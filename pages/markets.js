@@ -6,3 +6,11 @@ export default function Markets() {
     </div>
   );
 }
+export default function Markets() {
+  return (
+    <div style={{ minHeight: "100vh", background: "black", color: "white", padding: "40px" }}>
+      <h1>Markets</h1>
+      <p>This is the markets page.</p>
+    </div>
+  );
+}
