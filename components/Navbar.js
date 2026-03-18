@@ -3,164 +3,137 @@ import { useRouter } from "next/router";
 export default function Navbar() {
   const router = useRouter();
 
-  const navLinks = [
-    { name: "Markets", path: "/markets" },
-    { name: "Exchange", path: "/exchange" },
-    { name: "Bonds", path: "/bonds" },
-    { name: "Equity & IPO", path: "/equity" },
-    { name: "Tokenize", path: "/tokenize" },
-  ];
-
   return (
-    <nav style={styles.nav}>
-      <div style={styles.container}>
-        
-        {/* LOGO */}
-        <div style={styles.logo} onClick={() => router.push("/")}>
-          <span style={styles.logoNXT}>NXT</span>
-
-          <div style={styles.divider}></div>
-
-          <div style={styles.logoText}>
-            <span style={styles.nextoken}>NEXTOKEN</span>
-            <span style={styles.capital}>CAPITAL</span>
+    <>
+      <nav className="navbar">
+        <div className="navInner">
+          <div className="navLogo" onClick={() => router.push("/")}>
+            <div className="logoIcon">N</div>
+            <span className="logoText">
+              NEXTOKEN<span className="logoBold">CAPITAL</span>
+            </span>
           </div>
+
+          <div className="navLinks">
+            <button onClick={() => router.push("/")}>Home</button>
+            <button onClick={() => router.push("/markets")}>Markets</button>
+            <button onClick={() => router.push("/about")}>About</button>
+            <button onClick={() => router.push("/contact")}>Contact</button>
+          </div>
+
+          <button
+            className="navCta"
+            onClick={() => router.push("/register")}
+          >
+            Get Started
+          </button>
         </div>
+      </nav>
 
-        {/* NAV LINKS */}
-        <div style={styles.navLinks}>
-          {navLinks.map((item) => {
-            const active = router.pathname === item.path;
+      <style jsx>{`
+        .navbar {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          z-index: 1000;
+          height: 72px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+          background: rgba(5, 6, 10, 0.85);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+        }
 
-            return (
-              <button
-                key={item.path}
-                onClick={() => router.push(item.path)}
-                style={{
-                  ...styles.link,
-                  ...(active ? styles.activeLink : {}),
-                }}
-              >
-                {item.name}
-              </button>
-            );
-          })}
-        </div>
+        .navInner {
+          max-width: 1180px;
+          margin: 0 auto;
+          padding: 0 18px;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 24px;
+        }
 
-        {/* RIGHT SIDE */}
-        <div style={styles.right}>
-          <button style={styles.login}>Log In</button>
-          <button style={styles.register}>Register</button>
-        </div>
+        .navLogo {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          cursor: pointer;
+          flex-shrink: 0;
+        }
 
-      </div>
-    </nav>
-  );
-}
+        .logoIcon {
+          width: 36px;
+          height: 36px;
+          border-radius: 10px;
+          background: linear-gradient(135deg, #ffda7a, #f5a623);
+          display: grid;
+          place-items: center;
+          font-weight: 900;
+          font-size: 18px;
+          color: #111;
+        }
 
-const styles = {
-  nav: {
-    position: "fixed",
-    top: 0,
-    width: "100%",
-    height: "80px",
-    background: "#0B0E11",
-    borderBottom: "1px solid rgba(255,255,255,0.05)",
-    zIndex: 1000,
-  },
+        .logoText {
+          font-size: 15px;
+          font-weight: 400;
+          letter-spacing: 1px;
+          color: #eef1ff;
+          text-transform: uppercase;
+        }
 
-  container: {
-    maxWidth: "1400px",
-    margin: "0 auto",
-    height: "100%",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: "0 30px",
-  },
+        .logoBold {
+          font-weight: 800;
+        }
 
-  logo: {
-    display: "flex",
-    alignItems: "center",
-    gap: "14px",
-    cursor: "pointer",
-  },
+        .navLinks {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          flex: 1;
+          justify-content: center;
+        }
 
-  logoNXT: {
-    color: "#F0B90B",
-    fontSize: "26px",
-    fontWeight: "900",
-  },
+        .navLinks button {
+          background: none;
+          border: none;
+          color: rgba(238, 241, 255, 0.75);
+          font-size: 14.5px;
+          font-weight: 500;
+          cursor: pointer;
+          padding: 8px 14px;
+          border-radius: 10px;
+          transition: all 0.18s;
+        }
 
-  divider: {
-    width: "1px",
-    height: "30px",
-    background: "rgba(240,185,11,0.3)",
-  },
+        .navLinks button:hover {
+          color: #ffda7a;
+          background: rgba(255, 218, 122, 0.08);
+        }
 
-  logoText: {
-    display: "flex",
-    flexDirection: "column",
-    lineHeight: "1",
-  },
+        .navCta {
+          flex-shrink: 0;
+          padding: 9px 20px;
+          border-radius: 12px;
+          border: 0;
+          background: linear-gradient(135deg, #ffda7a, #f5c15a);
+          color: #111;
+          font-weight: 700;
+          font-size: 14px;
+          cursor: pointer;
+          transition: all 0.2s;
+          box-shadow: 0 8px 24px rgba(255, 193, 90, 0.25);
+        }
 
-  nextoken: {
-    color: "#fff",
-    fontWeight: "800",
-    fontSize: "16px",
-  },
+        .navCta:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 12px 30px rgba(255, 193, 90, 0.35);
+        }
 
-  capital: {
-    color: "#F0B90B",
-    fontSize: "10px",
-    letterSpacing: "3px",
-    marginTop: "3px",
-  },
-
-  navLinks: {
-    display: "flex",
-    gap: "8px",
-  },
-
-  link: {
-    padding: "10px 16px",
-    background: "transparent",
-    border: "none",
-    color: "rgba(255,255,255,0.6)",
-    fontSize: "15px",
-    fontWeight: "600",
-    borderRadius: "8px",
-    cursor: "pointer",
-    transition: "0.2s",
-  },
-
-  activeLink: {
-    background: "#1E2329",
-    color: "#fff",
-  },
-
-  right: {
-    display: "flex",
-    gap: "10px",
-  },
-
-  login: {
-    padding: "10px 18px",
-    background: "transparent",
-    border: "1px solid rgba(240,185,11,0.3)",
-    color: "#fff",
-    borderRadius: "8px",
-    cursor: "pointer",
-    fontWeight: "600",
-  },
-
-  register: {
-    padding: "10px 18px",
-    background: "#F0B90B",
-    border: "none",
-    color: "#000",
-    borderRadius: "8px",
-    cursor: "pointer",
-    fontWeight: "700",
-  },
-};
+        @media (max-width: 640px) {
+          .navLinks {
+            display: none;
+          }
+        }
+      `}</style>
