@@ -1,108 +1,205 @@
-import { useState } from 'react'
-import { useAuth } from '../lib/AuthContext'
-import { useRouter } from 'next/router'
+import { useEffect } from "react";
 
-export default function Navbar({ onLogin, onRegister }) {
-  const { user, logout } = useAuth()
-  const router = useRouter()
-  const [menuOpen, setMenuOpen] = useState(false)
+export default function Home() {
+  useEffect(() => {
+    const menuBtn = document.getElementById("menuBtn");
+    const drawer = document.getElementById("drawer");
 
-  const navLinks = [
-    { label: 'Markets', href: '/markets' },
-    { label: 'Exchange', href: '/exchange' },
-    { label: 'Bonds', href: '/bonds' },
-    { label: 'Equity & IPO', href: '/equity' },
-    { label: 'Tokenize', href: '/tokenize' },
-  ]
+    if (menuBtn) {
+      menuBtn.addEventListener("click", () => {
+        drawer.classList.toggle("show");
+      });
+    }
+  }, []);
+
+  const scrollToId = (id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth" });
+  };
 
   return (
-    <nav style={{
-      position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000,
-      height: 60, display: 'flex', alignItems: 'center', padding: '0 5%',
-      background: '#0B0E11', borderBottom: '1px solid rgba(255,255,255,0.06)',
-      backdropFilter: 'blur(20px)'
-    }}>
-      {/* Logo */}
-      <div
-        onClick={() => router.push('/')}
-        style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', flexShrink: 0, marginRight: '2rem' }}
-      >
-        <span className="logo-nxt">NXT</span>
-        <div className="logo-sep" />
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <span className="logo-name">NEXTOKEN</span>
-          <span className="logo-cap">CAPITAL</span>
+    <>
+      <div className="sparkle"></div>
+
+      {/* HEADER */}
+      <header className="topbar">
+        <div className="container">
+          <div className="topbar-inner">
+            <div className="brand">
+              <div className="logoMark"></div>
+              <div className="brandText">
+                <strong>NEXTOKEN</strong>
+                <span>CAPITAL</span>
+              </div>
+            </div>
+
+            <nav className="nav">
+              <a href="#">Home</a>
+              <a href="#">About</a>
+              <a href="#">Contact</a>
+            </nav>
+
+            <div className="rightTools">
+              <button className="btn" onClick={() => scrollToId("get-started")}>
+                Get Started
+              </button>
+            </div>
+          </div>
+
+          <div className="drawer" id="drawer">
+            <a href="#">Home</a>
+            <a href="#">About</a>
+            <a href="#">Contact</a>
+          </div>
         </div>
-      </div>
+      </header>
 
-      {/* Nav Links */}
-      <div style={{ display: 'flex', gap: '0.25rem', flex: 1 }}>
-        {navLinks.map(link => (
-          <button
-            key={link.href}
-            onClick={() => router.push(link.href)}
-            style={{
-              padding: '0.45rem 0.75rem',
-              background: router.pathname === link.href ? '#1E2329' : 'transparent',
-              border: 'none',
-              borderRadius: 4,
-              fontSize: '0.82rem',
-              fontWeight: 500,
-              color: router.pathname === link.href ? 'white' : 'rgba(255,255,255,0.45)',
-              cursor: 'pointer',
-              transition: 'all 0.15s',
-              fontFamily: 'Inter, sans-serif',
-              whiteSpace: 'nowrap'
-            }}
-            onMouseEnter={e => { e.target.style.color = 'white'; e.target.style.background = '#1E2329' }}
-            onMouseLeave={e => {
-              e.target.style.color = router.pathname === link.href ? 'white' : 'rgba(255,255,255,0.45)'
-              e.target.style.background = router.pathname === link.href ? '#1E2329' : 'transparent'
-            }}
-          >
-            {link.label}
-          </button>
-        ))}
-      </div>
+      {/* HERO */}
+      <main className="hero">
+        <div className="container">
+          <section className="heroCard">
+            <div className="heroInner">
+              <div>
+                <h1>
+                  INVEST IN <span className="gold">TOKENIZED</span>
+                  <br />
+                  REAL-WORLD ASSETS
+                </h1>
 
-      {/* Right side */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
-        {user ? (
-          <>
-            <span style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.4)', marginRight: '0.25rem' }}>
-              {user.first_name} {user.last_name}
-            </span>
-            <button
-              className="btn btn-gold btn-sm"
-              onClick={() => router.push('/dashboard')}
-              style={{ background: '#F0B90B', color: 'black', border: 'none', padding: '0.4rem 1rem', borderRadius: 4, fontWeight: 800, cursor: 'pointer', fontSize: '0.78rem' }}
-            >
-              Dashboard
-            </button>
-            <button
-              onClick={logout}
-              style={{ padding: '0.4rem 1rem', background: 'transparent', border: '1px solid rgba(240,185,11,0.25)', color: 'rgba(255,255,255,0.5)', borderRadius: 4, fontSize: '0.78rem', cursor: 'pointer', fontFamily: 'Inter,sans-serif' }}
-            >
-              Log Out
-            </button>
-          </>
-        ) : (
-          <>
-            <button
-              onClick={onLogin}
-              style={{ padding: '0.4rem 1rem', background: 'transparent', border: '1px solid rgba(240,185,11,0.25)', color: 'rgba(255,255,255,0.55)', borderRadius: 4, fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'Inter,sans-serif' }}
-            >
-              Log In
-            </button>
-            <button
-              onClick={onRegister}
-              style={{ padding: '0.4rem 1.1rem', background: '#F0B90B', color: 'black', border: 'none', borderRadius: 4, fontSize: '0.78rem', fontWeight: 800, cursor: 'pointer', fontFamily: 'Inter,sans-serif' }}
-            >
-              Register
-            </button>
-          </>
-        )}
-      </div>
-    </nav>
-  )
+                <p>
+                  Register and explore opportunities in property,
+                  infrastructure, energy projects, and businesses.
+                </p>
+
+                <div className="heroActions">
+                  <button className="btn">Register</button>
+                  <button className="btnOutline">Learn More</button>
+                </div>
+              </div>
+
+              <div className="heroVisual">
+                <div className="coin">
+                  <span>NXC</span>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      {/* STYLE */}
+      <style jsx global>{`
+        body {
+          margin: 0;
+          background: #05060a;
+          color: white;
+          font-family: sans-serif;
+        }
+
+        .container {
+          max-width: 1100px;
+          margin: auto;
+          padding: 0 20px;
+        }
+
+        .topbar {
+          position: fixed;
+          top: 0;
+          width: 100%;
+          background: #0b0d14;
+          z-index: 1000;
+        }
+
+        .topbar-inner {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 15px 0;
+        }
+
+        .brand {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .logoMark {
+          width: 30px;
+          height: 30px;
+          background: gold;
+          border-radius: 8px;
+        }
+
+        .brandText span {
+          font-size: 10px;
+          color: gold;
+        }
+
+        .nav {
+          display: flex;
+          gap: 20px;
+        }
+
+        .btn {
+          background: gold;
+          border: none;
+          padding: 10px 15px;
+          border-radius: 8px;
+          font-weight: bold;
+          cursor: pointer;
+        }
+
+        .hero {
+          padding-top: 100px;
+        }
+
+        .heroCard {
+          background: #111;
+          border-radius: 20px;
+          padding: 40px;
+        }
+
+        .heroInner {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .gold {
+          color: gold;
+        }
+
+        .btnOutline {
+          border: 1px solid white;
+          background: transparent;
+          color: white;
+          padding: 10px 15px;
+          border-radius: 8px;
+        }
+
+        .heroVisual {
+          width: 200px;
+          height: 200px;
+          background: #222;
+          border-radius: 20px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        .coin {
+          width: 100px;
+          height: 100px;
+          background: gold;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: black;
+          font-weight: bold;
+        }
+      `}</style>
+    </>
+  );
 }
