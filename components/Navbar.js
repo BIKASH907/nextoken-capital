@@ -16,9 +16,8 @@ export default function Navbar() {
       <nav className="navbar">
         <div className="navInner">
           <div className="navLogo" onClick={() => router.push("/")}>
-            <div className="logoBox">
-              <span className="logoNxt">NXT</span>
-            </div>
+            <span className="logoNxt">NXT</span>
+            <div className="logoDivider" />
             <div className="logoTextWrap">
               <span className="logoTop">NEXTOKEN</span>
               <span className="logoBottom">CAPITAL</span>
@@ -56,14 +55,14 @@ export default function Navbar() {
           right: 0;
           z-index: 1000;
           height: 68px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-          background: #0a0b0f;
+          background: #0d0d0d;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
 
         .navInner {
           max-width: 1280px;
           margin: 0 auto;
-          padding: 0 24px;
+          padding: 0 28px;
           height: 100%;
           display: flex;
           align-items: center;
@@ -74,79 +73,77 @@ export default function Navbar() {
         .navLogo {
           display: flex;
           align-items: center;
-          gap: 10px;
+          gap: 12px;
           cursor: pointer;
           flex-shrink: 0;
         }
 
-        .logoBox {
-          width: 38px;
-          height: 38px;
-          border-radius: 8px;
-          background: linear-gradient(135deg, #f5c842, #e6a817);
-          display: flex;
-          align-items: center;
-          justify-content: center;
+        .logoNxt {
+          font-size: 22px;
+          font-weight: 900;
+          color: #f5c842;
+          letter-spacing: 1px;
+          line-height: 1;
         }
 
-        .logoNxt {
-          font-size: 13px;
-          font-weight: 900;
-          color: #111;
-          letter-spacing: 0.5px;
+        .logoDivider {
+          width: 1px;
+          height: 28px;
+          background: rgba(255, 255, 255, 0.15);
         }
 
         .logoTextWrap {
           display: flex;
           flex-direction: column;
           line-height: 1;
-          gap: 1px;
+          gap: 2px;
         }
 
         .logoTop {
-          font-size: 13px;
+          font-size: 12px;
           font-weight: 700;
           color: #ffffff;
-          letter-spacing: 1.5px;
+          letter-spacing: 2px;
         }
 
         .logoBottom {
-          font-size: 10px;
+          font-size: 9px;
           font-weight: 400;
-          color: rgba(255, 255, 255, 0.45);
-          letter-spacing: 2px;
+          color: rgba(255, 255, 255, 0.4);
+          letter-spacing: 2.5px;
         }
 
         .navLinks {
           display: flex;
           align-items: center;
-          gap: 0;
           flex: 1;
           justify-content: center;
+          gap: 2px;
         }
 
         .navLinks button {
           background: none;
           border: none;
-          color: rgba(255, 255, 255, 0.6);
+          color: rgba(255, 255, 255, 0.55);
           font-size: 14px;
-          font-weight: 500;
+          font-weight: 400;
           cursor: pointer;
-          padding: 6px 16px;
-          border-radius: 8px;
+          padding: 6px 14px;
+          border-radius: 6px;
           transition: color 0.15s, background 0.15s;
           white-space: nowrap;
+          letter-spacing: 0.2px;
         }
 
         .navLinks button:hover {
           color: #ffffff;
-          background: rgba(255, 255, 255, 0.06);
+          background: rgba(255, 255, 255, 0.07);
         }
 
         .navLinks button.active {
           color: #ffffff;
           background: rgba(255, 255, 255, 0.1);
-          font-weight: 600;
+          font-weight: 500;
         }
 
         .navActions {
@@ -157,9 +154,9 @@ export default function Navbar() {
         }
 
         .btnLogin {
-          padding: 8px 20px;
+          padding: 8px 22px;
           border-radius: 8px;
-          border: 1px solid rgba(255, 255, 255, 0.25);
+          border: 1px solid rgba(255, 255, 255, 0.3);
           background: transparent;
           color: #ffffff;
           font-size: 14px;
@@ -169,20 +166,20 @@ export default function Navbar() {
         }
 
         .btnLogin:hover {
-          border-color: rgba(255, 255, 255, 0.5);
-          background: rgba(255, 255, 255, 0.06);
+          border-color: rgba(255, 255, 255, 0.6);
+          background: rgba(255, 255, 255, 0.05);
         }
 
         .btnRegister {
-          padding: 8px 20px;
+          padding: 8px 22px;
           border-radius: 8px;
           border: none;
           background: #f5c842;
-          color: #111;
+          color: #111111;
           font-size: 14px;
           font-weight: 700;
           cursor: pointer;
-          transition: background 0.15s, transform 0.15s;
+          transition: background 0.15s, transform 0.12s;
         }
 
         .btnRegister:hover {
