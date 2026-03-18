@@ -1,38 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 const PAIRS = [
-  {
-    name: 'BTC/EUR',
-    symbol: 'BTCEUR',
-    tvSymbol: 'BINANCE:BTCEUR',
-    base: 'BTC',
-    quote: 'EUR',
-    type: 'Crypto',
-  },
-  {
-    name: 'ETH/EUR',
-    symbol: 'ETHEUR',
-    tvSymbol: 'BINANCE:ETHEUR',
-    base: 'ETH',
-    quote: 'EUR',
-    type: 'Crypto',
-  },
-  {
-    name: 'BNB/EUR',
-    symbol: 'BNBEUR',
-    tvSymbol: 'BINANCE:BNBEUR',
-    base: 'BNB',
-    quote: 'EUR',
-    type: 'Crypto',
-  },
-  {
-    name: 'BTC/USDT',
-    symbol: 'BTCUSDT',
-    tvSymbol: 'BINANCE:BTCUSDT',
-    base: 'BTC',
-    quote: 'USDT',
-    type: 'Crypto',
-  },
+  { name: 'BTC/EUR', symbol: 'BTCEUR', tvSymbol: 'BINANCE:BTCEUR', base: 'BTC', quote: 'EUR', type: 'Crypto' },
+  { name: 'ETH/EUR', symbol: 'ETHEUR', tvSymbol: 'BINANCE:ETHEUR', base: 'ETH', quote: 'EUR', type: 'Crypto' },
+  { name: 'BNB/EUR', symbol: 'BNBEUR', tvSymbol: 'BINANCE:BNBEUR', base: 'BNB', quote: 'EUR', type: 'Crypto' },
+  { name: 'BTC/USDT', symbol: 'BTCUSDT', tvSymbol: 'BINANCE:BTCUSDT', base: 'BTC', quote: 'USDT', type: 'Crypto' },
 ]
 
 const DEFAULT_WALLET = {
@@ -41,6 +13,19 @@ const DEFAULT_WALLET = {
   BTC: 0.35,
   ETH: 4.2,
   BNB: 18,
+}
+
+const panelTitleStyle = {
+  fontWeight: 800,
+  marginBottom: '1rem',
+  fontSize: '1rem',
+}
+
+const subTitleStyle = {
+  fontWeight: 800,
+  marginBottom: '0.75rem',
+  fontSize: '0.9rem',
+  color: 'white',
 }
 
 export default function ExchangePage() {
@@ -65,8 +50,6 @@ export default function ExchangePage() {
   const [chartReady, setChartReady] = useState(false)
 
   const chartContainerRef = useRef(null)
-  const chartWidgetRef = useRef(null)
-  const tvScriptLoadedRef = useRef(false)
   const wsRef = useRef(null)
 
   const currentTicker = tickerMap[selectedPair.symbol] || null
@@ -177,43 +160,34 @@ export default function ExchangePage() {
   }, [marketPrice, selectedPair])
 
   useEffect(() => {
-    function loadTradingViewScript() {
-      return new Promise((resolve, reject) => {
-        if (window.TradingView) {
-          tvScriptLoadedRef.current = true
-          resolve()
-          return
-        }
-
-        const existing = document.getElementById('tradingview-widget-script')
-        if (existing) {
-          existing.addEventListener('load', () => resolve())
-          existing.addEventListener('error', reject)
-          return
-        }
-
-        const script = document.createElement('script')
-        script.id = 'tradingview-widget-script'
-        script.src = 'https://s3.tradingview.com/tv.js'
-        script.async = true
-        script.onload = () => {
-          tvScriptLoadedRef.current = true
-          resolve()
-        }
-        script.onerror = reject
-        document.body.appendChild(script)
-      })
-    }
+    let cancelled = false
 
     async function initChart() {
       try {
-        await loadTradingViewScript()
+        if (typeof window === 'undefined') return
 
-        if (!chartContainerRef.current || !window.TradingView) return
+        if (!window.TradingView) {
+          await new Promise((resolve, reject) => {
+            const existing = document.getElementById('tradingview-widget-script')
+            if (existing) {
+              resolve()
+              return
+            }
+            const script = document.createElement('script')
+            script.id = 'tradingview-widget-script'
+            script.src = 'https://s3.tradingview.com/tv.js'
+            script.async = true
+            script.onload = resolve
+            script.onerror = reject
+            document.body.appendChild(script)
+          })
+        }
+
+        if (cancelled || !chartContainerRef.current || !window.TradingView) return
 
         chartContainerRef.current.innerHTML = ''
 
-        chartWidgetRef.current = new window.TradingView.widget({
+        new window.TradingView.widget({
           autosize: true,
           symbol: selectedPair.tvSymbol,
           interval: '60',
@@ -244,12 +218,12 @@ export default function ExchangePage() {
     }
 
     initChart()
+    return () => {
+      cancelled = true
+    }
   }, [selectedPair, dark2])
 
-  const displayedPrice =
-    orderType === 'market'
-      ? marketPrice || Number(price || 0)
-      : Number(price || 0)
+  const displayedPrice = orderType === 'market' ? marketPrice || Number(price || 0) : Number(price || 0)
 
   function formatMoney(value, currency = selectedPair.quote) {
     if (!Number.isFinite(value)) return `0 ${currency}`
@@ -292,12 +266,11 @@ export default function ExchangePage() {
         return
       }
 
-      const nextWallet = {
+      setWallet({
         ...wallet,
         [quoteAsset]: availableQuote - cost,
         [baseAsset]: Number(wallet[baseAsset] || 0) + a,
-      }
-      setWallet(nextWallet)
+      })
     } else {
       const availableBase = Number(wallet[baseAsset] || 0)
       if (availableBase < a) {
@@ -305,12 +278,11 @@ export default function ExchangePage() {
         return
       }
 
-      const nextWallet = {
+      setWallet({
         ...wallet,
         [baseAsset]: availableBase - a,
         [quoteAsset]: Number(wallet[quoteAsset] || 0) + cost,
-      }
-      setWallet(nextWallet)
+      })
     }
 
     const newOrder = {
@@ -383,8 +355,7 @@ export default function ExchangePage() {
                 Exchange Terminal
               </div>
               <h1 style={{ fontSize: '2rem', fontWeight: 900, margin: 0 }}>
-                {selectedPair.name}{' '}
-                <span style={{ color: gold }}>Live Trading</span>
+                {selectedPair.name} <span style={{ color: gold }}>Live Trading</span>
               </h1>
               <p style={{ color: muted, marginTop: '0.7rem', maxWidth: 720 }}>
                 Interactive charting, live market price feed, wallet balances, simulated order execution,
@@ -410,8 +381,7 @@ export default function ExchangePage() {
               <div
                 style={{
                   marginTop: '0.45rem',
-                  color:
-                    Number(currentTicker?.priceChangePercent || 0) >= 0 ? green : red,
+                  color: Number(currentTicker?.priceChangePercent || 0) >= 0 ? green : red,
                   fontWeight: 800,
                 }}
               >
@@ -631,16 +601,8 @@ export default function ExchangePage() {
                       borderRadius: 4,
                       cursor: 'pointer',
                       fontWeight: 800,
-                      background:
-                        tradeSide === side
-                          ? side === 'buy'
-                            ? green
-                            : red
-                          : dark3,
-                      color:
-                        tradeSide === side
-                          ? 'white'
-                          : 'rgba(255,255,255,0.72)',
+                      background: tradeSide === side ? (side === 'buy' ? green : red) : dark3,
+                      color: tradeSide === side ? 'white' : 'rgba(255,255,255,0.72)',
                     }}
                   >
                     {side.toUpperCase()}
@@ -799,23 +761,6 @@ function panelStyle(bg, border) {
     border: `1px solid ${border}`,
     borderRadius: 6,
     padding: '1rem',
-  }
-}
-
-function panelTitleStyle() {
-  return {
-    fontWeight: 800,
-    marginBottom: '1rem',
-    fontSize: '1rem',
-  }
-}
-
-function subTitleStyle() {
-  return {
-    fontWeight: 800,
-    marginBottom: '0.75rem',
-    fontSize: '0.9rem',
-    color: 'white',
   }
 }
 
