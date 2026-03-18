@@ -17,15 +17,14 @@ export default function Navbar() {
           <div className="navLinks">
             <button onClick={() => router.push("/")}>Home</button>
             <button onClick={() => router.push("/markets")}>Markets</button>
-            <button onClick={() => router.push("/about")}>About</button>
-            <button onClick={() => router.push("/contact")}>Contact</button>
+            <button onClick={() => router.push("/bonds")}>Bonds</button>
+            <button onClick={() => router.push("/equity")}>Equity</button>
+            <button onClick={() => router.push("/exchange")}>Exchange</button>
+            <button onClick={() => router.push("/tokenize")}>Tokenize</button>
           </div>
 
-          <button
-            className="navCta"
-            onClick={() => router.push("/register")}
-          >
-            Get Started
+          <button className="navCta" onClick={() => router.push("/dashboard")}>
+            Dashboard
           </button>
         </div>
       </nav>
@@ -39,7 +38,7 @@ export default function Navbar() {
           z-index: 1000;
           height: 72px;
           border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-          background: rgba(5, 6, 10, 0.85);
+          background: rgba(5, 6, 10, 0.9);
           backdrop-filter: blur(16px);
           -webkit-backdrop-filter: blur(16px);
         }
@@ -90,7 +89,7 @@ export default function Navbar() {
         .navLinks {
           display: flex;
           align-items: center;
-          gap: 4px;
+          gap: 2px;
           flex: 1;
           justify-content: center;
         }
@@ -99,10 +98,10 @@ export default function Navbar() {
           background: none;
           border: none;
           color: rgba(238, 241, 255, 0.75);
-          font-size: 14.5px;
+          font-size: 14px;
           font-weight: 500;
           cursor: pointer;
-          padding: 8px 14px;
+          padding: 8px 12px;
           border-radius: 10px;
           transition: all 0.18s;
         }
@@ -131,7 +130,7 @@ export default function Navbar() {
           box-shadow: 0 12px 30px rgba(255, 193, 90, 0.35);
         }
 
-        @media (max-width: 640px) {
+        @media (max-width: 768px) {
           .navLinks {
             display: none;
           }
