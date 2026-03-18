@@ -13,7 +13,6 @@ export default function Navbar() {
               NEXTOKEN<span className="logoBold">CAPITAL</span>
             </span>
           </div>
-
           <div className="navLinks">
             <button onClick={() => router.push("/")}>Home</button>
             <button onClick={() => router.push("/markets")}>Markets</button>
@@ -22,7 +21,6 @@ export default function Navbar() {
             <button onClick={() => router.push("/exchange")}>Exchange</button>
             <button onClick={() => router.push("/tokenize")}>Tokenize</button>
           </div>
-
           <button className="navCta" onClick={() => router.push("/dashboard")}>
             Dashboard
           </button>
@@ -42,7 +40,6 @@ export default function Navbar() {
           backdrop-filter: blur(16px);
           -webkit-backdrop-filter: blur(16px);
         }
-
         .navInner {
           max-width: 1180px;
           margin: 0 auto;
@@ -53,7 +50,6 @@ export default function Navbar() {
           justify-content: space-between;
           gap: 24px;
         }
-
         .navLogo {
           display: flex;
           align-items: center;
@@ -61,7 +57,6 @@ export default function Navbar() {
           cursor: pointer;
           flex-shrink: 0;
         }
-
         .logoIcon {
           width: 36px;
           height: 36px;
@@ -73,7 +68,6 @@ export default function Navbar() {
           font-size: 18px;
           color: #111;
         }
-
         .logoText {
           font-size: 15px;
           font-weight: 400;
@@ -81,11 +75,9 @@ export default function Navbar() {
           color: #eef1ff;
           text-transform: uppercase;
         }
-
         .logoBold {
           font-weight: 800;
         }
-
         .navLinks {
           display: flex;
           align-items: center;
@@ -93,7 +85,6 @@ export default function Navbar() {
           flex: 1;
           justify-content: center;
         }
-
         .navLinks button {
           background: none;
           border: none;
@@ -105,12 +96,10 @@ export default function Navbar() {
           border-radius: 10px;
           transition: all 0.18s;
         }
-
         .navLinks button:hover {
           color: #ffda7a;
           background: rgba(255, 218, 122, 0.08);
         }
-
         .navCta {
           flex-shrink: 0;
           padding: 9px 20px;
@@ -124,12 +113,10 @@ export default function Navbar() {
           transition: all 0.2s;
           box-shadow: 0 8px 24px rgba(255, 193, 90, 0.25);
         }
-
         .navCta:hover {
           transform: translateY(-1px);
           box-shadow: 0 12px 30px rgba(255, 193, 90, 0.35);
         }
-
         @media (max-width: 768px) {
           .navLinks {
             display: none;
