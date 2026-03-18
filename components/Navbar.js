@@ -8,7 +8,7 @@ export default function Navbar() {
       <nav className="navbar">
         <div className="navInner">
           <div className="navLogo" onClick={() => router.push("/")}>
-            <div className="logoIcon">NXT</div>
+            <div className="logoIcon">NXC</div>
             <span className="logoText">
               NEXTOKEN<span className="logoBold">CAPITAL</span>
             </span>
