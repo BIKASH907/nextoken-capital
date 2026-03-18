@@ -2,9 +2,9 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 
-const TICKER = [
-  { symbol: "BTC/EUR", price: "62054.31", change: "-3.66" },
-  { symbol: "ETH/EUR", price: "1913.01", change: "-5.24" },
+const TICKER_ITEMS = [
+  { symbol: "BTC/EUR", price: "62,054.31", change: "-3.66" },
+  { symbol: "ETH/EUR", price: "1,913.01", change: "-5.24" },
   { symbol: "BNB/EUR", price: "568.90", change: "-2.20" },
   { symbol: "SOL/EUR", price: "98.42", change: "+1.12" },
   { symbol: "XRP/EUR", price: "0.4821", change: "+0.87" },
@@ -15,80 +15,41 @@ const TICKER = [
   { symbol: "LINK/EUR", price: "11.42", change: "+1.75" },
 ];
 
-const ASSET_CATEGORIES = [
-  {
-    label: "Real Assets",
-    color: "#f5c842",
-    items: ["Real Estate", "Infrastructure", "Precious Metals", "Commodities", "Agricultural Assets"],
-  },
-  {
-    label: "Financial Assets",
-    color: "#4f8ef7",
-    items: ["Corporate Bonds", "Private Equity", "Venture Capital", "Debt Instruments", "Revenue Streams"],
-  },
-  {
-    label: "Alternative Investments",
-    color: "#0ecb81",
-    items: ["Art & Collectibles", "Music & Film Rights", "Sports Clubs", "Healthcare", "Luxury Goods"],
-  },
-  {
-    label: "Emerging Markets",
-    color: "#b77aff",
-    items: ["Carbon Credits", "Intellectual Property", "Gaming Assets", "Royalty Streams", "ESG Instruments"],
-  },
-];
-
-const PROCESS = [
-  {
-    step: "01",
-    title: "Securitize",
-    desc: "Choose your jurisdiction, structure your financial instrument, and prepare your legal wrapper for on-chain issuance.",
-  },
-  {
-    step: "02",
-    title: "Tokenize",
-    desc: "Onboard investors with a compliant KYC/AML digital experience. Allocate security tokens to approved wallets.",
-  },
-  {
-    step: "03",
-    title: "Manage",
-    desc: "Handle dividends, corporate actions, transfers, and compliance enforcement — all automated on the blockchain.",
-  },
-];
-
-const PRODUCTS = [
-  { icon: "📜", title: "Bond Issuance", desc: "Issue tokenized corporate or government bonds with automated coupon payments and instant settlement.", tag: "15–18% Target ROI" },
-  { icon: "🏠", title: "Real Estate", desc: "Fractional ownership of income-generating real estate. Lower minimums, global investors, 24/7 liquidity.", tag: "From €1,000" },
-  { icon: "📊", title: "Equity & IPO", desc: "Run regulated tokenized equity rounds and secondary market trading without traditional broker overhead.", tag: "DLT Pilot Regime" },
-  { icon: "⚡", title: "Exchange", desc: "Deep liquidity secondary market for all tokenized assets. 0.2% flat fee, instant settlement, 24/7.", tag: "0.2% Fee" },
+const FEATURES = [
+  { icon: "🏛", title: "Issue Bonds", desc: "Launch regulated tokenized bonds on-chain with full MiCA compliance and instant settlement." },
+  { icon: "🏠", title: "Tokenize Assets", desc: "Convert real estate, infrastructure, and business equity into tradeable digital tokens." },
+  { icon: "📈", title: "Equity & IPO", desc: "Participate in tokenized equity offerings and secondary market trading 24/7." },
+  { icon: "⚡", title: "Exchange", desc: "Trade tokenized real-world assets with deep liquidity and 0.2% flat trading fees." },
+  { icon: "🌍", title: "190+ Countries", desc: "Global access to regulated capital markets infrastructure from anywhere in the world." },
+  { icon: "🔒", title: "EU Regulated", desc: "Fully licensed under MiCA, supervised by the Bank of Lithuania and EU authorities." },
 ];
 
 const STATS = [
   { value: "$300T+", label: "Global Asset Market" },
-  { value: "190+", label: "Countries Supported" },
+  { value: "190+", label: "Countries" },
   { value: "<48h", label: "Time to Issue" },
-  { value: "12,400+", label: "Registered Investors" },
+  { value: "0.2%", label: "Trading Fee" },
 ];
 
 export default function Home() {
   const router = useRouter();
-  const [ticker, setTicker] = useState(TICKER);
+  const [prices, setPrices] = useState(TICKER_ITEMS);
 
   useEffect(() => {
-    const id = setInterval(() => {
-      setTicker((prev) =>
-        prev.map((t) => {
-          const d = (Math.random() - 0.5) * 0.3;
-          const raw = parseFloat(t.price.replace(/,/g, "")) * (1 + d / 100);
-          const price = raw >= 1
+    const interval = setInterval(() => {
+      setPrices((prev) =>
+        prev.map((item) => {
+          const delta = (Math.random() - 0.5) * 0.4;
+          const raw = parseFloat(item.price.replace(/,/g, "")) * (1 + delta / 100);
+          const formatted = raw >= 1
             ? raw.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
             : raw.toFixed(4);
-          const ch = parseFloat(t.change) + d;
-          return { ...t, price, change: (ch >= 0 ? "+" : "") + ch.toFixed(2) };
+          const changeVal = parseFloat(item.change) + delta;
+          return { ...item, price: formatted, change: (changeVal >= 0 ? "+" : "") + changeVal.toFixed(2) };
         })
       );
-    }, 2500);
-    return () => clearInterval(id);
+    }, 2000);
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -96,192 +57,131 @@ export default function Home() {
       <Navbar />
       <main className="main">
 
-        {/* ── TICKER ── */}
-        <div className="ticker">
+        {/* BACKGROUND ORBS */}
+        <div className="bgOrbs" aria-hidden="true">
+          <div className="orb orb1" />
+          <div className="orb orb2" />
+          <div className="orb orb3" />
+          <div className="orb orb4" />
+          <div className="dotGrid" />
+        </div>
+
+        {/* TICKER BAR */}
+        <div className="tickerWrap">
           <div className="tickerTrack">
-            {[...ticker, ...ticker].map((t, i) => (
+            {[...prices, ...prices].map((item, i) => (
               <div className="tickerItem" key={i}>
-                <span className="tSym">{t.symbol}</span>
-                <span className="tPrice">{t.price}</span>
-                <span className={`tChg ${t.change.startsWith("+") ? "up" : "dn"}`}>{t.change}%</span>
+                <span className="tSym">{item.symbol}</span>
+                <span className="tPrice">{item.price}</span>
+                <span className={`tChange ${item.change.startsWith("+") ? "up" : "dn"}`}>{item.change}%</span>
               </div>
             ))}
           </div>
         </div>
 
-        {/* ── HERO ── */}
+        {/* HERO */}
         <section className="hero">
           <div className="wrap heroWrap">
             <div className="heroLeft">
-              <div className="heroPill">
-                <span className="pillDot" />
+              <div className="heroBadge">
+                <span className="dot" />
                 MiCA Licensed · EU Regulated · DLT Pilot Regime
               </div>
               <h1 className="heroH1">
-                Institutional-Grade<br />
+                The Global Platform for<br />
                 <span className="gold">Tokenized Capital Markets</span>
               </h1>
-              <p className="heroSub">
-                Issue bonds, tokenize real-world assets, launch equity offerings and trade
-                on a regulated 24/7 secondary market — all on one compliant platform
-                supervised by the Bank of Lithuania.
+              <p className="heroP">
+                Issue bonds, tokenize real-world assets, launch equity offerings,
+                and trade on a regulated 24/7 secondary market — all on one compliant platform.
               </p>
-              <div className="heroCtas">
-                <button className="btnPrimary" onClick={() => router.push("/register")}>
-                  Start Investing
-                </button>
-                <button className="btnGhost" onClick={() => router.push("/tokenize")}>
-                  Tokenize an Asset
-                </button>
+              <div className="heroBtns">
+                <button className="btnPrimary" onClick={() => router.push("/register")}>Get Started</button>
+                <button className="btnSecondary" onClick={() => router.push("/exchange")}>Open Exchange</button>
               </div>
               <div className="heroStats">
                 {STATS.map((s) => (
-                  <div className="hStat" key={s.label}>
-                    <span className="hStatV">{s.value}</span>
-                    <span className="hStatL">{s.label}</span>
+                  <div className="stat" key={s.label}>
+                    <span className="statV">{s.value}</span>
+                    <span className="statL">{s.label}</span>
                   </div>
                 ))}
               </div>
             </div>
             <div className="heroRight">
               <div className="liveCard">
-                <div className="lcHead">
-                  <span className="lcTitle">Live Markets</span>
-                  <span className="lcLive">● LIVE</span>
+                <div className="liveCardHead">
+                  <span className="liveCardTitle">Live Market</span>
+                  <span className="liveDot">● LIVE</span>
                 </div>
-                {ticker.slice(0, 5).map((t) => (
-                  <div className="lcRow" key={t.symbol}>
-                    <span className="lcSym">{t.symbol}</span>
-                    <span className="lcPrice">€{t.price}</span>
-                    <span className={`lcChg ${t.change.startsWith("+") ? "up" : "dn"}`}>{t.change}%</span>
+                {prices.slice(0, 5).map((item) => (
+                  <div className="liveRow" key={item.symbol}>
+                    <span className="lSym">{item.symbol}</span>
+                    <span className="lPrice">€{item.price}</span>
+                    <span className={`lChange ${item.change.startsWith("+") ? "up" : "dn"}`}>{item.change}%</span>
                   </div>
                 ))}
-                <button className="lcBtn" onClick={() => router.push("/exchange")}>
-                  Open Exchange →
-                </button>
-              </div>
-              <div className="yieldCard">
-                <span className="ycLabel">Target Annual Yield</span>
-                <span className="ycValue">15 – 18%</span>
-                <span className="ycSub">On tokenized bond products · EU regulated</span>
+                <button className="liveBtn" onClick={() => router.push("/exchange")}>View All Markets →</button>
               </div>
             </div>
           </div>
         </section>
 
-        {/* ── WHAT CAN BE TOKENIZED ── */}
+        {/* FEATURES */}
         <section className="section">
-          <div className="wrap blockWrap">
-            <div className="sectionHead">
-              <p className="eyebrow">WHAT CAN BE TOKENIZED</p>
-              <h2 className="sectionH2">Any Asset. Any Market. On-Chain.</h2>
-              <p className="sectionSub">From real estate to carbon credits — if it has value, it can be tokenized and traded on Nextoken Capital.</p>
-            </div>
-            <div className="catGrid">
-              {ASSET_CATEGORIES.map((cat) => (
-                <div className="catCard" key={cat.label} style={{ "--accent": cat.color }}>
-                  <div className="catLabel" style={{ color: cat.color }}>{cat.label}</div>
-                  <ul className="catList">
-                    {cat.items.map((item) => (
-                      <li key={item}>
-                        <span className="catDot" style={{ background: cat.color }} />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
+          <div className="wrap">
+            <p className="eyebrow">EVERYTHING YOU NEED</p>
+            <h2 className="sectionH2">One Platform. All Capital Markets.</h2>
+            <div className="grid3">
+              {FEATURES.map((f) => (
+                <div className="fCard" key={f.title}>
+                  <div className="fIcon">{f.icon}</div>
+                  <h3 className="fTitle">{f.title}</h3>
+                  <p className="fDesc">{f.desc}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* ── HOW IT WORKS ── */}
-        <section className="section sectionDark">
-          <div className="wrap blockWrap">
-            <div className="sectionHead">
-              <p className="eyebrow">HOW IT WORKS</p>
-              <h2 className="sectionH2">From Asset to Token in 3 Steps</h2>
-            </div>
-            <div className="processRow">
-              {PROCESS.map((p, idx) => (
-                <div className="processCard" key={p.step}>
-                  <div className="processStep">{p.step}</div>
-                  <h3 className="processTitle">{p.title}</h3>
-                  <p className="processDesc">{p.desc}</p>
-                  {idx < PROCESS.length - 1 && <div className="processArrow">→</div>}
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ── PRODUCTS ── */}
-        <section className="section">
-          <div className="wrap blockWrap">
-            <div className="sectionHead">
-              <p className="eyebrow">OUR PRODUCTS</p>
-              <h2 className="sectionH2">Every Financial Instrument. Tokenized.</h2>
-            </div>
-            <div className="prodGrid">
-              {PRODUCTS.map((p) => (
-                <div className="prodCard" key={p.title}>
-                  <div className="prodTop">
-                    <span className="prodIcon">{p.icon}</span>
-                    <span className="prodTag">{p.tag}</span>
-                  </div>
-                  <h3 className="prodTitle">{p.title}</h3>
-                  <p className="prodDesc">{p.desc}</p>
-                  <button className="prodBtn" onClick={() => router.push("/register")}>Learn More →</button>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ── COMPLIANCE ── */}
-        <section className="section sectionDark">
-          <div className="wrap blockWrap">
-            <div className="sectionHead">
-              <p className="eyebrow">COMPLIANCE & REGULATION</p>
-              <h2 className="sectionH2">Regulated. Audited. Trusted.</h2>
-              <p className="sectionSub">Every token issued on Nextoken Capital is backed by a legal framework. We operate under the strictest EU financial regulations.</p>
-            </div>
-            <div className="compGrid">
+        {/* TRUST */}
+        <section className="section sectionAlt">
+          <div className="wrap">
+            <p className="eyebrow">REGULATED & COMPLIANT</p>
+            <h2 className="sectionH2">Built on Trust & Regulation</h2>
+            <div className="grid2">
               {[
-                { icon: "🇪🇺", title: "MiCA Licensed", desc: "Fully compliant with the EU Markets in Crypto-Assets Regulation. The gold standard for digital asset regulation." },
-                { icon: "🏦", title: "Bank of Lithuania", desc: "Supervised and monitored by Lietuvos bankas — Lithuania's central bank and primary financial regulator." },
-                { icon: "⚖️", title: "DLT Pilot Regime", desc: "Approved to operate under the EU DLT Pilot Regime, enabling regulated trading of tokenized securities." },
-                { icon: "🛡", title: "AML / KYC", desc: "Institutional-grade KYC onboarding, real-time AML screening, and continuous transaction monitoring." },
-                { icon: "🔍", title: "SOC 2 Audited", desc: "Annual third-party security audits ensuring your data and assets meet the highest industry standards." },
-                { icon: "📋", title: "GDPR Compliant", desc: "Full compliance with EU data protection regulation. Your data is never sold or shared with third parties." },
-              ].map((c) => (
-                <div className="compCard" key={c.title}>
-                  <span className="compIcon">{c.icon}</span>
-                  <h4 className="compTitle">{c.title}</h4>
-                  <p className="compDesc">{c.desc}</p>
+                { icon: "🇪🇺", title: "MiCA Licensed", desc: "Compliant with the EU Markets in Crypto-Assets Regulation framework." },
+                { icon: "🏦", title: "Monitored by Bank of Lithuania", desc: "Supervised by Lietuvos bankas, the central bank and financial regulator of Lithuania." },
+                { icon: "⚖️", title: "DLT Pilot Regime", desc: "Approved to operate under the EU DLT Pilot Regime for tokenized securities." },
+                { icon: "🛡", title: "AML / KYC Compliant", desc: "Full KYC onboarding, AML screening, and transaction monitoring on all accounts." },
+              ].map((t) => (
+                <div className="tCard" key={t.title}>
+                  <div className="tIcon">{t.icon}</div>
+                  <div>
+                    <h4 className="tTitle">{t.title}</h4>
+                    <p className="tDesc">{t.desc}</p>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* ── CTA ── */}
+        {/* CTA */}
         <section className="ctaSection">
           <div className="wrap ctaWrap">
-            <div className="ctaLeft">
-              <h2 className="ctaH2">Ready to enter the future of capital markets?</h2>
-              <p className="ctaP">Join 12,400+ investors and issuers already on the platform. Free to register, no minimums to explore.</p>
+            <div>
+              <h2 className="ctaH2">Ready to tokenize the world?</h2>
+              <p className="ctaP">Join 12,400+ investors and issuers on the platform.</p>
             </div>
-            <div className="ctaBtns">
-              <button className="btnPrimary" onClick={() => router.push("/register")}>Create Free Account</button>
-              <button className="btnGhost" onClick={() => router.push("/markets")}>Explore Markets</button>
-            </div>
+            <button className="btnPrimary" onClick={() => router.push("/register")}>Create Free Account</button>
           </div>
         </section>
 
-        {/* ── FOOTER ── */}
+        {/* FOOTER */}
         <footer className="footer">
-          <div className="wrap footerWrap">
+          <div className="wrap">
             <div className="footerTop">
               <div className="footerBrand">
                 <div className="fLogo">
@@ -291,28 +191,21 @@ export default function Home() {
                     <span className="fLogoBot">CAPITAL</span>
                   </div>
                 </div>
-                <p className="fTagline">Regulated infrastructure for tokenized real-world assets. Supervised by the Bank of Lithuania.</p>
+                <p className="fTagline">The regulated infrastructure for tokenized real-world assets.</p>
                 <div className="litBadge">
-                  <span className="litFlag">🇱🇹</span>
-                  <div>
+                  <span style={{ fontSize: "20px" }}>🇱🇹</span>
+                  <div className="litText">
                     <span className="litLabel">Monitored by</span>
                     <span className="litName">Bank of Lithuania</span>
-                  </div>
-                </div>
-                <div className="litBadge" style={{marginTop:"10px"}}>
-                  <span className="litFlag">🇪🇺</span>
-                  <div>
-                    <span className="litLabel">Licensed under</span>
-                    <span className="litName">MiCA Regulation</span>
                   </div>
                 </div>
               </div>
               <div className="footerCols">
                 {[
-                  { title: "Products", links: [["Markets","/markets"],["Exchange","/exchange"],["Bonds","/bonds"],["Equity & IPO","/equity"],["Tokenize","/tokenize"]] },
-                  { title: "Assets", links: [["Real Estate",""],["Corporate Bonds",""],["Private Equity",""],["Carbon Credits",""],["Infrastructure",""]] },
-                  { title: "Company", links: [["About Us",""],["Careers",""],["Press",""],["Blog",""],["Partners",""]] },
-                  { title: "Legal", links: [["Terms of Service",""],["Privacy Policy",""],["Risk Disclosure",""],["AML Policy",""],["Cookie Policy",""]] },
+                  { title: "Products", links: [["Markets", "/markets"], ["Exchange", "/exchange"], ["Bonds", "/bonds"], ["Equity & IPO", "/equity"], ["Tokenize", "/tokenize"]] },
+                  { title: "Company", links: [["About Us", ""], ["Careers", ""], ["Press", ""], ["Blog", ""]] },
+                  { title: "Legal", links: [["Terms of Service", ""], ["Privacy Policy", ""], ["Risk Disclosure", ""], ["AML Policy", ""]] },
+                  { title: "Support", links: [["Help Center", ""], ["Contact Us", ""], ["API Docs", ""], ["Status", ""]] },
                 ].map((col) => (
                   <div className="footerCol" key={col.title}>
                     <h5 className="colTitle">{col.title}</h5>
@@ -324,173 +217,239 @@ export default function Home() {
               </div>
             </div>
             <div className="footerBottom">
-              <p>© 2026 Nextoken Capital UAB. All rights reserved. Registered in Lithuania. Company No. 305XXXXXX.</p>
-              <p>⚠ Risk warning: Investing in tokenized assets carries risk. Capital is at risk. Past performance is not indicative of future results. This is not financial advice.</p>
+              <p>© 2026 Nextoken Capital UAB. All rights reserved. Registered in Lithuania.</p>
+              <p>Risk warning: Investing in tokenized assets involves risk. Past performance is not indicative of future results.</p>
             </div>
           </div>
         </footer>
       </main>
 
       <style jsx>{`
-        * { box-sizing: border-box; }
-        .main { background: #0b0b0f; color: #fff; min-height: 100vh; padding-top: 68px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
-        .wrap { max-width: 1280px; margin: 0 auto; padding: 0 28px; }
-        .blockWrap { display: block; }
+        /* ── BASE ── */
+        .main {
+          background: #04040a;
+          color: #fff;
+          min-height: 100vh;
+          padding-top: 68px;
+          position: relative;
+          overflow-x: hidden;
+        }
 
-        /* TICKER */
-        .ticker { background: #111116; border-bottom: 1px solid rgba(255,255,255,0.05); overflow: hidden; height: 42px; display: flex; align-items: center; }
-        .tickerTrack { display: flex; animation: slide 60s linear infinite; width: max-content; }
-        @keyframes slide { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-        .tickerItem { display: flex; align-items: center; gap: 8px; padding: 0 28px; border-right: 1px solid rgba(255,255,255,0.05); white-space: nowrap; }
-        .tSym { font-size: 12px; color: rgba(255,255,255,0.4); font-weight: 500; }
-        .tPrice { font-size: 12px; color: #fff; font-weight: 600; font-variant-numeric: tabular-nums; }
-        .tChg { font-size: 12px; font-weight: 600; }
-        .up { color: #0ecb81; }
-        .dn { color: #f6465d; }
+        /* ── ONDO-STYLE BACKGROUND ── */
+        .bgOrbs {
+          position: fixed;
+          inset: 0;
+          z-index: 0;
+          pointer-events: none;
+          overflow: hidden;
+        }
+        .orb {
+          position: absolute;
+          border-radius: 50%;
+          filter: blur(120px);
+          opacity: 0.18;
+        }
+        .orb1 {
+          width: 700px;
+          height: 700px;
+          background: radial-gradient(circle, #3b5bdb, transparent 70%);
+          top: -180px;
+          left: -100px;
+          animation: drift1 18s ease-in-out infinite alternate;
+        }
+        .orb2 {
+          width: 600px;
+          height: 600px;
+          background: radial-gradient(circle, #6741d9, transparent 70%);
+          top: 100px;
+          right: -120px;
+          animation: drift2 22s ease-in-out infinite alternate;
+        }
+        .orb3 {
+          width: 500px;
+          height: 500px;
+          background: radial-gradient(circle, #1971c2, transparent 70%);
+          bottom: 200px;
+          left: 30%;
+          animation: drift3 26s ease-in-out infinite alternate;
+        }
+        .orb4 {
+          width: 400px;
+          height: 400px;
+          background: radial-gradient(circle, #f5c842, transparent 70%);
+          bottom: -100px;
+          right: 10%;
+          opacity: 0.07;
+          animation: drift1 20s ease-in-out infinite alternate-reverse;
+        }
+        @keyframes drift1 {
+          from { transform: translate(0, 0) scale(1); }
+          to   { transform: translate(60px, 80px) scale(1.12); }
+        }
+        @keyframes drift2 {
+          from { transform: translate(0, 0) scale(1); }
+          to   { transform: translate(-80px, 60px) scale(1.08); }
+        }
+        @keyframes drift3 {
+          from { transform: translate(0, 0) scale(1); }
+          to   { transform: translate(50px, -70px) scale(1.15); }
+        }
+        .dotGrid {
+          position: absolute;
+          inset: 0;
+          background-image: radial-gradient(rgba(255,255,255,0.07) 1px, transparent 1px);
+          background-size: 32px 32px;
+          mask-image: radial-gradient(ellipse 80% 80% at 50% 40%, black 30%, transparent 100%);
+        }
 
-        /* HERO */
+        /* All content sits above orbs */
+        .tickerWrap, .hero, .section, .ctaSection, .footer {
+          position: relative;
+          z-index: 1;
+        }
+
+        /* ── TICKER ── */
+        .tickerWrap {
+          background: rgba(255,255,255,0.03);
+          border-bottom: 1px solid rgba(255,255,255,0.07);
+          overflow: hidden;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          backdrop-filter: blur(8px);
+        }
+        .tickerTrack { display:flex; animation:ticker 50s linear infinite; width:max-content; }
+        @keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+        .tickerItem { display:flex; align-items:center; gap:8px; padding:0 24px; border-right:1px solid rgba(255,255,255,0.05); white-space:nowrap; }
+        .tSym { font-size:12px; color:rgba(255,255,255,0.45); font-weight:500; }
+        .tPrice { font-size:12px; color:#fff; font-weight:600; }
+        .tChange { font-size:12px; font-weight:500; }
+        .up { color:#0ecb81; }
+        .dn { color:#f6465d; }
+
+        /* ── HERO ── */
         .hero { padding: 90px 0 70px; }
-        .heroWrap { display: flex; align-items: flex-start; gap: 60px; }
-        .heroLeft { flex: 1; }
-        .heroRight { flex-shrink: 0; width: 320px; display: flex; flex-direction: column; gap: 16px; }
-        .heroPill { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 100px; padding: 6px 14px; margin-bottom: 24px; }
-        .pillDot { width: 6px; height: 6px; border-radius: 50%; background: #0ecb81; flex-shrink: 0; }
-        .heroH1 { font-size: 54px; font-weight: 800; line-height: 1.08; margin: 0 0 20px; letter-spacing: -1.5px; color: #fff; }
-        .gold { color: #f5c842; }
-        .heroSub { font-size: 16px; color: rgba(255,255,255,0.48); line-height: 1.75; max-width: 540px; margin: 0 0 36px; }
-        .heroCtas { display: flex; gap: 14px; margin-bottom: 52px; }
-        .btnPrimary { padding: 14px 32px; border-radius: 8px; border: none; background: #f5c842; color: #111; font-size: 15px; font-weight: 700; cursor: pointer; transition: background .15s, transform .12s; white-space: nowrap; }
-        .btnPrimary:hover { background: #ffd84d; transform: translateY(-1px); }
-        .btnGhost { padding: 14px 32px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.18); background: transparent; color: #fff; font-size: 15px; font-weight: 600; cursor: pointer; transition: border-color .15s, background .15s; white-space: nowrap; }
-        .btnGhost:hover { border-color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.05); }
-        .heroStats { display: flex; gap: 0; border-top: 1px solid rgba(255,255,255,0.07); padding-top: 32px; }
-        .hStat { flex: 1; border-right: 1px solid rgba(255,255,255,0.07); padding-right: 24px; margin-right: 24px; }
-        .hStat:last-child { border-right: none; margin-right: 0; padding-right: 0; }
-        .hStatV { display: block; font-size: 24px; font-weight: 800; color: #f5c842; margin-bottom: 4px; }
-        .hStatL { font-size: 11px; color: rgba(255,255,255,0.38); text-transform: uppercase; letter-spacing: 1px; }
-
-        /* LIVE CARD */
-        .liveCard { background: #13131a; border: 1px solid rgba(255,255,255,0.07); border-radius: 16px; padding: 22px; }
-        .lcHead { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
-        .lcTitle { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.55); }
-        .lcLive { font-size: 11px; color: #0ecb81; font-weight: 600; }
-        .lcRow { display: flex; align-items: center; padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
-        .lcSym { font-size: 13px; font-weight: 600; color: #fff; width: 95px; }
-        .lcPrice { font-size: 13px; color: rgba(255,255,255,0.75); flex: 1; text-align: right; font-variant-numeric: tabular-nums; }
-        .lcChg { font-size: 12px; font-weight: 600; width: 64px; text-align: right; }
-        .lcBtn { margin-top: 14px; width: 100%; padding: 10px; border-radius: 8px; border: 1px solid rgba(245,200,66,0.25); background: transparent; color: #f5c842; font-size: 13px; font-weight: 600; cursor: pointer; transition: background .15s; }
-        .lcBtn:hover { background: rgba(245,200,66,0.07); }
-
-        /* YIELD CARD */
-        .yieldCard { background: linear-gradient(135deg, #1a1500 0%, #13131a 100%); border: 1px solid rgba(245,200,66,0.2); border-radius: 16px; padding: 22px; text-align: center; }
-        .ycLabel { display: block; font-size: 11px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; }
-        .ycValue { display: block; font-size: 36px; font-weight: 900; color: #f5c842; letter-spacing: -1px; margin-bottom: 6px; }
-        .ycSub { font-size: 12px; color: rgba(255,255,255,0.35); }
-
-        /* SECTIONS */
-        .section { padding: 90px 0; border-top: 1px solid rgba(255,255,255,0.05); }
-        .sectionDark { background: #0e0e14; }
-        .sectionHead { text-align: center; margin-bottom: 56px; }
-        .eyebrow { font-size: 11px; letter-spacing: 2.5px; color: #f5c842; font-weight: 700; margin: 0 0 12px; }
-        .sectionH2 { font-size: 38px; font-weight: 800; color: #fff; margin: 0 0 16px; letter-spacing: -0.8px; }
-        .sectionSub { font-size: 16px; color: rgba(255,255,255,0.42); max-width: 560px; margin: 0 auto; line-height: 1.7; }
-
-        /* ASSET CATEGORIES */
-        .catGrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
-        .catCard { background: #13131a; border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 24px; border-top: 3px solid var(--accent); transition: transform .2s, border-color .2s; }
-        .catCard:hover { transform: translateY(-4px); }
-        .catLabel { font-size: 13px; font-weight: 700; margin-bottom: 16px; display: block; letter-spacing: 0.3px; }
-        .catList { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
-        .catList li { display: flex; align-items: center; gap: 8px; font-size: 13px; color: rgba(255,255,255,0.55); }
-        .catDot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
-
-        /* PROCESS */
-        .processRow { display: flex; gap: 0; position: relative; }
-        .processCard { flex: 1; background: #13131a; border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 32px 28px; position: relative; }
-        .processCard:not(:last-child) { margin-right: 20px; }
-        .processStep { font-size: 11px; font-weight: 700; color: #f5c842; letter-spacing: 2px; margin-bottom: 16px; }
-        .processTitle { font-size: 22px; font-weight: 800; color: #fff; margin: 0 0 12px; }
-        .processDesc { font-size: 14px; color: rgba(255,255,255,0.45); line-height: 1.7; margin: 0; }
-        .processArrow { position: absolute; right: -22px; top: 50%; transform: translateY(-50%); font-size: 20px; color: rgba(255,255,255,0.2); z-index: 1; }
-
-        /* PRODUCTS */
-        .prodGrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
-        .prodCard { background: #13131a; border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 26px; display: flex; flex-direction: column; gap: 12px; transition: border-color .2s, background .2s; }
-        .prodCard:hover { border-color: rgba(245,200,66,0.3); background: #171720; }
-        .prodTop { display: flex; justify-content: space-between; align-items: center; }
-        .prodIcon { font-size: 26px; }
-        .prodTag { font-size: 10px; font-weight: 700; color: #f5c842; background: rgba(245,200,66,0.1); border-radius: 6px; padding: 3px 8px; }
-        .prodTitle { font-size: 17px; font-weight: 700; color: #fff; margin: 0; }
-        .prodDesc { font-size: 13px; color: rgba(255,255,255,0.42); line-height: 1.65; margin: 0; flex: 1; }
-        .prodBtn { font-size: 13px; color: #f5c842; background: none; border: none; cursor: pointer; padding: 0; font-weight: 600; text-align: left; transition: opacity .15s; }
-        .prodBtn:hover { opacity: 0.7; }
-
-        /* COMPLIANCE */
-        .compGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        .compCard { background: #13131a; border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 26px; }
-        .compIcon { font-size: 28px; display: block; margin-bottom: 14px; }
-        .compTitle { font-size: 15px; font-weight: 700; color: #fff; margin: 0 0 8px; }
-        .compDesc { font-size: 13px; color: rgba(255,255,255,0.42); line-height: 1.65; margin: 0; }
-
-        /* CTA */
-        .ctaSection { padding: 90px 0; background: linear-gradient(135deg, #14100a 0%, #0b0b0f 60%); border-top: 1px solid rgba(255,255,255,0.05); }
-        .ctaWrap { display: flex; justify-content: space-between; align-items: center; gap: 48px; }
-        .ctaLeft { flex: 1; }
-        .ctaH2 { font-size: 34px; font-weight: 800; color: #fff; margin: 0 0 10px; letter-spacing: -0.5px; }
-        .ctaP { font-size: 15px; color: rgba(255,255,255,0.42); margin: 0; line-height: 1.6; }
-        .ctaBtns { display: flex; flex-direction: column; gap: 12px; flex-shrink: 0; }
-
-        /* FOOTER */
-        .footer { background: #080810; border-top: 1px solid rgba(255,255,255,0.06); padding: 64px 0 32px; }
-        .footerWrap { display: block; }
-        .footerTop { display: flex; gap: 80px; margin-bottom: 48px; }
-        .footerBrand { flex-shrink: 0; width: 240px; }
-        .fLogo { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
-        .fNxt { font-size: 22px; font-weight: 900; color: #f5c842; }
-        .fLogoText { display: flex; flex-direction: column; line-height: 1; gap: 2px; }
-        .fLogoTop { font-size: 12px; font-weight: 700; color: #fff; letter-spacing: 2px; }
-        .fLogoBot { font-size: 9px; color: rgba(255,255,255,0.35); letter-spacing: 2.5px; }
-        .fTagline { font-size: 13px; color: rgba(255,255,255,0.35); line-height: 1.65; margin: 0 0 20px; }
-        .litBadge { display: flex; align-items: center; gap: 10px; background: #111118; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px 14px; }
-        .litFlag { font-size: 18px; flex-shrink: 0; }
-        .litBadge div { display: flex; flex-direction: column; gap: 1px; }
-        .litLabel { font-size: 9px; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 1px; }
-        .litName { font-size: 12px; font-weight: 600; color: #fff; }
-        .footerCols { display: flex; gap: 56px; flex: 1; }
-        .footerCol { display: flex; flex-direction: column; gap: 11px; }
-        .colTitle { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.6); margin: 0 0 4px; text-transform: uppercase; letter-spacing: 1px; }
-        .colLink { font-size: 13px; color: rgba(255,255,255,0.35); cursor: pointer; transition: color .15s; text-decoration: none; }
-        .colLink:hover { color: rgba(255,255,255,0.75); }
-        .footerBottom { border-top: 1px solid rgba(255,255,255,0.05); padding-top: 24px; display: flex; flex-direction: column; gap: 6px; }
-        .footerBottom p { font-size: 12px; color: rgba(255,255,255,0.22); margin: 0; line-height: 1.6; }
-
-        /* RESPONSIVE */
-        @media (max-width: 1100px) {
-          .catGrid { grid-template-columns: repeat(2, 1fr); }
-          .prodGrid { grid-template-columns: repeat(2, 1fr); }
-          .compGrid { grid-template-columns: repeat(2, 1fr); }
+        .wrap { max-width:1280px; margin:0 auto; padding:0 28px; }
+        .heroWrap { display:flex; align-items:center; gap:60px; }
+        .heroLeft { flex:1; }
+        .heroRight { flex-shrink:0; width:340px; }
+        .heroBadge {
+          display:inline-flex; align-items:center; gap:8px;
+          font-size:12px; color:rgba(255,255,255,0.55);
+          border:1px solid rgba(255,255,255,0.12);
+          border-radius:100px; padding:6px 14px; margin-bottom:28px;
+          background: rgba(255,255,255,0.04);
+          backdrop-filter: blur(8px);
         }
-        @media (max-width: 960px) {
-          .heroWrap { flex-direction: column; }
-          .heroRight { width: 100%; flex-direction: row; }
-          .liveCard, .yieldCard { flex: 1; }
-          .footerTop { flex-direction: column; gap: 40px; }
-          .footerBrand { width: 100%; }
-          .footerCols { flex-wrap: wrap; gap: 32px; }
-          .processRow { flex-direction: column; gap: 16px; }
-          .processCard { margin-right: 0 !important; }
-          .processArrow { display: none; }
+        .dot { width:6px; height:6px; border-radius:50%; background:#0ecb81; flex-shrink:0; }
+        .heroH1 { font-size:54px; font-weight:800; line-height:1.1; margin:0 0 20px; letter-spacing:-1.5px; }
+        .gold { color:#f5c842; }
+        .heroP { font-size:17px; color:rgba(255,255,255,0.5); line-height:1.7; max-width:520px; margin:0 0 36px; }
+        .heroBtns { display:flex; gap:14px; margin-bottom:52px; }
+        .btnPrimary { padding:14px 32px; border-radius:8px; border:none; background:#f5c842; color:#111; font-size:15px; font-weight:700; cursor:pointer; transition:background .15s,transform .12s; }
+        .btnPrimary:hover { background:#ffd84d; transform:translateY(-1px); }
+        .btnSecondary { padding:14px 32px; border-radius:8px; border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.04); color:#fff; font-size:15px; font-weight:600; cursor:pointer; transition:border-color .15s,background .15s; backdrop-filter:blur(8px); }
+        .btnSecondary:hover { border-color:rgba(255,255,255,0.4); background:rgba(255,255,255,0.08); }
+        .heroStats { display:flex; gap:40px; }
+        .stat { display:flex; flex-direction:column; gap:4px; }
+        .statV { font-size:22px; font-weight:800; color:#f5c842; }
+        .statL { font-size:11px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:1px; }
+
+        /* ── LIVE CARD ── */
+        .liveCard {
+          background: rgba(255,255,255,0.04);
+          border: 1px solid rgba(255,255,255,0.1);
+          border-radius: 20px;
+          padding: 24px;
+          backdrop-filter: blur(20px);
+          box-shadow: 0 0 80px rgba(59,91,219,0.12), 0 0 0 1px rgba(255,255,255,0.05);
         }
-        @media (max-width: 640px) {
-          .heroH1 { font-size: 36px; }
-          .sectionH2 { font-size: 28px; }
-          .catGrid { grid-template-columns: 1fr; }
-          .prodGrid { grid-template-columns: 1fr; }
-          .compGrid { grid-template-columns: 1fr; }
-          .heroRight { flex-direction: column; }
-          .ctaWrap { flex-direction: column; align-items: flex-start; }
-          .heroStats { flex-wrap: wrap; gap: 16px; }
-          .hStat { flex: none; border-right: none; margin-right: 0; padding-right: 0; }
+        .liveCardHead { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+        .liveCardTitle { font-size:13px; font-weight:600; color:rgba(255,255,255,0.6); }
+        .liveDot { font-size:11px; color:#0ecb81; font-weight:600; }
+        .liveRow { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
+        .lSym { font-size:13px; font-weight:600; color:#fff; width:100px; }
+        .lPrice { font-size:13px; color:rgba(255,255,255,0.8); flex:1; text-align:right; }
+        .lChange { font-size:12px; font-weight:600; width:70px; text-align:right; }
+        .liveBtn { margin-top:16px; width:100%; padding:10px; border-radius:8px; border:1px solid rgba(245,200,66,0.25); background:transparent; color:#f5c842; font-size:13px; font-weight:600; cursor:pointer; transition:background .15s; }
+        .liveBtn:hover { background:rgba(245,200,66,0.08); }
+
+        /* ── SECTIONS ── */
+        .section { padding:90px 0; border-top:1px solid rgba(255,255,255,0.06); }
+        .sectionAlt { background: rgba(255,255,255,0.02); }
+        .eyebrow { font-size:11px; letter-spacing:2px; color:#f5c842; font-weight:600; margin:0 0 12px; }
+        .sectionH2 { font-size:38px; font-weight:800; color:#fff; margin:0 0 48px; letter-spacing:-0.5px; }
+
+        .grid3 { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+        .fCard {
+          background: rgba(255,255,255,0.03);
+          border: 1px solid rgba(255,255,255,0.08);
+          border-radius: 16px;
+          padding: 28px;
+          backdrop-filter: blur(12px);
+          transition: border-color .2s, background .2s, transform .2s;
+        }
+        .fCard:hover { border-color:rgba(245,200,66,0.3); background:rgba(255,255,255,0.06); transform:translateY(-4px); }
+        .fIcon { font-size:28px; margin-bottom:16px; }
+        .fTitle { font-size:16px; font-weight:700; color:#fff; margin:0 0 10px; }
+        .fDesc { font-size:14px; color:rgba(255,255,255,0.45); line-height:1.65; margin:0; }
+
+        .grid2 { display:grid; grid-template-columns:repeat(2,1fr); gap:20px; }
+        .tCard {
+          display:flex; gap:20px; align-items:flex-start;
+          background: rgba(255,255,255,0.03);
+          border: 1px solid rgba(255,255,255,0.08);
+          border-radius:16px; padding:24px;
+          backdrop-filter:blur(12px);
+          transition: border-color .2s;
+        }
+        .tCard:hover { border-color:rgba(59,91,219,0.4); }
+        .tIcon { font-size:28px; flex-shrink:0; }
+        .tTitle { font-size:15px; font-weight:700; color:#fff; margin:0 0 8px; }
+        .tDesc { font-size:13px; color:rgba(255,255,255,0.45); line-height:1.6; margin:0; }
+
+        /* ── CTA ── */
+        .ctaSection { padding:90px 0; border-top:1px solid rgba(255,255,255,0.06); }
+        .ctaWrap { display:flex; justify-content:space-between; align-items:center; gap:40px; }
+        .ctaH2 { font-size:34px; font-weight:800; color:#fff; margin:0 0 8px; }
+        .ctaP { font-size:15px; color:rgba(255,255,255,0.45); margin:0; }
+
+        /* ── FOOTER ── */
+        .footer { background:rgba(0,0,0,0.6); border-top:1px solid rgba(255,255,255,0.07); padding:60px 0 32px; backdrop-filter:blur(20px); }
+        .footerTop { display:flex; gap:80px; margin-bottom:48px; }
+        .footerBrand { flex-shrink:0; width:220px; }
+        .fLogo { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+        .fNxt { font-size:22px; font-weight:900; color:#f5c842; }
+        .fLogoText { display:flex; flex-direction:column; line-height:1; gap:2px; }
+        .fLogoTop { font-size:12px; font-weight:700; color:#fff; letter-spacing:2px; }
+        .fLogoBot { font-size:9px; color:rgba(255,255,255,0.4); letter-spacing:2.5px; }
+        .fTagline { font-size:13px; color:rgba(255,255,255,0.4); line-height:1.6; margin:0 0 20px; }
+        .litBadge { display:flex; align-items:center; gap:10px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:10px 14px; }
+        .litText { display:flex; flex-direction:column; gap:1px; }
+        .litLabel { font-size:10px; color:rgba(255,255,255,0.35); letter-spacing:0.5px; text-transform:uppercase; }
+        .litName { font-size:12px; font-weight:600; color:#fff; }
+        .footerCols { display:flex; gap:60px; flex:1; }
+        .footerCol { display:flex; flex-direction:column; gap:12px; }
+        .colTitle { font-size:13px; font-weight:700; color:#fff; margin:0 0 4px; text-transform:uppercase; letter-spacing:0.5px; }
+        .colLink { font-size:13px; color:rgba(255,255,255,0.4); cursor:pointer; transition:color .15s; text-decoration:none; }
+        .colLink:hover { color:rgba(255,255,255,0.8); }
+        .footerBottom { border-top:1px solid rgba(255,255,255,0.06); padding-top:24px; display:flex; flex-direction:column; gap:6px; }
+        .footerBottom p { font-size:12px; color:rgba(255,255,255,0.25); margin:0; }
+
+        @media (max-width:1024px) {
+          .heroWrap { flex-direction:column; }
+          .heroRight { width:100%; }
+          .grid3 { grid-template-columns:repeat(2,1fr); }
+          .footerTop { flex-direction:column; gap:40px; }
+          .footerBrand { width:100%; }
+        }
+        @media (max-width:640px) {
+          .heroH1 { font-size:34px; }
+          .grid3 { grid-template-columns:1fr; }
+          .grid2 { grid-template-columns:1fr; }
+          .heroStats { gap:20px; flex-wrap:wrap; }
+          .ctaWrap { flex-direction:column; align-items:flex-start; }
+          .footerCols { flex-wrap:wrap; gap:32px; }
         }
       `}</style>
     </>
