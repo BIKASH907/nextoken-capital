@@ -3,27 +3,48 @@ import { useRouter } from "next/router";
 export default function Navbar() {
   const router = useRouter();
 
+  const links = [
+    { label: "Markets", href: "/markets" },
+    { label: "Exchange", href: "/exchange" },
+    { label: "Bonds", href: "/bonds" },
+    { label: "Equity & IPO", href: "/equity" },
+    { label: "Tokenize", href: "/tokenize" },
+  ];
+
   return (
     <>
       <nav className="navbar">
         <div className="navInner">
           <div className="navLogo" onClick={() => router.push("/")}>
-            <div className="logoIcon">NXC</div>
-            <span className="logoText">
-              NEXTOKEN<span className="logoBold">CAPITAL</span>
-            </span>
+            <div className="logoBox">
+              <span className="logoNxt">NXT</span>
+            </div>
+            <div className="logoTextWrap">
+              <span className="logoTop">NEXTOKEN</span>
+              <span className="logoBottom">CAPITAL</span>
+            </div>
           </div>
+
           <div className="navLinks">
-            <button onClick={() => router.push("/")}>Home</button>
-            <button onClick={() => router.push("/markets")}>Markets</button>
-            <button onClick={() => router.push("/bonds")}>Bonds</button>
-            <button onClick={() => router.push("/equity")}>Equity</button>
-            <button onClick={() => router.push("/exchange")}>Exchange</button>
-            <button onClick={() => router.push("/tokenize")}>Tokenize</button>
+            {links.map((link) => (
+              <button
+                key={link.href}
+                className={router.pathname === link.href ? "active" : ""}
+                onClick={() => router.push(link.href)}
+              >
+                {link.label}
+              </button>
+            ))}
           </div>
-          <button className="navCta" onClick={() => router.push("/dashboard")}>
-            Dashboard
-          </button>
+
+          <div className="navActions">
+            <button className="btnLogin" onClick={() => router.push("/login")}>
+              Log In
+            </button>
+            <button className="btnRegister" onClick={() => router.push("/register")}>
+              Register
+            </button>
+          </div>
         </div>
       </nav>
 
@@ -34,22 +55,22 @@ export default function Navbar() {
           left: 0;
           right: 0;
           z-index: 1000;
-          height: 72px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-          background: rgba(5, 6, 10, 0.9);
-          backdrop-filter: blur(16px);
-          -webkit-backdrop-filter: blur(16px);
+          height: 68px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+          background: #0a0b0f;
         }
+
         .navInner {
-          max-width: 1180px;
+          max-width: 1280px;
           margin: 0 auto;
-          padding: 0 18px;
+          padding: 0 24px;
           height: 100%;
           display: flex;
           align-items: center;
           justify-content: space-between;
-          gap: 24px;
+          gap: 32px;
         }
+
         .navLogo {
           display: flex;
           align-items: center;
@@ -57,68 +78,126 @@ export default function Navbar() {
           cursor: pointer;
           flex-shrink: 0;
         }
-        .logoIcon {
-          width: 36px;
-          height: 36px;
-          border-radius: 10px;
-          background: linear-gradient(135deg, #ffda7a, #f5a623);
-          display: grid;
-          place-items: center;
+
+        .logoBox {
+          width: 38px;
+          height: 38px;
+          border-radius: 8px;
+          background: linear-gradient(135deg, #f5c842, #e6a817);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .logoNxt {
+          font-size: 13px;
           font-weight: 900;
-          font-size: 18px;
           color: #111;
+          letter-spacing: 0.5px;
         }
-        .logoText {
-          font-size: 15px;
+
+        .logoTextWrap {
+          display: flex;
+          flex-direction: column;
+          line-height: 1;
+          gap: 1px;
+        }
+
+        .logoTop {
+          font-size: 13px;
+          font-weight: 700;
+          color: #ffffff;
+          letter-spacing: 1.5px;
+        }
+
+        .logoBottom {
+          font-size: 10px;
           font-weight: 400;
-          letter-spacing: 1px;
-          color: #eef1ff;
-          text-transform: uppercase;
+          color: rgba(255, 255, 255, 0.45);
+          letter-spacing: 2px;
         }
-        .logoBold {
-          font-weight: 800;
-        }
+
         .navLinks {
           display: flex;
           align-items: center;
-          gap: 2px;
+          gap: 0;
           flex: 1;
           justify-content: center;
         }
+
         .navLinks button {
           background: none;
           border: none;
-          color: rgba(238, 241, 255, 0.75);
+          color: rgba(255, 255, 255, 0.6);
           font-size: 14px;
           font-weight: 500;
           cursor: pointer;
-          padding: 8px 12px;
-          border-radius: 10px;
-          transition: all 0.18s;
+          padding: 6px 16px;
+          border-radius: 8px;
+          transition: color 0.15s, background 0.15s;
+          white-space: nowrap;
         }
+
         .navLinks button:hover {
-          color: #ffda7a;
-          background: rgba(255, 218, 122, 0.08);
+          color: #ffffff;
+          background: rgba(255, 255, 255, 0.06);
         }
-        .navCta {
+
+        .navLinks button.active {
+          color: #ffffff;
+          background: rgba(255, 255, 255, 0.1);
+          font-weight: 600;
+        }
+
+        .navActions {
+          display: flex;
+          align-items: center;
+          gap: 10px;
           flex-shrink: 0;
-          padding: 9px 20px;
-          border-radius: 12px;
-          border: 0;
-          background: linear-gradient(135deg, #ffda7a, #f5c15a);
-          color: #111;
-          font-weight: 700;
+        }
+
+        .btnLogin {
+          padding: 8px 20px;
+          border-radius: 8px;
+          border: 1px solid rgba(255, 255, 255, 0.25);
+          background: transparent;
+          color: #ffffff;
           font-size: 14px;
+          font-weight: 500;
           cursor: pointer;
-          transition: all 0.2s;
-          box-shadow: 0 8px 24px rgba(255, 193, 90, 0.25);
+          transition: border-color 0.15s, background 0.15s;
         }
-        .navCta:hover {
+
+        .btnLogin:hover {
+          border-color: rgba(255, 255, 255, 0.5);
+          background: rgba(255, 255, 255, 0.06);
+        }
+
+        .btnRegister {
+          padding: 8px 20px;
+          border-radius: 8px;
+          border: none;
+          background: #f5c842;
+          color: #111;
+          font-size: 14px;
+          font-weight: 700;
+          cursor: pointer;
+          transition: background 0.15s, transform 0.15s;
+        }
+
+        .btnRegister:hover {
+          background: #ffd84d;
           transform: translateY(-1px);
-          box-shadow: 0 12px 30px rgba(255, 193, 90, 0.35);
         }
-        @media (max-width: 768px) {
+
+        @media (max-width: 900px) {
           .navLinks {
+            display: none;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .btnLogin {
             display: none;
           }
         }
