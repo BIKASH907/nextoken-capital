@@ -1,299 +1,797 @@
-import { useState } from 'react'
-import { useRouter } from 'next/router'
-import Navbar from '../components/Navbar'
-import AuthModal from '../components/AuthModal'
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Nextoken Capital — Tokenized Real-World Assets</title>
+  <meta name="description" content="Invest in tokenized real-world assets. Nextoken Capital — NXC Token." />
 
-const MARKETS = [
-  { name: 'NXT/EUR', price: '€1.248', change: '+3.42%', up: true },
-  { name: 'EURO BOND 5Y', price: '€98.40', change: '+0.18%', up: true },
-  { name: 'RE TOKEN LT', price: '€245.00', change: '-0.82%', up: false },
-  { name: 'INFRA BOND 3Y', price: '€101.20', change: '+0.54%', up: true },
-  { name: 'SME EQUITY A', price: '€18.75', change: '+1.20%', up: true },
-  { name: 'GREEN BOND 7Y', price: '€99.80', change: '+0.22%', up: true },
-]
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-const BONDS = [
-  { name: 'Baltic Green Bond 2027', symbol: 'BALT-GREEN-27', type: 'Green', yield: '6.4%', term: '3Y', pct: 72, raised: '€3.6M', total: '€5M', min: '€500' },
-  { name: 'EU Infrastructure Bond', symbol: 'EU-INFRA-29', type: 'Corporate', yield: '5.1%', term: '5Y', pct: 45, raised: '€9M', total: '€20M', min: '€1,000' },
-  { name: 'SME Convertible Note I', symbol: 'SME-CNV-26', type: 'Convertible', yield: '8.2%', term: '2Y', pct: 94, raised: '€940K', total: '€1M', min: '€250' },
-]
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-export default function Home() {
-  const router = useRouter()
-  const [modal, setModal] = useState(null)
+  <style>
+    :root{
+      --bg-0:#05060a;
+      --bg-1:#0b0d14;
+      --card:#0f1220cc;
+      --card2:#0f122099;
+      --line:#ffffff1a;
+      --text:#eef1ff;
+      --muted:#b6b9d6;
+      --gold:#f5c15a;
+      --gold2:#ffda7a;
+      --gold3:#b97b23;
+      --blue:#3aa0ff;
+      --teal:#35d0b2;
+      --shadow: 0 20px 60px rgba(0,0,0,.55);
+      --radius: 18px;
+      --radius2: 26px;
+    }
 
-  const gold = '#F0B90B'
-  const dark = '#0B0E11'
-  const dark2 = '#161A1E'
-  const dark3 = '#1E2329'
-  const green = '#0ECB81'
-  const red = '#F6465D'
-  const border = 'rgba(255,255,255,0.06)'
-  const muted = 'rgba(255,255,255,0.4)'
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 800px at 20% 10%, rgba(255,187,60,.25), transparent 55%),
+        radial-gradient(1000px 700px at 80% 20%, rgba(58,160,255,.18), transparent 55%),
+        radial-gradient(900px 600px at 50% 90%, rgba(53,208,178,.12), transparent 60%),
+        linear-gradient(180deg, var(--bg-0), var(--bg-1));
+      overflow-x:hidden;
+    }
 
-  return (
-    <div style={{ background: dark, minHeight: '100vh', color: 'rgba(255,255,255,0.85)', fontFamily: 'Inter,sans-serif' }}>
-      <Navbar onLogin={() => setModal('login')} onRegister={() => setModal('register')} />
+    a{color:inherit; text-decoration:none}
+    .container{max-width:1180px; margin:0 auto; padding:0 18px}
 
-      {modal && <AuthModal mode={modal} onClose={() => setModal(null)} onSwitch={m => setModal(m)} />}
+    .sparkle{
+      position:fixed; inset:0; pointer-events:none; opacity:.25;
+      background-image:
+        radial-gradient(2px 2px at 10% 20%, #fff, transparent 60%),
+        radial-gradient(1px 1px at 50% 40%, #fff, transparent 60%),
+        radial-gradient(1px 1px at 80% 30%, #fff, transparent 60%),
+        radial-gradient(1px 1px at 20% 80%, #fff, transparent 60%),
+        radial-gradient(2px 2px at 70% 75%, #fff, transparent 60%),
+        radial-gradient(1px 1px at 90% 85%, #fff, transparent 60%);
+      filter: blur(.2px);
+    }
 
-      {/* HERO */}
-      <section style={{ paddingTop: '5rem', paddingBottom: '3rem', background: dark, position: 'relative', overflow: 'hidden' }}>
-        {/* Grid bg */}
-        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(240,185,11,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(240,185,11,0.04) 1px,transparent 1px)', backgroundSize: '44px 44px', maskImage: 'radial-gradient(ellipse at 60% 50%,black 20%,transparent 70%)' }} />
-        {/* Glow */}
-        <div style={{ position: 'absolute', right: '-5%', top: '-10%', width: 600, height: 500, background: 'radial-gradient(circle,rgba(240,185,11,0.06),transparent 65%)', pointerEvents: 'none' }} />
+    .topbar{
+      border-bottom:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(20,18,30,.75), rgba(10,10,16,.55));
+      backdrop-filter: blur(10px);
+      position:sticky; top:0; z-index:50;
+    }
 
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '4rem 5%', position: 'relative', zIndex: 1 }}>
-          <div style={{ maxWidth: 680 }}>
-            {/* Badge */}
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, padding: '4px 14px', border: `1px solid rgba(240,185,11,0.22)`, borderRadius: 100, fontSize: '0.68rem', fontWeight: 600, color: gold, letterSpacing: '0.5px', marginBottom: '1.5rem' }}>
-              <span style={{ width: 5, height: 5, background: green, borderRadius: '50%', animation: 'pulse 2s infinite' }} />
-              MiCA Licensed · EU Regulated · DLT Pilot Regime
-            </div>
+    .topbar-inner{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:12px 0;
+      gap:14px;
+    }
 
-            <h1 style={{ fontSize: 'clamp(2.4rem,4vw,3.6rem)', fontWeight: 900, lineHeight: 1.08, letterSpacing: '-2px', color: '#fff', marginBottom: '1.25rem' }}>
-              The Global Platform for<br />
-              <span style={{ color: gold }}>Tokenized Capital Markets</span>
-            </h1>
+    .brand{
+      display:flex; align-items:center; gap:12px; min-width:240px;
+    }
 
-            <p style={{ fontSize: '1rem', color: muted, lineHeight: 1.8, maxWidth: 520, marginBottom: '2.5rem' }}>
-              Issue bonds, tokenize real-world assets, launch equity offerings, and trade on a regulated 24/7 secondary market — all on one compliant platform.
-            </p>
+    .logoMark{
+      width:38px; height:38px; border-radius:12px;
+      background:
+        radial-gradient(18px 18px at 30% 30%, rgba(255,255,255,.25), transparent 60%),
+        linear-gradient(135deg, rgba(255,218,122,.95), rgba(185,123,35,.95));
+      box-shadow: 0 12px 30px rgba(255,193,90,.15);
+      position:relative;
+    }
 
-            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '3rem' }}>
-              <button onClick={() => setModal('register')} style={{ padding: '0.85rem 2.2rem', background: gold, color: 'black', border: 'none', borderRadius: 4, fontSize: '0.9rem', fontWeight: 800, cursor: 'pointer', fontFamily: 'Inter,sans-serif' }}>
-                Get Started
-              </button>
-              <button onClick={() => router.push('/exchange')} style={{ padding: '0.85rem 2.2rem', background: dark3, color: 'rgba(255,255,255,0.7)', border: `1px solid rgba(240,185,11,0.2)`, borderRadius: 4, fontSize: '0.9rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'Inter,sans-serif' }}>
-                Open Exchange
-              </button>
-            </div>
+    .logoMark:before{
+      content:"";
+      position:absolute; inset:8px;
+      border-radius:10px;
+      background:linear-gradient(135deg, rgba(10,12,18,.9), rgba(25,30,45,.9));
+      border:1px solid rgba(255,255,255,.18);
+    }
 
-            {/* KPIs */}
-            <div style={{ display: 'flex', gap: '2.5rem', flexWrap: 'wrap' }}>
-              {[['$300T+','Global Asset Market'],['190+','Countries'],['<48h','Time to Issue'],['0.2%','Trading Fee']].map(([n,l]) => (
-                <div key={l}>
-                  <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#fff', letterSpacing: '-0.5px' }}><span style={{ color: gold }}>{n}</span></div>
-                  <div style={{ fontSize: '0.65rem', color: muted, letterSpacing: '1px', textTransform: 'uppercase', marginTop: 2 }}>{l}</div>
-                </div>
-              ))}
-            </div>
+    .brandText{
+      display:flex; flex-direction:column; line-height:1.05;
+    }
+
+    .brandText strong{
+      font-weight:800; letter-spacing:.6px;
+    }
+
+    .brandText span{
+      color:rgba(255,255,255,.75);
+      font-size:12px;
+      letter-spacing:2.6px;
+      margin-top:2px;
+    }
+
+    .nav{
+      display:flex; align-items:center; gap:18px;
+      padding:0 10px;
+      border-left:1px solid var(--line);
+      border-right:1px solid var(--line);
+    }
+
+    .nav a{
+      font-size:14px;
+      color:rgba(238,241,255,.85);
+      padding:8px 10px;
+      border-radius:12px;
+      transition:.2s ease;
+      position:relative;
+    }
+
+    .nav a.active{
+      color:var(--gold2);
+    }
+
+    .nav a:hover{
+      background:rgba(255,255,255,.06);
+    }
+
+    .rightTools{
+      display:flex; align-items:center; gap:10px;
+      justify-content:flex-end;
+      min-width:260px;
+    }
+
+    .pill{
+      display:flex; align-items:center; gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      color:rgba(238,241,255,.85);
+      font-size:13px;
+    }
+
+    .pill small{opacity:.85}
+
+    .btn{
+      border:0;
+      cursor:pointer;
+      font-weight:700;
+      letter-spacing:.2px;
+      border-radius:12px;
+      padding:10px 14px;
+      color:#111;
+      background:linear-gradient(135deg, var(--gold2), var(--gold));
+      box-shadow: 0 12px 30px rgba(255,193,90,.20);
+      transition: transform .15s ease, filter .15s ease;
+      white-space:nowrap;
+    }
+
+    .btn:hover{transform: translateY(-1px); filter:saturate(1.05)}
+    .btn:active{transform: translateY(0px)}
+
+    .hero{
+      padding:28px 0 14px;
+      position:relative;
+    }
+
+    .heroCard{
+      border-radius: var(--radius2);
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.14);
+      background:
+        radial-gradient(900px 350px at 70% 40%, rgba(255,193,90,.22), transparent 60%),
+        radial-gradient(900px 350px at 30% 40%, rgba(58,160,255,.18), transparent 60%),
+        linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      box-shadow: var(--shadow);
+      position:relative;
+    }
+
+    .heroInner{
+      display:grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap:24px;
+      padding:26px;
+      align-items:center;
+      min-height:320px;
+    }
+
+    .hero h1{
+      margin:0;
+      font-size:44px;
+      line-height:1.04;
+      letter-spacing:.5px;
+    }
+
+    .hero h1 .gold{
+      background:linear-gradient(180deg, var(--gold2), var(--gold3));
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+      text-shadow:0 14px 40px rgba(255,193,90,.15);
+    }
+
+    .hero p{
+      margin:14px 0 18px;
+      color:rgba(238,241,255,.82);
+      max-width:560px;
+      font-size:15.5px;
+      line-height:1.55;
+    }
+
+    .heroActions{
+      display:flex; gap:12px; align-items:center; flex-wrap:wrap;
+    }
+
+    .btnOutline{
+      border:1px solid rgba(255,255,255,.20);
+      background:rgba(255,255,255,.06);
+      color:rgba(238,241,255,.92);
+      padding:10px 14px;
+      border-radius:12px;
+      font-weight:700;
+      cursor:pointer;
+      transition:.2s ease;
+    }
+
+    .btnOutline:hover{background:rgba(255,255,255,.10)}
+
+    .heroVisual{
+      position:relative;
+      height:260px;
+      border-radius:22px;
+      border:1px solid rgba(255,255,255,.12);
+      background:
+        radial-gradient(120px 120px at 75% 30%, rgba(255,255,255,.22), transparent 60%),
+        radial-gradient(260px 260px at 40% 70%, rgba(255,193,90,.25), transparent 62%),
+        radial-gradient(220px 220px at 70% 80%, rgba(58,160,255,.22), transparent 60%),
+        linear-gradient(135deg, rgba(12,14,22,.95), rgba(20,24,38,.65));
+      overflow:hidden;
+      box-shadow: 0 22px 60px rgba(0,0,0,.45);
+    }
+
+    .coin{
+      position:absolute;
+      width:170px; height:170px;
+      right:20px; top:18px;
+      border-radius:999px;
+      background:
+        radial-gradient(70px 70px at 30% 30%, rgba(255,255,255,.35), transparent 55%),
+        linear-gradient(135deg, var(--gold2), var(--gold3));
+      box-shadow: 0 30px 80px rgba(255,193,90,.25);
+      display:grid; place-items:center;
+      border:1px solid rgba(255,255,255,.18);
+    }
+
+    .coin span{
+      font-weight:900;
+      font-size:38px;
+      letter-spacing:1px;
+      color:#1a1206;
+      text-shadow: 0 8px 22px rgba(0,0,0,.25);
+    }
+
+    .ring{
+      position:absolute; inset:-30px;
+      border-radius:999px;
+      border:2px solid rgba(255,218,122,.16);
+      filter: blur(.1px);
+    }
+
+    .chartUp{
+      position:absolute; left:20px; bottom:18px;
+      width:220px; height:110px;
+      border-radius:18px;
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.12);
+      padding:12px;
+    }
+
+    .chartUp .line{
+      height:100%;
+      background:
+        linear-gradient(90deg, transparent, transparent),
+        radial-gradient(140px 80px at 70% 55%, rgba(53,208,178,.25), transparent 62%),
+        radial-gradient(140px 80px at 45% 35%, rgba(58,160,255,.22), transparent 62%);
+      border-radius:14px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .chartUp .line:before{
+      content:"";
+      position:absolute; inset:0;
+      background:
+        linear-gradient(135deg, rgba(255,218,122,.0), rgba(255,218,122,.0)),
+        repeating-linear-gradient(90deg, rgba(255,255,255,.08) 0 1px, transparent 1px 16px);
+      opacity:.55;
+    }
+
+    .chartUp .arrow{
+      position:absolute; right:16px; top:18px;
+      font-size:18px; color:rgba(255,218,122,.95);
+      text-shadow:0 10px 30px rgba(255,193,90,.25);
+    }
+
+    .chip{
+      position:absolute; left:-35px; top:40px;
+      width:120px; height:60px;
+      border-radius:16px;
+      background:linear-gradient(135deg, rgba(58,160,255,.30), rgba(255,193,90,.18));
+      border:1px solid rgba(255,255,255,.14);
+      transform: rotate(-12deg);
+      opacity:.9;
+    }
+
+    .sectionTitle{
+      margin:22px 0 12px;
+      text-align:center;
+      font-weight:800;
+      letter-spacing:2px;
+      color:rgba(255,218,122,.92);
+      text-transform:uppercase;
+      font-size:14px;
+    }
+
+    .vm{
+      margin-top:16px;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:14px;
+    }
+
+    .vmCard{
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius: var(--radius);
+      padding:18px 18px 16px;
+      box-shadow: 0 18px 40px rgba(0,0,0,.35);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .vmCard:before{
+      content:"";
+      position:absolute; inset:-1px;
+      background: radial-gradient(280px 120px at 20% 0%, rgba(255,193,90,.18), transparent 60%);
+      opacity:.9;
+      pointer-events:none;
+    }
+
+    .vmHead{
+      display:flex; align-items:center; gap:12px;
+      margin-bottom:10px;
+      position:relative;
+    }
+
+    .vmIcon{
+      width:38px; height:38px; border-radius:14px;
+      display:grid; place-items:center;
+      background: linear-gradient(135deg, rgba(255,218,122,.9), rgba(185,123,35,.9));
+      color:#1b1207;
+      font-weight:900;
+      box-shadow: 0 14px 30px rgba(255,193,90,.18);
+    }
+
+    .vmHead h3{
+      margin:0; font-size:18px; letter-spacing:.4px;
+    }
+
+    .vmCard p{
+      margin:0;
+      color:rgba(238,241,255,.82);
+      line-height:1.55;
+      position:relative;
+    }
+
+    .features{
+      margin-top:16px;
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:12px;
+    }
+
+    .feature{
+      border-radius: var(--radius);
+      border:1px solid rgba(255,255,255,.12);
+      background:
+        radial-gradient(240px 140px at 30% 20%, rgba(255,193,90,.16), transparent 60%),
+        linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+      box-shadow: 0 18px 40px rgba(0,0,0,.35);
+      padding:16px 14px;
+      min-height:132px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .feature .badge{
+      width:42px; height:42px; border-radius:16px;
+      display:grid; place-items:center;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.14);
+      margin-bottom:10px;
+      color:rgba(255,218,122,.95);
+      font-size:18px;
+    }
+
+    .feature h4{margin:0 0 6px; font-size:14.5px; letter-spacing:.2px}
+    .feature p{margin:0; color:rgba(238,241,255,.78); font-size:13px; line-height:1.45}
+
+    .token{
+      margin:18px 0 0;
+      border-radius: var(--radius2);
+      border:1px solid rgba(255,255,255,.14);
+      background:
+        radial-gradient(900px 250px at 50% 20%, rgba(255,193,90,.20), transparent 60%),
+        radial-gradient(900px 280px at 20% 80%, rgba(58,160,255,.14), transparent 60%),
+        linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+
+    .tokenInner{
+      padding:18px 18px 16px;
+    }
+
+    .tokenGrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap:12px;
+      align-items:stretch;
+      margin-top:10px;
+    }
+
+    .tokenCard{
+      border-radius: var(--radius);
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.04);
+      padding:14px;
+      box-shadow: 0 16px 40px rgba(0,0,0,.30);
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      min-height:110px;
+    }
+
+    .tokenCard .ic{
+      width:42px; height:42px; border-radius:16px;
+      display:grid; place-items:center;
+      background:linear-gradient(135deg, rgba(255,218,122,.85), rgba(185,123,35,.85));
+      color:#1a1207;
+      font-weight:900;
+      flex:0 0 auto;
+    }
+
+    .tokenCard h4{margin:0 0 4px; font-size:14.5px}
+    .tokenCard p{margin:0; color:rgba(238,241,255,.78); font-size:13px; line-height:1.45}
+
+    .tokenCTA{
+      display:flex;
+      justify-content:center;
+      margin-top:14px;
+    }
+
+    footer{
+      margin:18px 0 26px;
+      padding-top:18px;
+      border-top:1px solid var(--line);
+      color:rgba(238,241,255,.75);
+    }
+
+    .footerRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      flex-wrap:wrap;
+    }
+
+    .socials{
+      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+    }
+
+    .socials a{
+      width:38px; height:38px;
+      display:grid; place-items:center;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.05);
+      transition:.2s ease;
+    }
+
+    .socials a:hover{transform: translateY(-1px); background:rgba(255,255,255,.08)}
+
+    .contact{
+      display:flex; gap:12px; align-items:center; flex-wrap:wrap;
+      font-size:13px;
+    }
+
+    .contact span{
+      display:flex; align-items:center; gap:8px;
+      padding:8px 10px; border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.04);
+    }
+
+    .disclaimer{
+      margin-top:14px;
+      font-size:12px;
+      color:rgba(238,241,255,.60);
+      line-height:1.55;
+      text-align:center;
+    }
+
+    .menuBtn{
+      display:none;
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(255,255,255,.05);
+      color:rgba(238,241,255,.9);
+      border-radius:12px;
+      padding:9px 12px;
+      cursor:pointer;
+      font-weight:700;
+    }
+
+    @media (max-width: 980px){
+      .heroInner{grid-template-columns: 1fr;}
+      .heroVisual{height:240px}
+      .features{grid-template-columns: 1fr 1fr}
+      .tokenGrid{grid-template-columns: 1fr}
+      .nav{display:none}
+      .menuBtn{display:inline-flex}
+      .brand{min-width:auto}
+      .rightTools{min-width:auto}
+      .hero h1{font-size:36px}
+    }
+
+    @media (max-width: 520px){
+      .features{grid-template-columns: 1fr}
+      .hero h1{font-size:32px}
+    }
+
+    .drawer{
+      display:none;
+      border-top:1px solid var(--line);
+      padding:10px 0 12px;
+    }
+
+    .drawer a{
+      display:block;
+      padding:10px 12px;
+      border-radius:14px;
+      color:rgba(238,241,255,.9);
+    }
+
+    .drawer a:hover{background:rgba(255,255,255,.06)}
+    .drawer.show{display:block}
+  </style>
+</head>
+
+<body>
+  <div class="sparkle"></div>
+
+  <header class="topbar">
+    <div class="container">
+      <div class="topbar-inner">
+        <a class="brand" href="#">
+          <div class="logoMark" aria-hidden="true"></div>
+          <div class="brandText">
+            <strong>NEXTOKEN</strong>
+            <span>CAPITAL</span>
           </div>
-        </div>
-      </section>
+        </a>
 
-      {/* TICKER */}
-      <div style={{ background: dark2, borderTop: `1px solid ${border}`, borderBottom: `1px solid ${border}`, padding: '0.75rem 5%', overflow: 'hidden' }}>
-        <div style={{ display: 'flex', gap: '3rem', alignItems: 'center', overflowX: 'auto', scrollbarWidth: 'none' }}>
-          <span style={{ fontSize: '0.62rem', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.2)', whiteSpace: 'nowrap', flexShrink: 0 }}>Live</span>
-          {MARKETS.map(m => (
-            <div key={m.name} style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: muted }}>{m.name}</span>
-              <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#fff' }}>{m.price}</span>
-              <span style={{ fontSize: '0.68rem', fontWeight: 600, padding: '1px 6px', borderRadius: 2, background: m.up ? 'rgba(14,203,129,0.1)' : 'rgba(246,70,93,0.08)', color: m.up ? green : red }}>{m.change}</span>
-            </div>
-          ))}
+        <nav class="nav" aria-label="Primary navigation">
+          <a class="active" href="#home">Home</a>
+          <a href="#about">About Us</a>
+          <a href="#how">How It Works</a>
+          <a href="#news">News</a>
+          <a href="#contact">Contact</a>
+        </nav>
+
+        <div class="rightTools">
+          <button class="menuBtn" id="menuBtn"><i class="fa-solid fa-bars"></i> Menu</button>
+          <div class="pill" title="Language">
+            <i class="fa-solid fa-globe"></i> <small>EN</small>
+          </div>
+          <div class="pill" title="Phone">
+            <i class="fa-solid fa-phone"></i> <small>+1 (555) 123-4567</small>
+          </div>
+          <button class="btn" onclick="scrollToId('get-started')">Get Started</button>
         </div>
       </div>
 
-      {/* PRODUCTS */}
-      <section style={{ padding: '4rem 5%', background: dark }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-          <div style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase', color: gold, marginBottom: '0.65rem' }}>Platform</div>
-          <div style={{ fontSize: 'clamp(1.6rem,2.5vw,2.2rem)', fontWeight: 900, letterSpacing: '-1px', marginBottom: '2.5rem' }}>
-            Everything to <span style={{ color: gold }}>Access Capital Markets</span>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(260px,1fr))', gap: 1, background: border }}>
-            {[
-              { tag: 'Tokenization', title: 'Tokenize Any Asset', desc: 'Convert real estate, infrastructure, and equity into compliant digital tokens. Unlock liquidity in under 48 hours.', link: '/tokenize' },
-              { tag: 'Bonds', title: 'Issue Tokenized Bonds', desc: 'Create compliant tokenized bonds up to €1B per offering. Corporate, green, and convertible bonds structured in hours.', link: '/bonds' },
-              { tag: 'IPO', title: 'Go Public in 48h', desc: 'Issue equity tokens, manage cap table on-chain, and raise capital from investors across 27 EU countries.', link: '/equity' },
-              { tag: 'Exchange', title: 'Trade 24/7', desc: 'DLT MTF regulated secondary marketplace. Order-book + AMM hybrid. Atomic settlement. 0.2% fee only.', link: '/exchange' },
-            ].map(f => (
-              <div key={f.tag}
-                onClick={() => router.push(f.link)}
-                style={{ background: dark2, padding: '2rem', cursor: 'pointer', transition: 'background 0.15s', borderTop: `2px solid transparent` }}
-                onMouseEnter={e => { e.currentTarget.style.background = dark3; e.currentTarget.style.borderTopColor = gold }}
-                onMouseLeave={e => { e.currentTarget.style.background = dark2; e.currentTarget.style.borderTopColor = 'transparent' }}
-              >
-                <div style={{ fontSize: '0.6rem', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: gold, marginBottom: '0.4rem' }}>{f.tag}</div>
-                <div style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '0.6rem' }}>{f.title}</div>
-                <div style={{ fontSize: '0.8rem', color: muted, lineHeight: 1.8 }}>{f.desc}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <div class="drawer" id="drawer">
+        <a href="#home" onclick="closeDrawer()">Home</a>
+        <a href="#about" onclick="closeDrawer()">About Us</a>
+        <a href="#how" onclick="closeDrawer()">How It Works</a>
+        <a href="#news" onclick="closeDrawer()">News</a>
+        <a href="#contact" onclick="closeDrawer()">Contact</a>
+      </div>
+    </div>
+  </header>
 
-      {/* HOW IT WORKS */}
-      <section style={{ padding: '4rem 5%', background: dark2 }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-          <div style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase', color: gold, marginBottom: '0.65rem' }}>How It Works</div>
-          <div style={{ fontSize: 'clamp(1.6rem,2.5vw,2.2rem)', fontWeight: 900, letterSpacing: '-1px', marginBottom: '2.5rem' }}>
-            From Asset to Global Market <span style={{ color: gold }}>in 3 Steps</span>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: 1, background: border }}>
-            {[
-              { n: '01', title: 'Submit Your Asset', desc: 'Upload documentation and financials. Our compliance engine structures the token offering within 24 hours.', eta: '24 hours' },
-              { n: '02', title: 'Issue & Raise Capital', desc: 'Smart contracts deployed. Your offering goes live to verified investors across 190+ countries in real time.', eta: '24–48 hours' },
-              { n: '03', title: 'Trade on Exchange', desc: 'Tokens list automatically on NXT Exchange. Investors gain 24/7 liquidity and you get ongoing capital access.', eta: 'Live at launch' },
-            ].map(s => (
-              <div key={s.n} style={{ background: dark3, padding: '2rem', position: 'relative', borderTop: `2px solid ${gold}` }}>
-                <div style={{ position: 'absolute', top: '1rem', right: '1.5rem', fontSize: '3rem', fontWeight: 900, color: 'rgba(240,185,11,0.06)' }}>{s.n}</div>
-                <div style={{ width: 30, height: 30, border: `1.5px solid rgba(240,185,11,0.3)`, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.72rem', fontWeight: 800, color: gold, marginBottom: '1rem' }}>{s.n.replace('0','')}</div>
-                <div style={{ fontSize: '0.95rem', fontWeight: 800, marginBottom: '0.5rem' }}>{s.title}</div>
-                <div style={{ fontSize: '0.8rem', color: muted, lineHeight: 1.8, marginBottom: '0.75rem' }}>{s.desc}</div>
-                <div style={{ fontSize: '0.62rem', fontWeight: 700, color: gold, letterSpacing: '1px', textTransform: 'uppercase' }}>→ {s.eta}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+  <main id="home" class="hero">
+    <div class="container">
+      <section class="heroCard">
+        <div class="heroInner">
+          <div>
+            <h1>
+              INVEST IN <span class="gold">TOKENIZED</span><br/>
+              REAL-WORLD ASSETS
+            </h1>
+            <p>
+              Register and explore opportunities in property, infrastructure, energy projects, businesses &amp; more.
+              Nextoken Capital provides real-world asset tokenization infrastructure with the <strong>NXC</strong> token ecosystem.
+            </p>
 
-      {/* BONDS PREVIEW */}
-      <section style={{ padding: '4rem 5%', background: dark }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-            <div>
-              <div style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase', color: gold, marginBottom: '0.4rem' }}>Bond Market</div>
-              <div style={{ fontSize: 'clamp(1.4rem,2vw,2rem)', fontWeight: 900, letterSpacing: '-1px' }}><span style={{ color: gold }}>Live</span> Bond Offerings</div>
-            </div>
-            <button onClick={() => router.push('/bonds')} style={{ padding: '0.5rem 1.25rem', background: dark3, border: `1px solid ${border}`, color: 'rgba(255,255,255,0.6)', borderRadius: 4, fontSize: '0.82rem', cursor: 'pointer', fontFamily: 'Inter,sans-serif' }}>View All →</button>
-          </div>
-          <div style={{ background: dark2, border: `1px solid ${border}`, borderRadius: 4, overflow: 'hidden' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr>
-                  {['Bond Name','Type','Yield','Term','Progress','Min. Invest',''].map(h => (
-                    <th key={h} style={{ padding: '0.6rem 1rem', textAlign: 'left', fontSize: '0.65rem', fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase', color: muted, background: dark3, borderBottom: `1px solid ${border}` }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {BONDS.map(b => (
-                  <tr key={b.symbol} onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-                    <td style={{ padding: '0.9rem 1rem', borderBottom: `1px solid ${border}` }}>
-                      <div style={{ fontWeight: 700, color: '#fff', fontSize: '0.85rem' }}>{b.name}</div>
-                      <div style={{ fontSize: '0.68rem', color: muted }}>{b.symbol}</div>
-                    </td>
-                    <td style={{ padding: '0.9rem 1rem', borderBottom: `1px solid ${border}` }}>
-                      <span style={{ padding: '2px 7px', borderRadius: 2, fontSize: '0.68rem', fontWeight: 700, background: b.type === 'Green' ? 'rgba(14,203,129,0.1)' : b.type === 'Convertible' ? 'rgba(24,144,255,0.1)' : 'rgba(240,185,11,0.1)', color: b.type === 'Green' ? green : b.type === 'Convertible' ? '#1890FF' : gold }}>{b.type}</span>
-                    </td>
-                    <td style={{ padding: '0.9rem 1rem', borderBottom: `1px solid ${border}`, fontWeight: 800, color: green, fontSize: '0.92rem' }}>{b.yield}</td>
-                    <td style={{ padding: '0.9rem 1rem', borderBottom: `1px solid ${border}`, color: muted, fontSize: '0.82rem' }}>{b.term}</td>
-                    <td style={{ padding: '0.9rem 1rem', borderBottom: `1px solid ${border}` }}>
-                      <div style={{ width: 100, height: 4, background: 'rgba(255,255,255,0.08)', borderRadius: 2, overflow: 'hidden' }}>
-                        <div style={{ width: `${b.pct}%`, height: '100%', background: gold, borderRadius: 2 }} />
-                      </div>
-                      <div style={{ fontSize: '0.65rem', color: muted, marginTop: 3 }}>{b.pct}% · {b.raised}/{b.total}</div>
-                    </td>
-                    <td style={{ padding: '0.9rem 1rem', borderBottom: `1px solid ${border}`, color: muted, fontSize: '0.82rem' }}>{b.min}</td>
-                    <td style={{ padding: '0.9rem 1rem', borderBottom: `1px solid ${border}` }}>
-                      <button onClick={() => setModal('register')} style={{ padding: '0.35rem 0.9rem', background: gold, color: 'black', border: 'none', borderRadius: 3, fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer', fontFamily: 'Inter,sans-serif' }}>Invest</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      {/* WHY */}
-      <section style={{ padding: '4rem 5%', background: dark2 }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-          <div style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase', color: gold, marginBottom: '0.65rem' }}>Why Nextoken</div>
-          <div style={{ fontSize: 'clamp(1.6rem,2.5vw,2.2rem)', fontWeight: 900, letterSpacing: '-1px', marginBottom: '2.5rem' }}>Built Different. <span style={{ color: gold }}>Built to Last.</span></div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(260px,1fr))', gap: 1, background: border }}>
-            {[
-              ['01','Regulatory-First','MiCA CASP, MiFID II, and DLT MTF licensed by the Bank of Lithuania. Compliance built into every smart contract.'],
-              ['02','True Global Reach','EU MiCA passporting covers all 27 countries. FinCEN MSB for US investors. 190+ countries from day one.'],
-              ['03','Radically Cheaper','Traditional bond: €500k+. Traditional IPO: €5M+. Nextoken: from €5,000. Same result in 48 hours.'],
-              ['04','Institutional Custody','Licensed EU custodians. Smart contracts audited. Multi-sig governance with 72-hour timelocks.'],
-              ['05','Full Transparency','Every transfer and payment recorded on-chain. Immutable audit trails replace expensive reconciliation.'],
-              ['06','24/7 Liquidity','Bond and equity markets never close. Capital never sleeps. Trade any asset, any time, anywhere.'],
-            ].map(([n,t,d]) => (
-              <div key={n} style={{ background: dark3, padding: '1.75rem' }}>
-                <div style={{ fontSize: '0.62rem', fontWeight: 700, color: gold, letterSpacing: '2px', marginBottom: '0.65rem' }}>{n}</div>
-                <div style={{ fontSize: '0.92rem', fontWeight: 800, marginBottom: '0.4rem' }}>{t}</div>
-                <div style={{ fontSize: '0.78rem', color: muted, lineHeight: 1.8 }}>{d}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* COMPLIANCE */}
-      <section style={{ padding: '4rem 5%', background: dark }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-          <div style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase', color: gold, marginBottom: '0.65rem' }}>Compliance</div>
-          <div style={{ fontSize: 'clamp(1.6rem,2.5vw,2.2rem)', fontWeight: 900, letterSpacing: '-1px', marginBottom: '2.5rem' }}>Licensed. Regulated. <span style={{ color: gold }}>Institutional-Grade.</span></div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 1, background: border }}>
-            {[
-              ['MiCA CASP','EU Crypto-Assets Regulation. Class 2 covering exchange, custody, and token issuance across 27 EU states.'],
-              ['MiFID II','Investment Firm license enabling bond and equity issuance and brokerage across the EU.'],
-              ['DLT Pilot','DLT MTF authorization for tokenized securities trading and settlement on blockchain.'],
-              ['FinCEN MSB','US Money Services Business registration enabling US investor access to the platform.'],
-            ].map(([name,desc]) => (
-              <div key={name} style={{ background: dark2, padding: '1.75rem', textAlign: 'center' }}>
-                <div style={{ fontSize: '1rem', fontWeight: 900, color: '#fff', marginBottom: '0.4rem' }}>{name}</div>
-                <div style={{ fontSize: '0.72rem', color: muted, lineHeight: 1.7, marginBottom: '0.6rem' }}>{desc}</div>
-                <span style={{ padding: '2px 9px', background: 'rgba(14,203,129,0.1)', borderRadius: 2, fontSize: '0.62rem', fontWeight: 700, color: green }}>Licensed</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section style={{ background: gold, padding: '4rem 5%', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 30% 50%,rgba(255,255,255,0.12),transparent 50%)' }} />
-        <div style={{ position: 'relative', zIndex: 1 }}>
-          <div style={{ fontSize: 'clamp(1.8rem,3vw,2.8rem)', fontWeight: 900, color: 'black', letterSpacing: '-1px', marginBottom: '0.75rem' }}>Start on Nextoken Capital Today</div>
-          <p style={{ fontSize: '0.9rem', color: 'rgba(0,0,0,0.55)', margin: '0 auto 2rem', maxWidth: 420, lineHeight: 1.7 }}>Join the companies already tokenizing assets and accessing global capital markets.</p>
-          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <button onClick={() => setModal('register')} style={{ padding: '0.85rem 2.2rem', background: 'black', color: 'white', border: 'none', borderRadius: 4, fontSize: '0.9rem', fontWeight: 800, cursor: 'pointer', fontFamily: 'Inter,sans-serif' }}>Create Account</button>
-            <button onClick={() => router.push('/exchange')} style={{ padding: '0.85rem 2.2rem', background: 'transparent', color: 'rgba(0,0,0,0.7)', border: '1.5px solid rgba(0,0,0,0.2)', borderRadius: 4, fontSize: '0.9rem', fontWeight: 700, cursor: 'pointer', fontFamily: 'Inter,sans-serif' }}>Open Exchange</button>
-          </div>
-        </div>
-      </section>
-
-      {/* FOOTER */}
-      <footer style={{ background: dark2, padding: '3rem 5% 1.5rem', borderTop: `1px solid ${border}` }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: '3rem', marginBottom: '2.5rem', flexWrap: 'wrap' }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.75rem' }}>
-                <span style={{ fontFamily: 'Arial Black,sans-serif', fontSize: 20, fontWeight: 900, color: gold, letterSpacing: -1 }}>NXT</span>
-                <div style={{ width: 1, height: 22, background: 'rgba(240,185,11,0.2)', margin: '0 10px' }} />
-                <div><div style={{ fontFamily: 'Arial Black,sans-serif', fontSize: 12, fontWeight: 900, color: '#fff' }}>NEXTOKEN</div><div style={{ fontSize: 7, color: gold, letterSpacing: 4 }}>CAPITAL</div></div>
-              </div>
-              <div style={{ fontSize: '0.78rem', color: muted, lineHeight: 1.8, maxWidth: 240 }}>The global platform for tokenized capital markets. Issue bonds, equity, and real-world assets. Trade 24/7.</div>
-            </div>
-            {[
-              ['Platform', ['Exchange','Bonds','Equity & IPO','Tokenize Asset']],
-              ['Company', ['About','Team','Careers','Blog']],
-              ['Legal', ['Terms of Service','Privacy Policy','Risk Disclosure','AML Policy']],
-            ].map(([title, links]) => (
-              <div key={title}>
-                <div style={{ fontSize: '0.62rem', fontWeight: 700, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.2)', marginBottom: '0.85rem' }}>{title}</div>
-                {links.map(l => <div key={l} style={{ fontSize: '0.78rem', color: muted, marginBottom: '0.45rem', cursor: 'pointer' }}>{l}</div>)}
-              </div>
-            ))}
-          </div>
-          <div style={{ paddingTop: '1.5rem', borderTop: `1px solid ${border}`, display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
-            <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.2)' }}>© 2025 Nextoken Capital UAB. Registered in Lithuania. Regulated by the Bank of Lithuania.</div>
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-              {['MiCA','MiFID II','DLT Pilot','FinCEN'].map(t => (
-                <span key={t} style={{ padding: '2px 8px', background: 'rgba(240,185,11,0.05)', borderRadius: 2, fontSize: '0.62rem', fontWeight: 700, color: 'rgba(240,185,11,0.35)' }}>{t}</span>
-              ))}
+            <div class="heroActions">
+              <button class="btn" onclick="scrollToId('get-started')">Register Now</button>
+              <button class="btnOutline" onclick="scrollToId('how')">How it works</button>
             </div>
           </div>
+
+          <div class="heroVisual" aria-label="Hero visual">
+            <div class="chip" aria-hidden="true"></div>
+            <div class="coin" aria-hidden="true">
+              <div class="ring"></div>
+              <span>NXC</span>
+            </div>
+            <div class="chartUp" aria-hidden="true">
+              <div class="arrow"><i class="fa-solid fa-arrow-trend-up"></i></div>
+              <div class="line"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="sectionTitle">OUR VISION &amp; MISSION</div>
+
+      <section class="vm" id="about">
+        <article class="vmCard">
+          <div class="vmHead">
+            <div class="vmIcon"><i class="fa-solid fa-eye"></i></div>
+            <h3>Our Vision</h3>
+          </div>
+          <p>
+            To empower global access to tokenized real-world assets by making investment opportunities transparent,
+            efficient, and borderless.
+          </p>
+        </article>
+
+        <article class="vmCard">
+          <div class="vmHead">
+            <div class="vmIcon"><i class="fa-solid fa-bullseye"></i></div>
+            <h3>Our Mission</h3>
+          </div>
+          <p>
+            To build a secure and decentralized investment ecosystem for everyone using blockchain-powered tokenization
+            infrastructure and compliant onboarding.
+          </p>
+        </article>
+      </section>
+
+      <section class="features" style="margin-top:16px">
+        <article class="feature">
+          <div class="badge"><i class="fa-solid fa-coins"></i></div>
+          <h4>Earn Passive Income</h4>
+          <p>Target returns with diversified tokenized opportunities (example: 15%–18% ROI annually).</p>
+        </article>
+
+        <article class="feature">
+          <div class="badge"><i class="fa-solid fa-shield-halved"></i></div>
+          <h4>Trusted EU Company</h4>
+          <p>Corporate structure and EU-based operations to support trust and transparency.</p>
+        </article>
+
+        <article class="feature">
+          <div class="badge"><i class="fa-solid fa-circle-check"></i></div>
+          <h4>Secure &amp; Compliant</h4>
+          <p>Strong security practices with compliance-first onboarding and clear disclosures.</p>
+        </article>
+
+        <article class="feature">
+          <div class="badge"><i class="fa-solid fa-solar-panel"></i></div>
+          <h4>Future Projects</h4>
+          <p>Pipeline includes tokenized infrastructure and green energy-linked opportunities.</p>
+        </article>
+      </section>
+
+      <section class="token" id="how" style="margin-top:18px">
+        <div class="tokenInner">
+          <div class="sectionTitle" style="margin:6px 0 4px">NXC TOKEN</div>
+
+          <div class="tokenGrid">
+            <article class="tokenCard">
+              <div class="ic"><i class="fa-solid fa-link"></i></div>
+              <div>
+                <h4>Utility Token Access</h4>
+                <p>Use NXC to access ecosystem utilities, platform features, and participation mechanisms.</p>
+              </div>
+            </article>
+
+            <article class="tokenCard">
+              <div class="ic"><i class="fa-solid fa-chart-pie"></i></div>
+              <div>
+                <h4>Supply &amp; Tokenomics</h4>
+                <p>Example placeholder: fixed supply model and transparent token distribution.</p>
+              </div>
+            </article>
+
+            <article class="tokenCard">
+              <div class="ic"><i class="fa-solid fa-gift"></i></div>
+              <div>
+                <h4>Staking &amp; Rewards</h4>
+                <p>Stake to earn ecosystem benefits (rewards structure can be added later).</p>
+              </div>
+            </article>
+          </div>
+
+          <div class="tokenCTA" id="get-started">
+            <button class="btn" onclick="alert('Connect this button to your Webflow / registration page link.')">
+              Learn About NXC
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section id="news" style="margin-top:18px">
+        <div class="sectionTitle">NEWS</div>
+        <div style="
+          border:1px solid rgba(255,255,255,.12);
+          background:rgba(255,255,255,.04);
+          border-radius: var(--radius2);
+          padding:16px;
+          box-shadow: 0 18px 40px rgba(0,0,0,.30);
+        ">
+          <p style="margin:0; color:rgba(238,241,255,.80); line-height:1.55">
+            Add your latest updates here (launch announcements, partnerships, token updates, project pipeline).
+          </p>
+        </div>
+      </section>
+
+      <footer id="contact">
+        <div class="footerRow">
+          <div class="socials" aria-label="Social media links">
+            <a href="#" title="X / Twitter" aria-label="X"><i class="fa-brands fa-x-twitter"></i></a>
+            <a href="#" title="Facebook" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="#" title="Instagram" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" title="LinkedIn" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+            <a href="#" title="Telegram" aria-label="Telegram"><i class="fa-brands fa-telegram"></i></a>
+          </div>
+
+          <div class="contact">
+            <span><i class="fa-solid fa-envelope"></i> info@nextoken.com</span>
+            <span><i class="fa-solid fa-phone"></i> +1 (555) 123-4567</span>
+          </div>
+        </div>
+
+        <div class="disclaimer">
+          NXC Token is a utility token for ecosystem access. Nextoken Capital does not provide financial services,
+          investment advice, or custody of funds. Always do your own research and comply with local laws.
         </div>
       </footer>
-
-      <style>{`@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.3;transform:scale(1.5);}}`}</style>
     </div>
-  )
-}
+  </main>
+
+  <script>
+    function scrollToId(id){
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.scrollIntoView({behavior:'smooth', block:'start'});
+      closeDrawer();
+    }
+
+    const menuBtn = document.getElementById('menuBtn');
+    const drawer = document.getElementById('drawer');
+
+    function closeDrawer(){
+      drawer.classList.remove('show');
+    }
+
+    if(menuBtn){
+      menuBtn.addEventListener('click', () => {
+        drawer.classList.toggle('show');
+      });
+    }
+  </script>
+</body>
+</html>
