@@ -1,9 +1,10 @@
-import React from 'react';
-import '../styles/globals.css'; // Ensure your CSS path is correct
+import Footer from '../components/Footer';
 
-function MyApp({ Component, pageProps }) {
-  // If you have a Layout component, wrap <Component /> with it here
-  return <Component {...pageProps} />;
+export default function MyApp({ Component, pageProps }) {
+  return (
+    <>
+      <Component {...pageProps} />
+      <Footer />
+    </>
+  );
 }
-
-export default MyApp;
