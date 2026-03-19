@@ -151,7 +151,7 @@ const TIMELINE = [
 ]
 
 const TEAM = [
-  { photo:'/bikash.jpg', i:'BK', n:'Bikash Bhat',              r:'CEO & Founder',            b:'Founder of Nextoken Capital. Passionate about regulated DeFi, tokenized real-world assets, and building the future of capital markets.' },
+  { photo:'/bikash.png', i:'BK', n:'Bikash Bhat',              r:'CEO & Founder',            b:'Founder of Nextoken Capital. Passionate about regulated DeFi, tokenized real-world assets, and building the future of capital markets.' },
   { photo:null,          i:'EV', n:'Elena Vaitkute',      r:'CTO & Co-Founder',         b:'Ex-Ethereum Foundation researcher. Led DLT integrations at Nasdaq Nordic. PhD, KTU.' },
   { photo:null,          i:'JP', n:'Jonas Petrauskas',    r:'Chief Compliance Officer', b:'Former Senior Inspector at Lietuvos bankas. AML/KYC architect for 3 EU fintechs.' },
   { photo:null,          i:'SK', n:'Simona Kazlauskiene', r:'Chief Risk Officer',        b:'10 years at ECB in market risk supervision. Certified FRM. Led Basel IV across two Baltic banks.' },
