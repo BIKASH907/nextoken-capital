@@ -316,10 +316,10 @@ export default function Home() {
                   {
                     title: "Company",
                     links: [
-                      ["About Us", ""],
-                      ["Careers", ""],
-                      ["Press", ""],
-                      ["Blog", ""],
+                      ["About Us", "/company"],
+                      ["Careers", "/company"],
+                      ["Press", "/company"],
+                      ["Blog", "/company"],
                     ],
                   },
                   {
