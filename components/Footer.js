@@ -35,7 +35,7 @@ export default function Footer() {
           {/* Legal */}
           <div>
             <h4 style={{fontFamily:'monospace',fontSize:'.68rem',letterSpacing:'.15em',color:'#4a5568',textTransform:'uppercase',marginBottom:'16px'}}>Legal</h4>
-            <a href="#" style={{display:'block',fontSize:'.85rem',color:'#9ca3af',textDecoration:'none',marginBottom:'10px'}}>Terms of Service</a>
+            <a href="/terms" style={{display:'block',fontSize:'.85rem',color:'#9ca3af',textDecoration:'none',marginBottom:'10px'}}>Terms of Service</a>
             <a href="#" style={{display:'block',fontSize:'.85rem',color:'#9ca3af',textDecoration:'none',marginBottom:'10px'}}>Privacy Policy</a>
             <a href="#" style={{display:'block',fontSize:'.85rem',color:'#9ca3af',textDecoration:'none',marginBottom:'10px'}}>Risk Disclosure</a>
             <a href="#" style={{display:'block',fontSize:'.85rem',color:'#9ca3af',textDecoration:'none',marginBottom:'10px'}}>AML Policy</a>
