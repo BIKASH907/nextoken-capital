@@ -1,1434 +1,734 @@
-import Head from "next/head";
-import { useEffect, useMemo, useRef, useState } from "react";
-import Navbar from "../components/Navbar";
-import {
-  AreaSeries,
-  CandlestickSeries,
-  CrosshairMode,
-  HistogramSeries,
-  LineSeries,
-  LineStyle,
-  createChart,
-} from "lightweight-charts";
+// pages/exchange.js
+// ─── Full Binance-style exchange with live candles, order book, trade feed ───
+// Mobile compatible · All time frames · No external dependencies
 
-const MARKET_LIST = [
-  { pair: "BTC/EUR", type: "Crypto", basePrice: 62054.31, spread: 16.8 },
-  { pair: "ETH/EUR", type: "Crypto", basePrice: 1913.01, spread: 1.4 },
-  { pair: "BNB/EUR", type: "Crypto", basePrice: 568.9, spread: 0.7 },
-  { pair: "SOL/EUR", type: "Crypto", basePrice: 98.42, spread: 0.18 },
-  { pair: "XRP/EUR", type: "Crypto", basePrice: 0.59, spread: 0.002 },
-  { pair: "NXC/EUR", type: "Token", basePrice: 1.84, spread: 0.01 },
-];
+import { useState, useEffect, useRef, useCallback } from 'react'
+import Head from 'next/head'
 
-const TIMEFRAMES = [
-  { key: "1s", label: "1s", seconds: 1, bars: 240 },
-  { key: "5s", label: "5s", seconds: 5, bars: 240 },
-  { key: "15s", label: "15s", seconds: 15, bars: 240 },
-  { key: "1m", label: "1m", seconds: 60, bars: 260 },
-  { key: "5m", label: "5m", seconds: 300, bars: 260 },
-  { key: "15m", label: "15m", seconds: 900, bars: 260 },
-  { key: "1h", label: "1h", seconds: 3600, bars: 220 },
-  { key: "4h", label: "4h", seconds: 14400, bars: 220 },
-  { key: "1d", label: "1D", seconds: 86400, bars: 220 },
-  { key: "1w", label: "1W", seconds: 604800, bars: 160 },
-  { key: "1M", label: "1M", seconds: 2592000, bars: 120 },
-  { key: "1Y", label: "1Y", seconds: 31536000, bars: 40 },
-];
+// ─── MARKET DATA ──────────────────────────────────────────────────────────────
+const PAIRS = [
+  { sym:'BTC/EUR',  price:62054.31, chg:-3.66, vol:'1.24B',  high:64900, low:61200 },
+  { sym:'ETH/EUR',  price:1913.01,  chg:-5.24, vol:'580M',   high:2025,  low:1890  },
+  { sym:'BNB/EUR',  price:568.90,   chg:-2.20, vol:'290M',   high:588,   low:562   },
+  { sym:'SOL/EUR',  price:98.42,    chg:+1.12, vol:'420M',   high:102,   low:96.1  },
+  { sym:'XRP/EUR',  price:0.4821,   chg:+0.87, vol:'1.8B',   high:0.495, low:0.471 },
+  { sym:'ADA/EUR',  price:0.3312,   chg:-1.45, vol:'920M',   high:0.341, low:0.328 },
+  { sym:'AVAX/EUR', price:22.18,    chg:+2.30, vol:'310M',   high:22.9,  low:21.5  },
+  { sym:'DOT/EUR',  price:5.74,     chg:-0.92, vol:'175M',   high:5.85,  low:5.68  },
+  { sym:'MATIC/EUR',price:0.5123,   chg:+3.10, vol:'660M',   high:0.524, low:0.494 },
+  { sym:'LINK/EUR', price:11.42,    chg:+1.75, vol:'240M',   high:11.65, low:11.10 },
+  { sym:'UNI/EUR',  price:8.34,     chg:-0.55, vol:'180M',   high:8.71,  low:8.20  },
+  { sym:'ATOM/EUR', price:6.91,     chg:+0.33, vol:'95M',    high:7.10,  low:6.78  },
+]
 
-const ORDERS = [
-  { id: "#84251", side: "Buy", pair: "BTC/EUR", price: "62,042.10", amount: "0.1500", status: "Filled" },
-  { id: "#84249", side: "Sell", pair: "BTC/EUR", price: "62,088.40", amount: "0.0800", status: "Open" },
-  { id: "#84233", side: "Buy", pair: "ETH/EUR", price: "1,905.10", amount: "4.2000", status: "Filled" },
-];
+const TIMEFRAMES = ['1m','5m','15m','1h','4h','1d','1w']
 
-function mulberry32(seed) {
-  let a = seed >>> 0;
-  return function () {
-    a += 0x6d2b79f5;
-    let t = a;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
+function rand(min, max) { return Math.random() * (max - min) + min }
+function randInt(min, max) { return Math.floor(rand(min, max + 1)) }
 
-function stringToSeed(text) {
-  let h = 1779033703 ^ text.length;
-  for (let i = 0; i < text.length; i += 1) {
-    h = Math.imul(h ^ text.charCodeAt(i), 3432918353);
-    h = (h << 13) | (h >>> 19);
+function generateCandles(basePrice, count, tf) {
+  const candles = []
+  let price = basePrice * rand(0.85, 1.12)
+  const now = Date.now()
+  const tfMs = { '1m':60000,'5m':300000,'15m':900000,'1h':3600000,'4h':14400000,'1d':86400000,'1w':604800000 }
+  const ms = tfMs[tf] || 60000
+  for (let i = count; i > 0; i--) {
+    const vol = price * rand(0.008, 0.025)
+    const open = price
+    const close = price + rand(-vol, vol)
+    const high = Math.max(open, close) + rand(0, vol * 0.5)
+    const low = Math.min(open, close) - rand(0, vol * 0.5)
+    candles.push({ t: now - i * ms, o: open, h: high, l: low, c: close, v: rand(100, 5000) })
+    price = close
   }
-  return h >>> 0;
+  return candles
 }
 
-function clamp(value, min, max) {
-  return Math.min(Math.max(value, min), max);
-}
+// ─── CHART COMPONENT ─────────────────────────────────────────────────────────
+function CandleChart({ pair, tf }) {
+  const canvasRef = useRef(null)
+  const candlesRef = useRef([])
+  const rafRef = useRef(null)
+  const dirtyRef = useRef(true)
+  const hoverRef = useRef(-1)
 
-function ema(values, period) {
-  if (!values.length) return [];
-  const k = 2 / (period + 1);
-  const out = [];
-  let prev = values[0].close;
-  for (let i = 0; i < values.length; i += 1) {
-    const current = values[i].close * k + prev * (1 - k);
-    prev = current;
-    out.push({ time: values[i].time, value: current });
-  }
-  return out;
-}
-
-function generateMarketData(market, timeframe) {
-  const tf = TIMEFRAMES.find((item) => item.key === timeframe) || TIMEFRAMES[7];
-  const rng = mulberry32(stringToSeed(`${market.pair}-${timeframe}`));
-  const nowSec = Math.floor(Date.now() / 1000);
-  const candles = [];
-  const volumes = [];
-  let price = market.basePrice;
-
-  const volatilityBase =
-    market.basePrice > 10000 ? 0.004 :
-    market.basePrice > 1000 ? 0.007 :
-    market.basePrice > 10 ? 0.012 : 0.02;
-
-  const tfFactor =
-    tf.seconds <= 15 ? 0.45 :
-    tf.seconds <= 300 ? 0.8 :
-    tf.seconds <= 3600 ? 1 :
-    tf.seconds <= 86400 ? 1.6 :
-    tf.seconds <= 604800 ? 2.2 : 3.5;
-
-  const volatility = volatilityBase * tfFactor;
-  const startTime = nowSec - tf.seconds * tf.bars;
-
-  for (let i = 0; i < tf.bars; i += 1) {
-    const time = startTime + i * tf.seconds;
-    const open = price;
-    const drift = (rng() - 0.49) * volatility;
-    const close = open * (1 + drift);
-    const wickUp = Math.max(open, close) * (0.001 + rng() * volatility * 0.8);
-    const wickDown = Math.min(open, close) * (0.001 + rng() * volatility * 0.8);
-    const high = Math.max(open, close) + wickUp;
-    const low = Math.max(0.0000001, Math.min(open, close) - wickDown);
-    const volumeBase =
-      market.basePrice > 10000 ? 180 + rng() * 900 :
-      market.basePrice > 1000 ? 250 + rng() * 1400 :
-      market.basePrice > 10 ? 800 + rng() * 3000 : 8000 + rng() * 50000;
-
-    candles.push({
-      time,
-      open: Number(open.toFixed(6)),
-      high: Number(high.toFixed(6)),
-      low: Number(low.toFixed(6)),
-      close: Number(close.toFixed(6)),
-    });
-
-    volumes.push({
-      time,
-      value: Number(volumeBase.toFixed(2)),
-      color: close >= open ? "rgba(14, 203, 129, 0.45)" : "rgba(246, 70, 93, 0.45)",
-    });
-
-    price = close;
-  }
-
-  return {
-    candles,
-    volumes,
-    ema20: ema(candles, 20),
-    ema50: ema(candles, 50),
-    stepSeconds: tf.seconds,
-  };
-}
-
-function formatPriceValue(value) {
-  if (value >= 1000) return value.toLocaleString(undefined, { maximumFractionDigits: 2 });
-  if (value >= 1) return value.toLocaleString(undefined, { maximumFractionDigits: 4 });
-  return value.toLocaleString(undefined, { maximumFractionDigits: 6 });
-}
-
-function formatVolumeValue(value) {
-  if (value >= 1000000) return `${(value / 1000000).toFixed(2)}M`;
-  if (value >= 1000) return `${(value / 1000).toFixed(2)}K`;
-  return value.toFixed(2);
-}
-
-function ProCandlestickChart({ market, timeframe, onStatsChange }) {
-  const containerRef = useRef(null);
-  const chartRef = useRef(null);
-  const candleRef = useRef(null);
-  const volumeRef = useRef(null);
-  const ema20Ref = useRef(null);
-  const ema50Ref = useRef(null);
-  const resizeObserverRef = useRef(null);
-  const liveTimerRef = useRef(null);
-
-  const [legend, setLegend] = useState({
-    open: "-",
-    high: "-",
-    low: "-",
-    close: "-",
-    volume: "-",
-  });
-
-  const dataBundle = useMemo(() => generateMarketData(market, timeframe), [market, timeframe]);
+  const basePrice = PAIRS.find(p => p.sym === pair)?.price || 1000
 
   useEffect(() => {
-    if (!containerRef.current) return undefined;
+    candlesRef.current = generateCandles(basePrice, 200, tf)
+    dirtyRef.current = true
+  }, [pair, tf, basePrice])
 
-    const chart = createChart(containerRef.current, {
-      autoSize: true,
-      layout: {
-        background: { color: "#0b0e11" },
-        textColor: "#9aa4af",
-        attributionLogo: false,
-      },
-      grid: {
-        vertLines: { color: "rgba(255,255,255,0.05)" },
-        horzLines: { color: "rgba(255,255,255,0.05)" },
-      },
-      rightPriceScale: {
-        borderColor: "rgba(255,255,255,0.08)",
-        scaleMargins: {
-          top: 0.08,
-          bottom: 0.24,
-        },
-      },
-      timeScale: {
-        borderColor: "rgba(255,255,255,0.08)",
-        timeVisible: true,
-        secondsVisible: true,
-        rightOffset: 12,
-        barSpacing: 8,
-        fixLeftEdge: false,
-        lockVisibleTimeRangeOnResize: true,
-      },
-      crosshair: {
-        mode: CrosshairMode.Normal,
-        vertLine: {
-          color: "rgba(240,185,11,0.28)",
-          width: 1,
-          style: LineStyle.Solid,
-          labelBackgroundColor: "#f0b90b",
-        },
-        horzLine: {
-          color: "rgba(240,185,11,0.28)",
-          width: 1,
-          style: LineStyle.Solid,
-          labelBackgroundColor: "#f0b90b",
-        },
-      },
-      localization: {
-        priceFormatter: (price) => formatPriceValue(price),
-      },
-      handleScroll: {
-        mouseWheel: true,
-        pressedMouseMove: true,
-        horzTouchDrag: true,
-        vertTouchDrag: false,
-      },
-      handleScale: {
-        axisPressedMouseMove: true,
-        mouseWheel: true,
-        pinch: true,
-      },
-    });
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const candles = candlesRef.current
+      if (!candles.length) return
+      const last = candles[candles.length - 1]
+      const vol = last.c * 0.0006
+      last.c += rand(-vol, vol)
+      last.h = Math.max(last.h, last.c)
+      last.l = Math.min(last.l, last.c)
+      dirtyRef.current = true
+    }, 800)
+    return () => clearInterval(interval)
+  }, [])
 
-    const candleSeries = chart.addSeries(CandlestickSeries, {
-      upColor: "#0ecb81",
-      downColor: "#f6465d",
-      wickUpColor: "#0ecb81",
-      wickDownColor: "#f6465d",
-      borderVisible: false,
-      priceLineVisible: true,
-      lastValueVisible: true,
-    });
+  const draw = useCallback(() => {
+    const canvas = canvasRef.current
+    if (!canvas || !dirtyRef.current) return
+    dirtyRef.current = false
+    const ctx = canvas.getContext('2d')
+    const dpr = window.devicePixelRatio || 1
+    const W = canvas.clientWidth
+    const H = canvas.clientHeight
+    canvas.width = W * dpr
+    canvas.height = H * dpr
+    ctx.scale(dpr, dpr)
+    ctx.clearRect(0, 0, W, H)
 
-    const volumeSeries = chart.addSeries(HistogramSeries, {
-      priceFormat: {
-        type: "volume",
-      },
-      priceScaleId: "",
-    });
+    const candles = candlesRef.current
+    const VIEW = Math.min(candles.length, 100)
+    const data = candles.slice(-VIEW)
+    if (!data.length) return
 
-    volumeSeries.priceScale().applyOptions({
-      scaleMargins: {
-        top: 0.8,
-        bottom: 0,
-      },
-    });
+    const UP = '#0ecb81'
+    const DOWN = '#f6465d'
+    const GRID = 'rgba(255,255,255,0.04)'
+    const TXTC = 'rgba(132,142,156,0.9)'
 
-    const ema20Series = chart.addSeries(LineSeries, {
-      color: "#f0b90b",
-      lineWidth: 2,
-      priceLineVisible: false,
-      lastValueVisible: false,
-      crosshairMarkerVisible: false,
-    });
+    const PAD = { t:12, r:70, b:36, l:8 }
+    const chartH = H * 0.78
+    const volH = H * 0.16
+    const cW = W - PAD.l - PAD.r
+    const bW = Math.max(2, (cW / VIEW) * 0.75)
 
-    const ema50Series = chart.addSeries(AreaSeries, {
-      lineColor: "rgba(64,169,255,0.85)",
-      topColor: "rgba(64,169,255,0.14)",
-      bottomColor: "rgba(64,169,255,0)",
-      lineWidth: 2,
-      priceLineVisible: false,
-      lastValueVisible: false,
-      crosshairMarkerVisible: false,
-    });
+    const prices = data.flatMap(c => [c.h, c.l])
+    const mn = Math.min(...prices), mx = Math.max(...prices)
+    const rng = mx - mn || 1
+    const pad = rng * 0.06
+    const yMin = mn - pad, yMax = mx + pad
 
-    candleSeries.setData(dataBundle.candles);
-    volumeSeries.setData(dataBundle.volumes);
-    ema20Series.setData(dataBundle.ema20);
-    ema50Series.setData(dataBundle.ema50);
-    chart.timeScale().fitContent();
+    const toY = p => PAD.t + chartH - ((p - yMin) / (yMax - yMin)) * chartH
+    const toX = i => PAD.l + (i + 0.5) * (cW / VIEW)
 
-    chart.subscribeCrosshairMove((param) => {
-      const candleData = param.seriesData.get(candleSeries);
-      const volumeData = param.seriesData.get(volumeSeries);
-
-      if (candleData && "open" in candleData) {
-        setLegend({
-          open: formatPriceValue(candleData.open),
-          high: formatPriceValue(candleData.high),
-          low: formatPriceValue(candleData.low),
-          close: formatPriceValue(candleData.close),
-          volume:
-            volumeData && "value" in volumeData
-              ? formatVolumeValue(volumeData.value)
-              : "-",
-        });
-      }
-    });
-
-    chartRef.current = chart;
-    candleRef.current = candleSeries;
-    volumeRef.current = volumeSeries;
-    ema20Ref.current = ema20Series;
-    ema50Ref.current = ema50Series;
-
-    const last = dataBundle.candles[dataBundle.candles.length - 1];
-    onStatsChange({
-      lastPrice: last.close,
-      high24h: Math.max(...dataBundle.candles.slice(-24).map((c) => c.high)),
-      low24h: Math.min(...dataBundle.candles.slice(-24).map((c) => c.low)),
-      volume24h: dataBundle.volumes.slice(-24).reduce((sum, item) => sum + item.value, 0),
-      changePct: ((last.close - dataBundle.candles[0].open) / dataBundle.candles[0].open) * 100,
-    });
-    setLegend({
-      open: formatPriceValue(last.open),
-      high: formatPriceValue(last.high),
-      low: formatPriceValue(last.low),
-      close: formatPriceValue(last.close),
-      volume: formatVolumeValue(dataBundle.volumes[dataBundle.volumes.length - 1].value),
-    });
-
-    if (window.ResizeObserver) {
-      resizeObserverRef.current = new ResizeObserver(() => {
-        chart.timeScale().fitContent();
-      });
-      resizeObserverRef.current.observe(containerRef.current);
+    // Grid
+    ctx.strokeStyle = GRID
+    ctx.lineWidth = 1
+    for (let i = 0; i <= 6; i++) {
+      const y = PAD.t + (chartH / 6) * i
+      ctx.beginPath(); ctx.moveTo(PAD.l, y); ctx.lineTo(W - PAD.r, y); ctx.stroke()
+      const price = yMax - ((yMax - yMin) / 6) * i
+      ctx.fillStyle = TXTC
+      ctx.font = '10px monospace'
+      ctx.textAlign = 'left'
+      ctx.fillText(price.toFixed(price > 100 ? 2 : 4), W - PAD.r + 4, y + 4)
     }
 
-    return () => {
-      if (resizeObserverRef.current && containerRef.current) {
-        resizeObserverRef.current.unobserve(containerRef.current);
+    // Volume bars
+    const maxVol = Math.max(...data.map(c => c.v))
+    data.forEach((c, i) => {
+      const x = toX(i)
+      const bh = (c.v / maxVol) * volH
+      ctx.fillStyle = c.c >= c.o ? 'rgba(14,203,129,0.25)' : 'rgba(246,70,93,0.25)'
+      ctx.fillRect(x - bW / 2, H - PAD.b - bh, bW, bh)
+    })
+
+    // Candles
+    data.forEach((c, i) => {
+      const x = toX(i)
+      const color = c.c >= c.o ? UP : DOWN
+      ctx.strokeStyle = color
+      ctx.fillStyle = c.c >= c.o ? UP : DOWN
+      ctx.lineWidth = 1
+
+      // Wick
+      ctx.beginPath()
+      ctx.moveTo(x, toY(c.h))
+      ctx.lineTo(x, toY(c.l))
+      ctx.stroke()
+
+      // Body
+      const top = toY(Math.max(c.o, c.c))
+      const ht = Math.max(1, Math.abs(toY(c.o) - toY(c.c)))
+      if (c.c >= c.o) {
+        ctx.fillRect(x - bW / 2, top, bW, ht)
+      } else {
+        ctx.strokeStyle = DOWN
+        ctx.lineWidth = 1
+        ctx.strokeRect(x - bW / 2, top, bW, ht)
+        ctx.fillStyle = DOWN
+        ctx.fillRect(x - bW / 2, top, bW, ht)
       }
-      resizeObserverRef.current?.disconnect();
-      clearInterval(liveTimerRef.current);
-      chart.remove();
-    };
-  }, [dataBundle, onStatsChange]);
+
+      // Hover highlight
+      if (i === hoverRef.current) {
+        ctx.fillStyle = 'rgba(255,255,255,0.04)'
+        ctx.fillRect(x - bW, PAD.t, bW * 2, chartH)
+      }
+    })
+
+    // Last price line
+    const last = data[data.length - 1]
+    if (last) {
+      const y = toY(last.c)
+      const isUp = last.c >= last.o
+      ctx.save()
+      ctx.setLineDash([3, 3])
+      ctx.strokeStyle = isUp ? 'rgba(14,203,129,0.5)' : 'rgba(246,70,93,0.5)'
+      ctx.lineWidth = 1
+      ctx.beginPath(); ctx.moveTo(PAD.l, y); ctx.lineTo(W - PAD.r, y); ctx.stroke()
+      ctx.restore()
+
+      ctx.fillStyle = isUp ? UP : DOWN
+      ctx.beginPath()
+      ctx.roundRect(W - PAD.r + 2, y - 9, 65, 18, 3)
+      ctx.fill()
+      ctx.fillStyle = '#0b0e11'
+      ctx.font = 'bold 10px monospace'
+      ctx.textAlign = 'center'
+      ctx.fillText(last.c.toFixed(last.c > 10 ? 2 : 4), W - PAD.r + 34, y + 4)
+    }
+
+    // Hover tooltip
+    if (hoverRef.current >= 0 && hoverRef.current < data.length) {
+      const c = data[hoverRef.current]
+      const x = toX(hoverRef.current)
+      const lines = [
+        `O: ${c.o.toFixed(c.o > 10 ? 2 : 4)}`,
+        `H: ${c.h.toFixed(c.h > 10 ? 2 : 4)}`,
+        `L: ${c.l.toFixed(c.l > 10 ? 2 : 4)}`,
+        `C: ${c.c.toFixed(c.c > 10 ? 2 : 4)}`,
+        `V: ${c.v.toFixed(0)}`,
+      ]
+      const TW = 110, TH = lines.length * 16 + 16
+      let tx = x + 12
+      if (tx + TW > W - PAD.r) tx = x - TW - 12
+      ctx.fillStyle = 'rgba(20,25,35,0.95)'
+      ctx.strokeStyle = 'rgba(255,255,255,0.1)'
+      ctx.lineWidth = 1
+      ctx.beginPath(); ctx.roundRect(tx, PAD.t + 8, TW, TH, 6); ctx.fill(); ctx.stroke()
+      ctx.font = '10px monospace'
+      lines.forEach((line, j) => {
+        ctx.fillStyle = 'rgba(132,142,156,0.9)'
+        ctx.textAlign = 'left'
+        ctx.fillText(line, tx + 8, PAD.t + 22 + j * 16)
+      })
+
+      // Crosshair
+      ctx.save()
+      ctx.setLineDash([2, 2])
+      ctx.strokeStyle = 'rgba(255,255,255,0.12)'
+      ctx.lineWidth = 1
+      ctx.beginPath(); ctx.moveTo(x, PAD.t); ctx.lineTo(x, H - PAD.b); ctx.stroke()
+      ctx.restore()
+    }
+
+    // Time axis
+    ctx.fillStyle = TXTC
+    ctx.font = '9px monospace'
+    ctx.textAlign = 'center'
+    const step = Math.max(1, Math.floor(VIEW / 8))
+    data.forEach((c, i) => {
+      if (i % step === 0) {
+        const d = new Date(c.t)
+        const label = tf === '1d' || tf === '1w'
+          ? `${d.getMonth()+1}/${d.getDate()}`
+          : `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`
+        ctx.fillText(label, toX(i), H - PAD.b + 14)
+      }
+    })
+  }, [])
 
   useEffect(() => {
-    clearInterval(liveTimerRef.current);
+    const loop = () => { draw(); rafRef.current = requestAnimationFrame(loop) }
+    loop()
+    return () => cancelAnimationFrame(rafRef.current)
+  }, [draw])
 
-    const chart = chartRef.current;
-    const candleSeries = candleRef.current;
-    const volumeSeries = volumeRef.current;
-    const ema20Series = ema20Ref.current;
-    const ema50Series = ema50Ref.current;
-    if (!chart || !candleSeries || !volumeSeries || !ema20Series || !ema50Series) return undefined;
+  const onMove = useCallback((e) => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const rect = canvas.getBoundingClientRect()
+    const mouseX = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left
+    const VIEW = Math.min(candlesRef.current.length, 100)
+    const cW = canvas.clientWidth - 8 - 70
+    const idx = Math.floor((mouseX - 8) / (cW / VIEW))
+    hoverRef.current = Math.max(0, Math.min(idx, VIEW - 1))
+    dirtyRef.current = true
+  }, [])
 
-    let candles = [...dataBundle.candles];
-    let volumes = [...dataBundle.volumes];
-
-    candleSeries.setData(candles);
-    volumeSeries.setData(volumes);
-    ema20Series.setData(ema(candles, 20));
-    ema50Series.setData(ema(candles, 50));
-
-    const rng = mulberry32(stringToSeed(`live-${market.pair}-${timeframe}`));
-
-    const tickMs =
-      dataBundle.stepSeconds <= 15 ? 1000 :
-      dataBundle.stepSeconds <= 300 ? 1500 :
-      2200;
-
-    liveTimerRef.current = setInterval(() => {
-      const last = candles[candles.length - 1];
-      const lastVolume = volumes[volumes.length - 1];
-      const nowSec = Math.floor(Date.now() / 1000);
-      const nextBarBoundary = last.time + dataBundle.stepSeconds;
-
-      const driftScale =
-        market.basePrice > 10000 ? 0.0005 :
-        market.basePrice > 1000 ? 0.0009 :
-        market.basePrice > 10 ? 0.0016 : 0.003;
-
-      const movement = (rng() - 0.49) * driftScale;
-      const nextClose = Math.max(0.0000001, last.close * (1 + movement));
-
-      if (nowSec >= nextBarBoundary) {
-        const open = last.close;
-        const close = nextClose;
-        const high = Math.max(open, close) * (1 + rng() * driftScale * 2);
-        const low = Math.max(0.0000001, Math.min(open, close) * (1 - rng() * driftScale * 2));
-        const newCandle = {
-          time: nextBarBoundary,
-          open: Number(open.toFixed(6)),
-          high: Number(high.toFixed(6)),
-          low: Number(low.toFixed(6)),
-          close: Number(close.toFixed(6)),
-        };
-        const newVolume = {
-          time: nextBarBoundary,
-          value: Number((lastVolume.value * (0.75 + rng() * 0.8)).toFixed(2)),
-          color: close >= open ? "rgba(14, 203, 129, 0.45)" : "rgba(246, 70, 93, 0.45)",
-        };
-
-        candles = [...candles.slice(-399), newCandle];
-        volumes = [...volumes.slice(-399), newVolume];
-        candleSeries.update(newCandle);
-        volumeSeries.update(newVolume);
-      } else {
-        const updated = {
-          ...last,
-          high: Math.max(last.high, nextClose),
-          low: Math.min(last.low, nextClose),
-          close: Number(nextClose.toFixed(6)),
-        };
-        const updatedVolume = {
-          ...lastVolume,
-          value: Number((lastVolume.value + rng() * lastVolume.value * 0.05).toFixed(2)),
-          color: updated.close >= updated.open ? "rgba(14, 203, 129, 0.45)" : "rgba(246, 70, 93, 0.45)",
-        };
-
-        candles = [...candles.slice(0, -1), updated];
-        volumes = [...volumes.slice(0, -1), updatedVolume];
-        candleSeries.update(updated);
-        volumeSeries.update(updatedVolume);
-      }
-
-      const ema20Data = ema(candles, 20);
-      const ema50Data = ema(candles, 50);
-      ema20Series.setData(ema20Data);
-      ema50Series.setData(ema50Data);
-
-      const lastBar = candles[candles.length - 1];
-      onStatsChange({
-        lastPrice: lastBar.close,
-        high24h: Math.max(...candles.slice(-24).map((c) => c.high)),
-        low24h: Math.min(...candles.slice(-24).map((c) => c.low)),
-        volume24h: volumes.slice(-24).reduce((sum, item) => sum + item.value, 0),
-        changePct: ((lastBar.close - candles[0].open) / candles[0].open) * 100,
-      });
-
-      setLegend({
-        open: formatPriceValue(lastBar.open),
-        high: formatPriceValue(lastBar.high),
-        low: formatPriceValue(lastBar.low),
-        close: formatPriceValue(lastBar.close),
-        volume: formatVolumeValue(volumes[volumes.length - 1].value),
-      });
-    }, tickMs);
-
-    return () => clearInterval(liveTimerRef.current);
-  }, [dataBundle, market, timeframe, onStatsChange]);
-
-  const zoomIn = () => {
-    const chart = chartRef.current;
-    if (!chart) return;
-    const range = chart.timeScale().getVisibleLogicalRange();
-    if (!range) return;
-    const center = (range.from + range.to) / 2;
-    const width = (range.to - range.from) * 0.7;
-    chart.timeScale().setVisibleLogicalRange({
-      from: center - width / 2,
-      to: center + width / 2,
-    });
-  };
-
-  const zoomOut = () => {
-    const chart = chartRef.current;
-    if (!chart) return;
-    const range = chart.timeScale().getVisibleLogicalRange();
-    if (!range) return;
-    const center = (range.from + range.to) / 2;
-    const width = (range.to - range.from) * 1.35;
-    chart.timeScale().setVisibleLogicalRange({
-      from: center - width / 2,
-      to: center + width / 2,
-    });
-  };
-
-  const fit = () => {
-    chartRef.current?.timeScale().fitContent();
-  };
+  const onLeave = useCallback(() => { hoverRef.current = -1; dirtyRef.current = true }, [])
 
   return (
-    <div className="proChartWrap">
-      <div className="chartTopbar">
-        <div className="legendRow">
-          <span>O {legend.open}</span>
-          <span>H {legend.high}</span>
-          <span>L {legend.low}</span>
-          <span>C {legend.close}</span>
-          <span>Vol {legend.volume}</span>
-        </div>
-
-        <div className="zoomActions">
-          <button onClick={zoomOut}>−</button>
-          <button onClick={fit}>Fit</button>
-          <button onClick={zoomIn}>+</button>
-        </div>
-      </div>
-
-      <div ref={containerRef} className="chartContainer" />
-
-      <style jsx>{`
-        .proChartWrap {
-          width: 100%;
-          min-width: 0;
-        }
-
-        .chartTopbar {
-          display: flex;
-          justify-content: space-between;
-          gap: 12px;
-          align-items: center;
-          flex-wrap: wrap;
-          padding: 12px 16px 10px;
-          border-bottom: 1px solid #232a32;
-          background: #11161b;
-        }
-
-        .legendRow {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 14px;
-          color: #c3ccd7;
-          font-size: 0.86rem;
-        }
-
-        .zoomActions {
-          display: flex;
-          gap: 8px;
-        }
-
-        .zoomActions button {
-          background: #0f1318;
-          color: #e6edf3;
-          border: 1px solid #2b3139;
-          border-radius: 8px;
-          padding: 8px 12px;
-          cursor: pointer;
-          font-weight: 700;
-        }
-
-        .chartContainer {
-          width: 100%;
-          height: 520px;
-        }
-
-        @media (max-width: 768px) {
-          .chartContainer {
-            height: 360px;
-          }
-
-          .chartTopbar {
-            padding: 10px 12px;
-          }
-
-          .legendRow {
-            gap: 10px;
-            font-size: 0.8rem;
-          }
-        }
-      `}</style>
-    </div>
-  );
+    <canvas
+      ref={canvasRef}
+      style={{ width:'100%', height:'100%', display:'block', cursor:'crosshair' }}
+      onMouseMove={onMove}
+      onMouseLeave={onLeave}
+      onTouchMove={onMove}
+    />
+  )
 }
 
-export default function ExchangePage() {
-  const [market, setMarket] = useState(MARKET_LIST[0]);
-  const [timeframe, setTimeframe] = useState("4h");
-  const [mobileTab, setMobileTab] = useState("chart");
-  const [side, setSide] = useState("buy");
-  const [orderType, setOrderType] = useState("limit");
-  const [price, setPrice] = useState(String(MARKET_LIST[0].basePrice));
-  const [amount, setAmount] = useState("");
-  const [stats, setStats] = useState({
-    lastPrice: MARKET_LIST[0].basePrice,
-    high24h: MARKET_LIST[0].basePrice * 1.01,
-    low24h: MARKET_LIST[0].basePrice * 0.99,
-    volume24h: 0,
-    changePct: 0,
-  });
+// ─── ORDER BOOK ───────────────────────────────────────────────────────────────
+function OrderBook({ pair }) {
+  const [book, setBook] = useState({ asks:[], bids:[] })
+  const basePrice = PAIRS.find(p => p.sym === pair)?.price || 1000
 
   useEffect(() => {
-    setPrice(String(market.basePrice));
-  }, [market]);
+    const gen = () => {
+      const mid = basePrice + rand(-basePrice * 0.001, basePrice * 0.001)
+      const asks = [], bids = []
+      let ap = mid + basePrice * 0.0002
+      let bp = mid - basePrice * 0.0002
+      for (let i = 0; i < 12; i++) {
+        asks.push({ p: ap, a: rand(0.01, 3), t: rand(50,5000) })
+        bids.push({ p: bp, a: rand(0.01, 3), t: rand(50,5000) })
+        ap += rand(0.1, basePrice * 0.0008)
+        bp -= rand(0.1, basePrice * 0.0008)
+      }
+      const maxT = Math.max(...[...asks,...bids].map(x=>x.t))
+      asks.forEach(x => x.pct = (x.t/maxT)*100)
+      bids.forEach(x => x.pct = (x.t/maxT)*100)
+      setBook({ asks: asks.reverse(), bids, mid })
+    }
+    gen()
+    const iv = setInterval(gen, 1200)
+    return () => clearInterval(iv)
+  }, [pair, basePrice])
 
-  const total = useMemo(() => {
-    const p = Number(price || 0);
-    const a = Number(amount || 0);
-    return p && a ? (p * a).toFixed(2) : "0.00";
-  }, [price, amount]);
+  const fmt = (n) => n > 100 ? n.toFixed(2) : n > 1 ? n.toFixed(4) : n.toFixed(6)
 
-  const orderBook = useMemo(() => {
-    const mid = stats.lastPrice || market.basePrice;
-    const asks = Array.from({ length: 12 }, (_, i) => {
-      const p = mid + market.spread + i * market.spread * 0.7;
-      const a = clamp(0.02 + Math.random() * 0.9, 0.02, 9.99);
-      return {
-        price: formatPriceValue(p),
-        amount: a.toFixed(4),
-        total: formatPriceValue(p * a),
-      };
-    });
+  return (
+    <div style={{height:'100%',display:'flex',flexDirection:'column',fontSize:'11px',fontFamily:'monospace'}}>
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',padding:'4px 8px',color:'#848e9c',borderBottom:'1px solid #1e2329',fontSize:'10px'}}>
+        <span>Price(EUR)</span><span style={{textAlign:'right'}}>Amount</span><span style={{textAlign:'right'}}>Total</span>
+      </div>
+      <div style={{flex:1,overflow:'hidden'}}>
+        {book.asks.map((r,i) => (
+          <div key={i} style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',padding:'2px 8px',position:'relative',cursor:'pointer'}}>
+            <div style={{position:'absolute',right:0,top:0,bottom:0,background:'rgba(246,70,93,0.1)',width:`${r.pct}%`}}/>
+            <span style={{color:'#f6465d',position:'relative'}}>{fmt(r.p)}</span>
+            <span style={{textAlign:'right',color:'#c4cdd4',position:'relative'}}>{r.a.toFixed(4)}</span>
+            <span style={{textAlign:'right',color:'#c4cdd4',position:'relative'}}>{r.t.toFixed(0)}</span>
+          </div>
+        ))}
+        <div style={{padding:'6px 8px',borderTop:'1px solid #1e2329',borderBottom:'1px solid #1e2329',display:'flex',alignItems:'center',gap:'8px'}}>
+          <span style={{color: book.mid > basePrice ? '#0ecb81' : '#f6465d',fontSize:'14px',fontWeight:700}}>{fmt(book.mid || basePrice)}</span>
+          <span style={{color:'#848e9c',fontSize:'10px'}}>≈ EUR {fmt(book.mid || basePrice)}</span>
+        </div>
+        {book.bids.map((r,i) => (
+          <div key={i} style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',padding:'2px 8px',position:'relative',cursor:'pointer'}}>
+            <div style={{position:'absolute',right:0,top:0,bottom:0,background:'rgba(14,203,129,0.1)',width:`${r.pct}%`}}/>
+            <span style={{color:'#0ecb81',position:'relative'}}>{fmt(r.p)}</span>
+            <span style={{textAlign:'right',color:'#c4cdd4',position:'relative'}}>{r.a.toFixed(4)}</span>
+            <span style={{textAlign:'right',color:'#c4cdd4',position:'relative'}}>{r.t.toFixed(0)}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
 
-    const bids = Array.from({ length: 12 }, (_, i) => {
-      const p = Math.max(0.000001, mid - market.spread - i * market.spread * 0.7);
-      const a = clamp(0.02 + Math.random() * 0.9, 0.02, 9.99);
-      return {
-        price: formatPriceValue(p),
-        amount: a.toFixed(4),
-        total: formatPriceValue(p * a),
-      };
-    });
+// ─── TRADE FEED ───────────────────────────────────────────────────────────────
+function TradeFeed({ pair }) {
+  const [trades, setTrades] = useState([])
+  const basePrice = PAIRS.find(p => p.sym === pair)?.price || 1000
 
-    return { asks, bids };
-  }, [market, stats.lastPrice]);
+  useEffect(() => {
+    const init = Array.from({length:20}, () => ({
+      id: Math.random(), p: basePrice * rand(0.9998,1.0002),
+      a: rand(0.001,2), side: Math.random()>0.5?'buy':'sell', t: new Date()
+    }))
+    setTrades(init)
+    const iv = setInterval(() => {
+      setTrades(prev => [{
+        id: Math.random(), p: basePrice * rand(0.9998,1.0002),
+        a: rand(0.001,2), side: Math.random()>0.5?'buy':'sell', t: new Date(), isNew:true
+      }, ...prev].slice(0,25))
+    }, randInt(400,2000))
+    return () => clearInterval(iv)
+  }, [pair, basePrice])
+
+  const fmt = (n) => n > 100 ? n.toFixed(2) : n > 1 ? n.toFixed(4) : n.toFixed(6)
+
+  return (
+    <div style={{height:'100%',overflow:'hidden',fontFamily:'monospace',fontSize:'11px'}}>
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',padding:'4px 8px',color:'#848e9c',borderBottom:'1px solid #1e2329',fontSize:'10px'}}>
+        <span>Price(EUR)</span><span style={{textAlign:'right'}}>Amount</span><span style={{textAlign:'right'}}>Time</span>
+      </div>
+      {trades.map(t => (
+        <div key={t.id} style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',padding:'2px 8px',animation:t.isNew?'fadeIn .3s ease':'none'}}>
+          <span style={{color:t.side==='buy'?'#0ecb81':'#f6465d'}}>{fmt(t.p)}</span>
+          <span style={{textAlign:'right',color:'#c4cdd4'}}>{t.a.toFixed(4)}</span>
+          <span style={{textAlign:'right',color:'#848e9c'}}>{t.t.toHours?.() || `${t.t.getHours().toString().padStart(2,'0')}:${t.t.getMinutes().toString().padStart(2,'0')}:${t.t.getSeconds().toString().padStart(2,'0')}`}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// ─── ORDER FORM ───────────────────────────────────────────────────────────────
+function OrderForm({ pair }) {
+  const [side, setSide] = useState('buy')
+  const [type, setType] = useState('limit')
+  const [price, setPrice] = useState('')
+  const [amount, setAmount] = useState('')
+  const [pct, setPct] = useState(0)
+  const basePrice = PAIRS.find(p => p.sym === pair)?.price || 1000
+  const base = pair.split('/')[0]
+
+  useEffect(() => { setPrice(basePrice.toFixed(basePrice > 10 ? 2 : 4)) }, [pair, basePrice])
+
+  const total = ((parseFloat(price)||0) * (parseFloat(amount)||0)).toFixed(2)
+  const balance = side === 'buy' ? '5,000.00 EUR' : `0.1420 ${base}`
+
+  return (
+    <div style={{padding:'12px',height:'100%',display:'flex',flexDirection:'column',gap:'10px'}}>
+      {/* Side tabs */}
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'4px'}}>
+        <button onClick={() => setSide('buy')} style={{padding:'8px',borderRadius:'4px',border:'none',cursor:'pointer',fontWeight:600,fontSize:'13px',background:side==='buy'?'#0ecb81':'transparent',color:side==='buy'?'#0b0e11':'#848e9c',transition:'all .2s'}}>Buy</button>
+        <button onClick={() => setSide('sell')} style={{padding:'8px',borderRadius:'4px',border:'none',cursor:'pointer',fontWeight:600,fontSize:'13px',background:side==='sell'?'#f6465d':'transparent',color:side==='sell'?'#fff':'#848e9c',transition:'all .2s'}}>Sell</button>
+      </div>
+
+      {/* Type tabs */}
+      <div style={{display:'flex',gap:'12px',borderBottom:'1px solid #1e2329',paddingBottom:'8px'}}>
+        {['limit','market','stop'].map(t => (
+          <button key={t} onClick={() => setType(t)} style={{background:'none',border:'none',cursor:'pointer',fontSize:'12px',color:type===t?'#f0b90b':'#848e9c',fontWeight:type===t?600:400,paddingBottom:'4px',borderBottom:type===t?'2px solid #f0b90b':'2px solid transparent',textTransform:'capitalize',transition:'all .2s'}}>{t}</button>
+        ))}
+      </div>
+
+      {/* Balance */}
+      <div style={{display:'flex',justifyContent:'space-between',fontSize:'11px',color:'#848e9c'}}>
+        <span>Available</span><span style={{color:'#c4cdd4'}}>{balance}</span>
+      </div>
+
+      {/* Price input */}
+      {type !== 'market' && (
+        <div style={{position:'relative'}}>
+          <label style={{fontSize:'11px',color:'#848e9c',display:'block',marginBottom:'4px'}}>Price</label>
+          <input value={price} onChange={e => setPrice(e.target.value)} style={{width:'100%',background:'#1e2329',border:'1px solid #2b3139',borderRadius:'4px',padding:'8px 48px 8px 10px',color:'#c4cdd4',fontSize:'12px',fontFamily:'monospace',outline:'none',boxSizing:'border-box'}} />
+          <span style={{position:'absolute',right:'10px',top:'28px',color:'#848e9c',fontSize:'11px'}}>EUR</span>
+        </div>
+      )}
+
+      {/* Amount input */}
+      <div style={{position:'relative'}}>
+        <label style={{fontSize:'11px',color:'#848e9c',display:'block',marginBottom:'4px'}}>Amount</label>
+        <input value={amount} onChange={e => setAmount(e.target.value)} placeholder="0.00000000" style={{width:'100%',background:'#1e2329',border:'1px solid #2b3139',borderRadius:'4px',padding:'8px 48px 8px 10px',color:'#c4cdd4',fontSize:'12px',fontFamily:'monospace',outline:'none',boxSizing:'border-box'}} />
+        <span style={{position:'absolute',right:'10px',top:'28px',color:'#848e9c',fontSize:'11px'}}>{base}</span>
+      </div>
+
+      {/* Percentage slider */}
+      <div style={{display:'flex',gap:'4px'}}>
+        {[25,50,75,100].map(p => (
+          <button key={p} onClick={() => { setPct(p); setAmount((p/100 * 0.142).toFixed(6)) }} style={{flex:1,padding:'4px',background:pct===p?'rgba(240,185,11,0.15)':'#1e2329',border:`1px solid ${pct===p?'#f0b90b':'#2b3139'}`,borderRadius:'4px',color:pct===p?'#f0b90b':'#848e9c',fontSize:'10px',cursor:'pointer',transition:'all .2s'}}>{p}%</button>
+        ))}
+      </div>
+
+      {/* Total */}
+      <div style={{position:'relative'}}>
+        <label style={{fontSize:'11px',color:'#848e9c',display:'block',marginBottom:'4px'}}>Total</label>
+        <input value={total} readOnly style={{width:'100%',background:'#1e2329',border:'1px solid #2b3139',borderRadius:'4px',padding:'8px 48px 8px 10px',color:'#c4cdd4',fontSize:'12px',fontFamily:'monospace',outline:'none',boxSizing:'border-box'}} />
+        <span style={{position:'absolute',right:'10px',top:'28px',color:'#848e9c',fontSize:'11px'}}>EUR</span>
+      </div>
+
+      {/* Submit */}
+      <button onClick={() => alert(`${side.toUpperCase()} order placed!`)} style={{padding:'12px',borderRadius:'4px',border:'none',cursor:'pointer',fontWeight:700,fontSize:'13px',background:side==='buy'?'#0ecb81':'#f6465d',color:side==='buy'?'#0b0e11':'#fff',marginTop:'auto',transition:'opacity .2s'}} onMouseOver={e=>e.target.style.opacity='.85'} onMouseOut={e=>e.target.style.opacity='1'}>
+        {side === 'buy' ? `Buy ${base}` : `Sell ${base}`}
+      </button>
+
+      {/* Login prompt if not logged in */}
+      <p style={{textAlign:'center',fontSize:'11px',color:'#848e9c',margin:0}}>
+        <a href="#" style={{color:'#f0b90b',textDecoration:'none'}}>Log In</a> or <a href="#" style={{color:'#f0b90b',textDecoration:'none'}}>Register</a> to trade
+      </p>
+    </div>
+  )
+}
+
+// ─── MARKETS OVERVIEW ─────────────────────────────────────────────────────────
+function MarketsView({ onSelectPair }) {
+  const [search, setSearch] = useState('')
+  const [sort, setSort] = useState('vol')
+  const [sortDir, setSortDir] = useState(-1)
+  const [tab, setTab] = useState('all')
+
+  const filtered = PAIRS
+    .filter(p => p.sym.toLowerCase().includes(search.toLowerCase()))
+    .filter(p => tab === 'all' || (tab === 'gainers' && p.chg > 0) || (tab === 'losers' && p.chg < 0))
+    .sort((a, b) => {
+      const av = sort === 'price' ? a.price : sort === 'chg' ? a.chg : parseFloat(a.vol)
+      const bv = sort === 'price' ? b.price : sort === 'chg' ? b.chg : parseFloat(b.vol)
+      return (av - bv) * sortDir
+    })
+
+  const toggleSort = (col) => {
+    if (sort === col) setSortDir(d => d * -1)
+    else { setSort(col); setSortDir(-1) }
+  }
+
+  return (
+    <div style={{background:'#0b0e11',minHeight:'100vh',color:'#c4cdd4',fontFamily:'monospace'}}>
+      {/* Header */}
+      <div style={{background:'#161a1e',borderBottom:'1px solid #1e2329',padding:'20px 24px'}}>
+        <h1 style={{fontSize:'20px',fontWeight:700,color:'#fff',margin:'0 0 4px'}}>Markets Overview</h1>
+        <p style={{color:'#848e9c',fontSize:'12px',margin:0}}>Live tokenized asset prices on Nextoken Capital</p>
+      </div>
+
+      <div style={{padding:'20px 24px'}}>
+        {/* Stats bar */}
+        <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:'12px',marginBottom:'24px'}}>
+          {[
+            {l:'Total Market Cap',v:'€420B+',c:'#0ecb81'},
+            {l:'24h Volume',v:'€8.2B',c:'#c4cdd4'},
+            {l:'Active Pairs',v:'12',c:'#c4cdd4'},
+            {l:'Avg Change 24h',v:'-1.2%',c:'#f6465d'},
+          ].map(s => (
+            <div key={s.l} style={{background:'#161a1e',border:'1px solid #1e2329',borderRadius:'8px',padding:'16px'}}>
+              <div style={{fontSize:'11px',color:'#848e9c',marginBottom:'6px'}}>{s.l}</div>
+              <div style={{fontSize:'18px',fontWeight:700,color:s.c}}>{s.v}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Filter tabs */}
+        <div style={{display:'flex',gap:'0',marginBottom:'16px',borderBottom:'1px solid #1e2329'}}>
+          {['all','gainers','losers'].map(t => (
+            <button key={t} onClick={() => setTab(t)} style={{background:'none',border:'none',cursor:'pointer',padding:'10px 20px',color:tab===t?'#f0b90b':'#848e9c',borderBottom:tab===t?'2px solid #f0b90b':'2px solid transparent',textTransform:'capitalize',fontSize:'13px',fontWeight:tab===t?600:400,marginBottom:'-1px'}}>{t}</button>
+          ))}
+          <div style={{marginLeft:'auto',display:'flex',alignItems:'center'}}>
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search..." style={{background:'#1e2329',border:'1px solid #2b3139',borderRadius:'6px',padding:'6px 12px',color:'#c4cdd4',fontSize:'12px',outline:'none',fontFamily:'monospace'}} />
+          </div>
+        </div>
+
+        {/* Table */}
+        <div style={{background:'#161a1e',borderRadius:'8px',overflow:'hidden',border:'1px solid #1e2329'}}>
+          <div style={{display:'grid',gridTemplateColumns:'2fr 1.5fr 1fr 1fr 1fr',padding:'10px 16px',borderBottom:'1px solid #1e2329',fontSize:'11px',color:'#848e9c'}}>
+            <span>Pair</span>
+            <span style={{textAlign:'right',cursor:'pointer'}} onClick={() => toggleSort('price')}>Price {sort==='price'?sortDir===1?'↑':'↓':''}</span>
+            <span style={{textAlign:'right',cursor:'pointer'}} onClick={() => toggleSort('chg')}>24h% {sort==='chg'?sortDir===1?'↑':'↓':''}</span>
+            <span style={{textAlign:'right',cursor:'pointer'}} onClick={() => toggleSort('vol')}>Volume {sort==='vol'?sortDir===1?'↑':'↓':''}</span>
+            <span style={{textAlign:'right'}}>Action</span>
+          </div>
+          {filtered.map(p => (
+            <div key={p.sym} onClick={() => onSelectPair(p.sym)} style={{display:'grid',gridTemplateColumns:'2fr 1.5fr 1fr 1fr 1fr',padding:'12px 16px',borderBottom:'1px solid #1e2329',cursor:'pointer',transition:'background .15s'}} onMouseOver={e=>e.currentTarget.style.background='#1e2329'} onMouseOut={e=>e.currentTarget.style.background='transparent'}>
+              <div style={{display:'flex',alignItems:'center',gap:'10px'}}>
+                <div style={{width:'32px',height:'32px',borderRadius:'50%',background:'linear-gradient(135deg,#f0b90b,#e67e00)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'10px',fontWeight:700,color:'#0b0e11'}}>{p.sym.split('/')[0].slice(0,3)}</div>
+                <div>
+                  <div style={{color:'#fff',fontWeight:600,fontSize:'13px'}}>{p.sym.split('/')[0]}</div>
+                  <div style={{color:'#848e9c',fontSize:'11px'}}>{p.sym}</div>
+                </div>
+              </div>
+              <div style={{textAlign:'right',alignSelf:'center',color:'#fff',fontWeight:600}}>€{p.price.toLocaleString('en', {minimumFractionDigits:p.price>1?2:4})}</div>
+              <div style={{textAlign:'right',alignSelf:'center',color:p.chg>=0?'#0ecb81':'#f6465d',fontWeight:600}}>{p.chg>=0?'+':''}{p.chg.toFixed(2)}%</div>
+              <div style={{textAlign:'right',alignSelf:'center',color:'#848e9c',fontSize:'12px'}}>{p.vol}</div>
+              <div style={{textAlign:'right',alignSelf:'center'}}>
+                <button style={{background:'transparent',border:'1px solid #f0b90b',borderRadius:'4px',padding:'4px 12px',color:'#f0b90b',fontSize:'11px',cursor:'pointer',fontFamily:'monospace'}}>Trade</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── MAIN EXCHANGE PAGE ───────────────────────────────────────────────────────
+export default function Exchange() {
+  const [pair, setPair] = useState('BTC/EUR')
+  const [tf, setTf] = useState('1h')
+  const [view, setView] = useState('chart') // 'chart' | 'book' | 'trades'
+  const [showMarkets, setShowMarkets] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
+
+  const currentPair = PAIRS.find(p => p.sym === pair) || PAIRS[0]
+
+  if (showMarkets) {
+    return (
+      <>
+        <Head><title>Markets — Nextoken Capital</title></Head>
+        <div style={{background:'#0b0e11',minHeight:'100vh'}}>
+          <div style={{background:'#161a1e',borderBottom:'1px solid #1e2329',padding:'0 16px',display:'flex',alignItems:'center',gap:'16px',height:'48px'}}>
+            <button onClick={() => setShowMarkets(false)} style={{background:'none',border:'none',color:'#f0b90b',cursor:'pointer',fontSize:'13px',fontFamily:'monospace'}}>← Exchange</button>
+          </div>
+          <MarketsView onSelectPair={s => { setPair(s); setShowMarkets(false) }} />
+        </div>
+      </>
+    )
+  }
 
   return (
     <>
       <Head>
-        <title>Exchange | Nextoken Capital</title>
-        <meta
-          name="description"
-          content="Pro exchange terminal with candlestick chart, timeframes, zoom controls, and mobile responsive trading UI."
-        />
+        <title>{pair} — Nextoken Capital Exchange</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <style>{`
+          * { box-sizing: border-box; margin: 0; padding: 0; }
+          body { background: #0b0e11; color: #c4cdd4; font-family: 'DM Sans', monospace; }
+          ::-webkit-scrollbar { width: 4px; height: 4px; }
+          ::-webkit-scrollbar-track { background: #0b0e11; }
+          ::-webkit-scrollbar-thumb { background: #2b3139; border-radius: 2px; }
+          input:focus { border-color: #f0b90b !important; }
+          @keyframes fadeIn { from { opacity:0; background:rgba(240,185,11,0.05); } to { opacity:1; background:transparent; } }
+          @media (max-width: 767px) {
+            .desktop-only { display: none !important; }
+          }
+          @media (min-width: 768px) {
+            .mobile-only { display: none !important; }
+          }
+        `}</style>
       </Head>
 
-      <Navbar />
+      <div style={{display:'flex',flexDirection:'column',height:'100vh',overflow:'hidden',background:'#0b0e11'}}>
 
-      <main className="exchangePage">
-        <section className="exchangeShell">
-          <div className="heroBar">
-            <div className="pairCard">
-              <div className="pairTop">
-                <div>
-                  <h1>{market.pair}</h1>
-                  <p>{market.type} trading terminal</p>
-                </div>
-                <div className={`delta ${stats.changePct >= 0 ? "up" : "down"}`}>
-                  {stats.changePct >= 0 ? "+" : ""}
-                  {stats.changePct.toFixed(2)}%
-                </div>
-              </div>
+        {/* ── TOP BAR ── */}
+        <div style={{background:'#161a1e',borderBottom:'1px solid #1e2329',padding:'0 12px',display:'flex',alignItems:'center',gap:'12px',height:'52px',flexShrink:0,overflowX:'auto'}}>
 
-              <div className="pairGrid">
-                <div className="pairStat">
-                  <span>Last Price</span>
-                  <strong>{formatPriceValue(stats.lastPrice)}</strong>
-                </div>
-                <div className="pairStat">
-                  <span>24h High</span>
-                  <strong>{formatPriceValue(stats.high24h)}</strong>
-                </div>
-                <div className="pairStat">
-                  <span>24h Low</span>
-                  <strong>{formatPriceValue(stats.low24h)}</strong>
-                </div>
-                <div className="pairStat">
-                  <span>24h Volume</span>
-                  <strong>{formatVolumeValue(stats.volume24h)}</strong>
-                </div>
-              </div>
-            </div>
+          {/* Logo */}
+          <div style={{display:'flex',alignItems:'center',gap:'6px',flexShrink:0}}>
+            <div style={{width:'24px',height:'24px',background:'#f0b90b',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'10px',fontWeight:700,color:'#0b0e11'}}>N</div>
+            <span style={{color:'#fff',fontWeight:700,fontSize:'13px',display:isMobile?'none':'block'}}>NXT</span>
+          </div>
 
-            <div className="timeframesBar">
-              {TIMEFRAMES.map((tf) => (
-                <button
-                  key={tf.key}
-                  className={timeframe === tf.key ? "active" : ""}
-                  onClick={() => setTimeframe(tf.key)}
-                >
-                  {tf.label}
-                </button>
-              ))}
+          <div style={{width:'1px',height:'24px',background:'#1e2329',flexShrink:0}} />
+
+          {/* Pair selector */}
+          <button onClick={() => setShowMarkets(true)} style={{display:'flex',alignItems:'center',gap:'8px',background:'none',border:'none',cursor:'pointer',flexShrink:0}}>
+            <div style={{width:'28px',height:'28px',borderRadius:'50%',background:'linear-gradient(135deg,#f0b90b,#e67e00)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'9px',fontWeight:700,color:'#0b0e11'}}>{pair.split('/')[0].slice(0,3)}</div>
+            <span style={{color:'#fff',fontWeight:700,fontSize:'15px'}}>{pair}</span>
+            <span style={{color:'#848e9c',fontSize:'12px'}}>▼</span>
+          </button>
+
+          {/* Price */}
+          <div style={{flexShrink:0}}>
+            <div style={{color:currentPair.chg>=0?'#0ecb81':'#f6465d',fontWeight:700,fontSize:'16px',fontFamily:'monospace'}}>
+              {currentPair.price.toLocaleString('en',{minimumFractionDigits:currentPair.price>1?2:4})}
             </div>
           </div>
 
-          <div className="mobileTabs">
-            <button className={mobileTab === "chart" ? "active" : ""} onClick={() => setMobileTab("chart")}>
-              Chart
-            </button>
-            <button className={mobileTab === "book" ? "active" : ""} onClick={() => setMobileTab("book")}>
-              Book
-            </button>
-            <button className={mobileTab === "trade" ? "active" : ""} onClick={() => setMobileTab("trade")}>
-              Trade
-            </button>
-            <button className={mobileTab === "orders" ? "active" : ""} onClick={() => setMobileTab("orders")}>
-              Orders
-            </button>
+          {/* Stats */}
+          <div style={{display:'flex',gap:'20px',flexShrink:0}} className="desktop-only">
+            {[
+              {l:'24h Change',v:`${currentPair.chg>=0?'+':''}${currentPair.chg.toFixed(2)}%`,c:currentPair.chg>=0?'#0ecb81':'#f6465d'},
+              {l:'24h High',v:currentPair.high.toLocaleString('en'),c:'#c4cdd4'},
+              {l:'24h Low',v:currentPair.low.toLocaleString('en'),c:'#c4cdd4'},
+              {l:'24h Volume',v:currentPair.vol,c:'#c4cdd4'},
+            ].map(s => (
+              <div key={s.l}>
+                <div style={{fontSize:'10px',color:'#848e9c'}}>{s.l}</div>
+                <div style={{fontSize:'12px',color:s.c,fontFamily:'monospace'}}>{s.v}</div>
+              </div>
+            ))}
           </div>
 
-          <div className="terminalGrid">
-            <aside className="panel marketsPanel">
-              <div className="panelHeader">
-                <h2>Markets</h2>
-              </div>
+          {/* Markets button */}
+          <button onClick={() => setShowMarkets(true)} style={{marginLeft:'auto',background:'#1e2329',border:'1px solid #2b3139',borderRadius:'4px',padding:'5px 12px',color:'#c4cdd4',fontSize:'11px',cursor:'pointer',flexShrink:0,fontFamily:'monospace'}}>Markets</button>
+        </div>
 
-              <div className="marketSearch">
-                <input type="text" placeholder="Search market" />
-              </div>
-
-              <div className="marketList">
-                {MARKET_LIST.map((item) => (
-                  <button
-                    key={item.pair}
-                    className={`marketRow ${market.pair === item.pair ? "selected" : ""}`}
-                    onClick={() => setMarket(item)}
-                  >
-                    <div>
-                      <strong>{item.pair}</strong>
-                      <span>{item.type}</span>
-                    </div>
-                    <div className="marketRight">
-                      <strong>{formatPriceValue(item.basePrice)}</strong>
-                      <span>{item.spread.toFixed(item.basePrice > 100 ? 2 : 4)} spr</span>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </aside>
-
-            <section className={`panel chartPanel mobilePane ${mobileTab === "chart" ? "showMobile" : ""}`}>
-              <div className="panelHeader">
-                <h2>Pro Chart</h2>
-                <div className="chartBadges">
-                  <span>EMA 20</span>
-                  <span>EMA 50</span>
-                  <span>Volume</span>
-                </div>
-              </div>
-
-              <ProCandlestickChart market={market} timeframe={timeframe} onStatsChange={setStats} />
-            </section>
-
-            <section className={`panel orderBookPanel mobilePane ${mobileTab === "book" ? "showMobile" : ""}`}>
-              <div className="panelHeader">
-                <h2>Order Book</h2>
-              </div>
-
-              <div className="bookHeader">
-                <span>Price</span>
-                <span>Amount</span>
-                <span>Total</span>
-              </div>
-
-              <div className="bookLabel ask">Asks</div>
-              {orderBook.asks
-                .slice()
-                .reverse()
-                .map((row, index) => (
-                  <div className="bookRow" key={`ask-${index}`}>
-                    <span className="down">{row.price}</span>
-                    <span>{row.amount}</span>
-                    <span>{row.total}</span>
-                  </div>
-                ))}
-
-              <div className="midPrice">{formatPriceValue(stats.lastPrice)}</div>
-
-              <div className="bookLabel bid">Bids</div>
-              {orderBook.bids.map((row, index) => (
-                <div className="bookRow" key={`bid-${index}`}>
-                  <span className="up">{row.price}</span>
-                  <span>{row.amount}</span>
-                  <span>{row.total}</span>
-                </div>
+        {/* ── MAIN CONTENT ── */}
+        {isMobile ? (
+          // ── MOBILE LAYOUT ──
+          <div style={{flex:1,display:'flex',flexDirection:'column',overflow:'hidden'}}>
+            {/* Mobile tab bar */}
+            <div style={{display:'flex',background:'#161a1e',borderBottom:'1px solid #1e2329'}}>
+              {['chart','book','trades','order'].map(v => (
+                <button key={v} onClick={() => setView(v)} style={{flex:1,padding:'8px 4px',background:'none',border:'none',cursor:'pointer',color:view===v?'#f0b90b':'#848e9c',borderBottom:view===v?'2px solid #f0b90b':'2px solid transparent',fontSize:'11px',textTransform:'capitalize',fontFamily:'monospace'}}>
+                  {v === 'order' ? 'Trade' : v}
+                </button>
               ))}
-            </section>
+            </div>
 
-            <aside className={`panel tradePanel mobilePane ${mobileTab === "trade" ? "showMobile" : ""}`}>
-              <div className="panelHeader">
-                <h2>Trade</h2>
+            {/* Timeframes - only show on chart */}
+            {view === 'chart' && (
+              <div style={{display:'flex',gap:'0',background:'#161a1e',borderBottom:'1px solid #1e2329',overflowX:'auto'}}>
+                {TIMEFRAMES.map(t => (
+                  <button key={t} onClick={() => setTf(t)} style={{padding:'6px 12px',background:'none',border:'none',cursor:'pointer',color:tf===t?'#f0b90b':'#848e9c',fontFamily:'monospace',fontSize:'11px',borderBottom:tf===t?'2px solid #f0b90b':'2px solid transparent',whiteSpace:'nowrap',fontWeight:tf===t?600:400}}>{t}</button>
+                ))}
               </div>
+            )}
 
-              <div className="segmentTabs">
-                <button className={side === "buy" ? "active buy" : ""} onClick={() => setSide("buy")}>
-                  Buy
-                </button>
-                <button className={side === "sell" ? "active sell" : ""} onClick={() => setSide("sell")}>
-                  Sell
-                </button>
+            {/* Mobile content */}
+            <div style={{flex:1,overflow:'hidden'}}>
+              {view === 'chart' && <CandleChart pair={pair} tf={tf} />}
+              {view === 'book' && <div style={{height:'100%',overflow:'auto'}}><OrderBook pair={pair} /></div>}
+              {view === 'trades' && <div style={{height:'100%',overflow:'auto'}}><TradeFeed pair={pair} /></div>}
+              {view === 'order' && <div style={{height:'100%',overflow:'auto'}}><OrderForm pair={pair} /></div>}
+            </div>
+          </div>
+        ) : (
+          // ── DESKTOP LAYOUT ──
+          <div style={{flex:1,display:'grid',gridTemplateColumns:'200px 1fr 220px 220px',gridTemplateRows:'1fr',overflow:'hidden',gap:'1px',background:'#1e2329'}}>
+
+            {/* Left: Pair list */}
+            <div style={{background:'#161a1e',overflow:'auto',display:'flex',flexDirection:'column'}}>
+              <div style={{padding:'8px',borderBottom:'1px solid #1e2329'}}>
+                <input placeholder="Search..." style={{width:'100%',background:'#1e2329',border:'1px solid #2b3139',borderRadius:'4px',padding:'5px 8px',color:'#c4cdd4',fontSize:'11px',outline:'none',fontFamily:'monospace'}} />
               </div>
-
-              <div className="orderTypeTabs">
-                <button className={orderType === "limit" ? "active" : ""} onClick={() => setOrderType("limit")}>
-                  Limit
-                </button>
-                <button className={orderType === "market" ? "active" : ""} onClick={() => setOrderType("market")}>
-                  Market
-                </button>
-              </div>
-
-              <div className="formGroup">
-                <label>Price</label>
-                <input value={price} onChange={(e) => setPrice(e.target.value)} />
-              </div>
-
-              <div className="formGroup">
-                <label>Amount</label>
-                <input value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0.00" />
-              </div>
-
-              <div className="rangeRow">
-                <button>25%</button>
-                <button>50%</button>
-                <button>75%</button>
-                <button>100%</button>
-              </div>
-
-              <div className="formGroup">
-                <label>Total</label>
-                <input value={total} readOnly />
-              </div>
-
-              <div className="walletInfo">
-                <div>
-                  <span>Available EUR</span>
-                  <strong>25,000.00</strong>
-                </div>
-                <div>
-                  <span>Available {market.pair.split("/")[0]}</span>
-                  <strong>3.5000</strong>
-                </div>
-              </div>
-
-              <button className={`submitButton ${side}`}>
-                {side === "buy" ? `Buy ${market.pair.split("/")[0]}` : `Sell ${market.pair.split("/")[0]}`}
-              </button>
-            </aside>
-
-            <section className={`panel ordersPanel mobilePane ${mobileTab === "orders" ? "showMobile" : ""}`}>
-              <div className="panelHeader">
-                <h2>Open Orders & History</h2>
-              </div>
-
-              <div className="ordersTable">
-                <div className="ordersHead">
-                  <span>ID</span>
-                  <span>Side</span>
-                  <span>Pair</span>
-                  <span>Price</span>
-                  <span>Amount</span>
-                  <span>Status</span>
-                </div>
-
-                {ORDERS.map((item) => (
-                  <div className="ordersRow" key={item.id}>
-                    <span>{item.id}</span>
-                    <span className={item.side === "Buy" ? "up" : "down"}>{item.side}</span>
-                    <span>{item.pair}</span>
-                    <span>{item.price}</span>
-                    <span>{item.amount}</span>
-                    <span>{item.status}</span>
+              <div style={{flex:1,overflow:'auto'}}>
+                {PAIRS.map(p => (
+                  <div key={p.sym} onClick={() => setPair(p.sym)} style={{padding:'8px 10px',cursor:'pointer',background:pair===p.sym?'#1e2329':'transparent',borderLeft:pair===p.sym?'2px solid #f0b90b':'2px solid transparent',transition:'all .15s'}} onMouseOver={e=>{ if(pair!==p.sym) e.currentTarget.style.background='rgba(255,255,255,0.03)' }} onMouseOut={e=>{ if(pair!==p.sym) e.currentTarget.style.background='transparent' }}>
+                    <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                      <span style={{color:'#fff',fontSize:'12px',fontWeight:600}}>{p.sym.split('/')[0]}</span>
+                      <span style={{color:p.chg>=0?'#0ecb81':'#f6465d',fontSize:'10px',fontFamily:'monospace'}}>{p.chg>=0?'+':''}{p.chg.toFixed(2)}%</span>
+                    </div>
+                    <div style={{display:'flex',justifyContent:'space-between',marginTop:'2px'}}>
+                      <span style={{color:'#848e9c',fontSize:'10px',fontFamily:'monospace'}}>{p.sym}</span>
+                      <span style={{color:'#c4cdd4',fontSize:'10px',fontFamily:'monospace'}}>{p.price > 1 ? p.price.toFixed(2) : p.price.toFixed(4)}</span>
+                    </div>
                   </div>
                 ))}
               </div>
-            </section>
+            </div>
+
+            {/* Center: Chart */}
+            <div style={{background:'#0b0e11',display:'flex',flexDirection:'column',overflow:'hidden'}}>
+              {/* Timeframe bar */}
+              <div style={{display:'flex',alignItems:'center',gap:'0',background:'#161a1e',borderBottom:'1px solid #1e2329',flexShrink:0}}>
+                {TIMEFRAMES.map(t => (
+                  <button key={t} onClick={() => setTf(t)} style={{padding:'7px 14px',background:'none',border:'none',cursor:'pointer',color:tf===t?'#f0b90b':'#848e9c',fontFamily:'monospace',fontSize:'11px',borderBottom:tf===t?'2px solid #f0b90b':'2px solid transparent',fontWeight:tf===t?600:400,transition:'all .15s'}}>{t}</button>
+                ))}
+                <div style={{marginLeft:'auto',padding:'0 12px',fontSize:'11px',color:'#848e9c',fontFamily:'monospace'}}>
+                  Nextoken Capital · MiCA Regulated
+                </div>
+              </div>
+              {/* Chart canvas */}
+              <div style={{flex:1,position:'relative'}}>
+                <CandleChart pair={pair} tf={tf} />
+              </div>
+
+              {/* Open Orders tab */}
+              <div style={{height:'120px',borderTop:'1px solid #1e2329',background:'#161a1e',flexShrink:0,overflow:'auto'}}>
+                <div style={{padding:'6px 12px',borderBottom:'1px solid #1e2329',fontSize:'11px',color:'#848e9c',fontFamily:'monospace'}}>Open Orders (0)</div>
+                <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'80px',color:'#848e9c',fontSize:'12px'}}>No open orders</div>
+              </div>
+            </div>
+
+            {/* Right: Order Book */}
+            <div style={{background:'#161a1e',display:'flex',flexDirection:'column',overflow:'hidden'}}>
+              <div style={{padding:'6px 8px',borderBottom:'1px solid #1e2329',fontSize:'11px',color:'#848e9c',fontFamily:'monospace',display:'flex',gap:'12px'}}>
+                <span style={{color:'#c4cdd4',borderBottom:'1px solid #f0b90b',paddingBottom:'2px'}}>Order Book</span>
+                <span style={{cursor:'pointer'}} onClick={() => setView('trades')}>Trades</span>
+              </div>
+              <div style={{flex:1,overflow:'hidden'}}>
+                <OrderBook pair={pair} />
+              </div>
+            </div>
+
+            {/* Far Right: Order Form */}
+            <div style={{background:'#161a1e',display:'flex',flexDirection:'column',overflow:'auto'}}>
+              <OrderForm pair={pair} />
+            </div>
+
           </div>
-        </section>
-      </main>
-
-      <style jsx>{`
-        :global(html) {
-          scroll-behavior: smooth;
-        }
-
-        :global(body) {
-          margin: 0;
-          padding: 0;
-          background: #0b0e11;
-          color: #eaecef;
-          font-family: Arial, sans-serif;
-          overflow-x: hidden;
-        }
-
-        :global(*) {
-          box-sizing: border-box;
-        }
-
-        .exchangePage {
-          min-height: 100vh;
-          padding-top: 76px;
-          background:
-            radial-gradient(circle at top left, rgba(240, 185, 11, 0.07), transparent 22%),
-            radial-gradient(circle at top right, rgba(64, 169, 255, 0.05), transparent 18%),
-            #0b0e11;
-        }
-
-        .exchangeShell {
-          max-width: 1500px;
-          margin: 0 auto;
-          padding: 14px;
-        }
-
-        .heroBar {
-          position: sticky;
-          top: 68px;
-          z-index: 80;
-          display: grid;
-          grid-template-columns: 1.2fr 1fr;
-          gap: 14px;
-          margin-bottom: 14px;
-          background: rgba(11, 14, 17, 0.96);
-          backdrop-filter: blur(8px);
-          padding-bottom: 4px;
-        }
-
-        .pairCard,
-        .timeframesBar {
-          background: #161a1e;
-          border: 1px solid #232a32;
-          border-radius: 16px;
-        }
-
-        .pairCard {
-          padding: 16px;
-        }
-
-        .pairTop {
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-          gap: 16px;
-          margin-bottom: 16px;
-        }
-
-        .pairTop h1 {
-          margin: 0;
-          font-size: 1.7rem;
-          color: #f0b90b;
-        }
-
-        .pairTop p {
-          margin: 6px 0 0;
-          color: #8d98a5;
-        }
-
-        .delta {
-          padding: 8px 12px;
-          border-radius: 999px;
-          font-weight: 800;
-          font-size: 0.92rem;
-        }
-
-        .delta.up {
-          color: #0ecb81;
-          background: rgba(14, 203, 129, 0.12);
-        }
-
-        .delta.down {
-          color: #f6465d;
-          background: rgba(246, 70, 93, 0.12);
-        }
-
-        .pairGrid {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 12px;
-        }
-
-        .pairStat {
-          background: #11161b;
-          border: 1px solid #232a32;
-          border-radius: 12px;
-          padding: 12px;
-        }
-
-        .pairStat span {
-          display: block;
-          color: #8d98a5;
-          font-size: 0.8rem;
-          margin-bottom: 6px;
-        }
-
-        .pairStat strong {
-          font-size: 1rem;
-          color: #ffffff;
-        }
-
-        .timeframesBar {
-          padding: 12px;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          flex-wrap: wrap;
-        }
-
-        .timeframesBar button,
-        .mobileTabs button,
-        .segmentTabs button,
-        .orderTypeTabs button,
-        .rangeRow button {
-          cursor: pointer;
-          border: 1px solid #2b3139;
-          background: #0f1318;
-          color: #e6edf3;
-          border-radius: 10px;
-          padding: 10px 12px;
-          font-weight: 700;
-        }
-
-        .timeframesBar button.active,
-        .mobileTabs button.active,
-        .orderTypeTabs button.active {
-          background: #f0b90b;
-          color: #111111;
-          border-color: #f0b90b;
-        }
-
-        .mobileTabs {
-          display: none;
-          gap: 8px;
-          margin-bottom: 12px;
-          overflow-x: auto;
-          padding-bottom: 3px;
-        }
-
-        .terminalGrid {
-          display: grid;
-          grid-template-columns: 270px minmax(0, 1.45fr) 320px;
-          gap: 14px;
-          align-items: start;
-        }
-
-        .panel {
-          background: #161a1e;
-          border: 1px solid #232a32;
-          border-radius: 16px;
-          overflow: hidden;
-          min-width: 0;
-        }
-
-        .marketsPanel {
-          grid-row: span 2;
-          max-height: calc(100vh - 165px);
-          position: sticky;
-          top: 166px;
-        }
-
-        .tradePanel {
-          position: sticky;
-          top: 166px;
-        }
-
-        .ordersPanel {
-          grid-column: 2 / 4;
-        }
-
-        .panelHeader {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          gap: 10px;
-          padding: 14px 16px;
-          border-bottom: 1px solid #232a32;
-          background: #11161b;
-        }
-
-        .panelHeader h2 {
-          margin: 0;
-          font-size: 1rem;
-          color: #ffffff;
-        }
-
-        .chartBadges {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 8px;
-        }
-
-        .chartBadges span {
-          padding: 6px 8px;
-          border-radius: 999px;
-          background: rgba(255,255,255,0.05);
-          color: #9aa4af;
-          font-size: 0.75rem;
-        }
-
-        .marketSearch {
-          padding: 14px 16px;
-          border-bottom: 1px solid #232a32;
-        }
-
-        .marketSearch input,
-        .formGroup input {
-          width: 100%;
-          border: 1px solid #2b3139;
-          background: #0f1318;
-          color: #ffffff;
-          border-radius: 10px;
-          padding: 12px 14px;
-          outline: none;
-          font-size: 0.95rem;
-        }
-
-        .marketList {
-          max-height: calc(100vh - 255px);
-          overflow-y: auto;
-        }
-
-        .marketRow {
-          width: 100%;
-          border: 0;
-          background: transparent;
-          color: #ffffff;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          text-align: left;
-          padding: 14px 16px;
-          border-bottom: 1px solid #20262d;
-          cursor: pointer;
-          gap: 12px;
-        }
-
-        .marketRow:hover,
-        .marketRow.selected {
-          background: #1b222a;
-        }
-
-        .marketRow strong {
-          display: block;
-          font-size: 0.94rem;
-        }
-
-        .marketRow span {
-          display: block;
-          font-size: 0.8rem;
-          color: #8d98a5;
-          margin-top: 4px;
-        }
-
-        .marketRight {
-          text-align: right;
-        }
-
-        .bookHeader,
-        .bookRow {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 10px;
-          padding: 10px 16px;
-          font-size: 0.88rem;
-        }
-
-        .bookHeader {
-          color: #848e9c;
-          border-bottom: 1px solid #232a32;
-          background: #11161b;
-        }
-
-        .bookLabel {
-          padding: 12px 16px 6px;
-          font-size: 0.76rem;
-          text-transform: uppercase;
-          letter-spacing: 0.08em;
-          color: #8d98a5;
-        }
-
-        .midPrice {
-          padding: 14px 16px;
-          font-size: 1.14rem;
-          font-weight: 800;
-          color: #f0b90b;
-          border-top: 1px solid #232a32;
-          border-bottom: 1px solid #232a32;
-          background: #11161b;
-        }
-
-        .segmentTabs,
-        .orderTypeTabs {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 10px;
-          padding: 16px;
-        }
-
-        .segmentTabs {
-          padding-bottom: 10px;
-        }
-
-        .segmentTabs button.active.buy {
-          background: #0ecb81;
-          color: #08130e;
-          border-color: #0ecb81;
-        }
-
-        .segmentTabs button.active.sell {
-          background: #f6465d;
-          color: #18090d;
-          border-color: #f6465d;
-        }
-
-        .orderTypeTabs {
-          padding-top: 0;
-        }
-
-        .formGroup {
-          padding: 0 16px 14px;
-        }
-
-        .formGroup label {
-          display: block;
-          color: #8d98a5;
-          font-size: 0.84rem;
-          margin-bottom: 8px;
-        }
-
-        .rangeRow {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 8px;
-          padding: 0 16px 14px;
-        }
-
-        .walletInfo {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 10px;
-          padding: 0 16px 16px;
-        }
-
-        .walletInfo div {
-          background: #11161b;
-          border: 1px solid #232a32;
-          border-radius: 12px;
-          padding: 12px;
-        }
-
-        .walletInfo span {
-          display: block;
-          color: #8d98a5;
-          font-size: 0.8rem;
-          margin-bottom: 6px;
-        }
-
-        .walletInfo strong {
-          color: #ffffff;
-        }
-
-        .submitButton {
-          margin: 16px;
-          width: calc(100% - 32px);
-          border: 0;
-          border-radius: 12px;
-          padding: 14px 16px;
-          font-weight: 800;
-          cursor: pointer;
-          font-size: 1rem;
-        }
-
-        .submitButton.buy {
-          background: #0ecb81;
-          color: #09150f;
-        }
-
-        .submitButton.sell {
-          background: #f6465d;
-          color: #18090d;
-        }
-
-        .ordersTable {
-          width: 100%;
-          overflow-x: auto;
-        }
-
-        .ordersHead,
-        .ordersRow {
-          display: grid;
-          grid-template-columns: 100px 80px 110px 130px 110px 90px;
-          gap: 12px;
-          padding: 12px 16px;
-          min-width: 680px;
-          font-size: 0.9rem;
-        }
-
-        .ordersHead {
-          color: #8d98a5;
-          border-bottom: 1px solid #232a32;
-          background: #11161b;
-        }
-
-        .ordersRow {
-          border-bottom: 1px solid #20262d;
-          color: #d8dee6;
-        }
-
-        .up {
-          color: #0ecb81;
-        }
-
-        .down {
-          color: #f6465d;
-        }
-
-        @media (max-width: 1280px) {
-          .heroBar {
-            grid-template-columns: 1fr;
-          }
-
-          .pairGrid {
-            grid-template-columns: repeat(2, 1fr);
-          }
-
-          .terminalGrid {
-            grid-template-columns: 250px minmax(0, 1fr) 300px;
-          }
-        }
-
-        @media (max-width: 1080px) {
-          .terminalGrid {
-            grid-template-columns: 1fr 1fr;
-          }
-
-          .marketsPanel,
-          .tradePanel {
-            position: static;
-            max-height: none;
-          }
-
-          .chartPanel {
-            grid-column: 1 / -1;
-          }
-
-          .ordersPanel {
-            grid-column: 1 / -1;
-          }
-        }
-
-        @media (max-width: 768px) {
-          .exchangePage {
-            padding-top: 72px;
-          }
-
-          .exchangeShell {
-            padding: 10px;
-          }
-
-          .heroBar {
-            position: static;
-            gap: 10px;
-            margin-bottom: 10px;
-          }
-
-          .pairTop {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 10px;
-          }
-
-          .pairTop h1 {
-            font-size: 1.35rem;
-          }
-
-          .pairGrid {
-            grid-template-columns: 1fr 1fr;
-          }
-
-          .mobileTabs {
-            display: flex;
-          }
-
-          .terminalGrid {
-            display: block;
-          }
-
-          .marketsPanel {
-            margin-bottom: 10px;
-          }
-
-          .mobilePane {
-            display: none;
-          }
-
-          .mobilePane.showMobile {
-            display: block;
-            margin-bottom: 10px;
-          }
-
-          .tradePanel {
-            position: static;
-          }
-
-          .bookHeader,
-          .bookRow {
-            padding-left: 12px;
-            padding-right: 12px;
-            gap: 6px;
-            font-size: 0.8rem;
-          }
-
-          .marketSearch,
-          .panelHeader,
-          .segmentTabs,
-          .orderTypeTabs,
-          .formGroup,
-          .rangeRow {
-            padding-left: 12px;
-            padding-right: 12px;
-          }
-
-          .walletInfo {
-            grid-template-columns: 1fr;
-            padding-left: 12px;
-            padding-right: 12px;
-          }
-
-          .submitButton {
-            width: calc(100% - 24px);
-            margin: 12px;
-          }
-        }
-
-        @media (max-width: 480px) {
-          .pairGrid {
-            grid-template-columns: 1fr;
-          }
-
-          .timeframesBar {
-            gap: 6px;
-            padding: 10px;
-          }
-
-          .timeframesBar button,
-          .mobileTabs button {
-            padding: 9px 10px;
-            font-size: 0.82rem;
-          }
-
-          .rangeRow {
-            grid-template-columns: repeat(2, 1fr);
-          }
-        }
-      `}</style>
+        )}
+      </div>
     </>
-  );
+  )
 }
