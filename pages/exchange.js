@@ -1,815 +1,488 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import Head from "next/head";
-import Link from "next/link";
+import { useRouter } from "next/router";
 
-const PAIRS = [
-  { label: "BNB/USDT", symbol: "BNBUSDT" },
-  { label: "BTC/USDT", symbol: "BTCUSDT" },
-  { label: "ETH/USDT", symbol: "ETHUSDT" },
-  { label: "SOL/USDT", symbol: "SOLUSDT" },
-  { label: "XRP/USDT", symbol: "XRPUSDT" },
-  { label: "ADA/USDT", symbol: "ADAUSDT" },
-  { label: "DOGE/USDT", symbol: "DOGEUSDT" },
-  { label: "LINK/USDT", symbol: "LINKUSDT" },
-  { label: "AVAX/USDT", symbol: "AVAXUSDT" },
-  { label: "DOT/USDT", symbol: "DOTUSDT" },
+const topStats = [
+  { label: "Active RWA Listings", value: "124" },
+  { label: "Total Platform Volume", value: "€248.6M" },
+  { label: "Verified Issuers", value: "38" },
+  { label: "Investor Accounts", value: "18.4K" },
 ];
 
-const TIMEFRAMES = [
-  { label: "1m", value: "1m" },
-  { label: "5m", value: "5m" },
-  { label: "15m", value: "15m" },
-  { label: "1h", value: "1h" },
-  { label: "4h", value: "4h" },
-  { label: "1d", value: "1d" },
+const tabs = [
+  "All Markets",
+  "Real Estate",
+  "Private Credit",
+  "Energy",
+  "Infrastructure",
+  "Token IPO",
+  "Secondary Market",
 ];
 
-function formatPrice(value) {
-  const n = Number(value);
-  if (!Number.isFinite(n)) return "--";
-  if (n >= 1000) {
-    return n.toLocaleString("en-US", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-  }
-  if (n >= 1) {
-    return n.toLocaleString("en-US", {
-      minimumFractionDigits: 4,
-      maximumFractionDigits: 4,
-    });
-  }
-  return n.toLocaleString("en-US", {
-    minimumFractionDigits: 6,
-    maximumFractionDigits: 6,
-  });
-}
+const featuredMarkets = [
+  {
+    id: 1,
+    name: "Vilnius Prime Office Portfolio",
+    symbol: "VPOP",
+    category: "Real Estate",
+    location: "Vilnius, Lithuania",
+    price: "€104.20",
+    change: "+2.84%",
+    volume: "€4.8M",
+    marketCap: "€42M",
+    sentiment: "Strong demand",
+    status: "Live",
+    description:
+      "Institutional-grade office assets with quarterly yield distribution and transparent issuer reporting.",
+  },
+  {
+    id: 2,
+    name: "Solar Yield Notes",
+    symbol: "SYN",
+    category: "Energy",
+    location: "Southern Europe",
+    price: "€98.74",
+    change: "+1.42%",
+    volume: "€2.1M",
+    marketCap: "€27M",
+    sentiment: "Stable inflows",
+    status: "Hot",
+    description:
+      "Tokenized renewable income notes backed by diversified solar cash-flow agreements.",
+  },
+  {
+    id: 3,
+    name: "Logistics Chain Income Fund",
+    symbol: "LCIF",
+    category: "Infrastructure",
+    location: "Central Europe",
+    price: "€112.08",
+    change: "-0.63%",
+    volume: "€3.7M",
+    marketCap: "€58M",
+    sentiment: "High liquidity",
+    status: "Live",
+    description:
+      "Warehousing and logistics-linked token basket with monthly performance snapshots.",
+  },
+  {
+    id: 4,
+    name: "Nextoken Growth Token IPO",
+    symbol: "NGTI",
+    category: "Token IPO",
+    location: "EU Regulated",
+    price: "€12.30",
+    change: "+5.91%",
+    volume: "€1.6M",
+    marketCap: "€16M",
+    sentiment: "Rising interest",
+    status: "New",
+    description:
+      "Primary issuance marketplace for vetted growth-stage tokenized offerings on Nextoken Capital.",
+  },
+];
 
-function formatSmall(value) {
-  const n = Number(value);
-  if (!Number.isFinite(n)) return "--";
-  if (n >= 1000000000) return `${(n / 1000000000).toFixed(2)}B`;
-  if (n >= 1000000) return `${(n / 1000000).toFixed(2)}M`;
-  if (n >= 1000) return `${(n / 1000).toFixed(2)}K`;
-  return n.toFixed(2);
-}
+const marketTable = [
+  {
+    symbol: "VPOP",
+    name: "Vilnius Prime Office Portfolio",
+    category: "Real Estate",
+    price: "€104.20",
+    change: "+2.84%",
+    volume: "€4.8M",
+    cap: "€42M",
+  },
+  {
+    symbol: "SYN",
+    name: "Solar Yield Notes",
+    category: "Energy",
+    price: "€98.74",
+    change: "+1.42%",
+    volume: "€2.1M",
+    cap: "€27M",
+  },
+  {
+    symbol: "LCIF",
+    name: "Logistics Chain Income Fund",
+    category: "Infrastructure",
+    price: "€112.08",
+    change: "-0.63%",
+    volume: "€3.7M",
+    cap: "€58M",
+  },
+  {
+    symbol: "NGTI",
+    name: "Nextoken Growth Token IPO",
+    category: "Token IPO",
+    price: "€12.30",
+    change: "+5.91%",
+    volume: "€1.6M",
+    cap: "€16M",
+  },
+  {
+    symbol: "ECRE",
+    name: "European Core Residential",
+    category: "Real Estate",
+    price: "€87.56",
+    change: "+1.08%",
+    volume: "€2.9M",
+    cap: "€31M",
+  },
+  {
+    symbol: "BCDN",
+    name: "Business Credit Debt Notes",
+    category: "Private Credit",
+    price: "€101.18",
+    change: "+0.38%",
+    volume: "€1.3M",
+    cap: "€24M",
+  },
+  {
+    symbol: "HBEN",
+    name: "Hydrogen Build Energy Notes",
+    category: "Energy",
+    price: "€93.40",
+    change: "-1.14%",
+    volume: "€890K",
+    cap: "€19M",
+  },
+  {
+    symbol: "AMHC",
+    name: "Airport Mobility Hub Corridor",
+    category: "Infrastructure",
+    price: "€119.72",
+    change: "+3.12%",
+    volume: "€5.2M",
+    cap: "€64M",
+  },
+];
 
-function formatPercent(value) {
-  const n = Number(value);
-  if (!Number.isFinite(n)) return "--";
-  return `${n >= 0 ? "+" : ""}${n.toFixed(2)}%`;
-}
+const marketThemes = [
+  {
+    title: "Income Yield",
+    value: "8 Markets",
+    desc: "Assets focused on predictable distribution and conservative underwriting.",
+  },
+  {
+    title: "Capital Growth",
+    value: "14 Markets",
+    desc: "Higher-upside offerings designed around long-term appreciation potential.",
+  },
+  {
+    title: "Institutional Access",
+    value: "11 Markets",
+    desc: "Large-ticket opportunities packaged for broader investor participation.",
+  },
+  {
+    title: "Primary Issuance",
+    value: "6 Live Deals",
+    desc: "Fresh token launches and regulated capital-raising opportunities.",
+  },
+];
 
-function useIsMobile(width = 980) {
-  const [isMobile, setIsMobile] = useState(false);
+const insights = [
+  {
+    title: "Most watched this week",
+    items: ["Vilnius Prime Office Portfolio", "Solar Yield Notes", "Nextoken Growth Token IPO"],
+  },
+  {
+    title: "Highest turnover",
+    items: ["Airport Mobility Hub Corridor", "Vilnius Prime Office Portfolio", "Logistics Chain Income Fund"],
+  },
+  {
+    title: "Trending categories",
+    items: ["Real Estate", "Infrastructure", "Token IPO"],
+  },
+];
 
-  useEffect(() => {
-    const update = () => setIsMobile(window.innerWidth < width);
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, [width]);
-
-  return isMobile;
-}
-
-function useTicker(symbol) {
-  const [ticker, setTicker] = useState(null);
-
-  useEffect(() => {
-    let alive = true;
-    let ws;
-
-    async function load() {
-      try {
-        const res = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`);
-        const data = await res.json();
-        if (alive) setTicker(data);
-      } catch (error) {}
-    }
-
-    load();
-
-    try {
-      ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@ticker`);
-      ws.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          if (!alive) return;
-          setTicker((prev) => ({
-            ...(prev || {}),
-            symbol,
-            lastPrice: data.c,
-            priceChangePercent: data.P,
-            highPrice: data.h,
-            lowPrice: data.l,
-            quoteVolume: data.q,
-          }));
-        } catch (error) {}
-      };
-    } catch (error) {}
-
-    return () => {
-      alive = false;
-      if (ws) ws.close();
-    };
-  }, [symbol]);
-
-  return ticker;
-}
-
-function useSidebarTickers() {
-  const [tickers, setTickers] = useState({});
-
-  useEffect(() => {
-    let active = true;
-
-    async function loadAll() {
-      try {
-        const results = await Promise.all(
-          PAIRS.map(async (pair) => {
-            const res = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${pair.symbol}`);
-            const data = await res.json();
-            return [pair.symbol, data];
-          })
-        );
-        if (active) {
-          setTickers(Object.fromEntries(results));
-        }
-      } catch (error) {}
-    }
-
-    loadAll();
-    const timer = setInterval(loadAll, 4000);
-
-    return () => {
-      active = false;
-      clearInterval(timer);
-    };
-  }, []);
-
-  return tickers;
-}
-
-function useCandles(symbol, interval) {
-  const [candles, setCandles] = useState([]);
-
-  useEffect(() => {
-    let active = true;
-
-    async function load() {
-      try {
-        const res = await fetch(
-          `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=90`
-        );
-        const data = await res.json();
-
-        if (!active) return;
-
-        setCandles(
-          (data || []).map((row) => ({
-            openTime: row[0],
-            open: Number(row[1]),
-            high: Number(row[2]),
-            low: Number(row[3]),
-            close: Number(row[4]),
-            volume: Number(row[5]),
-          }))
-        );
-      } catch (error) {}
-    }
-
-    load();
-    return () => {
-      active = false;
-    };
-  }, [symbol, interval]);
-
-  return candles;
-}
-
-function useOrderBook(symbol) {
-  const [book, setBook] = useState({ bids: [], asks: [] });
-
-  useEffect(() => {
-    let active = true;
-
-    async function load() {
-      try {
-        const res = await fetch(`https://api.binance.com/api/v3/depth?symbol=${symbol}&limit=14`);
-        const data = await res.json();
-
-        if (!active) return;
-
-        const bids = (data.bids || []).map(([price, qty]) => ({
-          price: Number(price),
-          qty: Number(qty),
-          total: Number(price) * Number(qty),
-        }));
-
-        const asks = (data.asks || []).map(([price, qty]) => ({
-          price: Number(price),
-          qty: Number(qty),
-          total: Number(price) * Number(qty),
-        }));
-
-        setBook({ bids, asks });
-      } catch (error) {}
-    }
-
-    load();
-    const timer = setInterval(load, 2000);
-
-    return () => {
-      active = false;
-      clearInterval(timer);
-    };
-  }, [symbol]);
-
-  return book;
-}
-
-function useTrades(symbol) {
-  const [trades, setTrades] = useState([]);
-
-  useEffect(() => {
-    let active = true;
-    let ws;
-
-    async function loadInitial() {
-      try {
-        const res = await fetch(`https://api.binance.com/api/v3/trades?symbol=${symbol}&limit=24`);
-        const data = await res.json();
-        if (!active) return;
-
-        setTrades(
-          (data || []).map((item) => ({
-            id: item.id,
-            price: Number(item.price),
-            qty: Number(item.qty),
-            time: item.time,
-            side: item.isBuyerMaker ? "sell" : "buy",
-          }))
-        );
-      } catch (error) {}
-    }
-
-    loadInitial();
-
-    try {
-      ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@trade`);
-      ws.onmessage = (event) => {
-        try {
-          const item = JSON.parse(event.data);
-          if (!active) return;
-
-          setTrades((prev) => [
-            {
-              id: item.t,
-              price: Number(item.p),
-              qty: Number(item.q),
-              time: item.T,
-              side: item.m ? "sell" : "buy",
-            },
-            ...prev.slice(0, 23),
-          ]);
-        } catch (error) {}
-      };
-    } catch (error) {}
-
-    return () => {
-      active = false;
-      if (ws) ws.close();
-    };
-  }, [symbol]);
-
-  return trades;
-}
-
-function CandleChart({ candles, timeframe }) {
-  const canvasRef = useRef(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas || !candles.length) return;
-
-    const ctx = canvas.getContext("2d");
-    const dpr = window.devicePixelRatio || 1;
-    const width = canvas.clientWidth;
-    const height = canvas.clientHeight;
-
-    canvas.width = width * dpr;
-    canvas.height = height * dpr;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.clearRect(0, 0, width, height);
-
-    const pad = { top: 14, right: 74, bottom: 28, left: 10 };
-    const chartW = width - pad.left - pad.right;
-    const chartH = height - pad.top - pad.bottom;
-
-    const highs = candles.map((c) => c.high);
-    const lows = candles.map((c) => c.low);
-    const max = Math.max(...highs);
-    const min = Math.min(...lows);
-    const range = max - min || 1;
-    const stepX = chartW / candles.length;
-    const bodyW = Math.max(4, stepX * 0.58);
-
-    const y = (price) => pad.top + chartH - ((price - min) / range) * chartH;
-
-    ctx.strokeStyle = "rgba(255,255,255,0.07)";
-    ctx.lineWidth = 1;
-
-    for (let i = 0; i <= 5; i++) {
-      const py = pad.top + (chartH / 5) * i;
-      ctx.beginPath();
-      ctx.moveTo(pad.left, py);
-      ctx.lineTo(width - pad.right, py);
-      ctx.stroke();
-
-      const value = max - (range / 5) * i;
-      ctx.fillStyle = "rgba(175,185,196,0.78)";
-      ctx.font = "11px monospace";
-      ctx.textAlign = "left";
-      ctx.fillText(formatPrice(value), width - pad.right + 6, py + 4);
-    }
-
-    candles.forEach((candle, i) => {
-      const x = pad.left + stepX * i + stepX / 2;
-      const isUp = candle.close >= candle.open;
-      const color = isUp ? "#0ECB81" : "#F6465D";
-
-      ctx.strokeStyle = color;
-      ctx.beginPath();
-      ctx.moveTo(x, y(candle.high));
-      ctx.lineTo(x, y(candle.low));
-      ctx.stroke();
-
-      const top = y(Math.max(candle.open, candle.close));
-      const bottom = y(Math.min(candle.open, candle.close));
-      const heightBody = Math.max(2, bottom - top);
-
-      ctx.fillStyle = color;
-      ctx.fillRect(x - bodyW / 2, top, bodyW, heightBody);
-    });
-
-    const every = Math.max(1, Math.floor(candles.length / 6));
-    ctx.fillStyle = "rgba(148,158,169,0.7)";
-    ctx.font = "10px monospace";
-    ctx.textAlign = "center";
-
-    candles.forEach((c, i) => {
-      if (i % every !== 0) return;
-      const d = new Date(c.openTime);
-      const label =
-        timeframe === "1d"
-          ? `${d.getMonth() + 1}/${d.getDate()}`
-          : `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
-      const x = pad.left + stepX * i + stepX / 2;
-      ctx.fillText(label, x, height - 8);
-    });
-  }, [candles, timeframe]);
-
-  return (
-    <div className="chartCanvasShell">
-      <canvas ref={canvasRef} className="chartCanvas" />
-    </div>
-  );
-}
-
-function MarketSidebar({ selectedPair, onSelect, tickers }) {
+export default function MarketsPage() {
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState("All Markets");
   const [search, setSearch] = useState("");
 
-  const rows = useMemo(() => {
-    return PAIRS.filter((pair) =>
-      pair.label.toLowerCase().includes(search.toLowerCase())
-    );
-  }, [search]);
+  const filteredFeatured = useMemo(() => {
+    return featuredMarkets.filter((item) => {
+      const tabMatch = activeTab === "All Markets" || item.category === activeTab;
+      const q = search.toLowerCase().trim();
+      const searchMatch =
+        !q ||
+        item.name.toLowerCase().includes(q) ||
+        item.symbol.toLowerCase().includes(q) ||
+        item.category.toLowerCase().includes(q) ||
+        item.location.toLowerCase().includes(q);
 
-  return (
-    <aside className="panel sidebarPanel">
-      <div className="panelTitle">Markets</div>
+      return tabMatch && searchMatch;
+    });
+  }, [activeTab, search]);
 
-      <div className="sidebarSearch">
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search pairs..."
-        />
-      </div>
+  const filteredTable = useMemo(() => {
+    return marketTable.filter((item) => {
+      const tabMatch = activeTab === "All Markets" || item.category === activeTab;
+      const q = search.toLowerCase().trim();
+      const searchMatch =
+        !q ||
+        item.name.toLowerCase().includes(q) ||
+        item.symbol.toLowerCase().includes(q) ||
+        item.category.toLowerCase().includes(q);
 
-      <div className="marketRows">
-        {rows.map((pair) => {
-          const ticker = tickers[pair.symbol];
-          const price = ticker?.lastPrice;
-          const change = ticker?.priceChangePercent;
-
-          return (
-            <button
-              type="button"
-              key={pair.symbol}
-              className={`marketRow ${selectedPair.symbol === pair.symbol ? "marketRowActive" : ""}`}
-              onClick={() => onSelect(pair)}
-            >
-              <div className="marketRowLeft">
-                <div className="marketLabel">{pair.label}</div>
-                <div className="marketSymbol">{pair.symbol}</div>
-              </div>
-
-              <div className="marketRowRight">
-                <div className="marketPrice">{formatPrice(price)}</div>
-                <div className={Number(change) >= 0 ? "upText" : "downText"}>
-                  {formatPercent(change)}
-                </div>
-              </div>
-            </button>
-          );
-        })}
-      </div>
-    </aside>
-  );
-}
-
-function OrderBookPanel({ asks, bids }) {
-  const maxTotal = Math.max(
-    1,
-    ...asks.map((x) => x.total),
-    ...bids.map((x) => x.total)
-  );
-
-  return (
-    <div className="orderBookWrap">
-      <div className="tableHead compactGrid">
-        <span>Price</span>
-        <span>Amount</span>
-        <span>Total</span>
-      </div>
-
-      <div className="tableBody">
-        {asks.slice().reverse().map((row, i) => (
-          <div className="bookRow compactGrid" key={`ask-${i}`}>
-            <div className="depthBar askBar" style={{ width: `${(row.total / maxTotal) * 100}%` }} />
-            <span className="downText">{formatPrice(row.price)}</span>
-            <span>{row.qty.toFixed(5)}</span>
-            <span>{formatSmall(row.total)}</span>
-          </div>
-        ))}
-
-        <div className="midRow">Mid Market</div>
-
-        {bids.map((row, i) => (
-          <div className="bookRow compactGrid" key={`bid-${i}`}>
-            <div className="depthBar bidBar" style={{ width: `${(row.total / maxTotal) * 100}%` }} />
-            <span className="upText">{formatPrice(row.price)}</span>
-            <span>{row.qty.toFixed(5)}</span>
-            <span>{formatSmall(row.total)}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function TradesPanel({ trades }) {
-  return (
-    <div className="tradesWrap">
-      <div className="tableHead compactGrid">
-        <span>Price</span>
-        <span>Amount</span>
-        <span>Time</span>
-      </div>
-
-      <div className="tableBody">
-        {trades.map((trade) => {
-          const d = new Date(trade.time);
-          const time = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}:${String(
-            d.getSeconds()
-          ).padStart(2, "0")}`;
-
-          return (
-            <div className="tradeRow compactGrid" key={trade.id}>
-              <span className={trade.side === "buy" ? "upText" : "downText"}>
-                {formatPrice(trade.price)}
-              </span>
-              <span>{trade.qty.toFixed(5)}</span>
-              <span className="mutedText">{time}</span>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-function TradeBox({ pair, lastPrice }) {
-  const [side, setSide] = useState("buy");
-  const [orderType, setOrderType] = useState("limit");
-  const [price, setPrice] = useState("");
-  const [amount, setAmount] = useState("");
-
-  const base = pair.label.split("/")[0];
-
-  useEffect(() => {
-    if (lastPrice) {
-      const n = Number(lastPrice);
-      setPrice(String(n >= 1 ? n.toFixed(2) : n.toFixed(6)));
-    }
-  }, [lastPrice]);
-
-  const total = ((Number(price) || 0) * (Number(amount) || 0)).toFixed(2);
-
-  return (
-    <div className="tradeBox">
-      <div className="buySellSwitch">
-        <button
-          type="button"
-          className={side === "buy" ? "activeBuy" : ""}
-          onClick={() => setSide("buy")}
-        >
-          Buy
-        </button>
-        <button
-          type="button"
-          className={side === "sell" ? "activeSell" : ""}
-          onClick={() => setSide("sell")}
-        >
-          Sell
-        </button>
-      </div>
-
-      <div className="subTabs">
-        {["limit", "market", "stop"].map((tab) => (
-          <button
-            type="button"
-            key={tab}
-            className={orderType === tab ? "subTabActive" : ""}
-            onClick={() => setOrderType(tab)}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
-
-      {orderType !== "market" && (
-        <div className="formRow">
-          <label>Price (USDT)</label>
-          <input value={price} onChange={(e) => setPrice(e.target.value)} />
-        </div>
-      )}
-
-      <div className="formRow">
-        <label>Amount ({base})</label>
-        <input
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          placeholder="0.00000"
-        />
-      </div>
-
-      <div className="percentRow">
-        {[25, 50, 75, 100].map((p) => (
-          <button
-            key={p}
-            type="button"
-            onClick={() => setAmount((p / 100).toFixed(2))}
-          >
-            {p}%
-          </button>
-        ))}
-      </div>
-
-      <div className="formRow">
-        <label>Total (USDT)</label>
-        <input value={total} readOnly />
-      </div>
-
-      <button
-        type="button"
-        className={`submitTradeBtn ${side === "buy" ? "buyBtn" : "sellBtn"}`}
-      >
-        {side === "buy" ? `Buy ${base}` : `Sell ${base}`}
-      </button>
-
-      <p className="loginHint">
-        <Link href="/login">Log In</Link> or <Link href="/register">Register</Link>
-      </p>
-    </div>
-  );
-}
-
-export default function Exchange() {
-  const [selectedPair, setSelectedPair] = useState(PAIRS[0]);
-  const [timeframe, setTimeframe] = useState("1h");
-  const [rightTab, setRightTab] = useState("book");
-  const [mobileTab, setMobileTab] = useState("chart");
-
-  const isMobile = useIsMobile();
-
-  const ticker = useTicker(selectedPair.symbol);
-  const candles = useCandles(selectedPair.symbol, timeframe);
-  const orderBook = useOrderBook(selectedPair.symbol);
-  const trades = useTrades(selectedPair.symbol);
-  const sideTickers = useSidebarTickers();
-
-  const price = ticker?.lastPrice;
-  const change = ticker?.priceChangePercent;
-  const high = ticker?.highPrice;
-  const low = ticker?.lowPrice;
-  const volume = ticker?.quoteVolume;
+      return tabMatch && searchMatch;
+    });
+  }, [activeTab, search]);
 
   return (
     <>
       <Head>
-        <title>{selectedPair.label} — Nextoken Capital Exchange</title>
+        <title>Markets — Nextoken Capital</title>
+        <meta
+          name="description"
+          content="Explore tokenized real-world asset markets, offerings, watchlists, and platform insights on Nextoken Capital."
+        />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      <main className="exchangePage">
-        <div className="exchangeContainer">
-          <section className="topBar panel">
-            <div className="pairIdentity">
-              <div className="pairCoin">{selectedPair.label.split("/")[0].slice(0, 3)}</div>
-              <div>
-                <h1>{selectedPair.label}</h1>
-                <p>Spot trading · Binance-inspired UI</p>
+      <main className="marketsPage">
+        <div className="bgGlow bgGlowOne" />
+        <div className="bgGlow bgGlowTwo" />
+
+        <section className="container">
+          <div className="heroCard">
+            <div className="heroLeft">
+              <div className="eyebrow">Nextoken Capital Markets</div>
+              <h1>
+                Markets, built for <span>tokenized real-world assets</span>
+              </h1>
+              <p>
+                Discover curated offerings, secondary market activity, new token issuances,
+                and investor-ready opportunities across the Nextoken Capital ecosystem.
+              </p>
+
+              <div className="heroActions">
+                <button className="primaryBtn" onClick={() => router.push("/exchange")}>
+                  Open Exchange
+                </button>
+                <button className="ghostBtn" onClick={() => router.push("/register")}>
+                  Create Account
+                </button>
               </div>
             </div>
 
-            <div className="statsGrid">
-              <div className="statCard">
-                <span>Last Price</span>
-                <strong className={Number(change) >= 0 ? "upText" : "downText"}>
-                  {formatPrice(price)}
-                </strong>
+            <div className="heroStats">
+              {topStats.map((stat) => (
+                <div key={stat.label} className="statTile">
+                  <span>{stat.label}</span>
+                  <strong>{stat.value}</strong>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="tabsBar">
+            <div className="tabsScroll">
+              {tabs.map((tab) => (
+                <button
+                  key={tab}
+                  className={`tabBtn ${activeTab === tab ? "tabBtnActive" : ""}`}
+                  onClick={() => setActiveTab(tab)}
+                  type="button"
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+
+            <div className="searchWrap">
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search markets, symbols, sectors..."
+              />
+            </div>
+          </div>
+
+          <section className="sectionBlock">
+            <div className="sectionHead">
+              <div>
+                <h2>Featured markets</h2>
+                <p>Curated opportunities and high-visibility offerings on the platform.</p>
               </div>
-              <div className="statCard">
-                <span>24h Change</span>
-                <strong className={Number(change) >= 0 ? "upText" : "downText"}>
-                  {formatPercent(change)}
-                </strong>
+              <button className="textBtn" onClick={() => router.push("/exchange")}>
+                View all markets
+              </button>
+            </div>
+
+            <div className="featuredGrid">
+              {filteredFeatured.length ? (
+                filteredFeatured.map((item) => (
+                  <article className="featuredCard" key={item.id}>
+                    <div className="featuredTop">
+                      <div>
+                        <div className="symbolPill">{item.symbol}</div>
+                        <h3>{item.name}</h3>
+                        <div className="metaLine">
+                          <span>{item.category}</span>
+                          <span>•</span>
+                          <span>{item.location}</span>
+                        </div>
+                      </div>
+                      <div className={`statusBadge status-${item.status.toLowerCase()}`}>
+                        {item.status}
+                      </div>
+                    </div>
+
+                    <p className="cardDesc">{item.description}</p>
+
+                    <div className="priceRow">
+                      <div>
+                        <span className="miniLabel">Price</span>
+                        <strong>{item.price}</strong>
+                      </div>
+                      <div>
+                        <span className="miniLabel">24h</span>
+                        <strong className={item.change.startsWith("-") ? "downText" : "upText"}>
+                          {item.change}
+                        </strong>
+                      </div>
+                    </div>
+
+                    <div className="metricsGrid">
+                      <div className="metricBox">
+                        <span>Volume</span>
+                        <strong>{item.volume}</strong>
+                      </div>
+                      <div className="metricBox">
+                        <span>Market Cap</span>
+                        <strong>{item.marketCap}</strong>
+                      </div>
+                      <div className="metricBox">
+                        <span>Market Mood</span>
+                        <strong>{item.sentiment}</strong>
+                      </div>
+                    </div>
+
+                    <button className="cardBtn" onClick={() => router.push("/exchange")}>
+                      View market
+                    </button>
+                  </article>
+                ))
+              ) : (
+                <div className="emptyState">
+                  <h3>No matching markets</h3>
+                  <p>Try another category or search term.</p>
+                </div>
+              )}
+            </div>
+          </section>
+
+          <section className="sectionBlock twoCol">
+            <div className="watchlistCard">
+              <div className="sectionHead compactHead">
+                <div>
+                  <h2>Market watchlist</h2>
+                  <p>Track active Nextoken Capital instruments and categories.</p>
+                </div>
               </div>
-              <div className="statCard">
-                <span>24h High</span>
-                <strong>{formatPrice(high)}</strong>
+
+              <div className="tableWrap">
+                <div className="marketTableHead">
+                  <span>Instrument</span>
+                  <span>Price</span>
+                  <span>24h</span>
+                  <span>Volume</span>
+                  <span>Cap</span>
+                </div>
+
+                {filteredTable.map((row) => (
+                  <button
+                    key={row.symbol}
+                    className="marketTableRow"
+                    type="button"
+                    onClick={() => router.push("/exchange")}
+                  >
+                    <div className="instrumentCell">
+                      <div className="instrumentBadge">{row.symbol.slice(0, 3)}</div>
+                      <div>
+                        <div className="instrumentName">{row.name}</div>
+                        <div className="instrumentSub">
+                          {row.symbol} · {row.category}
+                        </div>
+                      </div>
+                    </div>
+                    <span>{row.price}</span>
+                    <span className={row.change.startsWith("-") ? "downText" : "upText"}>
+                      {row.change}
+                    </span>
+                    <span>{row.volume}</span>
+                    <span>{row.cap}</span>
+                  </button>
+                ))}
               </div>
-              <div className="statCard">
-                <span>24h Low</span>
-                <strong>{formatPrice(low)}</strong>
+            </div>
+
+            <div className="rightColumn">
+              <div className="themeCard">
+                <div className="sectionHead compactHead">
+                  <div>
+                    <h2>Market themes</h2>
+                    <p>Explore the main investment pathways on Nextoken Capital.</p>
+                  </div>
+                </div>
+
+                <div className="themeGrid">
+                  {marketThemes.map((theme) => (
+                    <div key={theme.title} className="themeItem">
+                      <strong>{theme.title}</strong>
+                      <span>{theme.value}</span>
+                      <p>{theme.desc}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div className="statCard">
-                <span>Volume</span>
-                <strong>{formatSmall(volume)}</strong>
+
+              <div className="insightCard">
+                <div className="sectionHead compactHead">
+                  <div>
+                    <h2>Platform insights</h2>
+                    <p>What investors are focusing on right now.</p>
+                  </div>
+                </div>
+
+                <div className="insightList">
+                  {insights.map((block) => (
+                    <div key={block.title} className="insightBlock">
+                      <h3>{block.title}</h3>
+                      <ul>
+                        {block.items.map((item) => (
+                          <li key={item}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </section>
 
-          {isMobile ? (
-            <section className="mobileOnly">
-              <div className="panel mobilePairSelect">
-                <select
-                  value={selectedPair.symbol}
-                  onChange={(e) => {
-                    const pair = PAIRS.find((item) => item.symbol === e.target.value);
-                    if (pair) setSelectedPair(pair);
-                  }}
-                >
-                  {PAIRS.map((pair) => (
-                    <option key={pair.symbol} value={pair.symbol}>
-                      {pair.label}
-                    </option>
-                  ))}
-                </select>
+          <section className="ctaSection">
+            <div className="ctaCard">
+              <div>
+                <h2>Discover the full Nextoken Capital market experience</h2>
+                <p>
+                  Access listings, evaluate offerings, and move from market discovery to
+                  execution in one unified platform.
+                </p>
               </div>
 
-              <div className="mobileTabs">
-                {[
-                  ["chart", "Chart"],
-                  ["book", "Book"],
-                  ["trades", "Trades"],
-                  ["trade", "Trade"],
-                ].map(([value, label]) => (
-                  <button
-                    key={value}
-                    type="button"
-                    className={mobileTab === value ? "mobileTabActive" : ""}
-                    onClick={() => setMobileTab(value)}
-                  >
-                    {label}
-                  </button>
-                ))}
+              <div className="ctaActions">
+                <button className="primaryBtn" onClick={() => router.push("/exchange")}>
+                  Open Exchange
+                </button>
+                <button className="ghostBtn" onClick={() => router.push("/register")}>
+                  Register
+                </button>
               </div>
-
-              {mobileTab === "chart" && (
-                <div className="panel chartPanel">
-                  <div className="panelTitle panelRow">
-                    <span>Chart</span>
-                    <div className="timeTabs">
-                      {TIMEFRAMES.map((item) => (
-                        <button
-                          type="button"
-                          key={item.value}
-                          className={timeframe === item.value ? "timeTabActive" : ""}
-                          onClick={() => setTimeframe(item.value)}
-                        >
-                          {item.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <CandleChart candles={candles} timeframe={timeframe} />
-                </div>
-              )}
-
-              {mobileTab === "book" && (
-                <div className="panel sidePanel">
-                  <div className="panelTitle">Order Book</div>
-                  <OrderBookPanel asks={orderBook.asks} bids={orderBook.bids} />
-                </div>
-              )}
-
-              {mobileTab === "trades" && (
-                <div className="panel sidePanel">
-                  <div className="panelTitle">Market Trades</div>
-                  <TradesPanel trades={trades} />
-                </div>
-              )}
-
-              {mobileTab === "trade" && (
-                <div className="panel sidePanel">
-                  <div className="panelTitle">Trade</div>
-                  <TradeBox pair={selectedPair} lastPrice={price} />
-                </div>
-              )}
-            </section>
-          ) : (
-            <section className="desktopGrid">
-              <MarketSidebar
-                selectedPair={selectedPair}
-                onSelect={setSelectedPair}
-                tickers={sideTickers}
-              />
-
-              <div className="middleColumn">
-                <div className="panel chartPanel">
-                  <div className="panelTitle panelRow">
-                    <span>Chart</span>
-                    <div className="timeTabs">
-                      {TIMEFRAMES.map((item) => (
-                        <button
-                          type="button"
-                          key={item.value}
-                          className={timeframe === item.value ? "timeTabActive" : ""}
-                          onClick={() => setTimeframe(item.value)}
-                        >
-                          {item.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <CandleChart candles={candles} timeframe={timeframe} />
-                </div>
-
-                <div className="panel ordersPanel">
-                  <div className="panelTitle">Open Orders</div>
-                  <div className="emptyState">No open orders</div>
-                </div>
-              </div>
-
-              <div className="panel sidePanel">
-                <div className="panelTitle panelRow">
-                  <span>{rightTab === "book" ? "Order Book" : "Market Trades"}</span>
-                  <div className="rightTabs">
-                    <button
-                      type="button"
-                      className={rightTab === "book" ? "timeTabActive" : ""}
-                      onClick={() => setRightTab("book")}
-                    >
-                      Book
-                    </button>
-                    <button
-                      type="button"
-                      className={rightTab === "trades" ? "timeTabActive" : ""}
-                      onClick={() => setRightTab("trades")}
-                    >
-                      Trades
-                    </button>
-                  </div>
-                </div>
-
-                {rightTab === "book" ? (
-                  <OrderBookPanel asks={orderBook.asks} bids={orderBook.bids} />
-                ) : (
-                  <TradesPanel trades={trades} />
-                )}
-              </div>
-
-              <div className="panel sidePanel">
-                <div className="panelTitle">Trade</div>
-                <TradeBox pair={selectedPair} lastPrice={price} />
-              </div>
-            </section>
-          )}
-        </div>
+            </div>
+          </section>
+        </section>
       </main>
 
       <style jsx global>{`
@@ -824,443 +497,615 @@ export default function Exchange() {
         }
 
         body {
-          background: #0b0e11;
-          color: #eaecef;
+          background: #070b12;
+          color: #eef3fb;
           font-family: Inter, "Segoe UI", system-ui, sans-serif;
         }
 
-        .exchangePage {
+        .marketsPage {
           min-height: 100vh;
-          padding: 96px 16px 18px;
+          padding: 96px 18px 32px;
           background:
-            radial-gradient(circle at top left, rgba(240, 185, 11, 0.06), transparent 22%),
-            radial-gradient(circle at top right, rgba(59, 130, 246, 0.06), transparent 18%),
-            linear-gradient(180deg, #0b0e11 0%, #12171f 100%);
-        }
-
-        .exchangeContainer {
-          max-width: 1520px;
-          margin: 0 auto;
-        }
-
-        .panel {
-          border: 1px solid rgba(255, 255, 255, 0.07);
-          background: rgba(22, 26, 30, 0.92);
-          border-radius: 18px;
+            radial-gradient(circle at top left, rgba(240,185,11,0.08), transparent 24%),
+            radial-gradient(circle at top right, rgba(59,130,246,0.08), transparent 20%),
+            linear-gradient(180deg, #070b12 0%, #0c1320 100%);
+          position: relative;
           overflow: hidden;
-          box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25);
-          min-width: 0;
         }
 
-        .topBar {
+        .bgGlow {
+          position: fixed;
+          border-radius: 999px;
+          filter: blur(120px);
+          pointer-events: none;
+          opacity: 0.22;
+        }
+
+        .bgGlowOne {
+          width: 280px;
+          height: 280px;
+          left: -70px;
+          top: 60px;
+          background: rgba(240, 185, 11, 0.45);
+        }
+
+        .bgGlowTwo {
+          width: 320px;
+          height: 320px;
+          right: -90px;
+          top: 120px;
+          background: rgba(59, 130, 246, 0.35);
+        }
+
+        .container {
+          max-width: 1440px;
+          margin: 0 auto;
+          position: relative;
+          z-index: 1;
+        }
+
+        .heroCard,
+        .sectionBlock,
+        .watchlistCard,
+        .themeCard,
+        .insightCard,
+        .ctaCard,
+        .tabsBar {
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          background: rgba(18, 24, 34, 0.82);
+          border-radius: 24px;
+          box-shadow: 0 20px 46px rgba(0, 0, 0, 0.24);
+          backdrop-filter: blur(14px);
+        }
+
+        .heroCard {
+          display: grid;
+          grid-template-columns: minmax(0, 1.2fr) minmax(320px, 420px);
+          gap: 24px;
+          padding: 28px;
+          margin-bottom: 18px;
+        }
+
+        .eyebrow {
+          display: inline-flex;
+          align-items: center;
+          min-height: 34px;
+          padding: 0 14px;
+          border-radius: 999px;
+          background: rgba(240, 185, 11, 0.12);
+          border: 1px solid rgba(240, 185, 11, 0.22);
+          color: #f0b90b;
+          font-size: 11px;
+          font-weight: 800;
+          letter-spacing: 1px;
+          text-transform: uppercase;
+          margin-bottom: 16px;
+        }
+
+        .heroLeft h1 {
+          margin: 0 0 14px;
+          font-size: 48px;
+          line-height: 1.04;
+          letter-spacing: -1.2px;
+          color: #ffffff;
+        }
+
+        .heroLeft h1 span {
+          background: linear-gradient(180deg, #ffe089 0%, #c78913 100%);
+          -webkit-background-clip: text;
+          background-clip: text;
+          color: transparent;
+        }
+
+        .heroLeft p {
+          margin: 0;
+          max-width: 760px;
+          font-size: 16px;
+          line-height: 1.75;
+          color: rgba(238, 243, 251, 0.72);
+        }
+
+        .heroActions,
+        .ctaActions {
           display: flex;
-          justify-content: space-between;
+          gap: 12px;
+          flex-wrap: wrap;
+          margin-top: 22px;
+        }
+
+        .primaryBtn,
+        .ghostBtn,
+        .cardBtn,
+        .textBtn {
+          border: none;
+          cursor: pointer;
+          font-weight: 800;
+          transition: all 0.2s ease;
+        }
+
+        .primaryBtn {
+          min-height: 48px;
+          padding: 0 18px;
+          border-radius: 14px;
+          background: linear-gradient(135deg, #f0b90b, #c78913);
+          color: #10151d;
+          font-size: 14px;
+        }
+
+        .primaryBtn:hover,
+        .cardBtn:hover {
+          transform: translateY(-1px);
+        }
+
+        .ghostBtn {
+          min-height: 48px;
+          padding: 0 18px;
+          border-radius: 14px;
+          background: rgba(255, 255, 255, 0.04);
+          color: #eef3fb;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          font-size: 14px;
+        }
+
+        .heroStats {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 14px;
+        }
+
+        .statTile {
+          border-radius: 18px;
+          padding: 18px;
+          background: rgba(255, 255, 255, 0.035);
+          border: 1px solid rgba(255, 255, 255, 0.07);
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          min-height: 118px;
+        }
+
+        .statTile span {
+          color: rgba(238, 243, 251, 0.56);
+          font-size: 12px;
+          margin-bottom: 6px;
+        }
+
+        .statTile strong {
+          color: #ffffff;
+          font-size: 28px;
+          line-height: 1.1;
+        }
+
+        .tabsBar {
+          padding: 16px;
+          display: flex;
           align-items: center;
           gap: 16px;
-          padding: 18px 20px;
+          justify-content: space-between;
+          margin-bottom: 18px;
+        }
+
+        .tabsScroll {
+          display: flex;
+          gap: 10px;
+          overflow-x: auto;
+          scrollbar-width: none;
+        }
+
+        .tabBtn {
+          min-height: 40px;
+          padding: 0 14px;
+          border-radius: 999px;
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          background: rgba(255, 255, 255, 0.04);
+          color: rgba(238, 243, 251, 0.75);
+          font-size: 13px;
+          font-weight: 700;
+          cursor: pointer;
+          white-space: nowrap;
+        }
+
+        .tabBtnActive {
+          color: #f0b90b;
+          border-color: rgba(240, 185, 11, 0.32);
+          background: rgba(240, 185, 11, 0.11);
+        }
+
+        .searchWrap {
+          width: 320px;
+          max-width: 100%;
+          flex-shrink: 0;
+        }
+
+        .searchWrap input {
+          width: 100%;
+          height: 42px;
+          border-radius: 12px;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          background: rgba(255, 255, 255, 0.04);
+          color: #eef3fb;
+          padding: 0 14px;
+          outline: none;
+        }
+
+        .searchWrap input::placeholder {
+          color: rgba(238, 243, 251, 0.34);
+        }
+
+        .searchWrap input:focus {
+          border-color: rgba(240, 185, 11, 0.42);
+        }
+
+        .sectionBlock {
+          padding: 22px;
+          margin-bottom: 18px;
+        }
+
+        .sectionHead {
+          display: flex;
+          align-items: flex-end;
+          justify-content: space-between;
+          gap: 16px;
+          margin-bottom: 18px;
+        }
+
+        .compactHead {
           margin-bottom: 14px;
         }
 
-        .pairIdentity {
+        .sectionHead h2 {
+          margin: 0 0 6px;
+          color: #ffffff;
+          font-size: 24px;
+        }
+
+        .sectionHead p {
+          margin: 0;
+          color: rgba(238, 243, 251, 0.6);
+          font-size: 14px;
+          line-height: 1.6;
+        }
+
+        .textBtn {
+          background: transparent;
+          color: #f0b90b;
+          font-size: 14px;
+          padding: 0;
+        }
+
+        .featuredGrid {
+          display: grid;
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+          gap: 16px;
+        }
+
+        .featuredCard {
+          border-radius: 22px;
+          padding: 18px;
+          background:
+            radial-gradient(circle at top right, rgba(240,185,11,0.09), transparent 28%),
+            rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.07);
           display: flex;
-          align-items: center;
+          flex-direction: column;
           gap: 14px;
           min-width: 0;
         }
 
-        .pairCoin {
-          width: 48px;
-          height: 48px;
-          border-radius: 14px;
-          display: grid;
-          place-items: center;
-          background: linear-gradient(135deg, #f0b90b, #c98a09);
-          color: #111;
-          font-weight: 900;
-          flex-shrink: 0;
-        }
-
-        .pairIdentity h1 {
-          margin: 0;
-          font-size: 24px;
-          color: #fff;
-        }
-
-        .pairIdentity p {
-          margin: 4px 0 0;
-          color: #848e9c;
-          font-size: 13px;
-        }
-
-        .statsGrid {
+        .featuredTop {
           display: flex;
-          flex-wrap: wrap;
-          gap: 10px;
+          justify-content: space-between;
+          gap: 14px;
+          align-items: flex-start;
         }
 
-        .statCard {
-          min-width: 118px;
-          padding: 10px 12px;
-          border-radius: 14px;
+        .symbolPill {
+          display: inline-flex;
+          align-items: center;
+          min-height: 28px;
+          padding: 0 10px;
+          border-radius: 999px;
+          background: rgba(255, 255, 255, 0.05);
+          color: #f0b90b;
+          font-size: 11px;
+          font-weight: 800;
+          margin-bottom: 10px;
+        }
+
+        .featuredCard h3 {
+          margin: 0 0 6px;
+          color: #ffffff;
+          font-size: 18px;
+          line-height: 1.3;
+        }
+
+        .metaLine {
+          display: flex;
+          gap: 8px;
+          flex-wrap: wrap;
+          color: rgba(238, 243, 251, 0.56);
+          font-size: 12px;
+        }
+
+        .statusBadge {
+          min-height: 30px;
+          padding: 0 10px;
+          border-radius: 999px;
+          display: inline-flex;
+          align-items: center;
+          font-size: 11px;
+          font-weight: 800;
+          white-space: nowrap;
+          border: 1px solid transparent;
+        }
+
+        .status-live,
+        .status-hot,
+        .status-new {
+          color: #f0b90b;
+          background: rgba(240, 185, 11, 0.12);
+          border-color: rgba(240, 185, 11, 0.24);
+        }
+
+        .cardDesc {
+          margin: 0;
+          color: rgba(238, 243, 251, 0.64);
+          font-size: 13px;
+          line-height: 1.7;
+        }
+
+        .priceRow {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 12px;
+          padding: 14px;
+          border-radius: 16px;
           background: rgba(255, 255, 255, 0.03);
           border: 1px solid rgba(255, 255, 255, 0.06);
         }
 
-        .statCard span {
+        .miniLabel {
           display: block;
-          font-size: 10px;
-          color: #848e9c;
-          text-transform: uppercase;
-          letter-spacing: 0.8px;
+          color: rgba(238, 243, 251, 0.46);
+          font-size: 11px;
           margin-bottom: 4px;
         }
 
-        .statCard strong {
+        .priceRow strong {
+          color: #ffffff;
+          font-size: 18px;
+        }
+
+        .metricsGrid {
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr;
+          gap: 10px;
+        }
+
+        .metricBox {
+          border-radius: 14px;
+          padding: 12px;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .metricBox span {
+          display: block;
+          font-size: 11px;
+          color: rgba(238, 243, 251, 0.46);
+          margin-bottom: 4px;
+        }
+
+        .metricBox strong {
+          color: #ffffff;
           font-size: 14px;
-          color: #fff;
         }
 
-        .desktopGrid {
-          display: grid;
-          grid-template-columns: 260px minmax(0, 1fr) 320px 320px;
-          gap: 14px;
-          min-height: 760px;
+        .cardBtn {
+          min-height: 44px;
+          border-radius: 14px;
+          background: rgba(240, 185, 11, 0.12);
+          color: #f0b90b;
+          border: 1px solid rgba(240, 185, 11, 0.22);
+          font-size: 13px;
+          margin-top: auto;
         }
 
-        .middleColumn {
+        .twoCol {
           display: grid;
-          grid-template-rows: 1fr 130px;
-          gap: 14px;
+          grid-template-columns: minmax(0, 1.2fr) minmax(320px, 420px);
+          gap: 18px;
+          padding: 0;
+          background: transparent;
+          border: none;
+          box-shadow: none;
+          backdrop-filter: none;
+        }
+
+        .watchlistCard,
+        .rightColumn {
           min-width: 0;
         }
 
-        .sidebarPanel,
-        .sidePanel {
+        .watchlistCard {
+          padding: 22px;
+        }
+
+        .rightColumn {
           display: flex;
           flex-direction: column;
-          min-width: 0;
+          gap: 18px;
         }
 
-        .panelTitle {
-          padding: 14px 16px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-          color: #fff;
-          font-weight: 800;
-          font-size: 13px;
+        .themeCard,
+        .insightCard {
+          padding: 22px;
         }
 
-        .panelRow {
-          display: flex;
-          justify-content: space-between;
+        .tableWrap {
+          overflow: hidden;
+          border-radius: 18px;
+          border: 1px solid rgba(255, 255, 255, 0.07);
+          background: rgba(255, 255, 255, 0.02);
+        }
+
+        .marketTableHead,
+        .marketTableRow {
+          display: grid;
+          grid-template-columns: 2.2fr 0.9fr 0.9fr 0.9fr 0.9fr;
+          gap: 12px;
           align-items: center;
-          gap: 10px;
-          flex-wrap: wrap;
+          padding: 14px 16px;
         }
 
-        .sidebarSearch {
-          padding: 12px;
+        .marketTableHead {
+          color: rgba(238, 243, 251, 0.5);
+          font-size: 11px;
+          text-transform: uppercase;
+          letter-spacing: 0.8px;
           border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
 
-        .sidebarSearch input,
-        .mobilePairSelect select,
-        .formRow input {
+        .marketTableRow {
           width: 100%;
-          height: 42px;
-          padding: 0 12px;
-          border-radius: 12px;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          background: rgba(255, 255, 255, 0.04);
-          color: #eaecef;
-          outline: none;
-          font-size: 14px;
-        }
-
-        .sidebarSearch input:focus,
-        .mobilePairSelect select:focus,
-        .formRow input:focus {
-          border-color: rgba(240, 185, 11, 0.45);
-        }
-
-        .sidebarSearch input::placeholder,
-        .formRow input::placeholder {
-          color: #6f7781;
-        }
-
-        .marketRows {
-          overflow: auto;
-          min-height: 0;
-          flex: 1;
-        }
-
-        .marketRow {
-          width: 100%;
+          text-align: left;
           border: none;
           background: transparent;
-          color: inherit;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          gap: 12px;
-          text-align: left;
-          padding: 12px 14px;
-          border-left: 2px solid transparent;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+          color: #eef3fb;
           cursor: pointer;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .marketRow:hover {
+        .marketTableRow:last-child {
+          border-bottom: none;
+        }
+
+        .marketTableRow:hover {
           background: rgba(255, 255, 255, 0.035);
         }
 
-        .marketRowActive {
-          background: rgba(240, 185, 11, 0.08);
-          border-left-color: #f0b90b;
+        .instrumentCell {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          min-width: 0;
         }
 
-        .marketLabel {
-          color: #fff;
-          font-size: 13px;
-          font-weight: 700;
-        }
-
-        .marketSymbol {
-          color: #848e9c;
-          font-size: 11px;
-          margin-top: 3px;
-        }
-
-        .marketRowRight {
-          text-align: right;
+        .instrumentBadge {
+          width: 38px;
+          height: 38px;
+          border-radius: 12px;
+          display: grid;
+          place-items: center;
+          background: linear-gradient(135deg, #f0b90b, #c78913);
+          color: #10151d;
+          font-size: 12px;
+          font-weight: 900;
           flex-shrink: 0;
         }
 
-        .marketPrice {
-          color: #fff;
-          font-size: 13px;
-          font-weight: 700;
-        }
-
-        .chartPanel {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .chartCanvasShell {
-          flex: 1;
-          min-height: 460px;
-          padding: 8px 0;
-        }
-
-        .chartCanvas {
-          width: 100%;
-          height: 100%;
-          display: block;
-        }
-
-        .timeTabs,
-        .rightTabs,
-        .subTabs,
-        .mobileTabs {
-          display: flex;
-          gap: 8px;
-          flex-wrap: wrap;
-        }
-
-        .timeTabs button,
-        .rightTabs button,
-        .subTabs button,
-        .mobileTabs button,
-        .percentRow button {
-          min-height: 34px;
-          padding: 0 12px;
-          border-radius: 10px;
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          background: rgba(255, 255, 255, 0.04);
-          color: #aeb4bc;
-          cursor: pointer;
-          font-size: 12px;
-          font-weight: 700;
-        }
-
-        .timeTabActive,
-        .subTabActive,
-        .mobileTabActive {
-          background: rgba(240, 185, 11, 0.12) !important;
-          border-color: rgba(240, 185, 11, 0.32) !important;
-          color: #f0b90b !important;
-        }
-
-        .ordersPanel {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .emptyState {
-          flex: 1;
-          display: grid;
-          place-items: center;
-          color: #848e9c;
+        .instrumentName {
+          color: #ffffff;
           font-size: 14px;
+          font-weight: 700;
+          line-height: 1.35;
         }
 
-        .orderBookWrap,
-        .tradesWrap {
-          display: flex;
-          flex-direction: column;
-          min-height: 0;
-          height: 100%;
-        }
-
-        .tableHead,
-        .bookRow,
-        .tradeRow {
-          display: grid;
-          grid-template-columns: 1fr 1fr 1fr;
-          gap: 8px;
-          padding: 6px 12px;
-          font-size: 11px;
-          font-family: monospace;
-        }
-
-        .tableHead {
-          color: #848e9c;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-          text-transform: uppercase;
-          letter-spacing: 0.6px;
-        }
-
-        .compactGrid span:nth-child(2),
-        .compactGrid span:nth-child(3) {
-          text-align: right;
-        }
-
-        .tableBody {
-          overflow: auto;
-          min-height: 0;
-        }
-
-        .bookRow,
-        .tradeRow {
-          position: relative;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-        }
-
-        .bookRow span,
-        .tradeRow span {
-          position: relative;
-          z-index: 1;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-
-        .depthBar {
-          position: absolute;
-          top: 0;
-          bottom: 0;
-          right: 0;
-          z-index: 0;
-        }
-
-        .askBar {
-          background: rgba(246, 70, 93, 0.1);
-        }
-
-        .bidBar {
-          background: rgba(14, 203, 129, 0.1);
-        }
-
-        .midRow {
-          padding: 10px 12px;
-          text-align: center;
-          color: #fff;
+        .instrumentSub {
+          color: rgba(238, 243, 251, 0.48);
           font-size: 12px;
-          font-weight: 800;
-          background: rgba(255, 255, 255, 0.03);
-          border-top: 1px solid rgba(255, 255, 255, 0.06);
-          border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+          margin-top: 4px;
         }
 
-        .tradeBox {
-          padding: 14px;
-          display: flex;
-          flex-direction: column;
+        .themeGrid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
           gap: 12px;
         }
 
-        .buySellSwitch {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 8px;
+        .themeItem {
+          border-radius: 18px;
+          padding: 16px;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.06);
         }
 
-        .buySellSwitch button {
-          min-height: 42px;
-          border: none;
-          border-radius: 12px;
-          background: rgba(255, 255, 255, 0.05);
-          color: #d8dde3;
-          font-weight: 800;
-          cursor: pointer;
+        .themeItem strong {
+          display: block;
+          color: #ffffff;
+          font-size: 15px;
+          margin-bottom: 6px;
         }
 
-        .activeBuy {
-          background: #0ecb81 !important;
-          color: #0b0e11 !important;
+        .themeItem span {
+          display: block;
+          color: #f0b90b;
+          font-size: 13px;
+          font-weight: 700;
+          margin-bottom: 8px;
         }
 
-        .activeSell {
-          background: #f6465d !important;
-          color: #fff !important;
+        .themeItem p {
+          margin: 0;
+          color: rgba(238, 243, 251, 0.58);
+          font-size: 13px;
+          line-height: 1.65;
         }
 
-        .formRow {
+        .insightList {
           display: flex;
           flex-direction: column;
-          gap: 6px;
+          gap: 14px;
         }
 
-        .formRow label {
-          font-size: 11px;
-          color: #848e9c;
+        .insightBlock {
+          border-radius: 18px;
+          padding: 16px;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.06);
         }
 
-        .percentRow {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 8px;
+        .insightBlock h3 {
+          margin: 0 0 10px;
+          color: #ffffff;
+          font-size: 15px;
         }
 
-        .submitTradeBtn {
-          min-height: 46px;
-          border: none;
-          border-radius: 14px;
-          font-size: 14px;
-          font-weight: 800;
-          cursor: pointer;
-        }
-
-        .buyBtn {
-          background: #0ecb81;
-          color: #0b0e11;
-        }
-
-        .sellBtn {
-          background: #f6465d;
-          color: #fff;
-        }
-
-        .loginHint {
+        .insightBlock ul {
           margin: 0;
-          text-align: center;
-          color: #848e9c;
-          font-size: 12px;
+          padding-left: 18px;
+          color: rgba(238, 243, 251, 0.68);
         }
 
-        .loginHint a {
-          color: #f0b90b;
-          text-decoration: none;
+        .insightBlock li {
+          margin-bottom: 8px;
+          line-height: 1.5;
+        }
+
+        .ctaSection {
+          margin-top: 4px;
+        }
+
+        .ctaCard {
+          padding: 26px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 18px;
+        }
+
+        .ctaCard h2 {
+          margin: 0 0 8px;
+          color: #ffffff;
+          font-size: 28px;
+        }
+
+        .ctaCard p {
+          margin: 0;
+          color: rgba(238, 243, 251, 0.64);
+          font-size: 15px;
+          line-height: 1.7;
+          max-width: 760px;
         }
 
         .upText {
@@ -1271,59 +1116,118 @@ export default function Exchange() {
           color: #f6465d !important;
         }
 
-        .mutedText {
-          color: #848e9c;
+        .emptyState {
+          border-radius: 20px;
+          padding: 52px 20px;
+          text-align: center;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px dashed rgba(255, 255, 255, 0.08);
         }
 
-        .mobileOnly {
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
+        .emptyState h3 {
+          margin: 0 0 8px;
+          color: #ffffff;
         }
 
-        .mobilePairSelect {
-          padding: 12px;
+        .emptyState p {
+          margin: 0;
+          color: rgba(238, 243, 251, 0.56);
         }
 
-        @media (max-width: 1280px) {
-          .desktopGrid {
-            grid-template-columns: 230px minmax(0, 1fr) 290px 300px;
+        @media (max-width: 1200px) {
+          .heroCard {
+            grid-template-columns: 1fr;
+          }
+
+          .featuredGrid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+
+          .twoCol {
+            grid-template-columns: 1fr;
           }
         }
 
-        @media (max-width: 980px) {
-          .exchangePage {
-            padding: 88px 12px 12px;
+        @media (max-width: 820px) {
+          .marketsPage {
+            padding: 88px 12px 24px;
           }
 
-          .topBar {
+          .heroCard,
+          .sectionBlock,
+          .watchlistCard,
+          .themeCard,
+          .insightCard,
+          .ctaCard,
+          .tabsBar {
+            border-radius: 20px;
+          }
+
+          .heroLeft h1 {
+            font-size: 34px;
+          }
+
+          .heroStats {
+            grid-template-columns: 1fr 1fr;
+          }
+
+          .tabsBar {
+            flex-direction: column;
+            align-items: stretch;
+          }
+
+          .searchWrap {
+            width: 100%;
+          }
+
+          .featuredGrid,
+          .themeGrid {
+            grid-template-columns: 1fr;
+          }
+
+          .ctaCard {
             flex-direction: column;
             align-items: flex-start;
-          }
-
-          .statsGrid {
-            width: 100%;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-          }
-
-          .chartCanvasShell {
-            min-height: 360px;
           }
         }
 
         @media (max-width: 640px) {
-          .pairIdentity h1 {
-            font-size: 20px;
+          .heroCard {
+            padding: 18px;
           }
 
-          .statsGrid {
+          .heroStats {
             grid-template-columns: 1fr;
           }
 
-          .timeTabs button {
+          .marketTableHead,
+          .marketTableRow {
+            grid-template-columns: 1.8fr 1fr 1fr;
+          }
+
+          .marketTableHead span:nth-child(4),
+          .marketTableHead span:nth-child(5),
+          .marketTableRow span:nth-child(4),
+          .marketTableRow span:nth-child(5) {
+            display: none;
+          }
+
+          .metricsGrid {
+            grid-template-columns: 1fr;
+          }
+
+          .priceRow {
+            grid-template-columns: 1fr;
+          }
+
+          .ctaActions,
+          .heroActions {
+            width: 100%;
+          }
+
+          .primaryBtn,
+          .ghostBtn {
             flex: 1;
-            min-width: 52px;
           }
         }
       `}</style>
