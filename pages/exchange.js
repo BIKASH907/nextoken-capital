@@ -1,836 +1,927 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import Head from "next/head";
+import { useMemo, useState } from "react";
+import Navbar from "../components/Navbar";
 
-const PAIRS = [
-  { name: 'BTC/EUR', symbol: 'BTCEUR', tvSymbol: 'BINANCE:BTCEUR', base: 'BTC', quote: 'EUR', type: 'Crypto' },
-  { name: 'ETH/EUR', symbol: 'ETHEUR', tvSymbol: 'BINANCE:ETHEUR', base: 'ETH', quote: 'EUR', type: 'Crypto' },
-  { name: 'BNB/EUR', symbol: 'BNBEUR', tvSymbol: 'BINANCE:BNBEUR', base: 'BNB', quote: 'EUR', type: 'Crypto' },
-  { name: 'BTC/USDT', symbol: 'BTCUSDT', tvSymbol: 'BINANCE:BTCUSDT', base: 'BTC', quote: 'USDT', type: 'Crypto' },
-]
+const markets = [
+  { pair: "BTC/EUR", type: "Crypto", price: "62,054.31", change: "+2.84%" },
+  { pair: "ETH/EUR", type: "Crypto", price: "1,913.01", change: "-1.24%" },
+  { pair: "BNB/EUR", type: "Crypto", price: "568.90", change: "+0.92%" },
+  { pair: "BTC/USDT", type: "Crypto", price: "67,120.44", change: "+1.18%" },
+  { pair: "SOL/EUR", type: "Crypto", price: "98.42", change: "-0.88%" },
+  { pair: "XRP/EUR", type: "Crypto", price: "0.59", change: "+0.44%" },
+];
 
-const DEFAULT_WALLET = {
-  EUR: 25000,
-  USDT: 10000,
-  BTC: 0.35,
-  ETH: 4.2,
-  BNB: 18,
-}
+const bids = [
+  { price: "62,040.00", amount: "0.2500", total: "15,510.00" },
+  { price: "62,025.50", amount: "0.3700", total: "22,949.44" },
+  { price: "62,010.00", amount: "0.4900", total: "30,384.90" },
+  { price: "61,998.20", amount: "0.6100", total: "37,818.90" },
+  { price: "61,985.00", amount: "0.7300", total: "45,249.05" },
+  { price: "61,972.40", amount: "0.8500", total: "52,676.54" },
+];
 
-const panelTitleStyle = {
-  fontWeight: 800,
-  marginBottom: '1rem',
-  fontSize: '1rem',
-}
+const asks = [
+  { price: "62,070.00", amount: "0.2800", total: "17,379.60" },
+  { price: "62,084.20", amount: "0.4200", total: "26,075.36" },
+  { price: "62,099.00", amount: "0.5600", total: "34,775.44" },
+  { price: "62,110.50", amount: "0.7000", total: "43,477.35" },
+  { price: "62,126.80", amount: "0.8400", total: "52,186.51" },
+  { price: "62,140.00", amount: "1.1200", total: "69,596.80" },
+];
 
-const subTitleStyle = {
-  fontWeight: 800,
-  marginBottom: '0.75rem',
-  fontSize: '0.9rem',
-  color: 'white',
-}
+const balances = [
+  { asset: "EUR", amount: "25,000.00" },
+  { asset: "USDT", amount: "10,000.00" },
+  { asset: "BTC", amount: "0.35" },
+  { asset: "ETH", amount: "4.20" },
+  { asset: "BNB", amount: "18.00" },
+];
 
 export default function ExchangePage() {
-  const gold = '#F0B90B'
-  const dark = '#0B0E11'
-  const dark2 = '#161A1E'
-  const dark3 = '#1E2329'
-  const green = '#0ECB81'
-  const red = '#F6465D'
-  const border = 'rgba(255,255,255,0.06)'
-  const muted = 'rgba(255,255,255,0.5)'
-
-  const [selectedPair, setSelectedPair] = useState(PAIRS[0])
-  const [tickerMap, setTickerMap] = useState({})
-  const [wallet, setWallet] = useState(DEFAULT_WALLET)
-  const [orderHistory, setOrderHistory] = useState([])
-  const [tradeSide, setTradeSide] = useState('buy')
-  const [orderType, setOrderType] = useState('limit')
-  const [price, setPrice] = useState('')
-  const [amount, setAmount] = useState('')
-  const [statusMessage, setStatusMessage] = useState('')
-  const [chartReady, setChartReady] = useState(false)
-
-  const chartContainerRef = useRef(null)
-  const wsRef = useRef(null)
-
-  const currentTicker = tickerMap[selectedPair.symbol] || null
-  const marketPrice = currentTicker?.lastPrice ? Number(currentTicker.lastPrice) : 0
+  const [selectedMarket, setSelectedMarket] = useState(markets[0]);
+  const [side, setSide] = useState("buy");
+  const [orderType, setOrderType] = useState("limit");
+  const [price, setPrice] = useState("62054.31");
+  const [amount, setAmount] = useState("");
+  const [activeMobileTab, setActiveMobileTab] = useState("chart");
 
   const total = useMemo(() => {
-    const p = Number(price || 0)
-    const a = Number(amount || 0)
-    return p && a ? p * a : 0
-  }, [price, amount])
-
-  useEffect(() => {
-    try {
-      const savedWallet = localStorage.getItem('nxt_wallet')
-      const savedOrders = localStorage.getItem('nxt_order_history')
-      if (savedWallet) setWallet(JSON.parse(savedWallet))
-      if (savedOrders) setOrderHistory(JSON.parse(savedOrders))
-    } catch (err) {
-      console.error('Failed to load local data', err)
-    }
-  }, [])
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('nxt_wallet', JSON.stringify(wallet))
-      localStorage.setItem('nxt_order_history', JSON.stringify(orderHistory))
-    } catch (err) {
-      console.error('Failed to save local data', err)
-    }
-  }, [wallet, orderHistory])
-
-  useEffect(() => {
-    let ignore = false
-
-    async function loadAllTickers() {
-      try {
-        const res = await fetch('https://data-api.binance.vision/api/v3/ticker/24hr')
-        if (!res.ok) throw new Error(`Ticker request failed: ${res.status}`)
-        const data = await res.json()
-
-        if (ignore) return
-
-        const nextMap = {}
-        for (const item of data) {
-          nextMap[item.symbol] = item
-        }
-        setTickerMap(nextMap)
-      } catch (err) {
-        console.error('Failed to load tickers', err)
-      }
-    }
-
-    loadAllTickers()
-    const interval = setInterval(loadAllTickers, 15000)
-
-    return () => {
-      ignore = true
-      clearInterval(interval)
-    }
-  }, [])
-
-  useEffect(() => {
-    if (!selectedPair?.symbol) return
-
-    if (wsRef.current) {
-      wsRef.current.close()
-      wsRef.current = null
-    }
-
-    const streamName = `${selectedPair.symbol.toLowerCase()}@ticker`
-    const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${streamName}`)
-    wsRef.current = ws
-
-    ws.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data)
-        setTickerMap((prev) => ({
-          ...prev,
-          [selectedPair.symbol]: {
-            ...(prev[selectedPair.symbol] || {}),
-            symbol: data.s,
-            lastPrice: data.c,
-            priceChangePercent: data.P,
-            highPrice: data.h,
-            lowPrice: data.l,
-            volume: data.v,
-            quoteVolume: data.q,
-          },
-        }))
-      } catch (err) {
-        console.error('WebSocket parse error', err)
-      }
-    }
-
-    ws.onerror = (err) => {
-      console.error('WebSocket error', err)
-    }
-
-    return () => {
-      ws.close()
-    }
-  }, [selectedPair])
-
-  useEffect(() => {
-    if (marketPrice > 0) {
-      setPrice((prev) => (prev ? prev : String(marketPrice.toFixed(2))))
-    }
-  }, [marketPrice, selectedPair])
-
-  useEffect(() => {
-    let cancelled = false
-
-    async function initChart() {
-      try {
-        if (typeof window === 'undefined') return
-
-        if (!window.TradingView) {
-          await new Promise((resolve, reject) => {
-            const existing = document.getElementById('tradingview-widget-script')
-            if (existing) {
-              resolve()
-              return
-            }
-            const script = document.createElement('script')
-            script.id = 'tradingview-widget-script'
-            script.src = 'https://s3.tradingview.com/tv.js'
-            script.async = true
-            script.onload = resolve
-            script.onerror = reject
-            document.body.appendChild(script)
-          })
-        }
-
-        if (cancelled || !chartContainerRef.current || !window.TradingView) return
-
-        chartContainerRef.current.innerHTML = ''
-
-        new window.TradingView.widget({
-          autosize: true,
-          symbol: selectedPair.tvSymbol,
-          interval: '60',
-          timezone: 'Etc/UTC',
-          theme: 'dark',
-          style: '1',
-          locale: 'en',
-          enable_publishing: false,
-          hide_top_toolbar: false,
-          hide_legend: false,
-          save_image: false,
-          container_id: 'tradingview_exchange_chart',
-          studies: ['Volume@tv-basicstudies'],
-          overrides: {
-            'paneProperties.background': dark2,
-            'paneProperties.vertGridProperties.color': 'rgba(255,255,255,0.05)',
-            'paneProperties.horzGridProperties.color': 'rgba(255,255,255,0.05)',
-            'symbolWatermarkProperties.transparency': 90,
-            'scalesProperties.textColor': 'rgba(255,255,255,0.55)',
-          },
-        })
-
-        setChartReady(true)
-      } catch (err) {
-        console.error('Failed to load TradingView widget', err)
-        setChartReady(false)
-      }
-    }
-
-    initChart()
-    return () => {
-      cancelled = true
-    }
-  }, [selectedPair, dark2])
-
-  const displayedPrice = orderType === 'market' ? marketPrice || Number(price || 0) : Number(price || 0)
-
-  function formatMoney(value, currency = selectedPair.quote) {
-    if (!Number.isFinite(value)) return `0 ${currency}`
-    return `${value.toLocaleString(undefined, {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    })} ${currency}`
-  }
-
-  function formatAsset(value, symbol) {
-    if (!Number.isFinite(value)) return `0 ${symbol}`
-    return `${value.toLocaleString(undefined, {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 6,
-    })} ${symbol}`
-  }
-
-  function resetTradeForm() {
-    setAmount('')
-    setPrice(marketPrice > 0 ? String(marketPrice.toFixed(2)) : '')
-  }
-
-  function placeOrder() {
-    const p = Number(displayedPrice)
-    const a = Number(amount)
-
-    if (!p || !a || p <= 0 || a <= 0) {
-      setStatusMessage('Enter a valid price and amount.')
-      return
-    }
-
-    const cost = p * a
-    const baseAsset = selectedPair.base
-    const quoteAsset = selectedPair.quote
-
-    if (tradeSide === 'buy') {
-      const availableQuote = Number(wallet[quoteAsset] || 0)
-      if (availableQuote < cost) {
-        setStatusMessage(`Insufficient ${quoteAsset} balance.`)
-        return
-      }
-
-      setWallet({
-        ...wallet,
-        [quoteAsset]: availableQuote - cost,
-        [baseAsset]: Number(wallet[baseAsset] || 0) + a,
-      })
-    } else {
-      const availableBase = Number(wallet[baseAsset] || 0)
-      if (availableBase < a) {
-        setStatusMessage(`Insufficient ${baseAsset} balance.`)
-        return
-      }
-
-      setWallet({
-        ...wallet,
-        [baseAsset]: availableBase - a,
-        [quoteAsset]: Number(wallet[quoteAsset] || 0) + cost,
-      })
-    }
-
-    const newOrder = {
-      id: Date.now(),
-      time: new Date().toLocaleString(),
-      pair: selectedPair.name,
-      side: tradeSide.toUpperCase(),
-      type: orderType.toUpperCase(),
-      price: p,
-      amount: a,
-      total: cost,
-      status: 'FILLED',
-    }
-
-    setOrderHistory((prev) => [newOrder, ...prev].slice(0, 20))
-    setStatusMessage(`${tradeSide.toUpperCase()} order filled successfully.`)
-    resetTradeForm()
-  }
-
-  const bids = useMemo(() => {
-    const base = marketPrice || 100
-    return Array.from({ length: 7 }, (_, i) => ({
-      price: Math.max(base - i * 0.25, 0.01),
-      amount: 0.25 + i * 0.12,
-    }))
-  }, [marketPrice])
-
-  const asks = useMemo(() => {
-    const base = marketPrice || 100
-    return Array.from({ length: 7 }, (_, i) => ({
-      price: base + i * 0.25,
-      amount: 0.28 + i * 0.14,
-    }))
-  }, [marketPrice])
+    const p = parseFloat(price || "0");
+    const a = parseFloat(amount || "0");
+    if (!p || !a) return "0.00";
+    return (p * a).toFixed(2);
+  }, [price, amount]);
 
   return (
-    <div style={{ background: dark, minHeight: '100vh', color: 'white', fontFamily: 'Inter, sans-serif' }}>
-      <section
-        style={{
-          padding: '7rem 5% 1.5rem',
-          borderBottom: `1px solid ${border}`,
-          background: dark,
-        }}
-      >
-        <div style={{ maxWidth: 1400, margin: '0 auto' }}>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              gap: '1rem',
-              alignItems: 'flex-start',
-              flexWrap: 'wrap',
-            }}
-          >
-            <div>
-              <div
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  padding: '6px 14px',
-                  border: '1px solid rgba(240,185,11,0.25)',
-                  borderRadius: 999,
-                  color: gold,
-                  fontSize: '0.75rem',
-                  fontWeight: 700,
-                  marginBottom: '1rem',
-                }}
-              >
-                Exchange Terminal
+    <>
+      <Head>
+        <title>Exchange | Nextoken Capital</title>
+        <meta
+          name="description"
+          content="Responsive exchange terminal for Nextoken Capital."
+        />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
+
+      <Navbar />
+
+      <main className="exchangePage">
+        <section className="exchangeShell">
+          <div className="topBar">
+            <div className="pairInfo">
+              <div className="pairMain">
+                <h1>{selectedMarket.pair}</h1>
+                <span className={`change ${selectedMarket.change.startsWith("-") ? "down" : "up"}`}>
+                  {selectedMarket.change}
+                </span>
               </div>
-              <h1 style={{ fontSize: '2rem', fontWeight: 900, margin: 0 }}>
-                {selectedPair.name} <span style={{ color: gold }}>Live Trading</span>
-              </h1>
-              <p style={{ color: muted, marginTop: '0.7rem', maxWidth: 720 }}>
-                Interactive charting, live market price feed, wallet balances, simulated order execution,
-                and order history in one exchange interface.
-              </p>
+              <p>{selectedMarket.type} live trading terminal</p>
             </div>
 
-            <div
-              style={{
-                background: dark2,
-                border: `1px solid ${border}`,
-                borderRadius: 6,
-                padding: '1rem 1.2rem',
-                minWidth: 280,
-              }}
-            >
-              <div style={{ fontSize: '0.75rem', color: muted, marginBottom: '0.35rem' }}>
-                Last Price
+            <div className="topStats">
+              <div className="statCard">
+                <span>Last Price</span>
+                <strong>{selectedMarket.price}</strong>
               </div>
-              <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#fff' }}>
-                {marketPrice ? formatMoney(marketPrice) : '--'}
+              <div className="statCard">
+                <span>24h High</span>
+                <strong>62,880.10</strong>
               </div>
-              <div
-                style={{
-                  marginTop: '0.45rem',
-                  color: Number(currentTicker?.priceChangePercent || 0) >= 0 ? green : red,
-                  fontWeight: 800,
-                }}
-              >
-                {currentTicker?.priceChangePercent
-                  ? `${Number(currentTicker.priceChangePercent) >= 0 ? '+' : ''}${Number(
-                      currentTicker.priceChangePercent
-                    ).toFixed(2)}%`
-                  : '--'}
+              <div className="statCard">
+                <span>24h Low</span>
+                <strong>61,220.40</strong>
+              </div>
+              <div className="statCard">
+                <span>24h Volume</span>
+                <strong>1,248 BTC</strong>
               </div>
             </div>
           </div>
-        </div>
-      </section>
 
-      <section style={{ padding: '1rem 5%' }}>
-        <div
-          style={{
-            maxWidth: 1400,
-            margin: '0 auto',
-            display: 'grid',
-            gridTemplateColumns: '260px 1fr 360px',
-            gap: '1rem',
-            alignItems: 'start',
-          }}
-        >
-          <div style={panelStyle(dark2, border)}>
-            <div style={panelTitleStyle}>Markets</div>
-            <div style={{ display: 'grid', gap: '0.55rem' }}>
-              {PAIRS.map((pair) => {
-                const ticker = tickerMap[pair.symbol]
-                const pct = Number(ticker?.priceChangePercent || 0)
-                const last = Number(ticker?.lastPrice || 0)
-                const selected = selectedPair.symbol === pair.symbol
+          <div className="mobileTabs">
+            <button
+              className={activeMobileTab === "chart" ? "active" : ""}
+              onClick={() => setActiveMobileTab("chart")}
+            >
+              Chart
+            </button>
+            <button
+              className={activeMobileTab === "book" ? "active" : ""}
+              onClick={() => setActiveMobileTab("book")}
+            >
+              Book
+            </button>
+            <button
+              className={activeMobileTab === "trade" ? "active" : ""}
+              onClick={() => setActiveMobileTab("trade")}
+            >
+              Trade
+            </button>
+            <button
+              className={activeMobileTab === "wallet" ? "active" : ""}
+              onClick={() => setActiveMobileTab("wallet")}
+            >
+              Wallet
+            </button>
+          </div>
 
-                return (
+          <div className="terminalGrid">
+            <aside className="panel panelMarkets">
+              <div className="panelHeader">
+                <h2>Markets</h2>
+              </div>
+
+              <div className="marketSearch">
+                <input type="text" placeholder="Search market" />
+              </div>
+
+              <div className="marketList">
+                {markets.map((market) => (
                   <button
-                    key={pair.symbol}
-                    onClick={() => {
-                      setSelectedPair(pair)
-                      setPrice('')
-                    }}
-                    style={{
-                      width: '100%',
-                      textAlign: 'left',
-                      background: selected ? dark3 : 'transparent',
-                      border: `1px solid ${selected ? 'rgba(240,185,11,0.22)' : border}`,
-                      borderRadius: 6,
-                      padding: '0.8rem',
-                      cursor: 'pointer',
-                      color: 'white',
-                    }}
+                    key={market.pair}
+                    className={`marketRow ${selectedMarket.pair === market.pair ? "selected" : ""}`}
+                    onClick={() => setSelectedMarket(market)}
                   >
-                    <div
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        gap: '0.75rem',
-                        alignItems: 'center',
-                      }}
-                    >
-                      <div>
-                        <div style={{ fontWeight: 800 }}>{pair.name}</div>
-                        <div style={{ fontSize: '0.76rem', color: muted }}>{pair.type}</div>
-                      </div>
-                      <div style={{ textAlign: 'right' }}>
-                        <div style={{ fontWeight: 800 }}>
-                          {last ? formatMoney(last, pair.quote) : '--'}
-                        </div>
-                        <div
-                          style={{
-                            fontSize: '0.78rem',
-                            color: pct >= 0 ? green : red,
-                            fontWeight: 700,
-                          }}
-                        >
-                          {pct >= 0 ? '+' : ''}
-                          {pct.toFixed(2)}%
-                        </div>
-                      </div>
+                    <div>
+                      <strong>{market.pair}</strong>
+                      <span>{market.type}</span>
+                    </div>
+                    <div className="marketRowRight">
+                      <strong>{market.price}</strong>
+                      <span className={market.change.startsWith("-") ? "down" : "up"}>
+                        {market.change}
+                      </span>
                     </div>
                   </button>
-                )
-              })}
-            </div>
-
-            <div style={{ marginTop: '1rem', borderTop: `1px solid ${border}`, paddingTop: '1rem' }}>
-              <div style={subTitleStyle}>Market Stats</div>
-              <StatRow label="24h High" value={currentTicker?.highPrice ? formatMoney(Number(currentTicker.highPrice)) : '--'} muted={muted} />
-              <StatRow label="24h Low" value={currentTicker?.lowPrice ? formatMoney(Number(currentTicker.lowPrice)) : '--'} muted={muted} />
-              <StatRow label="Base Volume" value={currentTicker?.volume ? Number(currentTicker.volume).toLocaleString() : '--'} muted={muted} />
-              <StatRow label="Quote Volume" value={currentTicker?.quoteVolume ? formatMoney(Number(currentTicker.quoteVolume)) : '--'} muted={muted} />
-            </div>
-          </div>
-
-          <div style={{ display: 'grid', gap: '1rem' }}>
-            <div style={panelStyle(dark2, border)}>
-              <div style={panelTitleStyle}>Advanced Chart</div>
-              <div
-                id="tradingview_exchange_chart"
-                ref={chartContainerRef}
-                style={{
-                  width: '100%',
-                  height: 480,
-                  borderRadius: 6,
-                  overflow: 'hidden',
-                  background: dark3,
-                }}
-              />
-              {!chartReady && (
-                <div style={{ color: muted, fontSize: '0.9rem', marginTop: '0.75rem' }}>
-                  Loading TradingView chart...
-                </div>
-              )}
-            </div>
-
-            <div style={panelStyle(dark2, border)}>
-              <div style={panelTitleStyle}>Order Book</div>
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr',
-                  gap: '1rem',
-                }}
-              >
-                <div>
-                  <div style={{ color: green, fontWeight: 800, marginBottom: '0.7rem' }}>Bids</div>
-                  {bids.map((row, idx) => (
-                    <OrderBookRow
-                      key={`bid-${idx}`}
-                      price={row.price}
-                      amount={row.amount}
-                      color={green}
-                      quote={selectedPair.quote}
-                      base={selectedPair.base}
-                    />
-                  ))}
-                </div>
-
-                <div>
-                  <div style={{ color: red, fontWeight: 800, marginBottom: '0.7rem' }}>Asks</div>
-                  {asks.map((row, idx) => (
-                    <OrderBookRow
-                      key={`ask-${idx}`}
-                      price={row.price}
-                      amount={row.amount}
-                      color={red}
-                      quote={selectedPair.quote}
-                      base={selectedPair.base}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div style={panelStyle(dark2, border)}>
-              <div style={panelTitleStyle}>Order History</div>
-              {orderHistory.length === 0 ? (
-                <div style={{ color: muted }}>No orders yet.</div>
-              ) : (
-                <div style={{ overflowX: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 720 }}>
-                    <thead>
-                      <tr>
-                        {['Time', 'Pair', 'Side', 'Type', 'Price', 'Amount', 'Total', 'Status'].map((h) => (
-                          <th
-                            key={h}
-                            style={{
-                              padding: '0.8rem 0.6rem',
-                              textAlign: 'left',
-                              fontSize: '0.72rem',
-                              letterSpacing: '1px',
-                              textTransform: 'uppercase',
-                              color: muted,
-                              borderBottom: `1px solid ${border}`,
-                            }}
-                          >
-                            {h}
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {orderHistory.map((order) => (
-                        <tr key={order.id}>
-                          <td style={tableCell(border)}>{order.time}</td>
-                          <td style={tableCell(border)}>{order.pair}</td>
-                          <td style={{ ...tableCell(border), color: order.side === 'BUY' ? green : red, fontWeight: 800 }}>
-                            {order.side}
-                          </td>
-                          <td style={tableCell(border)}>{order.type}</td>
-                          <td style={tableCell(border)}>{order.price.toFixed(2)}</td>
-                          <td style={tableCell(border)}>{order.amount.toFixed(6)}</td>
-                          <td style={tableCell(border)}>{order.total.toFixed(2)}</td>
-                          <td style={tableCell(border)}>{order.status}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div style={{ display: 'grid', gap: '1rem' }}>
-            <div style={panelStyle(dark2, border)}>
-              <div style={panelTitleStyle}>Trade</div>
-
-              <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
-                {['buy', 'sell'].map((side) => (
-                  <button
-                    key={side}
-                    onClick={() => setTradeSide(side)}
-                    style={{
-                      flex: 1,
-                      padding: '0.75rem',
-                      border: 'none',
-                      borderRadius: 4,
-                      cursor: 'pointer',
-                      fontWeight: 800,
-                      background: tradeSide === side ? (side === 'buy' ? green : red) : dark3,
-                      color: tradeSide === side ? 'white' : 'rgba(255,255,255,0.72)',
-                    }}
-                  >
-                    {side.toUpperCase()}
-                  </button>
                 ))}
               </div>
+            </aside>
 
-              <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
-                {['limit', 'market'].map((type) => (
-                  <button
-                    key={type}
-                    onClick={() => setOrderType(type)}
-                    style={{
-                      flex: 1,
-                      padding: '0.65rem',
-                      border: `1px solid ${orderType === type ? 'rgba(240,185,11,0.22)' : border}`,
-                      borderRadius: 4,
-                      cursor: 'pointer',
-                      fontWeight: 700,
-                      background: orderType === type ? 'rgba(240,185,11,0.08)' : dark3,
-                      color: orderType === type ? gold : 'rgba(255,255,255,0.72)',
-                    }}
-                  >
-                    {type.toUpperCase()}
-                  </button>
-                ))}
+            <section
+              className={`panel panelChart mobilePane ${
+                activeMobileTab === "chart" ? "showMobile" : ""
+              }`}
+            >
+              <div className="panelHeader">
+                <h2>Advanced Chart</h2>
               </div>
 
-              <FormLabel text={`Price (${selectedPair.quote})`} muted={muted} />
-              <input
-                value={orderType === 'market' ? (marketPrice ? marketPrice.toFixed(2) : '') : price}
-                onChange={(e) => setPrice(e.target.value)}
-                readOnly={orderType === 'market'}
-                style={inputStyle(orderType === 'market' ? dark3 : dark, border)}
-                placeholder="Enter price"
-              />
-
-              <FormLabel text={`Amount (${selectedPair.base})`} muted={muted} />
-              <input
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                style={inputStyle(dark, border)}
-                placeholder="Enter amount"
-              />
-
-              <FormLabel text={`Total (${selectedPair.quote})`} muted={muted} />
-              <input
-                value={total ? total.toFixed(2) : ''}
-                readOnly
-                style={inputStyle(dark3, border)}
-                placeholder="Calculated total"
-              />
-
-              <div style={{ marginTop: '1rem', display: 'grid', gap: '0.45rem' }}>
-                <StatRow label="Available Quote" value={formatMoney(Number(wallet[selectedPair.quote] || 0), selectedPair.quote)} muted={muted} />
-                <StatRow label="Available Base" value={formatAsset(Number(wallet[selectedPair.base] || 0), selectedPair.base)} muted={muted} />
-              </div>
-
-              <button
-                onClick={placeOrder}
-                style={{
-                  width: '100%',
-                  marginTop: '1rem',
-                  background: tradeSide === 'buy' ? green : red,
-                  border: 'none',
-                  padding: '0.95rem',
-                  borderRadius: 4,
-                  fontWeight: 800,
-                  cursor: 'pointer',
-                  color: 'white',
-                  fontSize: '0.95rem',
-                }}
-              >
-                {tradeSide === 'buy' ? 'Buy' : 'Sell'} {selectedPair.base}
-              </button>
-
-              {statusMessage && (
-                <div
-                  style={{
-                    marginTop: '0.8rem',
-                    color: 'rgba(255,255,255,0.78)',
-                    fontSize: '0.88rem',
-                    background: dark3,
-                    border: `1px solid ${border}`,
-                    borderRadius: 4,
-                    padding: '0.75rem',
-                  }}
-                >
-                  {statusMessage}
+              <div className="chartBox">
+                <div className="chartArea">
+                  <div className="chartGlow" />
+                  <svg viewBox="0 0 100 40" preserveAspectRatio="none" className="chartSvg">
+                    <polyline
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      points="0,32 8,28 16,30 24,22 32,18 40,20 48,12 56,14 64,10 72,16 80,8 88,12 100,4"
+                    />
+                  </svg>
                 </div>
-              )}
-            </div>
 
-            <div style={panelStyle(dark2, border)}>
-              <div style={panelTitleStyle}>Wallet Balances</div>
-              <div style={{ display: 'grid', gap: '0.6rem' }}>
-                {Object.entries(wallet).map(([asset, value]) => (
-                  <div
-                    key={asset}
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      gap: '1rem',
-                      padding: '0.75rem 0.8rem',
-                      border: `1px solid ${border}`,
-                      borderRadius: 4,
-                      background: dark3,
-                    }}
-                  >
-                    <span style={{ fontWeight: 700 }}>{asset}</span>
-                    <span style={{ color: '#fff' }}>
-                      {asset === 'EUR' || asset === 'USDT'
-                        ? Number(value).toLocaleString(undefined, {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })
-                        : Number(value).toLocaleString(undefined, {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 6,
-                          })}
-                    </span>
+                <div className="chartTimes">
+                  <span>1H</span>
+                  <span className="active">4H</span>
+                  <span>1D</span>
+                  <span>1W</span>
+                  <span>1M</span>
+                </div>
+              </div>
+
+              <div className="historyPanel">
+                <div className="panelHeader small">
+                  <h2>Order History</h2>
+                </div>
+                <div className="emptyState">No orders yet.</div>
+              </div>
+            </section>
+
+            <section
+              className={`panel panelBook mobilePane ${
+                activeMobileTab === "book" ? "showMobile" : ""
+              }`}
+            >
+              <div className="panelHeader">
+                <h2>Order Book</h2>
+              </div>
+
+              <div className="bookHeader">
+                <span>Price</span>
+                <span>Amount</span>
+                <span>Total</span>
+              </div>
+
+              <div className="bookSection">
+                <div className="bookLabel ask">Asks</div>
+                {asks.map((row, i) => (
+                  <div className="bookRow" key={`ask-${i}`}>
+                    <span className="down">{row.price}</span>
+                    <span>{row.amount}</span>
+                    <span>{row.total}</span>
                   </div>
                 ))}
               </div>
 
-              <button
-                onClick={() => {
-                  setWallet(DEFAULT_WALLET)
-                  setStatusMessage('Wallet reset to demo balances.')
-                }}
-                style={{
-                  width: '100%',
-                  marginTop: '1rem',
-                  background: 'transparent',
-                  border: `1px solid rgba(240,185,11,0.25)`,
-                  padding: '0.85rem',
-                  borderRadius: 4,
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  color: gold,
-                }}
-              >
-                Reset Demo Wallet
+              <div className="midPrice">{selectedMarket.price}</div>
+
+              <div className="bookSection">
+                <div className="bookLabel bid">Bids</div>
+                {bids.map((row, i) => (
+                  <div className="bookRow" key={`bid-${i}`}>
+                    <span className="up">{row.price}</span>
+                    <span>{row.amount}</span>
+                    <span>{row.total}</span>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <aside
+              className={`panel panelTrade mobilePane ${
+                activeMobileTab === "trade" ? "showMobile" : ""
+              }`}
+            >
+              <div className="panelHeader">
+                <h2>Trade</h2>
+              </div>
+
+              <div className="segmented">
+                <button
+                  className={side === "buy" ? "active buy" : ""}
+                  onClick={() => setSide("buy")}
+                >
+                  Buy
+                </button>
+                <button
+                  className={side === "sell" ? "active sell" : ""}
+                  onClick={() => setSide("sell")}
+                >
+                  Sell
+                </button>
+              </div>
+
+              <div className="orderTypeTabs">
+                <button
+                  className={orderType === "limit" ? "active" : ""}
+                  onClick={() => setOrderType("limit")}
+                >
+                  Limit
+                </button>
+                <button
+                  className={orderType === "market" ? "active" : ""}
+                  onClick={() => setOrderType("market")}
+                >
+                  Market
+                </button>
+              </div>
+
+              <div className="formGroup">
+                <label>Price (EUR)</label>
+                <input
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  placeholder="Enter price"
+                />
+              </div>
+
+              <div className="formGroup">
+                <label>Amount (BTC)</label>
+                <input
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  placeholder="Enter amount"
+                />
+              </div>
+
+              <div className="formGroup">
+                <label>Total (EUR)</label>
+                <input value={total} readOnly />
+              </div>
+
+              <div className="quickAmounts">
+                <button>25%</button>
+                <button>50%</button>
+                <button>75%</button>
+                <button>100%</button>
+              </div>
+
+              <div className="availRow">
+                <span>Available Quote</span>
+                <strong>25,000.00 EUR</strong>
+              </div>
+              <div className="availRow">
+                <span>Available Base</span>
+                <strong>0.35 BTC</strong>
+              </div>
+
+              <button className={`submitBtn ${side}`}>
+                {side === "buy" ? "Buy BTC" : "Sell BTC"}
               </button>
-            </div>
+            </aside>
+
+            <section
+              className={`panel panelWallet mobilePane ${
+                activeMobileTab === "wallet" ? "showMobile" : ""
+              }`}
+            >
+              <div className="panelHeader">
+                <h2>Wallet Balances</h2>
+              </div>
+
+              <div className="walletList">
+                {balances.map((item) => (
+                  <div className="walletRow" key={item.asset}>
+                    <span>{item.asset}</span>
+                    <strong>{item.amount}</strong>
+                  </div>
+                ))}
+              </div>
+
+              <button className="resetBtn">Reset Demo Wallet</button>
+            </section>
           </div>
-        </div>
-      </section>
-    </div>
-  )
-}
+        </section>
+      </main>
 
-function panelStyle(bg, border) {
-  return {
-    background: bg,
-    border: `1px solid ${border}`,
-    borderRadius: 6,
-    padding: '1rem',
-  }
-}
+      <style jsx>{`
+        :global(html) {
+          scroll-behavior: smooth;
+        }
 
-function tableCell(border) {
-  return {
-    padding: '0.8rem 0.6rem',
-    borderBottom: `1px solid ${border}`,
-    color: 'rgba(255,255,255,0.82)',
-    fontSize: '0.9rem',
-    whiteSpace: 'nowrap',
-  }
-}
+        :global(body) {
+          margin: 0;
+          padding: 0;
+          background: #0b0e11;
+          color: #eaecef;
+          font-family: Arial, sans-serif;
+          overflow-x: hidden;
+        }
 
-function inputStyle(bg, border) {
-  return {
-    width: '100%',
-    padding: '0.8rem 0.85rem',
-    background: bg,
-    border: `1px solid ${border}`,
-    borderRadius: 4,
-    color: 'white',
-    outline: 'none',
-    marginBottom: '0.85rem',
-    fontSize: '0.92rem',
-  }
-}
+        :global(*) {
+          box-sizing: border-box;
+        }
 
-function FormLabel({ text, muted }) {
-  return (
-    <label
-      style={{
-        display: 'block',
-        fontSize: '0.78rem',
-        color: muted,
-        marginBottom: '0.35rem',
-        fontWeight: 700,
-      }}
-    >
-      {text}
-    </label>
-  )
-}
+        .exchangePage {
+          min-height: 100vh;
+          background:
+            radial-gradient(circle at top left, rgba(240, 185, 11, 0.08), transparent 25%),
+            #0b0e11;
+          padding-top: 84px;
+        }
 
-function StatRow({ label, value, muted }) {
-  return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem' }}>
-      <span style={{ color: muted }}>{label}</span>
-      <span style={{ color: 'white', textAlign: 'right' }}>{value}</span>
-    </div>
-  )
-}
+        .exchangeShell {
+          max-width: 1440px;
+          margin: 0 auto;
+          padding: 16px;
+        }
 
-function OrderBookRow({ price, amount, color, quote, base }) {
-  return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        gap: '1rem',
-        padding: '0.45rem 0',
-        borderBottom: '1px solid rgba(255,255,255,0.04)',
-        fontSize: '0.88rem',
-      }}
-    >
-      <span style={{ color, fontWeight: 700 }}>
-        {price.toFixed(2)} {quote}
-      </span>
-      <span style={{ color: 'rgba(255,255,255,0.72)' }}>
-        {amount.toFixed(4)} {base}
-      </span>
-    </div>
-  )
+        .topBar {
+          display: flex;
+          justify-content: space-between;
+          gap: 16px;
+          margin-bottom: 16px;
+          flex-wrap: wrap;
+        }
+
+        .pairInfo,
+        .topStats {
+          background: #161a1e;
+          border: 1px solid #232a32;
+          border-radius: 16px;
+        }
+
+        .pairInfo {
+          flex: 1;
+          min-width: 280px;
+          padding: 18px;
+        }
+
+        .pairMain {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          flex-wrap: wrap;
+        }
+
+        .pairMain h1 {
+          margin: 0;
+          font-size: 1.8rem;
+          color: #f0b90b;
+        }
+
+        .pairInfo p {
+          margin: 8px 0 0;
+          color: #9aa4af;
+        }
+
+        .topStats {
+          flex: 2;
+          min-width: 320px;
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 1px;
+          overflow: hidden;
+        }
+
+        .statCard {
+          padding: 16px;
+          background: #161a1e;
+        }
+
+        .statCard span {
+          display: block;
+          color: #848e9c;
+          font-size: 0.82rem;
+          margin-bottom: 6px;
+        }
+
+        .statCard strong {
+          font-size: 1rem;
+          color: #ffffff;
+        }
+
+        .mobileTabs {
+          display: none;
+          gap: 8px;
+          margin-bottom: 14px;
+          overflow-x: auto;
+          padding-bottom: 4px;
+        }
+
+        .mobileTabs button {
+          border: 1px solid #2b3139;
+          background: #161a1e;
+          color: #cbd5df;
+          border-radius: 10px;
+          padding: 10px 14px;
+          white-space: nowrap;
+          cursor: pointer;
+        }
+
+        .mobileTabs button.active {
+          background: #f0b90b;
+          color: #111;
+          border-color: #f0b90b;
+          font-weight: 700;
+        }
+
+        .terminalGrid {
+          display: grid;
+          grid-template-columns: 280px minmax(0, 1.45fr) minmax(300px, 0.75fr) 320px;
+          gap: 16px;
+          align-items: start;
+        }
+
+        .panel {
+          background: #161a1e;
+          border: 1px solid #232a32;
+          border-radius: 16px;
+          overflow: hidden;
+          min-width: 0;
+        }
+
+        .panelHeader {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 16px 16px 12px;
+          border-bottom: 1px solid #232a32;
+        }
+
+        .panelHeader.small {
+          padding-top: 14px;
+        }
+
+        .panelHeader h2 {
+          margin: 0;
+          font-size: 1rem;
+          color: #ffffff;
+        }
+
+        .marketSearch {
+          padding: 14px 16px;
+          border-bottom: 1px solid #232a32;
+        }
+
+        .marketSearch input,
+        .formGroup input {
+          width: 100%;
+          border: 1px solid #2b3139;
+          background: #0f1318;
+          color: #fff;
+          border-radius: 10px;
+          padding: 12px 14px;
+          outline: none;
+          font-size: 0.95rem;
+        }
+
+        .marketList {
+          max-height: 650px;
+          overflow-y: auto;
+        }
+
+        .marketRow {
+          width: 100%;
+          border: 0;
+          background: transparent;
+          color: #fff;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          text-align: left;
+          padding: 14px 16px;
+          border-bottom: 1px solid #20262d;
+          cursor: pointer;
+          gap: 12px;
+        }
+
+        .marketRow:hover,
+        .marketRow.selected {
+          background: #1b222a;
+        }
+
+        .marketRow strong {
+          display: block;
+          font-size: 0.95rem;
+        }
+
+        .marketRow span {
+          display: block;
+          font-size: 0.8rem;
+          color: #8d98a5;
+          margin-top: 4px;
+        }
+
+        .marketRowRight {
+          text-align: right;
+        }
+
+        .chartBox {
+          padding: 16px;
+        }
+
+        .chartArea {
+          position: relative;
+          height: 360px;
+          border-radius: 16px;
+          background:
+            linear-gradient(to bottom, rgba(240, 185, 11, 0.08), rgba(240, 185, 11, 0.01)),
+            #0f1318;
+          border: 1px solid #232a32;
+          overflow: hidden;
+          color: #f0b90b;
+        }
+
+        .chartGlow {
+          position: absolute;
+          inset: auto auto 0 0;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(to top, rgba(240,185,11,0.1), transparent 55%);
+          pointer-events: none;
+        }
+
+        .chartSvg {
+          width: 100%;
+          height: 100%;
+          display: block;
+          padding: 24px 16px;
+        }
+
+        .chartTimes {
+          display: flex;
+          gap: 10px;
+          margin-top: 14px;
+          flex-wrap: wrap;
+        }
+
+        .chartTimes span {
+          padding: 8px 10px;
+          border-radius: 8px;
+          background: #0f1318;
+          color: #aeb7c2;
+          border: 1px solid #232a32;
+          font-size: 0.85rem;
+        }
+
+        .chartTimes span.active {
+          background: #f0b90b;
+          color: #111;
+          border-color: #f0b90b;
+          font-weight: 700;
+        }
+
+        .historyPanel {
+          border-top: 1px solid #232a32;
+        }
+
+        .emptyState {
+          color: #8d98a5;
+          padding: 18px 16px 20px;
+        }
+
+        .bookHeader,
+        .bookRow {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 10px;
+          padding: 10px 16px;
+          font-size: 0.88rem;
+        }
+
+        .bookHeader {
+          color: #848e9c;
+          border-bottom: 1px solid #232a32;
+        }
+
+        .bookRow {
+          color: #d7dde4;
+        }
+
+        .bookLabel {
+          padding: 12px 16px 6px;
+          font-size: 0.82rem;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          color: #8d98a5;
+        }
+
+        .midPrice {
+          padding: 14px 16px;
+          font-size: 1.2rem;
+          font-weight: 800;
+          color: #f0b90b;
+          border-top: 1px solid #232a32;
+          border-bottom: 1px solid #232a32;
+          background: #11161b;
+        }
+
+        .segmented,
+        .orderTypeTabs {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 10px;
+          padding: 16px;
+        }
+
+        .segmented button,
+        .orderTypeTabs button,
+        .quickAmounts button,
+        .resetBtn {
+          cursor: pointer;
+          border-radius: 10px;
+          border: 1px solid #2b3139;
+          background: #0f1318;
+          color: #d6dbe1;
+          padding: 11px 12px;
+          font-weight: 600;
+        }
+
+        .segmented button.active.buy {
+          background: #0ecb81;
+          border-color: #0ecb81;
+          color: #08130e;
+        }
+
+        .segmented button.active.sell {
+          background: #f6465d;
+          border-color: #f6465d;
+          color: #1a090d;
+        }
+
+        .orderTypeTabs {
+          padding-top: 0;
+        }
+
+        .orderTypeTabs button.active {
+          background: #f0b90b;
+          color: #111;
+          border-color: #f0b90b;
+        }
+
+        .formGroup {
+          padding: 0 16px 14px;
+        }
+
+        .formGroup label {
+          display: block;
+          color: #8d98a5;
+          font-size: 0.84rem;
+          margin-bottom: 8px;
+        }
+
+        .quickAmounts {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 8px;
+          padding: 0 16px 14px;
+        }
+
+        .availRow {
+          display: flex;
+          justify-content: space-between;
+          gap: 10px;
+          padding: 0 16px 10px;
+          color: #9aa4af;
+          font-size: 0.9rem;
+        }
+
+        .availRow strong {
+          color: #fff;
+        }
+
+        .submitBtn {
+          margin: 16px;
+          width: calc(100% - 32px);
+          border: 0;
+          border-radius: 12px;
+          padding: 14px 16px;
+          font-weight: 800;
+          cursor: pointer;
+          font-size: 1rem;
+        }
+
+        .submitBtn.buy {
+          background: #0ecb81;
+          color: #09150f;
+        }
+
+        .submitBtn.sell {
+          background: #f6465d;
+          color: #18090d;
+        }
+
+        .walletList {
+          padding: 10px 16px 4px;
+        }
+
+        .walletRow {
+          display: flex;
+          justify-content: space-between;
+          gap: 10px;
+          padding: 12px 0;
+          border-bottom: 1px solid #232a32;
+        }
+
+        .walletRow span {
+          color: #9aa4af;
+        }
+
+        .walletRow strong {
+          color: #fff;
+        }
+
+        .resetBtn {
+          width: calc(100% - 32px);
+          margin: 16px;
+        }
+
+        .up {
+          color: #0ecb81 !important;
+        }
+
+        .down {
+          color: #f6465d !important;
+        }
+
+        @media (max-width: 1280px) {
+          .terminalGrid {
+            grid-template-columns: 250px minmax(0, 1fr) 300px;
+          }
+
+          .panelWallet {
+            grid-column: 1 / -1;
+          }
+        }
+
+        @media (max-width: 1024px) {
+          .topStats {
+            grid-template-columns: repeat(2, 1fr);
+          }
+
+          .terminalGrid {
+            grid-template-columns: 1fr 1fr;
+          }
+
+          .panelMarkets,
+          .panelChart,
+          .panelBook,
+          .panelTrade,
+          .panelWallet {
+            grid-column: auto;
+          }
+
+          .panelChart {
+            grid-column: 1 / -1;
+          }
+
+          .panelWallet {
+            grid-column: 1 / -1;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .exchangePage {
+            padding-top: 76px;
+          }
+
+          .exchangeShell {
+            padding: 12px;
+          }
+
+          .topBar {
+            margin-bottom: 12px;
+          }
+
+          .pairMain h1 {
+            font-size: 1.4rem;
+          }
+
+          .topStats {
+            grid-template-columns: repeat(2, 1fr);
+          }
+
+          .mobileTabs {
+            display: flex;
+          }
+
+          .terminalGrid {
+            display: block;
+          }
+
+          .panelMarkets {
+            margin-bottom: 12px;
+          }
+
+          .mobilePane {
+            display: none;
+          }
+
+          .mobilePane.showMobile {
+            display: block;
+            margin-bottom: 12px;
+          }
+
+          .chartArea {
+            height: 240px;
+          }
+
+          .bookHeader,
+          .bookRow {
+            font-size: 0.8rem;
+            gap: 6px;
+            padding-left: 12px;
+            padding-right: 12px;
+          }
+
+          .quickAmounts {
+            grid-template-columns: repeat(2, 1fr);
+          }
+
+          .panelHeader,
+          .marketSearch,
+          .chartBox,
+          .walletList,
+          .segmented,
+          .orderTypeTabs,
+          .formGroup,
+          .quickAmounts {
+            padding-left: 12px;
+            padding-right: 12px;
+          }
+
+          .submitBtn,
+          .resetBtn {
+            width: calc(100% - 24px);
+            margin: 12px;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .topStats {
+            grid-template-columns: 1fr;
+          }
+
+          .pairInfo {
+            min-width: 0;
+          }
+
+          .pairMain {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 8px;
+          }
+
+          .mobileTabs button {
+            padding: 9px 12px;
+            font-size: 0.9rem;
+          }
+
+          .statCard {
+            padding: 14px;
+          }
+        }
+      `}</style>
+    </>
+  );
 }
