@@ -2,32 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-
-:root {
-  --gold: #F0B90B;
-  --dark: #0B0E11;
-  --dark-2: #161A1E;
-  --dark-3: #1E2329;
-}
-
-* { box-sizing: border-box; }
-
-html, body {
-  background: var(--dark);
-  color: white;
-  font-family: 'Inter', sans-serif;
-  margin: 0;
-  padding: 0;
+/* Reset default margins to zero to kill the gap */
+html, body, #__next {
+  margin: 0 !important;
+  padding: 0 !important;
+  background-color: #0b0e11;
+  overflow-x: hidden;
 }
 
 @layer components {
-  /* LOGO SYSTEM */
+  /* LOGO STYLING - Image 7 and 10 match */
   .logo-nxt { 
     font-family: 'Arial Black', sans-serif; 
     font-size: 22px; 
     font-weight: 900; 
-    color: var(--gold); 
+    color: #F0B90B; 
     letter-spacing: -1px; 
   }
   .logo-sep { 
@@ -46,16 +35,7 @@ html, body {
   .logo-cap { 
     font-size: 7px; 
     font-weight: 700; 
-    color: var(--gold); 
+    color: #F0B90B; 
     letter-spacing: 4px; 
-    text-transform: uppercase; 
-  }
-
-  /* BUTTONS */
-  .btn-gold { 
-    @apply bg-[#F0B90B] text-black px-5 py-2 rounded text-sm font-bold hover:bg-[#fcd535] transition-all active:scale-95; 
-  }
-  .btn-login { 
-    @apply text-white font-bold text-sm px-4 hover:text-[#F0B90B] transition-colors; 
   }
 }
