@@ -1,501 +1,1292 @@
-// pages/exchange.js
-import { useState, useEffect, useRef, useCallback, createContext, useContext } from 'react'
-import Head from 'next/head'
-import Link from 'next/link'
+import { useMemo, useState } from "react";
+import Head from "next/head";
+import { useRouter } from "next/router";
 
-const PriceCtx = createContext({})
+const allMarkets = [
+  {
+    id: 1,
+    name: "Tokenized Office Building",
+    location: "Berlin, Germany",
+    category: "Property",
+    icon: "🏢",
+    roi: "16.4%",
+    minInvest: "€500",
+    funded: 78,
+    total: "€2,400,000",
+    raised: "€1,872,000",
+    status: "Live",
+    term: "36 months",
+    risk: "Low",
+  },
+  {
+    id: 2,
+    name: "Solar Farm Portfolio",
+    location: "Alicante, Spain",
+    category: "Energy",
+    icon: "☀️",
+    roi: "18.2%",
+    minInvest: "€250",
+    funded: 92,
+    total: "€5,000,000",
+    raised: "€4,600,000",
+    status: "Closing Soon",
+    term: "60 months",
+    risk: "Low",
+  },
+  {
+    id: 3,
+    name: "Logistics Hub",
+    location: "Warsaw, Poland",
+    category: "Infrastructure",
+    icon: "🏭",
+    roi: "15.1%",
+    minInvest: "€1,000",
+    funded: 45,
+    total: "€8,000,000",
+    raised: "€3,600,000",
+    status: "Live",
+    term: "48 months",
+    risk: "Medium",
+  },
+  {
+    id: 4,
+    name: "Residential Complex",
+    location: "Lisbon, Portugal",
+    category: "Property",
+    icon: "🏘️",
+    roi: "14.8%",
+    minInvest: "€500",
+    funded: 60,
+    total: "€3,200,000",
+    raised: "€1,920,000",
+    status: "Live",
+    term: "24 months",
+    risk: "Low",
+  },
+  {
+    id: 5,
+    name: "Wind Energy Project",
+    location: "Gdańsk, Poland",
+    category: "Energy",
+    icon: "💨",
+    roi: "17.6%",
+    minInvest: "€250",
+    funded: 33,
+    total: "€6,500,000",
+    raised: "€2,145,000",
+    status: "Live",
+    term: "72 months",
+    risk: "Medium",
+  },
+  {
+    id: 6,
+    name: "Retail Shopping Centre",
+    location: "Amsterdam, Netherlands",
+    category: "Commercial",
+    icon: "🛍️",
+    roi: "13.9%",
+    minInvest: "€1,000",
+    funded: 88,
+    total: "€4,000,000",
+    raised: "€3,520,000",
+    status: "Closing Soon",
+    term: "36 months",
+    risk: "Low",
+  },
+  {
+    id: 7,
+    name: "Tech Business Park",
+    location: "Dublin, Ireland",
+    category: "Commercial",
+    icon: "💼",
+    roi: "15.9%",
+    minInvest: "€500",
+    funded: 20,
+    total: "€10,000,000",
+    raised: "€2,000,000",
+    status: "Live",
+    term: "60 months",
+    risk: "Medium",
+  },
+  {
+    id: 8,
+    name: "Green Hydrogen Plant",
+    location: "Rotterdam, Netherlands",
+    category: "Energy",
+    icon: "⚗️",
+    roi: "18.8%",
+    minInvest: "€2,000",
+    funded: 15,
+    total: "€12,000,000",
+    raised: "€1,800,000",
+    status: "Live",
+    term: "84 months",
+    risk: "High",
+  },
+  {
+    id: 9,
+    name: "Student Housing Block",
+    location: "Prague, Czechia",
+    category: "Property",
+    icon: "🏠",
+    roi: "14.2%",
+    minInvest: "€250",
+    funded: 71,
+    total: "€1,800,000",
+    raised: "€1,278,000",
+    status: "Live",
+    term: "24 months",
+    risk: "Low",
+  },
+];
 
-const BASE_PAIRS = [
-  { sym:'BTC/EUR',   price:62054.31, chg:-3.66, vol:'1.24B', high:64900, low:61200 },
-  { sym:'ETH/EUR',   price:1913.01,  chg:-5.24, vol:'580M',  high:2025,  low:1890  },
-  { sym:'BNB/EUR',   price:568.90,   chg:-2.20, vol:'290M',  high:588,   low:562   },
-  { sym:'SOL/EUR',   price:98.42,    chg:+1.12, vol:'420M',  high:102,   low:96.1  },
-  { sym:'XRP/EUR',   price:0.4821,   chg:+0.87, vol:'1.8B',  high:0.495, low:0.471 },
-  { sym:'ADA/EUR',   price:0.3312,   chg:-1.45, vol:'920M',  high:0.341, low:0.328 },
-  { sym:'AVAX/EUR',  price:22.18,    chg:+2.30, vol:'310M',  high:22.9,  low:21.5  },
-  { sym:'DOT/EUR',   price:5.74,     chg:-0.92, vol:'175M',  high:5.85,  low:5.68  },
-  { sym:'MATIC/EUR', price:0.5123,   chg:+3.10, vol:'660M',  high:0.524, low:0.494 },
-  { sym:'LINK/EUR',  price:11.42,    chg:+1.75, vol:'240M',  high:11.65, low:11.10 },
-  { sym:'UNI/EUR',   price:8.34,     chg:-0.55, vol:'180M',  high:8.71,  low:8.20  },
-  { sym:'ATOM/EUR',  price:6.91,     chg:+0.33, vol:'95M',   high:7.10,  low:6.78  },
-]
+const categories = ["All", "Property", "Energy", "Infrastructure", "Commercial"];
+const riskLevels = ["All", "Low", "Medium", "High"];
 
-const TFS = ['1m','5m','15m','1h','4h','1d','1w']
-const r = (min,max) => Math.random()*(max-min)+min
+const riskColors = {
+  Low: "#2dd4bf",
+  Medium: "#fbbf24",
+  High: "#fb7185",
+};
 
-function buildCandles(base, count, tf) {
-  const ms = {'1m':60000,'5m':300000,'15m':900000,'1h':3600000,'4h':14400000,'1d':86400000,'1w':604800000}[tf]||60000
-  const candles=[]; let p=base*r(0.88,1.1); const now=Date.now()
-  for(let i=count;i>0;i--){
-    const v=p*r(0.006,0.022),o=p,c=p+r(-v,v),h=Math.max(o,c)+r(0,v*0.4),l=Math.min(o,c)-r(0,v*0.4)
-    candles.push({t:now-i*ms,o,h,l,c,v:r(50,3000)}); p=c
-  }
-  return candles
-}
+const statusStyles = {
+  Live: {
+    bg: "rgba(45, 212, 191, 0.12)",
+    border: "rgba(45, 212, 191, 0.32)",
+    color: "#2dd4bf",
+  },
+  "Closing Soon": {
+    bg: "rgba(251, 191, 36, 0.12)",
+    border: "rgba(251, 191, 36, 0.32)",
+    color: "#fbbf24",
+  },
+};
 
-function Chart({ pair, tf }) {
-  const { livePrice } = useContext(PriceCtx)
-  const cvs = useRef(null)
-  const candles = useRef([])
-  const raf = useRef(null)
-  const dirty = useRef(true)
-  const hover = useRef(-1)
-  const base = BASE_PAIRS.find(p=>p.sym===pair)?.price||1000
+export default function Markets() {
+  const router = useRouter();
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("All");
+  const [risk, setRisk] = useState("All");
+  const [sortBy, setSortBy] = useState("funded");
+  const [view, setView] = useState("grid");
 
-  useEffect(()=>{ candles.current=buildCandles(base,200,tf); dirty.current=true },[pair,tf,base])
+  const filteredMarkets = useMemo(() => {
+    const result = allMarkets
+      .filter((market) => {
+        const q = search.toLowerCase().trim();
+        const matchSearch =
+          market.name.toLowerCase().includes(q) ||
+          market.location.toLowerCase().includes(q) ||
+          market.category.toLowerCase().includes(q);
 
-  useEffect(()=>{
-    if(!candles.current.length||!livePrice[pair]) return
-    const last=candles.current[candles.current.length-1]
-    last.c=livePrice[pair]; last.h=Math.max(last.h,last.c); last.l=Math.min(last.l,last.c)
-    dirty.current=true
-  },[livePrice,pair])
+        const matchCategory = category === "All" || market.category === category;
+        const matchRisk = risk === "All" || market.risk === risk;
 
-  const draw = useCallback(()=>{
-    const el=cvs.current; if(!el||!dirty.current) return; dirty.current=false
-    const ctx=el.getContext('2d'), dpr=window.devicePixelRatio||1
-    const W=el.clientWidth, H=el.clientHeight
-    el.width=W*dpr; el.height=H*dpr; ctx.scale(dpr,dpr)
-    ctx.clearRect(0,0,W,H)
-    const data=candles.current.slice(-100); if(!data.length) return
-    const UP='#0ecb81',DN='#f6465d',GR='rgba(255,255,255,0.04)',TX='rgba(132,142,156,0.85)'
-    const P={t:10,r:72,b:34,l:6}
-    const cH=H*0.76, vH=H*0.15, cW=W-P.l-P.r
-    const VIEW=data.length
-    const prices=data.flatMap(c=>[c.h,c.l])
-    const mn=Math.min(...prices),mx=Math.max(...prices),rng=mx-mn||1,pd=rng*0.05
-    const yMin=mn-pd,yMax=mx+pd
-    const toY=p=>P.t+cH-((p-yMin)/(yMax-yMin))*cH
-    const toX=i=>P.l+(i+0.5)*(cW/VIEW)
-    const bW=Math.max(2,(cW/VIEW)*0.72)
-    ctx.strokeStyle=GR; ctx.lineWidth=1
-    for(let i=0;i<=5;i++){
-      const y=P.t+(cH/5)*i; ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(W-P.r,y);ctx.stroke()
-      const pr=yMax-((yMax-yMin)/5)*i
-      ctx.fillStyle=TX;ctx.font='10px monospace';ctx.textAlign='left'
-      ctx.fillText(pr.toFixed(pr>100?2:pr>1?4:6),W-P.r+4,y+4)
-    }
-    const mxV=Math.max(...data.map(c=>c.v))
-    data.forEach((c,i)=>{
-      const x=toX(i),bh=(c.v/mxV)*vH
-      ctx.fillStyle=c.c>=c.o?'rgba(14,203,129,0.22)':'rgba(246,70,93,0.22)'
-      ctx.fillRect(x-bW/2,H-P.b-bh,bW,bh)
-    })
-    data.forEach((c,i)=>{
-      const x=toX(i),up=c.c>=c.o,col=up?UP:DN
-      if(i===hover.current){ctx.fillStyle='rgba(255,255,255,0.03)';ctx.fillRect(x-bW,P.t,bW*2,cH)}
-      ctx.strokeStyle=col;ctx.lineWidth=1
-      ctx.beginPath();ctx.moveTo(x,toY(c.h));ctx.lineTo(x,toY(c.l));ctx.stroke()
-      const top=toY(Math.max(c.o,c.c)),ht=Math.max(1,Math.abs(toY(c.o)-toY(c.c)))
-      ctx.fillStyle=col;ctx.fillRect(x-bW/2,top,bW,ht)
-      if(!up){ctx.strokeStyle=col;ctx.strokeRect(x-bW/2,top,bW,ht)}
-    })
-    const last=data[data.length-1]
-    if(last){
-      const y=toY(last.c),up=last.c>=last.o,col=up?UP:DN
-      ctx.save();ctx.setLineDash([3,3]);ctx.strokeStyle=col+'80';ctx.lineWidth=1
-      ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(W-P.r,y);ctx.stroke();ctx.restore()
-      ctx.fillStyle=col;ctx.beginPath();ctx.roundRect(W-P.r+2,y-9,68,18,3);ctx.fill()
-      ctx.fillStyle='#0b0e11';ctx.font='bold 10px monospace';ctx.textAlign='center'
-      ctx.fillText(last.c.toFixed(last.c>100?2:last.c>1?4:6),W-P.r+35,y+4)
-    }
-    if(hover.current>=0&&hover.current<data.length){
-      const c=data[hover.current],x=toX(hover.current)
-      const dp=c.c>100?2:c.c>1?4:6
-      const lines=[`O:${c.o.toFixed(dp)}`,`H:${c.h.toFixed(dp)}`,`L:${c.l.toFixed(dp)}`,`C:${c.c.toFixed(dp)}`,`V:${c.v.toFixed(0)}`]
-      const TW=115,TH=lines.length*16+14; let tx=x+12
-      if(tx+TW>W-P.r) tx=x-TW-12
-      ctx.fillStyle='rgba(18,23,33,0.95)';ctx.strokeStyle='rgba(255,255,255,0.1)';ctx.lineWidth=1
-      ctx.beginPath();ctx.roundRect(tx,P.t+6,TW,TH,5);ctx.fill();ctx.stroke()
-      ctx.font='10px monospace';ctx.textAlign='left'
-      lines.forEach((ln,j)=>{ctx.fillStyle='rgba(196,205,212,0.9)';ctx.fillText(ln,tx+8,P.t+20+j*16)})
-      ctx.save();ctx.setLineDash([2,2]);ctx.strokeStyle='rgba(255,255,255,0.1)';ctx.lineWidth=1
-      ctx.beginPath();ctx.moveTo(x,P.t);ctx.lineTo(x,H-P.b);ctx.stroke();ctx.restore()
-    }
-    ctx.fillStyle=TX;ctx.font='9px monospace';ctx.textAlign='center'
-    const step=Math.max(1,Math.floor(VIEW/8))
-    data.forEach((c,i)=>{
-      if(i%step===0){
-        const d=new Date(c.t)
-        const lbl=(tf==='1d'||tf==='1w')?`${d.getMonth()+1}/${d.getDate()}`:`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`
-        ctx.fillText(lbl,toX(i),H-P.b+13)
-      }
-    })
-  },[])
-
-  useEffect(()=>{ const loop=()=>{draw();raf.current=requestAnimationFrame(loop)}; loop(); return()=>cancelAnimationFrame(raf.current) },[draw])
-
-  const onMove=useCallback(e=>{
-    const el=cvs.current; if(!el) return
-    const rect=el.getBoundingClientRect()
-    const mx=(e.touches?e.touches[0].clientX:e.clientX)-rect.left
-    const VIEW=Math.min(candles.current.length,100)
-    const cW=el.clientWidth-6-72
-    hover.current=Math.max(0,Math.min(Math.floor((mx-6)/(cW/VIEW)),VIEW-1))
-    dirty.current=true
-  },[])
-
-  return <canvas ref={cvs} style={{width:'100%',height:'100%',display:'block',cursor:'crosshair'}}
-    onMouseMove={onMove} onMouseLeave={()=>{hover.current=-1;dirty.current=true}} onTouchMove={onMove}/>
-}
-
-function Book({ pair }) {
-  const { livePrice } = useContext(PriceCtx)
-  const [book, setBook] = useState({asks:[],bids:[],mid:0})
-  useEffect(()=>{
-    const gen=()=>{
-      const mid=livePrice[pair]||BASE_PAIRS.find(p=>p.sym===pair)?.price||1000
-      const asks=[],bids=[]
-      let ap=mid+mid*0.0002,bp=mid-mid*0.0002
-      for(let i=0;i<12;i++){
-        asks.push({p:ap,a:r(0.01,3),t:r(50,5000)}); bids.push({p:bp,a:r(0.01,3),t:r(50,5000)})
-        ap+=r(0.1,mid*0.0006); bp-=r(0.1,mid*0.0006)
-      }
-      const mxT=Math.max(...[...asks,...bids].map(x=>x.t))
-      asks.forEach(x=>x.pct=(x.t/mxT)*100); bids.forEach(x=>x.pct=(x.t/mxT)*100)
-      setBook({asks:asks.reverse(),bids,mid})
-    }
-    gen(); const iv=setInterval(gen,1000); return()=>clearInterval(iv)
-  },[pair,livePrice])
-  const fmt=n=>n>1000?n.toFixed(2):n>1?n.toFixed(4):n.toFixed(6)
-  return(
-    <div style={{height:'100%',display:'flex',flexDirection:'column',fontSize:'11px',fontFamily:'monospace'}}>
-      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',padding:'4px 8px',color:'#848e9c',borderBottom:'1px solid #1e2329',fontSize:'10px'}}>
-        <span>Price(EUR)</span><span style={{textAlign:'right'}}>Amount</span><span style={{textAlign:'right'}}>Total</span>
-      </div>
-      <div style={{flex:1,overflow:'hidden'}}>
-        {book.asks.map((row,i)=>(
-          <div key={i} style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',padding:'2px 8px',position:'relative',cursor:'pointer'}} onMouseOver={e=>e.currentTarget.style.background='rgba(255,255,255,0.03)'} onMouseOut={e=>e.currentTarget.style.background='transparent'}>
-            <div style={{position:'absolute',right:0,top:0,bottom:0,background:'rgba(246,70,93,0.1)',width:`${row.pct}%`}}/>
-            <span style={{color:'#f6465d',position:'relative'}}>{fmt(row.p)}</span>
-            <span style={{textAlign:'right',color:'#c4cdd4',position:'relative'}}>{row.a.toFixed(4)}</span>
-            <span style={{textAlign:'right',color:'#848e9c',position:'relative'}}>{row.t.toFixed(0)}</span>
-          </div>
-        ))}
-        <div style={{padding:'5px 8px',borderTop:'1px solid #1e2329',borderBottom:'1px solid #1e2329',display:'flex',alignItems:'center',gap:'8px',background:'#0d1117'}}>
-          <span style={{color:'#0ecb81',fontSize:'14px',fontWeight:700}}>{fmt(book.mid)}</span>
-          <span style={{color:'#848e9c',fontSize:'10px'}}>≈ EUR {fmt(book.mid)}</span>
-        </div>
-        {book.bids.map((row,i)=>(
-          <div key={i} style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',padding:'2px 8px',position:'relative',cursor:'pointer'}} onMouseOver={e=>e.currentTarget.style.background='rgba(255,255,255,0.03)'} onMouseOut={e=>e.currentTarget.style.background='transparent'}>
-            <div style={{position:'absolute',right:0,top:0,bottom:0,background:'rgba(14,203,129,0.1)',width:`${row.pct}%`}}/>
-            <span style={{color:'#0ecb81',position:'relative'}}>{fmt(row.p)}</span>
-            <span style={{textAlign:'right',color:'#c4cdd4',position:'relative'}}>{row.a.toFixed(4)}</span>
-            <span style={{textAlign:'right',color:'#848e9c',position:'relative'}}>{row.t.toFixed(0)}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-function Feed({ pair }) {
-  const { livePrice } = useContext(PriceCtx)
-  const [trades, setTrades] = useState([])
-  const base = livePrice[pair]||BASE_PAIRS.find(p=>p.sym===pair)?.price||1000
-  useEffect(()=>{
-    setTrades(Array.from({length:18},()=>({id:Math.random(),p:base*r(0.9998,1.0002),a:r(0.001,2),side:Math.random()>.5?'buy':'sell',t:new Date()})))
-    const iv=setInterval(()=>setTrades(prev=>[{id:Math.random(),p:(livePrice[pair]||base)*r(0.9998,1.0002),a:r(0.001,2),side:Math.random()>.5?'buy':'sell',t:new Date()},...prev].slice(0,22)),r(400,1800))
-    return()=>clearInterval(iv)
-  },[pair])
-  const fmt=n=>n>1000?n.toFixed(2):n>1?n.toFixed(4):n.toFixed(6)
-  return(
-    <div style={{height:'100%',overflow:'hidden',fontFamily:'monospace',fontSize:'11px'}}>
-      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',padding:'4px 8px',color:'#848e9c',borderBottom:'1px solid #1e2329',fontSize:'10px'}}>
-        <span>Price(EUR)</span><span style={{textAlign:'right'}}>Amount</span><span style={{textAlign:'right'}}>Time</span>
-      </div>
-      <div style={{overflow:'hidden',height:'calc(100% - 28px)'}}>
-        {trades.map(t=>(
-          <div key={t.id} style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',padding:'2px 8px'}}>
-            <span style={{color:t.side==='buy'?'#0ecb81':'#f6465d'}}>{fmt(t.p)}</span>
-            <span style={{textAlign:'right',color:'#c4cdd4'}}>{t.a.toFixed(4)}</span>
-            <span style={{textAlign:'right',color:'#848e9c'}}>{String(t.t.getHours()).padStart(2,'0')}:{String(t.t.getMinutes()).padStart(2,'0')}:{String(t.t.getSeconds()).padStart(2,'0')}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-function Form({ pair }) {
-  const { livePrice } = useContext(PriceCtx)
-  const [side, setSide] = useState('buy')
-  const [type, setType] = useState('limit')
-  const [price, setPrice] = useState('')
-  const [amount, setAmount] = useState('')
-  const [pct, setPct] = useState(null)
-  const base = pair.split('/')[0]
-  const lp = livePrice[pair]||BASE_PAIRS.find(p=>p.sym===pair)?.price||1000
-  useEffect(()=>{ setPrice(lp.toFixed(lp>100?2:lp>1?4:6)) },[pair,lp])
-  const total = ((parseFloat(price)||0)*(parseFloat(amount)||0)).toFixed(2)
-  return(
-    <div style={{padding:'12px',display:'flex',flexDirection:'column',gap:'10px',height:'100%'}}>
-      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'3px',background:'#0b0e11',borderRadius:'6px',padding:'3px'}}>
-        {['buy','sell'].map(s=>(
-          <button key={s} onClick={()=>setSide(s)} style={{padding:'8px',borderRadius:'4px',border:'none',cursor:'pointer',fontWeight:700,fontSize:'13px',transition:'all .2s',background:side===s?(s==='buy'?'#0ecb81':'#f6465d'):'transparent',color:side===s?(s==='buy'?'#0b0e11':'#fff'):'#848e9c',textTransform:'capitalize'}}>{s}</button>
-        ))}
-      </div>
-      <div style={{display:'flex',borderBottom:'1px solid #1e2329'}}>
-        {['limit','market','stop'].map(t=>(
-          <button key={t} onClick={()=>setType(t)} style={{flex:1,background:'none',border:'none',cursor:'pointer',fontSize:'11px',color:type===t?'#f0b90b':'#848e9c',fontWeight:type===t?600:400,padding:'6px 4px',borderBottom:type===t?'2px solid #f0b90b':'2px solid transparent',textTransform:'capitalize',fontFamily:'monospace',transition:'all .15s'}}>{t}</button>
-        ))}
-      </div>
-      <div style={{display:'flex',justifyContent:'space-between',fontSize:'11px',color:'#848e9c'}}>
-        <span>Available</span><span style={{color:'#c4cdd4'}}>{side==='buy'?'5,000.00 EUR':`0.1420 ${base}`}</span>
-      </div>
-      {type!=='market'&&(
-        <div>
-          <label style={{fontSize:'10px',color:'#848e9c',display:'block',marginBottom:'4px'}}>Price (EUR)</label>
-          <div style={{position:'relative'}}>
-            <input value={price} onChange={e=>setPrice(e.target.value)} style={{width:'100%',background:'#1e2329',border:'1px solid #2b3139',borderRadius:'4px',padding:'8px 40px 8px 10px',color:'#e8e8e8',fontSize:'12px',fontFamily:'monospace',outline:'none',boxSizing:'border-box'}}/>
-            <span style={{position:'absolute',right:'8px',top:'50%',transform:'translateY(-50%)',color:'#848e9c',fontSize:'11px'}}>EUR</span>
-          </div>
-        </div>
-      )}
-      <div>
-        <label style={{fontSize:'10px',color:'#848e9c',display:'block',marginBottom:'4px'}}>Amount ({base})</label>
-        <div style={{position:'relative'}}>
-          <input value={amount} onChange={e=>setAmount(e.target.value)} placeholder="0.00000000" style={{width:'100%',background:'#1e2329',border:'1px solid #2b3139',borderRadius:'4px',padding:'8px 40px 8px 10px',color:'#e8e8e8',fontSize:'12px',fontFamily:'monospace',outline:'none',boxSizing:'border-box'}}/>
-          <span style={{position:'absolute',right:'8px',top:'50%',transform:'translateY(-50%)',color:'#848e9c',fontSize:'11px'}}>{base}</span>
-        </div>
-      </div>
-      <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:'4px'}}>
-        {[25,50,75,100].map(p=>(
-          <button key={p} onClick={()=>{setPct(p);setAmount((p/100*0.142).toFixed(6))}} style={{padding:'4px',background:pct===p?'rgba(240,185,11,0.15)':'#1e2329',border:`1px solid ${pct===p?'#f0b90b':'#2b3139'}`,borderRadius:'4px',color:pct===p?'#f0b90b':'#848e9c',fontSize:'10px',cursor:'pointer',fontFamily:'monospace'}}>{p}%</button>
-        ))}
-      </div>
-      <div>
-        <label style={{fontSize:'10px',color:'#848e9c',display:'block',marginBottom:'4px'}}>Total (EUR)</label>
-        <div style={{position:'relative'}}>
-          <input value={total} readOnly style={{width:'100%',background:'#1e2329',border:'1px solid #2b3139',borderRadius:'4px',padding:'8px 40px 8px 10px',color:'#848e9c',fontSize:'12px',fontFamily:'monospace',outline:'none',boxSizing:'border-box'}}/>
-          <span style={{position:'absolute',right:'8px',top:'50%',transform:'translateY(-50%)',color:'#848e9c',fontSize:'11px'}}>EUR</span>
-        </div>
-      </div>
-      <button onClick={()=>alert(`${side.toUpperCase()} order: ${amount||'0'} ${base} @ ${price} EUR`)} style={{padding:'11px',borderRadius:'4px',border:'none',cursor:'pointer',fontWeight:700,fontSize:'13px',background:side==='buy'?'#0ecb81':'#f6465d',color:side==='buy'?'#0b0e11':'#fff'}} onMouseOver={e=>e.target.style.opacity='.85'} onMouseOut={e=>e.target.style.opacity='1'}>
-        {side==='buy'?`Buy ${base}`:`Sell ${base}`}
-      </button>
-      <p style={{textAlign:'center',fontSize:'11px',color:'#848e9c',margin:0}}>
-        <Link href="/login" style={{color:'#f0b90b',textDecoration:'none'}}>Log In</Link> or <Link href="/register" style={{color:'#f0b90b',textDecoration:'none'}}>Register</Link>
-      </p>
-    </div>
-  )
-}
-
-function Markets({ onSelect }) {
-  const { livePrice } = useContext(PriceCtx)
-  const [search, setSearch] = useState('')
-  const [tab, setTab] = useState('all')
-  const [sort, setSort] = useState('vol')
-  const [dir, setDir] = useState(-1)
-  const rows = BASE_PAIRS
-    .filter(p=>p.sym.toLowerCase().includes(search.toLowerCase()))
-    .filter(p=>tab==='all'||(tab==='up'&&p.chg>0)||(tab==='down'&&p.chg<0))
-    .sort((a,b)=>{ const av=sort==='price'?a.price:sort==='chg'?a.chg:parseFloat(a.vol); const bv=sort==='price'?b.price:sort==='chg'?b.chg:parseFloat(b.vol); return(av-bv)*dir })
-  const tog=col=>{ if(sort===col)setDir(d=>d*-1); else{setSort(col);setDir(-1)} }
-  return(
-    <div style={{background:'#0b0e11',minHeight:'100%',color:'#c4cdd4'}}>
-      <div style={{background:'#161a1e',borderBottom:'1px solid #1e2329',padding:'16px 20px'}}>
-        <h2 style={{color:'#fff',fontWeight:700,fontSize:'18px',margin:'0 0 4px'}}>Markets Overview</h2>
-        <p style={{color:'#848e9c',fontSize:'12px',margin:0,fontFamily:'monospace'}}>Live tokenized asset prices — MiCA regulated</p>
-      </div>
-      <div style={{padding:'16px 20px'}}>
-        <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:'10px',marginBottom:'20px'}}>
-          {[{l:'Market Cap',v:'€420B+',c:'#0ecb81'},{l:'24h Volume',v:'€8.2B',c:'#c4cdd4'},{l:'Active Pairs',v:'12',c:'#c4cdd4'},{l:'Avg 24h',v:'-1.2%',c:'#f6465d'}].map(s=>(
-            <div key={s.l} style={{background:'#161a1e',border:'1px solid #1e2329',borderRadius:'8px',padding:'14px'}}>
-              <div style={{fontSize:'11px',color:'#848e9c',marginBottom:'4px',fontFamily:'monospace'}}>{s.l}</div>
-              <div style={{fontSize:'17px',fontWeight:700,color:s.c,fontFamily:'monospace'}}>{s.v}</div>
-            </div>
-          ))}
-        </div>
-        <div style={{display:'flex',alignItems:'center',borderBottom:'1px solid #1e2329'}}>
-          {[['all','All'],['up','Gainers'],['down','Losers']].map(([v,l])=>(
-            <button key={v} onClick={()=>setTab(v)} style={{background:'none',border:'none',cursor:'pointer',padding:'8px 16px',color:tab===v?'#f0b90b':'#848e9c',borderBottom:tab===v?'2px solid #f0b90b':'2px solid transparent',fontSize:'12px',fontFamily:'monospace',marginBottom:'-1px'}}>{l}</button>
-          ))}
-          <div style={{marginLeft:'auto',paddingBottom:'8px'}}>
-            <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search..." style={{background:'#1e2329',border:'1px solid #2b3139',borderRadius:'5px',padding:'5px 10px',color:'#c4cdd4',fontSize:'11px',outline:'none',fontFamily:'monospace'}}/>
-          </div>
-        </div>
-        <div style={{background:'#161a1e',borderRadius:'8px',overflow:'hidden',border:'1px solid #1e2329'}}>
-          <div style={{display:'grid',gridTemplateColumns:'2fr 1.5fr 1fr 1fr 1fr',padding:'8px 16px',borderBottom:'1px solid #1e2329',fontSize:'10px',color:'#848e9c',fontFamily:'monospace'}}>
-            <span>Pair</span>
-            <span style={{textAlign:'right',cursor:'pointer'}} onClick={()=>tog('price')}>Price {sort==='price'?(dir===1?'↑':'↓'):''}</span>
-            <span style={{textAlign:'right',cursor:'pointer'}} onClick={()=>tog('chg')}>24h% {sort==='chg'?(dir===1?'↑':'↓'):''}</span>
-            <span style={{textAlign:'right',cursor:'pointer'}} onClick={()=>tog('vol')}>Volume {sort==='vol'?(dir===1?'↑':'↓'):''}</span>
-            <span style={{textAlign:'right'}}>Action</span>
-          </div>
-          {rows.map(p=>(
-            <div key={p.sym} onClick={()=>onSelect(p.sym)} style={{display:'grid',gridTemplateColumns:'2fr 1.5fr 1fr 1fr 1fr',padding:'11px 16px',borderBottom:'1px solid #1e2329',cursor:'pointer',transition:'background .12s'}} onMouseOver={e=>e.currentTarget.style.background='#1e2329'} onMouseOut={e=>e.currentTarget.style.background='transparent'}>
-              <div style={{display:'flex',alignItems:'center',gap:'10px'}}>
-                <div style={{width:'30px',height:'30px',borderRadius:'50%',background:'linear-gradient(135deg,#f0b90b,#c8830a)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'9px',fontWeight:700,color:'#0b0e11',flexShrink:0}}>{p.sym.split('/')[0].slice(0,3)}</div>
-                <div><div style={{color:'#fff',fontWeight:600,fontSize:'13px'}}>{p.sym.split('/')[0]}</div><div style={{color:'#848e9c',fontSize:'10px',fontFamily:'monospace'}}>{p.sym}</div></div>
-              </div>
-              <div style={{textAlign:'right',alignSelf:'center',color:'#fff',fontWeight:600,fontFamily:'monospace',fontSize:'13px'}}>€{(livePrice[p.sym]||p.price).toLocaleString('en',{minimumFractionDigits:p.price>1?2:4})}</div>
-              <div style={{textAlign:'right',alignSelf:'center',color:p.chg>=0?'#0ecb81':'#f6465d',fontWeight:600,fontFamily:'monospace',fontSize:'12px'}}>{p.chg>=0?'+':''}{p.chg.toFixed(2)}%</div>
-              <div style={{textAlign:'right',alignSelf:'center',color:'#848e9c',fontSize:'12px',fontFamily:'monospace'}}>{p.vol}</div>
-              <div style={{textAlign:'right',alignSelf:'center'}}><button style={{background:'transparent',border:'1px solid #f0b90b',borderRadius:'4px',padding:'4px 10px',color:'#f0b90b',fontSize:'11px',cursor:'pointer',fontFamily:'monospace'}}>Trade</button></div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function Ticker({ livePrice, onSelect }) {
-  return(
-    <div style={{background:'#161a1e',borderBottom:'1px solid #1e2329',display:'flex',overflowX:'auto',scrollbarWidth:'none',flexShrink:0}}>
-      {BASE_PAIRS.slice(0,8).map(p=>{
-        const pr=livePrice[p.sym]||p.price
-        return(
-          <button key={p.sym} onClick={()=>onSelect(p.sym)} style={{padding:'6px 16px',background:'none',border:'none',cursor:'pointer',flexShrink:0,textAlign:'left',borderRight:'1px solid #1e2329'}}>
-            <div style={{fontSize:'11px',color:'#fff',fontWeight:600,fontFamily:'monospace'}}>{p.sym}</div>
-            <div style={{display:'flex',gap:'6px',alignItems:'center',marginTop:'1px'}}>
-              <span style={{fontSize:'11px',color:p.chg>=0?'#0ecb81':'#f6465d',fontFamily:'monospace'}}>{pr.toLocaleString('en',{minimumFractionDigits:pr>1?2:4})}</span>
-              <span style={{fontSize:'10px',color:p.chg>=0?'#0ecb81':'#f6465d',fontFamily:'monospace'}}>{p.chg>=0?'+':''}{p.chg.toFixed(2)}%</span>
-            </div>
-          </button>
-        )
-      })}
-    </div>
-  )
-}
-
-export default function Exchange() {
-  const [pair, setPair] = useState('BTC/EUR')
-  const [tf, setTf] = useState('1h')
-  const [rightTab, setRightTab] = useState('book')
-  const [page, setPage] = useState('exchange')
-  const [mobileTab, setMobileTab] = useState('chart')
-  const [livePrice, setLivePrice] = useState(()=>Object.fromEntries(BASE_PAIRS.map(p=>[p.sym,p.price])))
-  const [isMobile, setIsMobile] = useState(false)
-
-  useEffect(()=>{
-    const iv=setInterval(()=>{
-      setLivePrice(prev=>{
-        const next={...prev}
-        BASE_PAIRS.forEach(p=>{ const v=next[p.sym]*0.0005; next[p.sym]=Math.max(0.0001,next[p.sym]+r(-v,v)) })
-        return next
+        return matchSearch && matchCategory && matchRisk;
       })
-    },600)
-    return()=>clearInterval(iv)
-  },[])
+      .sort((a, b) => {
+        if (sortBy === "roi") return parseFloat(b.roi) - parseFloat(a.roi);
+        if (sortBy === "funded") return b.funded - a.funded;
+        if (sortBy === "min") {
+          return (
+            parseInt(a.minInvest.replace(/\D/g, ""), 10) -
+            parseInt(b.minInvest.replace(/\D/g, ""), 10)
+          );
+        }
+        return 0;
+      });
 
-  useEffect(()=>{
-    const check=()=>setIsMobile(window.innerWidth<900)
-    check(); window.addEventListener('resize',check); return()=>window.removeEventListener('resize',check)
-  },[])
+    return result;
+  }, [search, category, risk, sortBy]);
 
-  const cp=BASE_PAIRS.find(p=>p.sym===pair)||BASE_PAIRS[0]
-  const lp=livePrice[pair]||cp.price
-  const handleSelect=(sym)=>{ setPair(sym); setPage('exchange') }
-
-  return(
-    <PriceCtx.Provider value={{livePrice}}>
+  return (
+    <>
       <Head>
-        <title>{pair} {lp.toFixed(lp>100?2:4)} — Nextoken Capital Exchange</title>
-        <meta name="viewport" content="width=device-width,initial-scale=1"/>
-        <style>{`
-          *{box-sizing:border-box;margin:0;padding:0}
-          body{background:#0b0e11;color:#c4cdd4;font-family:'DM Sans',sans-serif}
-          ::-webkit-scrollbar{width:4px;height:4px}
-          ::-webkit-scrollbar-track{background:#0b0e11}
-          ::-webkit-scrollbar-thumb{background:#2b3139;border-radius:2px}
-          input:focus{border-color:#f0b90b!important;outline:none}
-          .exch-wrap{position:fixed;top:64px;left:0;right:0;bottom:0;display:flex;flex-direction:column;overflow:hidden}
-        `}</style>
+        <title>Markets — Nextoken Capital</title>
+        <meta
+          name="description"
+          content="Browse premium tokenized real-world asset investment opportunities on Nextoken Capital."
+        />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      <div className="exch-wrap">
-        <Ticker livePrice={livePrice} onSelect={handleSelect}/>
-        <div style={{background:'#161a1e',borderBottom:'1px solid #1e2329',padding:'8px 12px',display:'flex',alignItems:'center',gap:'12px',flexShrink:0,overflowX:'auto'}}>
-          <button onClick={()=>setPage(p=>p==='markets'?'exchange':'markets')} style={{display:'flex',alignItems:'center',gap:'8px',background:'none',border:'none',cursor:'pointer',flexShrink:0}}>
-            <div style={{width:'28px',height:'28px',borderRadius:'50%',background:'linear-gradient(135deg,#f0b90b,#c8830a)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'9px',fontWeight:700,color:'#0b0e11'}}>{pair.split('/')[0].slice(0,3)}</div>
-            <span style={{color:'#fff',fontWeight:700,fontSize:'15px',fontFamily:'monospace'}}>{pair}</span>
-            <span style={{color:'#848e9c',fontSize:'11px'}}>▾</span>
-          </button>
-          <div style={{flexShrink:0}}>
-            <div style={{color:cp.chg>=0?'#0ecb81':'#f6465d',fontWeight:700,fontSize:'17px',fontFamily:'monospace'}}>{lp.toLocaleString('en',{minimumFractionDigits:lp>100?2:4})}</div>
-            <div style={{color:'#848e9c',fontSize:'10px',fontFamily:'monospace'}}>EUR {lp.toLocaleString('en',{minimumFractionDigits:lp>100?2:4})}</div>
-          </div>
-          <div style={{display:'flex',gap:'20px',flexShrink:0,overflowX:'auto'}}>
-            {[{l:'24h Change',v:`${cp.chg>=0?'+':''}${cp.chg.toFixed(2)}%`,c:cp.chg>=0?'#0ecb81':'#f6465d'},{l:'24h High',v:cp.high.toLocaleString(),c:'#c4cdd4'},{l:'24h Low',v:cp.low.toLocaleString(),c:'#c4cdd4'},{l:'Volume',v:cp.vol,c:'#c4cdd4'}].map(s=>(
-              <div key={s.l} style={{flexShrink:0}}>
-                <div style={{fontSize:'10px',color:'#848e9c',fontFamily:'monospace'}}>{s.l}</div>
-                <div style={{fontSize:'12px',color:s.c,fontFamily:'monospace'}}>{s.v}</div>
-              </div>
-            ))}
-          </div>
-          <button onClick={()=>setPage(p=>p==='markets'?'exchange':'markets')} style={{marginLeft:'auto',background:'#1e2329',border:'1px solid #2b3139',borderRadius:'4px',padding:'5px 12px',color:'#c4cdd4',fontSize:'11px',cursor:'pointer',flexShrink:0,fontFamily:'monospace'}}>
-            {page==='markets'?'← Exchange':'Markets ▾'}
-          </button>
-        </div>
+      <main className="marketsPage">
+        <div className="backgroundGlow glowOne" />
+        <div className="backgroundGlow glowTwo" />
+        <div className="noiseLayer" />
 
-        {page==='markets' ? (
-          <div style={{flex:1,overflow:'auto'}}><Markets onSelect={handleSelect}/></div>
-        ) : isMobile ? (
-          <div style={{flex:1,display:'flex',flexDirection:'column',overflow:'hidden'}}>
-            <div style={{display:'flex',background:'#161a1e',borderBottom:'1px solid #1e2329',flexShrink:0}}>
-              {[['chart','Chart'],['book','Book'],['trades','Trades'],['order','Trade']].map(([v,l])=>(
-                <button key={v} onClick={()=>setMobileTab(v)} style={{flex:1,padding:'8px 4px',background:'none',border:'none',cursor:'pointer',color:mobileTab===v?'#f0b90b':'#848e9c',borderBottom:mobileTab===v?'2px solid #f0b90b':'2px solid transparent',fontSize:'11px',fontFamily:'monospace',fontWeight:mobileTab===v?600:400}}>{l}</button>
-              ))}
+        <section className="container">
+          <div className="hero">
+            <div className="heroLeft">
+              <div className="eyebrow">Investment Opportunities</div>
+              <h1>
+                Explore Premium <span>Tokenized Markets</span>
+              </h1>
+              <p>
+                Access curated real-world asset opportunities across property,
+                energy, infrastructure, and commercial sectors with a modern
+                digital investment experience.
+              </p>
             </div>
-            {mobileTab==='chart'&&(
-              <div style={{display:'flex',background:'#161a1e',borderBottom:'1px solid #1e2329',overflowX:'auto',flexShrink:0}}>
-                {TFS.map(t=>(<button key={t} onClick={()=>setTf(t)} style={{padding:'5px 12px',background:'none',border:'none',cursor:'pointer',color:tf===t?'#f0b90b':'#848e9c',fontFamily:'monospace',fontSize:'11px',borderBottom:tf===t?'2px solid #f0b90b':'2px solid transparent',whiteSpace:'nowrap',fontWeight:tf===t?600:400,flexShrink:0}}>{t}</button>))}
+
+            <div className="heroStats">
+              <div className="heroStatCard">
+                <strong>{allMarkets.length}</strong>
+                <span>Active Projects</span>
               </div>
-            )}
-            <div style={{flex:1,overflow:'hidden'}}>
-              {mobileTab==='chart'&&<Chart pair={pair} tf={tf}/>}
-              {mobileTab==='book'&&<div style={{height:'100%',overflow:'auto'}}><Book pair={pair}/></div>}
-              {mobileTab==='trades'&&<div style={{height:'100%',overflow:'auto'}}><Feed pair={pair}/></div>}
-              {mobileTab==='order'&&<div style={{height:'100%',overflow:'auto'}}><Form pair={pair}/></div>}
+              <div className="heroStatCard">
+                <strong>€50M+</strong>
+                <span>Total Assets</span>
+              </div>
+              <div className="heroStatCard">
+                <strong>18.8%</strong>
+                <span>Highest ROI</span>
+              </div>
             </div>
           </div>
-        ) : (
-          <div style={{flex:1,display:'grid',gridTemplateColumns:'190px 1fr 210px 210px',gap:'1px',background:'#1e2329',overflow:'hidden'}}>
-            <div style={{background:'#161a1e',display:'flex',flexDirection:'column',overflow:'hidden'}}>
-              <div style={{padding:'8px',borderBottom:'1px solid #1e2329',flexShrink:0}}>
-                <input placeholder="Search..." style={{width:'100%',background:'#1e2329',border:'1px solid #2b3139',borderRadius:'4px',padding:'5px 8px',color:'#c4cdd4',fontSize:'11px',fontFamily:'monospace'}}/>
+
+          <div className="toolbar">
+            <div className="searchBox">
+              <span className="searchIcon">⌕</span>
+              <input
+                type="text"
+                placeholder="Search by asset, sector, or location..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+
+            <div className="toolbarGrid">
+              <div className="filterBlock">
+                <label>Category</label>
+                <div className="chipWrap">
+                  {categories.map((item) => (
+                    <button
+                      key={item}
+                      type="button"
+                      className={`chip ${category === item ? "chipActive" : ""}`}
+                      onClick={() => setCategory(item)}
+                    >
+                      {item}
+                    </button>
+                  ))}
+                </div>
               </div>
-              <div style={{flex:1,overflow:'auto'}}>
-                {BASE_PAIRS.map(p=>{
-                  const pr=livePrice[p.sym]||p.price
-                  return(
-                    <div key={p.sym} onClick={()=>setPair(p.sym)} style={{padding:'7px 10px',cursor:'pointer',background:pair===p.sym?'#1e2329':'transparent',borderLeft:pair===p.sym?'2px solid #f0b90b':'2px solid transparent',transition:'all .12s'}} onMouseOver={e=>{if(pair!==p.sym)e.currentTarget.style.background='rgba(255,255,255,0.03)'}} onMouseOut={e=>{if(pair!==p.sym)e.currentTarget.style.background='transparent'}}>
-                      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-                        <span style={{color:'#fff',fontSize:'12px',fontWeight:600,fontFamily:'monospace'}}>{p.sym.split('/')[0]}</span>
-                        <span style={{color:p.chg>=0?'#0ecb81':'#f6465d',fontSize:'10px',fontFamily:'monospace'}}>{p.chg>=0?'+':''}{p.chg.toFixed(2)}%</span>
-                      </div>
-                      <div style={{display:'flex',justifyContent:'space-between',marginTop:'1px'}}>
-                        <span style={{color:'#848e9c',fontSize:'10px',fontFamily:'monospace'}}>{p.sym}</span>
-                        <span style={{color:'#c4cdd4',fontSize:'10px',fontFamily:'monospace'}}>{pr.toFixed(pr>100?2:pr>1?4:6)}</span>
+
+              <div className="filterBlock">
+                <label>Risk Level</label>
+                <div className="chipWrap">
+                  {riskLevels.map((item) => (
+                    <button
+                      key={item}
+                      type="button"
+                      className={`chip ${risk === item ? "chipActive" : ""}`}
+                      onClick={() => setRisk(item)}
+                    >
+                      {item}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="filterBlock smallBlock">
+                <label>Sort By</label>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                >
+                  <option value="funded">Most Funded</option>
+                  <option value="roi">Highest ROI</option>
+                  <option value="min">Lowest Min. Invest</option>
+                </select>
+              </div>
+
+              <div className="filterBlock smallBlock">
+                <label>View</label>
+                <div className="viewToggle">
+                  <button
+                    type="button"
+                    className={view === "grid" ? "viewActive" : ""}
+                    onClick={() => setView("grid")}
+                  >
+                    Grid
+                  </button>
+                  <button
+                    type="button"
+                    className={view === "list" ? "viewActive" : ""}
+                    onClick={() => setView("list")}
+                  >
+                    List
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="resultsBar">
+            <div className="resultsText">
+              Showing <strong>{filteredMarkets.length}</strong> of{" "}
+              <strong>{allMarkets.length}</strong> opportunities
+            </div>
+          </div>
+
+          {view === "grid" ? (
+            <div className="grid">
+              {filteredMarkets.length === 0 ? (
+                <div className="emptyState">
+                  <div className="emptyIcon">🔍</div>
+                  <h3>No matching opportunities</h3>
+                  <p>Try changing your filters or search keywords.</p>
+                </div>
+              ) : (
+                filteredMarkets.map((market) => (
+                  <article className="card" key={market.id}>
+                    <div className="cardTop">
+                      <div className="iconBox">{market.icon}</div>
+
+                      <div className="badgeStack">
+                        <span
+                          className="statusBadge"
+                          style={{
+                            background: statusStyles[market.status]?.bg,
+                            borderColor: statusStyles[market.status]?.border,
+                            color: statusStyles[market.status]?.color,
+                          }}
+                        >
+                          {market.status}
+                        </span>
+
+                        <span
+                          className="riskLabel"
+                          style={{ color: riskColors[market.risk] }}
+                        >
+                          ● {market.risk} Risk
+                        </span>
                       </div>
                     </div>
-                  )
-                })}
-              </div>
+
+                    <div className="cardBody">
+                      <div className="categoryTag">{market.category}</div>
+                      <h3>{market.name}</h3>
+                      <p className="location">📍 {market.location}</p>
+
+                      <div className="metrics">
+                        <div className="metric">
+                          <span className="metricValue premium">{market.roi}</span>
+                          <span className="metricLabel">Target ROI</span>
+                        </div>
+                        <div className="metric">
+                          <span className="metricValue">{market.minInvest}</span>
+                          <span className="metricLabel">Min. Invest</span>
+                        </div>
+                        <div className="metric">
+                          <span className="metricValue">{market.term}</span>
+                          <span className="metricLabel">Term</span>
+                        </div>
+                      </div>
+
+                      <div className="fundingBox">
+                        <div className="fundingRow">
+                          <span>Funding Progress</span>
+                          <strong>{market.funded}%</strong>
+                        </div>
+
+                        <div className="progressBar">
+                          <div
+                            className="progressFill"
+                            style={{ width: `${market.funded}%` }}
+                          />
+                        </div>
+
+                        <div className="fundingMeta">
+                          <span>{market.raised} raised</span>
+                          <span>{market.total} target</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <button
+                      className="primaryButton"
+                      onClick={() => router.push(`/asset/${market.id}`)}
+                    >
+                      View Opportunity
+                    </button>
+                  </article>
+                ))
+              )}
             </div>
-            <div style={{background:'#0b0e11',display:'flex',flexDirection:'column',overflow:'hidden'}}>
-              <div style={{display:'flex',alignItems:'center',background:'#161a1e',borderBottom:'1px solid #1e2329',flexShrink:0,overflowX:'auto'}}>
-                {TFS.map(t=>(<button key={t} onClick={()=>setTf(t)} style={{padding:'6px 13px',background:'none',border:'none',cursor:'pointer',color:tf===t?'#f0b90b':'#848e9c',fontFamily:'monospace',fontSize:'11px',borderBottom:tf===t?'2px solid #f0b90b':'2px solid transparent',fontWeight:tf===t?600:400,whiteSpace:'nowrap'}}>{t}</button>))}
-                <span style={{marginLeft:'auto',padding:'0 12px',fontSize:'10px',color:'#2b3139',fontFamily:'monospace',flexShrink:0}}>NXT · MiCA Regulated</span>
-              </div>
-              <div style={{flex:1,position:'relative',overflow:'hidden'}}><Chart pair={pair} tf={tf}/></div>
-              <div style={{height:'100px',borderTop:'1px solid #1e2329',background:'#161a1e',flexShrink:0}}>
-                <div style={{padding:'5px 12px',borderBottom:'1px solid #1e2329',fontSize:'11px',color:'#848e9c',fontFamily:'monospace'}}>Open Orders (0)</div>
-                <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'68px',color:'#848e9c',fontSize:'12px',fontFamily:'monospace'}}>No open orders</div>
-              </div>
+          ) : (
+            <div className="tableWrap">
+              {filteredMarkets.length === 0 ? (
+                <div className="emptyState">
+                  <div className="emptyIcon">🔍</div>
+                  <h3>No matching opportunities</h3>
+                  <p>Try changing your filters or search keywords.</p>
+                </div>
+              ) : (
+                <>
+                  <div className="tableHead">
+                    <span>Asset</span>
+                    <span>Category</span>
+                    <span>ROI</span>
+                    <span>Min. Invest</span>
+                    <span>Funded</span>
+                    <span>Risk</span>
+                    <span>Status</span>
+                    <span>Action</span>
+                  </div>
+
+                  {filteredMarkets.map((market) => (
+                    <div className="tableRow" key={market.id}>
+                      <div className="assetCell">
+                        <div className="tableIcon">{market.icon}</div>
+                        <div>
+                          <div className="assetName">{market.name}</div>
+                          <div className="assetLocation">📍 {market.location}</div>
+                        </div>
+                      </div>
+
+                      <span>{market.category}</span>
+                      <span className="premium strongText">{market.roi}</span>
+                      <span>{market.minInvest}</span>
+
+                      <div className="fundedCell">
+                        <div className="miniBar">
+                          <div
+                            className="miniFill"
+                            style={{ width: `${market.funded}%` }}
+                          />
+                        </div>
+                        <strong>{market.funded}%</strong>
+                      </div>
+
+                      <span
+                        className="strongText"
+                        style={{ color: riskColors[market.risk] }}
+                      >
+                        {market.risk}
+                      </span>
+
+                      <span
+                        className="statusBadge tableBadge"
+                        style={{
+                          background: statusStyles[market.status]?.bg,
+                          borderColor: statusStyles[market.status]?.border,
+                          color: statusStyles[market.status]?.color,
+                        }}
+                      >
+                        {market.status}
+                      </span>
+
+                      <button
+                        className="secondaryButton"
+                        onClick={() => router.push(`/asset/${market.id}`)}
+                      >
+                        Invest
+                      </button>
+                    </div>
+                  ))}
+                </>
+              )}
             </div>
-            <div style={{background:'#161a1e',display:'flex',flexDirection:'column',overflow:'hidden'}}>
-              <div style={{display:'flex',borderBottom:'1px solid #1e2329',flexShrink:0}}>
-                {[['book','Order Book'],['trades','Trades']].map(([v,l])=>(<button key={v} onClick={()=>setRightTab(v)} style={{flex:1,padding:'7px 6px',background:'none',border:'none',cursor:'pointer',color:rightTab===v?'#f0b90b':'#848e9c',borderBottom:rightTab===v?'2px solid #f0b90b':'2px solid transparent',fontSize:'11px',fontFamily:'monospace',fontWeight:rightTab===v?600:400}}>{l}</button>))}
+          )}
+
+          <div className="cta">
+            <div className="ctaCard">
+              <div>
+                <h2>Start building your portfolio today</h2>
+                <p>
+                  Create your account to access tokenized investment opportunities
+                  across multiple real-world sectors.
+                </p>
               </div>
-              <div style={{flex:1,overflow:'hidden'}}>{rightTab==='book'?<Book pair={pair}/>:<Feed pair={pair}/>}</div>
+
+              <button
+                className="ctaButton"
+                onClick={() => router.push("/register")}
+              >
+                Register Now
+              </button>
             </div>
-            <div style={{background:'#161a1e',overflow:'auto'}}><Form pair={pair}/></div>
           </div>
-        )}
-      </div>
-    </PriceCtx.Provider>
-  )
+        </section>
+      </main>
+
+      <style jsx>{`
+        .marketsPage {
+          position: relative;
+          min-height: 100vh;
+          overflow-x: hidden;
+          background:
+            radial-gradient(circle at top left, rgba(255, 196, 92, 0.12), transparent 32%),
+            radial-gradient(circle at top right, rgba(59, 130, 246, 0.1), transparent 28%),
+            linear-gradient(180deg, #05070d 0%, #090d16 45%, #06080f 100%);
+          color: #eef2ff;
+          font-family: Inter, "Segoe UI", system-ui, sans-serif;
+        }
+
+        .backgroundGlow {
+          position: fixed;
+          border-radius: 999px;
+          filter: blur(120px);
+          pointer-events: none;
+          z-index: 0;
+          opacity: 0.45;
+        }
+
+        .glowOne {
+          width: 280px;
+          height: 280px;
+          top: 60px;
+          left: -60px;
+          background: rgba(245, 158, 11, 0.22);
+        }
+
+        .glowTwo {
+          width: 320px;
+          height: 320px;
+          top: 120px;
+          right: -80px;
+          background: rgba(59, 130, 246, 0.14);
+        }
+
+        .noiseLayer {
+          position: fixed;
+          inset: 0;
+          pointer-events: none;
+          opacity: 0.06;
+          background-image:
+            radial-gradient(rgba(255,255,255,0.9) 0.7px, transparent 0.7px);
+          background-size: 18px 18px;
+          z-index: 0;
+        }
+
+        .container {
+          position: relative;
+          z-index: 1;
+          max-width: 1240px;
+          margin: 0 auto;
+          padding: 42px 18px 72px;
+        }
+
+        .hero {
+          display: grid;
+          grid-template-columns: 1.4fr 1fr;
+          gap: 24px;
+          align-items: stretch;
+          margin-bottom: 28px;
+        }
+
+        .heroLeft {
+          padding: 34px;
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 28px;
+          background: linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.06),
+            rgba(255, 255, 255, 0.025)
+          );
+          box-shadow: 0 24px 60px rgba(0, 0, 0, 0.32);
+          backdrop-filter: blur(18px);
+        }
+
+        .eyebrow {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          margin-bottom: 16px;
+          padding: 8px 14px;
+          border-radius: 999px;
+          border: 1px solid rgba(251, 191, 36, 0.24);
+          background: rgba(255, 255, 255, 0.04);
+          color: #fbbf24;
+          font-size: 11px;
+          font-weight: 800;
+          letter-spacing: 1.3px;
+          text-transform: uppercase;
+        }
+
+        .heroLeft h1 {
+          margin: 0 0 14px;
+          font-size: 48px;
+          line-height: 1.05;
+          font-weight: 900;
+          letter-spacing: -1px;
+        }
+
+        .heroLeft h1 span,
+        .premium {
+          background: linear-gradient(180deg, #ffe08a 0%, #d3922e 100%);
+          -webkit-background-clip: text;
+          background-clip: text;
+          color: transparent;
+        }
+
+        .heroLeft p {
+          margin: 0;
+          max-width: 680px;
+          font-size: 16px;
+          line-height: 1.75;
+          color: rgba(238, 242, 255, 0.72);
+        }
+
+        .heroStats {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 16px;
+        }
+
+        .heroStatCard {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          min-height: 120px;
+          padding: 24px;
+          border-radius: 22px;
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          background: linear-gradient(
+            180deg,
+            rgba(255,255,255,0.055),
+            rgba(255,255,255,0.02)
+          );
+          box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+        }
+
+        .heroStatCard strong {
+          font-size: 28px;
+          font-weight: 900;
+          color: #ffffff;
+          margin-bottom: 6px;
+        }
+
+        .heroStatCard span {
+          color: rgba(238, 242, 255, 0.62);
+          font-size: 13px;
+          font-weight: 600;
+        }
+
+        .toolbar {
+          margin-bottom: 18px;
+          padding: 22px;
+          border-radius: 24px;
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          background: rgba(255, 255, 255, 0.04);
+          backdrop-filter: blur(18px);
+          box-shadow: 0 18px 44px rgba(0, 0, 0, 0.22);
+        }
+
+        .searchBox {
+          position: relative;
+          margin-bottom: 18px;
+        }
+
+        .searchBox input {
+          width: 100%;
+          height: 54px;
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          border-radius: 16px;
+          background: rgba(255, 255, 255, 0.055);
+          color: #eef2ff;
+          padding: 0 18px 0 50px;
+          font-size: 15px;
+          outline: none;
+          box-sizing: border-box;
+          transition: all 0.2s ease;
+        }
+
+        .searchBox input::placeholder {
+          color: rgba(238, 242, 255, 0.36);
+        }
+
+        .searchBox input:focus {
+          border-color: rgba(251, 191, 36, 0.4);
+          box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.08);
+        }
+
+        .searchIcon {
+          position: absolute;
+          top: 50%;
+          left: 18px;
+          transform: translateY(-50%);
+          color: rgba(238, 242, 255, 0.55);
+          font-size: 18px;
+        }
+
+        .toolbarGrid {
+          display: grid;
+          grid-template-columns: 1.2fr 1fr 220px 180px;
+          gap: 16px;
+          align-items: end;
+        }
+
+        .filterBlock {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .filterBlock label {
+          font-size: 11px;
+          font-weight: 800;
+          letter-spacing: 1px;
+          text-transform: uppercase;
+          color: rgba(251, 191, 36, 0.76);
+        }
+
+        .chipWrap {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+        }
+
+        .chip {
+          height: 38px;
+          padding: 0 14px;
+          border-radius: 999px;
+          border: 1px solid rgba(255,255,255,0.12);
+          background: rgba(255,255,255,0.05);
+          color: rgba(238, 242, 255, 0.78);
+          font-size: 13px;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .chip:hover {
+          color: #fff;
+          border-color: rgba(251, 191, 36, 0.3);
+          transform: translateY(-1px);
+        }
+
+        .chipActive {
+          background: rgba(251, 191, 36, 0.12);
+          border-color: rgba(251, 191, 36, 0.4);
+          color: #fbbf24;
+        }
+
+        .filterBlock select {
+          height: 44px;
+          border-radius: 14px;
+          border: 1px solid rgba(255,255,255,0.12);
+          background: rgba(255,255,255,0.055);
+          color: #eef2ff;
+          padding: 0 14px;
+          font-size: 14px;
+          outline: none;
+        }
+
+        .filterBlock select option {
+          background: #0e1320;
+        }
+
+        .viewToggle {
+          display: flex;
+          gap: 8px;
+        }
+
+        .viewToggle button {
+          flex: 1;
+          height: 44px;
+          border-radius: 14px;
+          border: 1px solid rgba(255,255,255,0.12);
+          background: rgba(255,255,255,0.05);
+          color: rgba(238, 242, 255, 0.8);
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .viewToggle button.viewActive {
+          background: rgba(251, 191, 36, 0.12);
+          border-color: rgba(251, 191, 36, 0.42);
+          color: #fbbf24;
+        }
+
+        .resultsBar {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 18px;
+        }
+
+        .resultsText {
+          color: rgba(238, 242, 255, 0.58);
+          font-size: 14px;
+        }
+
+        .resultsText strong {
+          color: #ffffff;
+        }
+
+        .grid {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 18px;
+        }
+
+        .card {
+          display: flex;
+          flex-direction: column;
+          gap: 18px;
+          padding: 22px;
+          border-radius: 24px;
+          border: 1px solid rgba(255,255,255,0.08);
+          background:
+            radial-gradient(circle at top right, rgba(251, 191, 36, 0.09), transparent 28%),
+            linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.022));
+          box-shadow: 0 18px 44px rgba(0,0,0,0.28);
+          transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+          min-height: 100%;
+        }
+
+        .card:hover {
+          transform: translateY(-4px);
+          border-color: rgba(251, 191, 36, 0.22);
+          box-shadow: 0 28px 54px rgba(0,0,0,0.34);
+        }
+
+        .cardTop {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 14px;
+        }
+
+        .iconBox {
+          width: 54px;
+          height: 54px;
+          border-radius: 16px;
+          display: grid;
+          place-items: center;
+          font-size: 24px;
+          background: linear-gradient(135deg, #ffd977 0%, #c18222 100%);
+          box-shadow: 0 12px 24px rgba(251, 191, 36, 0.18);
+          flex-shrink: 0;
+        }
+
+        .badgeStack {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-end;
+          gap: 8px;
+        }
+
+        .statusBadge {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 30px;
+          padding: 0 12px;
+          border-radius: 999px;
+          border: 1px solid transparent;
+          font-size: 11px;
+          font-weight: 800;
+          letter-spacing: 0.4px;
+          white-space: nowrap;
+        }
+
+        .tableBadge {
+          width: fit-content;
+        }
+
+        .riskLabel {
+          font-size: 12px;
+          font-weight: 700;
+        }
+
+        .cardBody {
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+        }
+
+        .categoryTag {
+          display: inline-flex;
+          width: fit-content;
+          padding: 6px 10px;
+          border-radius: 10px;
+          background: rgba(255,255,255,0.05);
+          border: 1px solid rgba(255,255,255,0.08);
+          color: rgba(238, 242, 255, 0.72);
+          font-size: 11px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.8px;
+        }
+
+        .card h3 {
+          margin: 0;
+          font-size: 20px;
+          line-height: 1.28;
+          font-weight: 800;
+        }
+
+        .location {
+          margin: -4px 0 0;
+          color: rgba(238, 242, 255, 0.58);
+          font-size: 14px;
+        }
+
+        .metrics {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 10px;
+        }
+
+        .metric {
+          padding: 14px 10px;
+          border-radius: 16px;
+          background: rgba(255,255,255,0.045);
+          border: 1px solid rgba(255,255,255,0.06);
+          text-align: center;
+        }
+
+        .metricValue {
+          display: block;
+          font-size: 16px;
+          font-weight: 800;
+          color: #ffffff;
+          margin-bottom: 4px;
+        }
+
+        .metricLabel {
+          display: block;
+          font-size: 11px;
+          color: rgba(238, 242, 255, 0.48);
+          font-weight: 600;
+        }
+
+        .fundingBox {
+          padding: 16px;
+          border-radius: 18px;
+          background: rgba(255,255,255,0.035);
+          border: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .fundingRow {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 10px;
+          color: rgba(238, 242, 255, 0.64);
+          font-size: 13px;
+        }
+
+        .fundingRow strong {
+          color: #ffffff;
+          font-size: 14px;
+        }
+
+        .progressBar {
+          width: 100%;
+          height: 8px;
+          border-radius: 999px;
+          overflow: hidden;
+          background: rgba(255,255,255,0.08);
+          margin-bottom: 10px;
+        }
+
+        .progressFill {
+          height: 100%;
+          border-radius: 999px;
+          background: linear-gradient(90deg, #ffd977 0%, #f59e0b 100%);
+        }
+
+        .fundingMeta {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          color: rgba(238, 242, 255, 0.5);
+          font-size: 12px;
+        }
+
+        .primaryButton,
+        .secondaryButton,
+        .ctaButton {
+          border: none;
+          cursor: pointer;
+          font-weight: 800;
+          transition: all 0.2s ease;
+        }
+
+        .primaryButton {
+          height: 50px;
+          border-radius: 16px;
+          background: linear-gradient(135deg, #ffe08a 0%, #f0ad33 100%);
+          color: #101317;
+          font-size: 14px;
+          box-shadow: 0 14px 28px rgba(245, 158, 11, 0.18);
+          margin-top: auto;
+        }
+
+        .primaryButton:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 18px 34px rgba(245, 158, 11, 0.24);
+        }
+
+        .tableWrap {
+          border-radius: 24px;
+          overflow: hidden;
+          border: 1px solid rgba(255,255,255,0.08);
+          background: rgba(255,255,255,0.03);
+          box-shadow: 0 18px 44px rgba(0,0,0,0.24);
+        }
+
+        .tableHead,
+        .tableRow {
+          display: grid;
+          grid-template-columns: 2.3fr 1fr 0.8fr 0.9fr 1.2fr 0.8fr 1fr 0.85fr;
+          gap: 14px;
+          align-items: center;
+          padding: 16px 20px;
+        }
+
+        .tableHead {
+          background: rgba(255,255,255,0.05);
+          border-bottom: 1px solid rgba(255,255,255,0.08);
+          font-size: 11px;
+          font-weight: 800;
+          letter-spacing: 1px;
+          text-transform: uppercase;
+          color: rgba(251, 191, 36, 0.76);
+        }
+
+        .tableRow {
+          border-bottom: 1px solid rgba(255,255,255,0.06);
+          font-size: 13px;
+          color: rgba(238, 242, 255, 0.82);
+        }
+
+        .tableRow:last-child {
+          border-bottom: none;
+        }
+
+        .tableRow:hover {
+          background: rgba(255,255,255,0.035);
+        }
+
+        .assetCell {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          min-width: 0;
+        }
+
+        .tableIcon {
+          width: 44px;
+          height: 44px;
+          border-radius: 14px;
+          background: linear-gradient(135deg, #ffd977 0%, #c18222 100%);
+          display: grid;
+          place-items: center;
+          font-size: 20px;
+          flex-shrink: 0;
+        }
+
+        .assetName {
+          font-size: 14px;
+          font-weight: 800;
+          color: #ffffff;
+          line-height: 1.3;
+        }
+
+        .assetLocation {
+          margin-top: 3px;
+          font-size: 12px;
+          color: rgba(238, 242, 255, 0.5);
+        }
+
+        .fundedCell {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .miniBar {
+          flex: 1;
+          height: 6px;
+          border-radius: 999px;
+          overflow: hidden;
+          background: rgba(255,255,255,0.08);
+        }
+
+        .miniFill {
+          height: 100%;
+          border-radius: 999px;
+          background: linear-gradient(90deg, #ffd977 0%, #f59e0b 100%);
+        }
+
+        .fundedCell strong,
+        .strongText {
+          font-weight: 800;
+        }
+
+        .secondaryButton {
+          height: 40px;
+          padding: 0 14px;
+          border-radius: 12px;
+          background: linear-gradient(135deg, #ffe08a 0%, #f0ad33 100%);
+          color: #101317;
+          font-size: 13px;
+        }
+
+        .secondaryButton:hover {
+          transform: translateY(-1px);
+        }
+
+        .emptyState {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          padding: 64px 20px;
+          border-radius: 24px;
+          border: 1px dashed rgba(255,255,255,0.12);
+          background: rgba(255,255,255,0.025);
+        }
+
+        .emptyIcon {
+          font-size: 42px;
+          margin-bottom: 10px;
+        }
+
+        .emptyState h3 {
+          margin: 0 0 8px;
+          font-size: 20px;
+          color: #ffffff;
+        }
+
+        .emptyState p {
+          margin: 0;
+          color: rgba(238, 242, 255, 0.56);
+        }
+
+        .cta {
+          margin-top: 34px;
+        }
+
+        .ctaCard {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 22px;
+          padding: 28px;
+          border-radius: 26px;
+          border: 1px solid rgba(255,255,255,0.08);
+          background:
+            radial-gradient(circle at top right, rgba(251,191,36,0.12), transparent 30%),
+            linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+          box-shadow: 0 18px 44px rgba(0,0,0,0.24);
+        }
+
+        .ctaCard h2 {
+          margin: 0 0 8px;
+          font-size: 28px;
+          line-height: 1.15;
+        }
+
+        .ctaCard p {
+          margin: 0;
+          color: rgba(238, 242, 255, 0.64);
+          font-size: 15px;
+          line-height: 1.65;
+          max-width: 700px;
+        }
+
+        .ctaButton {
+          height: 52px;
+          padding: 0 22px;
+          border-radius: 16px;
+          background: linear-gradient(135deg, #ffe08a 0%, #f0ad33 100%);
+          color: #101317;
+          font-size: 14px;
+          white-space: nowrap;
+          box-shadow: 0 14px 28px rgba(245, 158, 11, 0.18);
+        }
+
+        .ctaButton:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 18px 34px rgba(245, 158, 11, 0.24);
+        }
+
+        @media (max-width: 1100px) {
+          .hero {
+            grid-template-columns: 1fr;
+          }
+
+          .heroStats {
+            grid-template-columns: repeat(3, 1fr);
+          }
+
+          .toolbarGrid {
+            grid-template-columns: 1fr 1fr;
+          }
+
+          .grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+
+          .tableWrap {
+            overflow-x: auto;
+          }
+
+          .tableHead,
+          .tableRow {
+            min-width: 980px;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .container {
+            padding: 28px 14px 56px;
+          }
+
+          .heroLeft {
+            padding: 24px;
+            border-radius: 22px;
+          }
+
+          .heroLeft h1 {
+            font-size: 34px;
+          }
+
+          .heroStats {
+            grid-template-columns: 1fr;
+          }
+
+          .toolbar {
+            padding: 16px;
+            border-radius: 20px;
+          }
+
+          .toolbarGrid {
+            grid-template-columns: 1fr;
+          }
+
+          .grid {
+            grid-template-columns: 1fr;
+          }
+
+          .metrics {
+            grid-template-columns: 1fr;
+          }
+
+          .ctaCard {
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 22px;
+          }
+
+          .ctaCard h2 {
+            font-size: 22px;
+          }
+
+          .ctaButton {
+            width: 100%;
+          }
+        }
+      `}</style>
+    </>
+  );
 }
