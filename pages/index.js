@@ -29,7 +29,7 @@ export default function Home() {
             minHeight: "calc(100vh - 140px)",
             display: "flex",
             alignItems: "center",
-            padding: "80px 20px",
+            padding: "140px 20px 80px",
           }}
         >
           <div
@@ -39,11 +39,7 @@ export default function Home() {
               margin: "0 auto",
             }}
           >
-            <div
-              style={{
-                maxWidth: "760px",
-              }}
-            >
+            <div style={{ maxWidth: "760px" }}>
               <div
                 style={{
                   display: "inline-flex",

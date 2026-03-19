@@ -14,6 +14,8 @@ export default function Navbar() {
     { label: "Tokenize", href: "/tokenize" },
   ];
 
+  const isActive = (href) => router.pathname === href;
+
   const closeMenu = () => setMenuOpen(false);
 
   return (
@@ -34,7 +36,7 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={router.pathname === link.href ? "active" : ""}
+                className={`navLink ${isActive(link.href) ? "active" : ""}`}
               >
                 {link.label}
               </Link>
@@ -51,10 +53,11 @@ export default function Navbar() {
           </div>
 
           <button
+            type="button"
             className={`menuToggle ${menuOpen ? "open" : ""}`}
             onClick={() => setMenuOpen((prev) => !prev)}
-            aria-label="Toggle menu"
-            type="button"
+            aria-label="Toggle navigation menu"
+            aria-expanded={menuOpen}
           >
             <span />
             <span />
@@ -67,7 +70,7 @@ export default function Navbar() {
             <Link
               key={link.href}
               href={link.href}
-              className={router.pathname === link.href ? "active" : ""}
+              className={`mobileLink ${isActive(link.href) ? "active" : ""}`}
               onClick={closeMenu}
             >
               {link.label}
@@ -78,7 +81,11 @@ export default function Navbar() {
             Log In
           </Link>
 
-          <Link href="/register" className="mobileRegister" onClick={closeMenu}>
+          <Link
+            href="/register"
+            className="mobileRegister"
+            onClick={closeMenu}
+          >
             Register
           </Link>
         </div>
@@ -112,10 +119,9 @@ export default function Navbar() {
           display: flex;
           align-items: center;
           gap: 12px;
+          text-decoration: none;
           cursor: pointer;
           flex-shrink: 0;
-          min-width: 0;
-          text-decoration: none;
         }
 
         .logoNxt {
@@ -127,7 +133,6 @@ export default function Navbar() {
         }
 
         .logoDivider {
-          display: block;
           width: 1px;
           height: 28px;
           background: rgba(255, 255, 255, 0.15);
@@ -136,8 +141,8 @@ export default function Navbar() {
         .logoTextWrap {
           display: flex;
           flex-direction: column;
-          line-height: 1;
           gap: 3px;
+          line-height: 1;
         }
 
         .logoTop {
@@ -157,30 +162,30 @@ export default function Navbar() {
         .navLinks {
           display: flex;
           align-items: center;
-          flex: 1;
           justify-content: center;
+          flex: 1;
           gap: 4px;
           min-width: 0;
         }
 
-        .navLinks :global(a) {
+        .navLink {
           text-decoration: none;
           color: rgba(255, 255, 255, 0.58);
           font-size: 14px;
           font-weight: 500;
           padding: 8px 14px;
           border-radius: 8px;
-          transition: color 0.15s ease, background 0.15s ease;
           white-space: nowrap;
           letter-spacing: 0.2px;
+          transition: color 0.15s ease, background 0.15s ease;
         }
 
-        .navLinks :global(a:hover) {
+        .navLink:hover {
           color: #ffffff;
           background: rgba(255, 255, 255, 0.06);
         }
 
-        .navLinks :global(a.active) {
+        .navLink.active {
           color: #ffffff;
           background: rgba(255, 255, 255, 0.1);
         }
@@ -227,7 +232,6 @@ export default function Navbar() {
           height: 46px;
           padding: 0 22px;
           border-radius: 12px;
-          border: none;
           background: #f5c842;
           color: #111111;
           font-size: 14px;
@@ -244,11 +248,11 @@ export default function Navbar() {
           display: none;
           width: 44px;
           height: 44px;
+          padding: 0;
           border-radius: 10px;
           border: 1px solid rgba(255, 255, 255, 0.12);
           background: transparent;
           cursor: pointer;
-          padding: 0;
           flex-direction: column;
           align-items: center;
           justify-content: center;
@@ -288,45 +292,46 @@ export default function Navbar() {
           display: none;
         }
 
-        .mobileMenu :global(a) {
+        .mobileLink,
+        .mobileLogin,
+        .mobileRegister {
           display: block;
           width: 100%;
           text-decoration: none;
           text-align: left;
-          background: rgba(255, 255, 255, 0.03);
-          border: 1px solid rgba(255, 255, 255, 0.06);
-          color: #ffffff;
           font-size: 15px;
           padding: 14px 16px;
           border-radius: 10px;
           margin-top: 10px;
         }
 
-        .mobileMenu :global(a.active) {
+        .mobileLink {
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.06);
+          color: #ffffff;
+        }
+
+        .mobileLink.active {
           background: rgba(245, 200, 66, 0.12);
           border-color: rgba(245, 200, 66, 0.4);
           color: #f5c842;
         }
 
         .mobileLogin {
-          border: 1px solid rgba(255, 255, 255, 0.25) !important;
-          background: transparent !important;
-          color: #ffffff !important;
+          border: 1px solid rgba(255, 255, 255, 0.25);
+          background: transparent;
+          color: #ffffff;
         }
 
         .mobileRegister {
-          background: #f5c842 !important;
-          color: #111111 !important;
-          border: none !important;
+          background: #f5c842;
+          color: #111111;
           font-weight: 700;
+          border: none;
         }
 
         @media (max-width: 1100px) {
-          .navLinks {
-            gap: 0;
-          }
-
-          .navLinks :global(a) {
+          .navLink {
             padding: 8px 10px;
             font-size: 13px;
           }
