@@ -325,10 +325,10 @@ export default function Home() {
                   {
                     title: "Legal",
                     links: [
-                      ["Terms of Service", ""],
-                      ["Privacy Policy", ""],
-                      ["Risk Disclosure", ""],
-                      ["AML Policy", ""],
+                      ["Terms of Service", "/company"],
+                      ["Privacy Policy", "/company"],
+                      ["Risk Disclosure", "/company"],
+                      ["AML Policy", "/company"],
                     ],
                   },
                   {
