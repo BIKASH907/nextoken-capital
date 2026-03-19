@@ -3,10 +3,10 @@ import Header from "../components/Header";
 
 export default function App({ Component, pageProps }) {
   return (
-    <div style={{ backgroundColor: '#0b0e11', minHeight: '100vh', margin: 0, padding: 0 }}>
+    <div style={{ backgroundColor: '#0b0e11', minHeight: '100vh' }}>
       <Header />
-      {/* This creates the exact space needed for the header with no extra gap */}
-      <main style={{ paddingTop: '64px' }}>
+      {/* This pt-[64px] ensures your content starts right at the edge of the header */}
+      <main className="pt-[64px]">
         <Component {...pageProps} />
       </main>
     </div>
