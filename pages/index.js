@@ -334,10 +334,10 @@ export default function Home() {
                   {
                     title: "Support",
                     links: [
-                      ["Help Center", ""],
-                      ["Contact Us", ""],
-                      ["API Docs", ""],
-                      ["Status", ""],
+                      ["Help Center", "/company"],
+                      ["Contact Us", "/company"],
+                      ["API Docs", "/company"],
+                      ["Status", "/company"],
                     ],
                   },
                 ].map((col) => (
