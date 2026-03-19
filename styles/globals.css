@@ -24,53 +24,66 @@ html, body {
   padding: 0;
 }
 
-/* Custom Scrollbar */
+/* --- LOGO DESIGN SYSTEM (Matches Nextoken Branding) --- */
+@layer components {
+  /* The "NXT" Box */
+  .logo-nxt { 
+    font-family: 'Arial Black', sans-serif; 
+    font-size: 22px; 
+    font-weight: 900; 
+    color: var(--gold); 
+    letter-spacing: -1px; 
+  }
+
+  /* The Vertical Separator Line */
+  .logo-sep { 
+    width: 1px; 
+    height: 24px; 
+    background: rgba(240,185,11,0.25); 
+    margin: 0 12px; 
+  }
+
+  /* "NEXTOKEN" Main Text */
+  .logo-name { 
+    font-family: 'Arial Black', sans-serif; 
+    font-size: 13px; 
+    font-weight: 900; 
+    color: white; 
+    letter-spacing: -0.3px; 
+    line-height: 1.1; 
+  }
+
+  /* "CAPITAL" Subtext */
+  .logo-cap { 
+    font-size: 7px; 
+    font-weight: 700; 
+    color: var(--gold); 
+    letter-spacing: 4px; 
+    text-transform: uppercase; 
+    line-height: 1.2; 
+  }
+
+  /* --- BUTTONS (Matches Image 6) --- */
+  .btn-gold { 
+    @apply bg-[#F0B90B] text-black hover:bg-[#fcd535] active:scale-95 transition-all duration-150; 
+  }
+  
+  .btn-dark { 
+    @apply bg-[#252930] text-white/80 hover:bg-[#2B3139] active:scale-95 transition-all duration-150; 
+  }
+
+  /* --- INPUTS & SEARCH --- */
+  .search-input {
+    @apply bg-[#2B3139] border border-transparent focus:border-gold/30 rounded px-3.5 py-1.5 text-xs text-white outline-none transition-all;
+  }
+}
+
+/* --- SCROLLBAR --- */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: var(--dark); }
 ::-webkit-scrollbar-thumb { background: var(--dark-3); border-radius: 2px; }
 
-@layer components {
-  /* Logo Styles */
-  .logo-nxt { font-family: 'Arial Black', sans-serif; font-size: 22px; font-weight: 900; color: var(--gold); letter-spacing: -1px; }
-  .logo-name { font-family: 'Arial Black', sans-serif; font-size: 12.5px; font-weight: 900; color: white; letter-spacing: -0.3px; line-height: 1.1; }
-  
-  /* Buttons - Cleaned up @apply logic */
-  .btn { 
-    @apply inline-flex items-center justify-center gap-2 px-6 py-2.5 text-sm font-bold rounded cursor-pointer transition-all duration-150 border-none outline-none; 
-  }
-  .btn-gold { 
-    @apply bg-[#F0B90B] text-black hover:bg-[#fcd535] active:scale-95; 
-  }
-  .btn-dark { 
-    @apply bg-[#252930] text-white/80 hover:bg-[#2B3139] active:scale-95; 
-  }
-  .btn-ghost { 
-    @apply bg-transparent border border-gold/25 text-white/60 hover:border-gold hover:text-gold; 
-  }
-
-  /* Form Inputs */
-  .inp { 
-    @apply w-full px-3.5 py-2.5 text-sm rounded outline-none transition-colors duration-150 bg-[#1E2329] border border-white/5 text-white focus:border-gold/40; 
-  }
-  .lbl { 
-    @apply block text-xs font-bold uppercase tracking-wider mb-1.5 text-white/40; 
-  }
-
-  /* Tables */
-  .tbl { @apply w-full border-collapse; }
-  .tbl th { 
-    @apply px-4 py-2.5 text-left text-xs font-bold uppercase tracking-wider text-white/30 bg-[#1E2329] border-b border-white/5; 
-  }
-  .tbl td { 
-    @apply px-4 py-3.5 text-sm border-b border-white/5 text-white/70; 
-  }
-
-  /* Stat Cards */
-  .stat-card { @apply p-5 bg-[#161A1E] rounded; }
-  .stat-n { @apply text-2xl font-black tracking-tight text-white; }
-}
-
-/* ANIMATION FOR TICKER TAPE */
+/* --- TICKER ANIMATION --- */
 @keyframes marquee {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
@@ -79,5 +92,5 @@ html, body {
 .animate-marquee {
   display: flex;
   white-space: nowrap;
-  animation: marquee 30s linear infinite;
+  animation: marquee 35s linear infinite;
 }

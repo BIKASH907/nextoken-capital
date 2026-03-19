@@ -2,18 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { 
-  Menu, 
-  X, 
-  ChevronDown, 
-  Search, 
-  Building2, 
-  ShieldCheck, 
-  TrendingUp, 
-  LayoutGrid, 
-  PieChart, 
-  FileText
-} from 'lucide-react';
+import { Menu, X, Search } from 'lucide-react';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -24,8 +13,6 @@ const Header = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  const closeMenu = () => setIsMenuOpen(false);
 
   const navLinks = [
     { title: 'Markets', link: '/markets' },
@@ -41,7 +28,7 @@ const Header = () => {
     }`}>
       <div className="max-w-[1440px] mx-auto px-4 h-16 flex items-center justify-between">
         
-        {/* --- LOGO SECTION (Exact Match to Image 4 & 6) --- */}
+        {/* --- CORRECTED LOGO SECTION --- */}
         <Link href="/" className="flex items-center no-underline group">
           <div className="logo-nxt">NXT</div>
           <div className="logo-sep"></div>
@@ -51,7 +38,7 @@ const Header = () => {
           </div>
         </Link>
 
-        {/* --- DESKTOP NAVIGATION (Exact Match to Image 6) --- */}
+        {/* --- CENTER NAVIGATION --- */}
         <nav className="hidden lg:flex items-center gap-8">
           {navLinks.map((item) => (
             <Link 
@@ -64,61 +51,45 @@ const Header = () => {
           ))}
         </nav>
 
-        {/* --- RIGHT TOOLS: LOGIN & REGISTER (Exact Match to Image 6) --- */}
+        {/* --- RIGHT SECTION: LOGIN & REGISTER --- */}
         <div className="flex items-center gap-4">
-          <div className="hidden sm:flex relative group">
+          <div className="hidden sm:flex relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" size={14} />
             <input 
               type="text" 
               placeholder="Search Assets..." 
-              className="bg-[#2B3139] border border-transparent focus:border-gold/30 rounded py-1.5 pl-9 pr-4 text-xs text-white outline-none w-32 focus:w-48 transition-all"
+              className="bg-[#2B3139] border border-transparent rounded py-1.5 pl-9 pr-4 text-xs text-white outline-none w-32"
             />
           </div>
 
           <div className="flex items-center gap-3">
-            {/* Log In Button: Same font size and color as Image 6 */}
-            <button className="hidden sm:block text-white font-bold text-sm px-2 hover:text-gold transition-colors">
+            {/* Login: High-contrast Bold White */}
+            <button className="hidden sm:block text-white font-bold text-sm px-2 hover:text-[#F0B90B] transition-colors">
               Log In
             </button>
             
-            {/* Register Button: Exact Gold/Yellow color from Image 6 */}
+            {/* Register: Specific Binance Gold #F0B90B */}
             <button className="bg-[#F0B90B] text-black px-5 py-2 rounded text-sm font-bold hover:bg-[#fcd535] transition-all">
               Register
             </button>
             
-            {/* MOBILE HAMBURGER */}
-            <button 
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="lg:hidden text-white hover:text-gold p-1"
-            >
+            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="lg:hidden text-white">
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>
       </div>
 
-      {/* --- MOBILE OVERLAY MENU --- */}
-      <div className={`lg:hidden fixed inset-0 top-16 bg-[#0B0E11] z-[-1] transition-transform duration-300 ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-        <div className="flex flex-col p-6 gap-8 h-full overflow-y-auto">
-          <nav className="flex flex-col gap-6">
-            {navLinks.map((item) => (
-              <Link 
-                key={item.title} 
-                href={item.link} 
-                onClick={closeMenu}
-                className="text-white font-bold text-lg border-b border-white/5 pb-2 no-underline"
-              >
-                {item.title}
-              </Link>
-            ))}
-          </nav>
-
-          <div className="mt-auto pt-6 flex flex-col gap-3 pb-10">
-            <button className="w-full py-3 rounded font-bold border border-white/10 text-white">Log In</button>
-            <button className="bg-[#F0B90B] text-black w-full py-3 rounded font-bold">Register Now</button>
-          </div>
+      {/* MOBILE MENU */}
+      {isMenuOpen && (
+        <div className="lg:hidden absolute top-16 left-0 w-full bg-[#0b0e11] p-6 flex flex-col gap-4 border-b border-white/10">
+          {navLinks.map((item) => (
+            <Link key={item.title} href={item.link} className="text-white font-bold text-lg no-underline">
+              {item.title}
+            </Link>
+          ))}
         </div>
-      </div>
+      )}
     </header>
   );
 };
