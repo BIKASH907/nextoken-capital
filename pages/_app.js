@@ -1,14 +1,25 @@
-import "../styles/globals.css";
-import Header from "../components/Header";
+import '../styles/globals.css';
+import Head from 'next/head';
 
-export default function App({ Component, pageProps }) {
+function MyApp({ Component, pageProps }) {
   return (
-    <div className="bg-[#0b0e11] min-h-screen flex flex-col m-0 p-0">
-      <Header />
-      {/* pt-[64px] (16rem) matches the h-16 (64px) height of the fixed header */}
-      <main className="flex-grow pt-[64px] m-0 p-0 overflow-x-hidden">
-        <Component {...pageProps} />
-      </main>
-    </div>
+    <>
+      <Head>
+        {/* This ensures responsive scaling on mobile devices */}
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        
+        {/* Global SEO / Branding */}
+        <meta name="theme-color" content="#0b0e11" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      
+      {/* This Component tag renders the specific page you are visiting 
+          (like index.js). By wrapping it here, your globals.css 
+          applies to the entire website.
+      */}
+      <Component {...pageProps} />
+    </>
   );
 }
+
+export default MyApp;
