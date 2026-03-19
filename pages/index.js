@@ -41,11 +41,19 @@ export default function Home() {
         prev.map((item) => {
           const delta = (Math.random() - 0.5) * 0.4;
           const raw = parseFloat(item.price.replace(/,/g, "")) * (1 + delta / 100);
-          const formatted = raw >= 1
-            ? raw.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-            : raw.toFixed(4);
+          const formatted =
+            raw >= 1
+              ? raw.toLocaleString("en-US", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })
+              : raw.toFixed(4);
           const changeVal = parseFloat(item.change) + delta;
-          return { ...item, price: formatted, change: (changeVal >= 0 ? "+" : "") + changeVal.toFixed(2) };
+          return {
+            ...item,
+            price: formatted,
+            change: (changeVal >= 0 ? "+" : "") + changeVal.toFixed(2),
+          };
         })
       );
     }, 2000);
@@ -56,21 +64,20 @@ export default function Home() {
     <>
       <Navbar />
       <main className="main">
-
-        {/* TICKER BAR */}
         <div className="tickerWrap">
           <div className="tickerTrack">
             {[...prices, ...prices].map((item, i) => (
               <div className="tickerItem" key={i}>
                 <span className="tSym">{item.symbol}</span>
                 <span className="tPrice">{item.price}</span>
-                <span className={`tChange ${item.change.startsWith("+") ? "up" : "dn"}`}>{item.change}%</span>
+                <span className={`tChange ${item.change.startsWith("+") ? "up" : "dn"}`}>
+                  {item.change}%
+                </span>
               </div>
             ))}
           </div>
         </div>
 
-        {/* HERO — full image background */}
         <section className="hero">
           <div className="heroBg" />
           <div className="heroOverlay" />
@@ -80,7 +87,8 @@ export default function Home() {
               MiCA Licensed · EU Regulated · DLT Pilot Regime
             </div>
             <h1 className="heroH1">
-              The Global Platform for<br />
+              The Global Platform for
+              <br />
               <span className="gold">Tokenized Capital Markets</span>
             </h1>
             <p className="heroP">
@@ -88,8 +96,12 @@ export default function Home() {
               and trade on a regulated 24/7 secondary market — all on one compliant platform.
             </p>
             <div className="heroBtns">
-              <button className="btnPrimary" onClick={() => router.push("/register")}>Get Started</button>
-              <button className="btnSecondary" onClick={() => router.push("/exchange")}>Open Exchange</button>
+              <button className="btnPrimary" onClick={() => router.push("/register")}>
+                Get Started
+              </button>
+              <button className="btnSecondary" onClick={() => router.push("/exchange")}>
+                Open Exchange
+              </button>
             </div>
             <div className="heroStats">
               {STATS.map((s) => (
@@ -101,34 +113,47 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Floating asset cards */}
           <div className="floatCard floatCard1">
             <div className="fcTag">TOKENIZED BOND</div>
             <div className="fcVal">€ 10,000</div>
             <div className="fcSub">EU Gov Bond · 5.2% APY</div>
-            <div className="fcLive"><span className="liveDot" />LIVE</div>
+            <div className="fcLive">
+              <span className="liveDot" />
+              LIVE
+            </div>
           </div>
+
           <div className="floatCard floatCard2">
             <div className="fcTag">REAL ESTATE TOKEN</div>
             <div className="fcVal">Vilnius Office</div>
             <div className="fcSub">€2.4M · 847 tokens</div>
-            <div className="fcLive"><span className="liveDot" />TRADEABLE</div>
+            <div className="fcLive">
+              <span className="liveDot" />
+              TRADEABLE
+            </div>
           </div>
+
           <div className="floatCard floatCard3">
             <div className="fcTag">EQUITY TOKEN</div>
             <div className="fcVal">FinTech IPO</div>
             <div className="fcSub">+18.4% · 30d</div>
-            <div className="fcLive"><span className="liveDot gold" />OPEN</div>
+            <div className="fcLive">
+              <span className="liveDot gold" />
+              OPEN
+            </div>
           </div>
+
           <div className="floatCard floatCard4">
             <div className="fcTag">NXC TOKEN</div>
             <div className="fcVal gold">€ {prices[0]?.price || "3.847"}</div>
             <div className="fcSub up">↑ +5.23% today</div>
-            <div className="fcLive"><span className="liveDot" />REGULATED</div>
+            <div className="fcLive">
+              <span className="liveDot" />
+              REGULATED
+            </div>
           </div>
         </section>
 
-        {/* FEATURES */}
         <section className="section">
           <div className="wrap">
             <p className="eyebrow">EVERYTHING YOU NEED</p>
@@ -145,7 +170,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* TRUST */}
         <section className="section sectionAlt">
           <div className="wrap">
             <p className="eyebrow">REGULATED & COMPLIANT</p>
@@ -169,18 +193,18 @@ export default function Home() {
           </div>
         </section>
 
-        {/* CTA */}
         <section className="ctaSection">
           <div className="wrap ctaWrap">
             <div>
               <h2 className="ctaH2">Ready to tokenize the world?</h2>
               <p className="ctaP">Join 12,400+ investors and issuers on the platform.</p>
             </div>
-            <button className="btnPrimary" onClick={() => router.push("/register")}>Create Free Account</button>
+            <button className="btnPrimary" onClick={() => router.push("/register")}>
+              Create Free Account
+            </button>
           </div>
         </section>
 
-        {/* FOOTER */}
         <footer className="footer">
           <div className="wrap">
             <div className="footerTop">
@@ -192,7 +216,9 @@ export default function Home() {
                     <span className="fLogoBot">CAPITAL</span>
                   </div>
                 </div>
-                <p className="fTagline">The regulated infrastructure for tokenized real-world assets.</p>
+                <p className="fTagline">
+                  The regulated infrastructure for tokenized real-world assets.
+                </p>
                 <div className="litBadge">
                   <span style={{ fontSize: "20px" }}>🇱🇹</span>
                   <div className="litText">
@@ -201,6 +227,7 @@ export default function Home() {
                   </div>
                 </div>
               </div>
+
               <div className="footerCols">
                 {[
                   { title: "Products", links: [["Markets", "/markets"], ["Exchange", "/exchange"], ["Bonds", "/bonds"], ["Equity & IPO", "/equity"], ["Tokenize", "/tokenize"]] },
@@ -211,15 +238,25 @@ export default function Home() {
                   <div className="footerCol" key={col.title}>
                     <h5 className="colTitle">{col.title}</h5>
                     {col.links.map(([label, href]) => (
-                      <a key={label} className="colLink" onClick={() => href && router.push(href)}>{label}</a>
+                      <a
+                        key={label}
+                        className="colLink"
+                        onClick={() => href && router.push(href)}
+                      >
+                        {label}
+                      </a>
                     ))}
                   </div>
                 ))}
               </div>
             </div>
+
             <div className="footerBottom">
               <p>© 2026 Nextoken Capital UAB. All rights reserved. Registered in Lithuania.</p>
-              <p>Risk warning: Investing in tokenized assets involves risk. Past performance is not indicative of future results.</p>
+              <p>
+                Risk warning: Investing in tokenized assets involves risk. Past performance
+                is not indicative of future results.
+              </p>
             </div>
           </div>
         </footer>
@@ -229,7 +266,6 @@ export default function Home() {
         .main { background:#04040a; color:#fff; min-height:100vh; padding-top:68px; }
         .wrap { max-width:1280px; margin:0 auto; padding:0 28px; }
 
-        /* TICKER */
         .tickerWrap { background:rgba(0,0,0,0.6); border-bottom:1px solid rgba(255,255,255,0.07); overflow:hidden; height:40px; display:flex; align-items:center; position:relative; z-index:10; }
         .tickerTrack { display:flex; animation:ticker 50s linear infinite; width:max-content; }
         @keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
@@ -240,7 +276,6 @@ export default function Home() {
         .up { color:#0ecb81; }
         .dn { color:#f6465d; }
 
-        /* HERO */
         .hero {
           position: relative;
           min-height: 92vh;
@@ -249,20 +284,23 @@ export default function Home() {
           justify-content: center;
           overflow: hidden;
         }
+
         .heroBg {
           position: absolute;
           inset: 0;
           background-image: url('/hero-bg.png');
           background-size: cover;
-          background-position: center top;
+          background-position: center center;
           background-repeat: no-repeat;
           transform: scale(1.03);
           animation: subtleZoom 20s ease-in-out infinite alternate;
         }
+
         @keyframes subtleZoom {
           from { transform: scale(1.03); }
-          to   { transform: scale(1.08); }
+          to { transform: scale(1.08); }
         }
+
         .heroOverlay {
           position: absolute;
           inset: 0;
@@ -274,6 +312,7 @@ export default function Home() {
             rgba(4,4,10,0.95) 100%
           );
         }
+
         .heroContent {
           position: relative;
           z-index: 2;
@@ -281,6 +320,7 @@ export default function Home() {
           max-width: 760px;
           padding: 0 24px;
         }
+
         .heroBadge {
           display:inline-flex; align-items:center; gap:8px;
           font-size:12px; color:rgba(255,255,255,0.7);
@@ -288,6 +328,7 @@ export default function Home() {
           border-radius:100px; padding:6px 16px; margin-bottom:28px;
           background:rgba(0,0,0,0.35); backdrop-filter:blur(10px);
         }
+
         .dot { width:6px; height:6px; border-radius:50%; background:#0ecb81; flex-shrink:0; }
         .heroH1 { font-size:58px; font-weight:900; line-height:1.08; margin:0 0 20px; letter-spacing:-2px; text-shadow:0 4px 40px rgba(0,0,0,0.6); }
         .gold { color:#f5c842; }
@@ -302,7 +343,6 @@ export default function Home() {
         .statV { font-size:22px; font-weight:800; color:#f5c842; text-shadow:0 0 20px rgba(245,200,66,0.4); }
         .statL { font-size:11px; color:rgba(255,255,255,0.45); text-transform:uppercase; letter-spacing:1px; }
 
-        /* FLOATING CARDS */
         .floatCard {
           position: absolute;
           z-index: 3;
@@ -329,7 +369,6 @@ export default function Home() {
         .liveDot { width:6px; height:6px; border-radius:50%; background:#0ecb81; flex-shrink:0; }
         .liveDot.gold { background:#f5c842; }
 
-        /* SECTIONS */
         .section { padding:90px 0; border-top:1px solid rgba(255,255,255,0.06); background:#04040a; }
         .sectionAlt { background:#070710; }
         .eyebrow { font-size:11px; letter-spacing:2px; color:#f5c842; font-weight:600; margin:0 0 12px; }
@@ -349,13 +388,11 @@ export default function Home() {
         .tTitle { font-size:15px; font-weight:700; color:#fff; margin:0 0 8px; }
         .tDesc { font-size:13px; color:rgba(255,255,255,0.45); line-height:1.6; margin:0; }
 
-        /* CTA */
         .ctaSection { padding:90px 0; border-top:1px solid rgba(255,255,255,0.06); background:linear-gradient(135deg,#0d0a00 0%,#04040a 100%); }
         .ctaWrap { display:flex; justify-content:space-between; align-items:center; gap:40px; }
         .ctaH2 { font-size:34px; font-weight:800; color:#fff; margin:0 0 8px; }
         .ctaP { font-size:15px; color:rgba(255,255,255,0.45); margin:0; }
 
-        /* FOOTER */
         .footer { background:#030309; border-top:1px solid rgba(255,255,255,0.07); padding:60px 0 32px; }
         .footerTop { display:flex; gap:80px; margin-bottom:48px; }
         .footerBrand { flex-shrink:0; width:220px; }
@@ -383,6 +420,7 @@ export default function Home() {
           .footerTop { flex-direction:column; gap:40px; }
           .footerBrand { width:100%; }
         }
+
         @media (max-width:640px) {
           .heroH1 { font-size:36px; }
           .floatCard1,.floatCard3 { display:none; }
