@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
@@ -13,48 +14,45 @@ export default function Navbar() {
     { label: "Tokenize", href: "/tokenize" },
   ];
 
-  const goTo = (href) => {
-    setMenuOpen(false);
-    router.push(href);
-  };
+  const closeMenu = () => setMenuOpen(false);
 
   return (
     <>
       <nav className="navbar">
         <div className="navInner">
-          <div className="navLogo" onClick={() => goTo("/")}>
+          <Link href="/" className="navLogo" onClick={closeMenu}>
             <span className="logoNxt">NXT</span>
-            <div className="logoDivider" />
-            <div className="logoTextWrap">
+            <span className="logoDivider" />
+            <span className="logoTextWrap">
               <span className="logoTop">NEXTOKEN</span>
               <span className="logoBottom">CAPITAL</span>
-            </div>
-          </div>
+            </span>
+          </Link>
 
           <div className="navLinks">
             {links.map((link) => (
-              <button
+              <Link
                 key={link.href}
+                href={link.href}
                 className={router.pathname === link.href ? "active" : ""}
-                onClick={() => goTo(link.href)}
               >
                 {link.label}
-              </button>
+              </Link>
             ))}
           </div>
 
           <div className="navActions">
-            <button className="btnLogin" onClick={() => goTo("/login")}>
+            <Link href="/login" className="btnLogin">
               Log In
-            </button>
-            <button className="btnRegister" onClick={() => goTo("/register")}>
+            </Link>
+            <Link href="/register" className="btnRegister">
               Register
-            </button>
+            </Link>
           </div>
 
           <button
             className={`menuToggle ${menuOpen ? "open" : ""}`}
-            onClick={() => setMenuOpen(!menuOpen)}
+            onClick={() => setMenuOpen((prev) => !prev)}
             aria-label="Toggle menu"
             type="button"
           >
@@ -66,22 +64,23 @@ export default function Navbar() {
 
         <div className={`mobileMenu ${menuOpen ? "show" : ""}`}>
           {links.map((link) => (
-            <button
+            <Link
               key={link.href}
+              href={link.href}
               className={router.pathname === link.href ? "active" : ""}
-              onClick={() => goTo(link.href)}
+              onClick={closeMenu}
             >
               {link.label}
-            </button>
+            </Link>
           ))}
 
-          <button className="mobileLogin" onClick={() => goTo("/login")}>
+          <Link href="/login" className="mobileLogin" onClick={closeMenu}>
             Log In
-          </button>
+          </Link>
 
-          <button className="mobileRegister" onClick={() => goTo("/register")}>
+          <Link href="/register" className="mobileRegister" onClick={closeMenu}>
             Register
-          </button>
+          </Link>
         </div>
       </nav>
 
@@ -94,6 +93,7 @@ export default function Navbar() {
           z-index: 1000;
           background: rgba(13, 13, 13, 0.96);
           backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
           border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
 
@@ -101,7 +101,7 @@ export default function Navbar() {
           max-width: 1280px;
           margin: 0 auto;
           padding: 0 20px;
-          min-height: 68px;
+          min-height: 78px;
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -115,6 +115,7 @@ export default function Navbar() {
           cursor: pointer;
           flex-shrink: 0;
           min-width: 0;
+          text-decoration: none;
         }
 
         .logoNxt {
@@ -126,6 +127,7 @@ export default function Navbar() {
         }
 
         .logoDivider {
+          display: block;
           width: 1px;
           height: 28px;
           background: rgba(255, 255, 255, 0.15);
@@ -135,7 +137,7 @@ export default function Navbar() {
           display: flex;
           flex-direction: column;
           line-height: 1;
-          gap: 2px;
+          gap: 3px;
         }
 
         .logoTop {
@@ -148,7 +150,7 @@ export default function Navbar() {
         .logoBottom {
           font-size: 9px;
           font-weight: 400;
-          color: rgba(255, 255, 255, 0.4);
+          color: rgba(255, 255, 255, 0.45);
           letter-spacing: 2.5px;
         }
 
@@ -157,71 +159,80 @@ export default function Navbar() {
           align-items: center;
           flex: 1;
           justify-content: center;
-          gap: 2px;
+          gap: 4px;
           min-width: 0;
         }
 
-        .navLinks button {
-          background: none;
-          border: none;
-          color: rgba(255, 255, 255, 0.55);
+        .navLinks :global(a) {
+          text-decoration: none;
+          color: rgba(255, 255, 255, 0.58);
           font-size: 14px;
-          font-weight: 400;
-          cursor: pointer;
-          padding: 6px 14px;
-          border-radius: 6px;
-          transition: color 0.15s, background 0.15s;
+          font-weight: 500;
+          padding: 8px 14px;
+          border-radius: 8px;
+          transition: color 0.15s ease, background 0.15s ease;
           white-space: nowrap;
           letter-spacing: 0.2px;
         }
 
-        .navLinks button:hover {
+        .navLinks :global(a:hover) {
           color: #ffffff;
-          background: rgba(255, 255, 255, 0.07);
+          background: rgba(255, 255, 255, 0.06);
         }
 
-        .navLinks button.active {
+        .navLinks :global(a.active) {
           color: #ffffff;
           background: rgba(255, 255, 255, 0.1);
-          font-weight: 500;
         }
 
         .navActions {
           display: flex;
           align-items: center;
-          gap: 10px;
+          gap: 12px;
           flex-shrink: 0;
         }
 
-        .btnLogin {
-          padding: 8px 20px;
-          border-radius: 8px;
-          border: 1px solid rgba(255, 255, 255, 0.3);
-          background: transparent;
-          color: #ffffff;
-          font-size: 14px;
-          font-weight: 500;
-          cursor: pointer;
-          transition: border-color 0.15s, background 0.15s;
+        .btnLogin,
+        .btnRegister {
+          text-decoration: none;
           white-space: nowrap;
         }
 
+        .btnLogin {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          min-width: 116px;
+          height: 46px;
+          padding: 0 20px;
+          border-radius: 12px;
+          border: 1px solid rgba(255, 255, 255, 0.22);
+          background: transparent;
+          color: #ffffff;
+          font-size: 14px;
+          font-weight: 600;
+          transition: border-color 0.15s ease, background 0.15s ease;
+        }
+
         .btnLogin:hover {
-          border-color: rgba(255, 255, 255, 0.6);
+          border-color: rgba(255, 255, 255, 0.45);
           background: rgba(255, 255, 255, 0.05);
         }
 
         .btnRegister {
-          padding: 8px 20px;
-          border-radius: 8px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          min-width: 134px;
+          height: 46px;
+          padding: 0 22px;
+          border-radius: 12px;
           border: none;
           background: #f5c842;
           color: #111111;
           font-size: 14px;
-          font-weight: 700;
-          cursor: pointer;
-          transition: background 0.15s, transform 0.12s;
-          white-space: nowrap;
+          font-weight: 800;
+          transition: background 0.15s ease, transform 0.12s ease;
         }
 
         .btnRegister:hover {
@@ -277,8 +288,10 @@ export default function Navbar() {
           display: none;
         }
 
-        .mobileMenu button {
+        .mobileMenu :global(a) {
+          display: block;
           width: 100%;
+          text-decoration: none;
           text-align: left;
           background: rgba(255, 255, 255, 0.03);
           border: 1px solid rgba(255, 255, 255, 0.06);
@@ -287,10 +300,9 @@ export default function Navbar() {
           padding: 14px 16px;
           border-radius: 10px;
           margin-top: 10px;
-          cursor: pointer;
         }
 
-        .mobileMenu button.active {
+        .mobileMenu :global(a.active) {
           background: rgba(245, 200, 66, 0.12);
           border-color: rgba(245, 200, 66, 0.4);
           color: #f5c842;
@@ -314,14 +326,15 @@ export default function Navbar() {
             gap: 0;
           }
 
-          .navLinks button {
-            padding: 6px 10px;
+          .navLinks :global(a) {
+            padding: 8px 10px;
             font-size: 13px;
           }
 
           .btnLogin,
           .btnRegister {
-            padding: 8px 16px;
+            min-width: auto;
+            padding: 0 16px;
           }
         }
 
@@ -341,7 +354,7 @@ export default function Navbar() {
 
           .navInner {
             padding: 0 16px;
-            min-height: 64px;
+            min-height: 72px;
           }
 
           .mobileMenu {
