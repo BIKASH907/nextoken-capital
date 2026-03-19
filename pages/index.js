@@ -127,7 +127,52 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        <section className="bottomSection">
+          <div className="container">
+            <div className="bottomCard">
+              <div className="bottomText">
+                <span className="sectionTag">Get Started</span>
+                <h2>Build, invest, and scale with confidence</h2>
+                <p>
+                  Nextoken Capital provides a premium digital experience for
+                  modern capital formation, investor engagement, and tokenized
+                  market access.
+                </p>
+              </div>
+
+              <div className="bottomActions">
+                <a href="/register" className="primaryBtn">
+                  Create Account
+                </a>
+                <a href="/markets" className="secondaryBtn">
+                  View Markets
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
+
+      <footer className="footer">
+        <div className="container footerInner">
+          <div className="footerBrand">
+            <h3>Nextoken Capital</h3>
+            <p>
+              A premium digital capital markets experience for the next
+              generation of global finance.
+            </p>
+          </div>
+
+          <div className="footerLinks">
+            <a href="/markets">Markets</a>
+            <a href="/exchange">Exchange</a>
+            <a href="/bonds">Bonds</a>
+            <a href="/equity">Equity & IPO</a>
+            <a href="/tokenize">Tokenize</a>
+          </div>
+        </div>
+      </footer>
 
       <style jsx>{`
         .page {
@@ -287,7 +332,8 @@ export default function Home() {
           margin-top: 10px;
         }
 
-        .statCard {
+        .statCard,
+        .featureCard {
           background: rgba(255, 255, 255, 0.04);
           border: 1px solid rgba(255, 255, 255, 0.08);
           border-radius: 18px;
@@ -297,20 +343,23 @@ export default function Home() {
           -webkit-backdrop-filter: blur(8px);
         }
 
-        .statCard h3 {
+        .statCard h3,
+        .featureCard h3 {
           margin: 0 0 12px;
           font-size: 20px;
           color: #ffffff;
         }
 
-        .statCard p {
+        .statCard p,
+        .featureCard p {
           margin: 0;
           font-size: 15px;
           line-height: 1.8;
           color: rgba(255, 255, 255, 0.66);
         }
 
-        .infoSection {
+        .infoSection,
+        .bottomSection {
           padding: 90px 24px 110px;
           background: linear-gradient(to bottom, #0b0e11, #09111f);
         }
@@ -336,14 +385,16 @@ export default function Home() {
           text-transform: uppercase;
         }
 
-        .sectionIntro h2 {
+        .sectionIntro h2,
+        .bottomText h2 {
           margin: 0 0 18px;
           font-size: clamp(30px, 5vw, 48px);
           line-height: 1.15;
           font-weight: 800;
         }
 
-        .sectionIntro p {
+        .sectionIntro p,
+        .bottomText p {
           margin: 0;
           color: rgba(255, 255, 255, 0.66);
           font-size: 18px;
@@ -356,23 +407,65 @@ export default function Home() {
           gap: 22px;
         }
 
-        .featureCard {
+        .bottomCard {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 24px;
+          padding: 32px;
+          border-radius: 22px;
           background: rgba(255, 255, 255, 0.04);
           border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 18px;
-          padding: 28px 24px;
         }
 
-        .featureCard h3 {
-          margin: 0 0 12px;
+        .bottomText {
+          max-width: 700px;
+        }
+
+        .bottomActions {
+          display: flex;
+          gap: 14px;
+          flex-wrap: wrap;
+        }
+
+        .footer {
+          border-top: 1px solid rgba(255, 255, 255, 0.08);
+          background: #080b10;
+          padding: 32px 24px;
+        }
+
+        .footerInner {
+          display: flex;
+          justify-content: space-between;
+          gap: 24px;
+          align-items: center;
+        }
+
+        .footerBrand h3 {
+          margin: 0 0 10px;
           font-size: 20px;
         }
 
-        .featureCard p {
+        .footerBrand p {
           margin: 0;
-          color: rgba(255, 255, 255, 0.66);
-          font-size: 15px;
-          line-height: 1.8;
+          color: rgba(255, 255, 255, 0.6);
+          max-width: 520px;
+          line-height: 1.7;
+        }
+
+        .footerLinks {
+          display: flex;
+          gap: 18px;
+          flex-wrap: wrap;
+        }
+
+        .footerLinks a {
+          color: rgba(255, 255, 255, 0.72);
+          text-decoration: none;
+        }
+
+        .footerLinks a:hover {
+          color: #ffffff;
         }
 
         @media (max-width: 900px) {
@@ -381,8 +474,15 @@ export default function Home() {
           }
 
           .statsGrid,
-          .featureGrid {
+          .featureGrid,
+          .footerInner {
             grid-template-columns: 1fr;
+            display: grid;
+          }
+
+          .bottomCard {
+            flex-direction: column;
+            align-items: flex-start;
           }
 
           .textWrap p {
@@ -397,22 +497,18 @@ export default function Home() {
         }
 
         @media (max-width: 600px) {
-          .hero {
-            padding-top: 80px;
-          }
-
           .textWrap h1 {
             font-size: 42px;
-          }
-
-          .heroActions {
-            gap: 14px;
           }
 
           .primaryBtn,
           .secondaryBtn {
             width: 100%;
             min-width: 0;
+          }
+
+          .bottomActions {
+            width: 100%;
           }
         }
       `}</style>
