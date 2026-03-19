@@ -1,10 +1,8 @@
-import "../styles/globals.css";
-import Navbar from "../components/Navbar";
-
-export default function MyApp({ Component, pageProps }) {
+// Remove the extra nav here if it's already in your index.js
+function MyApp({ Component, pageProps }) {
   return (
     <>
-      <Navbar />
+      {/* <Navbar />  <-- DELETE THIS IF IT IS REPEATING */}
       <Component {...pageProps} />
     </>
   );

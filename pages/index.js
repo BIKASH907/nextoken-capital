@@ -113,3 +113,42 @@ export default function Home() {
     </div>
   );
 }
+import Head from 'next/head';
+import Link from 'next/link';
+
+export default function Home() {
+  return (
+    <div style={{ backgroundColor: '#050816', color: '#ffffff', minHeight: '100vh' }}>
+      <Head>
+        <title>Nextoken Capital | The Global Platform</title>
+      </Head>
+
+      {/* --- ONLY ONE NAV TAG HERE --- */}
+      <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '24px 40px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <span style={{ color: '#f5c15a', fontSize: '26px', fontWeight: '900' }}>NXT</span>
+          <div style={{ display: 'flex', flexDirection: 'column', lineHeight: '1' }}>
+            <span style={{ fontWeight: '800', fontSize: '14px', letterSpacing: '1.5px' }}>NEXTOKEN</span>
+            <span style={{ fontSize: '10px', color: '#6e7686', letterSpacing: '1.5px' }}>CAPITAL</span>
+          </div>
+        </div>
+        
+        <div style={{ display: 'flex', gap: '32px' }}>
+          {['Markets', 'Exchange', 'Bonds', 'Equity & IPO', 'Tokenize'].map(item => (
+            <Link key={item} href="/" style={{ color: '#9ca3af', textDecoration: 'none', fontSize: '14px' }}>{item}</Link>
+          ))}
+        </div>
+
+        <div style={{ display: 'flex', gap: '12px' }}>
+          <button style={{ background: 'transparent', color: '#fff', border: '1px solid #333', padding: '10px 20px', borderRadius: '8px' }}>Log In</button>
+          <button style={{ background: '#f5c15a', color: '#000', border: 'none', padding: '10px 20px', borderRadius: '8px', fontWeight: '700' }}>Register</button>
+        </div>
+      </nav>
+
+      {/* Hero Content Starts Here */}
+      <main style={{ textAlign: 'center', padding: '100px 20px' }}>
+         <h1 style={{ fontSize: '64px', fontWeight: '800' }}>The Global Platform</h1>
+      </main>
+    </div>
+  );
+}
