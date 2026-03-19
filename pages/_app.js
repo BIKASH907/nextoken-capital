@@ -1,13 +1,14 @@
-import "../styles/globals.css"; // Ensure this has two dots (..)
+import "../styles/globals.css";
 import Header from "../components/Header";
 
 export default function App({ Component, pageProps }) {
   return (
-    <>
+    <div className="bg-[#0b0e11] min-h-screen">
       <Header />
-      <main className="pt-24 min-h-screen bg-[#0b0e11] text-white">
+      {/* pt-16 matches the h-16 of the header to remove the gap and overlapping */}
+      <main className="pt-16 sm:pt-20">
         <Component {...pageProps} />
       </main>
-    </>
+    </div>
   );
 }

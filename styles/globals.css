@@ -9,24 +9,20 @@
   --dark: #0B0E11;
   --dark-2: #161A1E;
   --dark-3: #1E2329;
-  --green: #0ECB81;
-  --red: #F6465D;
 }
 
 * { box-sizing: border-box; }
 
 html, body {
   background: var(--dark);
-  color: rgba(255, 255, 255, 0.85);
+  color: white;
   font-family: 'Inter', sans-serif;
-  scroll-behavior: smooth;
   margin: 0;
   padding: 0;
 }
 
-/* --- LOGO DESIGN SYSTEM (Matches Nextoken Branding) --- */
 @layer components {
-  /* The "NXT" Box */
+  /* LOGO SYSTEM */
   .logo-nxt { 
     font-family: 'Arial Black', sans-serif; 
     font-size: 22px; 
@@ -34,63 +30,32 @@ html, body {
     color: var(--gold); 
     letter-spacing: -1px; 
   }
-
-  /* The Vertical Separator Line */
   .logo-sep { 
     width: 1px; 
     height: 24px; 
     background: rgba(240,185,11,0.25); 
     margin: 0 12px; 
   }
-
-  /* "NEXTOKEN" Main Text */
   .logo-name { 
     font-family: 'Arial Black', sans-serif; 
     font-size: 13px; 
     font-weight: 900; 
     color: white; 
-    letter-spacing: -0.3px; 
     line-height: 1.1; 
   }
-
-  /* "CAPITAL" Subtext */
   .logo-cap { 
     font-size: 7px; 
     font-weight: 700; 
     color: var(--gold); 
     letter-spacing: 4px; 
     text-transform: uppercase; 
-    line-height: 1.2; 
   }
 
-  /* --- BUTTONS (Matches Image 6) --- */
+  /* BUTTONS */
   .btn-gold { 
-    @apply bg-[#F0B90B] text-black hover:bg-[#fcd535] active:scale-95 transition-all duration-150; 
+    @apply bg-[#F0B90B] text-black px-5 py-2 rounded text-sm font-bold hover:bg-[#fcd535] transition-all active:scale-95; 
   }
-  
-  .btn-dark { 
-    @apply bg-[#252930] text-white/80 hover:bg-[#2B3139] active:scale-95 transition-all duration-150; 
+  .btn-login { 
+    @apply text-white font-bold text-sm px-4 hover:text-[#F0B90B] transition-colors; 
   }
-
-  /* --- INPUTS & SEARCH --- */
-  .search-input {
-    @apply bg-[#2B3139] border border-transparent focus:border-gold/30 rounded px-3.5 py-1.5 text-xs text-white outline-none transition-all;
-  }
-}
-
-/* --- SCROLLBAR --- */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: var(--dark); }
-::-webkit-scrollbar-thumb { background: var(--dark-3); border-radius: 2px; }
-
-/* --- TICKER ANIMATION --- */
-@keyframes marquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
-.animate-marquee {
-  display: flex;
-  white-space: nowrap;
-  animation: marquee 35s linear infinite;
 }
