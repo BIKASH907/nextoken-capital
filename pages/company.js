@@ -151,10 +151,10 @@ const TIMELINE = [
 ]
 
 const TEAM = [
-  { i:'AM', n:'Andrius Mazulis',     r:'CEO & Co-Founder',         b:'Former Head of Digital Assets at SEB Bank. 15 years in capital markets. LBS MBA.' },
-  { i:'EV', n:'Elena Vaitkute',      r:'CTO & Co-Founder',         b:'Ex-Ethereum Foundation researcher. Led DLT integrations at Nasdaq Nordic. PhD, KTU.' },
-  { i:'JP', n:'Jonas Petrauskas',    r:'Chief Compliance Officer', b:'Former Senior Inspector at Lietuvos bankas. AML/KYC architect for 3 EU fintechs.' },
-  { i:'SK', n:'Simona Kazlauskiene', r:'Chief Risk Officer',        b:'10 years at ECB in market risk supervision. Certified FRM. Led Basel IV across two Baltic banks.' },
+  { photo:'/bikash.jpg', i:'BK', n:'Bikash Bhat',              r:'CEO & Founder',            b:'Founder of Nextoken Capital. Passionate about regulated DeFi, tokenized real-world assets, and building the future of capital markets.' },
+  { photo:null,          i:'EV', n:'Elena Vaitkute',      r:'CTO & Co-Founder',         b:'Ex-Ethereum Foundation researcher. Led DLT integrations at Nasdaq Nordic. PhD, KTU.' },
+  { photo:null,          i:'JP', n:'Jonas Petrauskas',    r:'Chief Compliance Officer', b:'Former Senior Inspector at Lietuvos bankas. AML/KYC architect for 3 EU fintechs.' },
+  { photo:null,          i:'SK', n:'Simona Kazlauskiene', r:'Chief Risk Officer',        b:'10 years at ECB in market risk supervision. Certified FRM. Led Basel IV across two Baltic banks.' },
 ]
 
 const LICENSES = [
@@ -341,7 +341,10 @@ function About() {
           <div className="g4">
             {TEAM.map(m => (
               <div key={m.n} className="card tc">
-                <div className="av">{m.i}</div>
+                {m.photo
+                  ? <img src={m.photo} alt={m.n} style={{width:'72px',height:'72px',borderRadius:'50%',objectFit:'cover',objectPosition:'top',margin:'0 auto 16px',display:'block',border:'2px solid #38bd82'}} />
+                  : <div className="av">{m.i}</div>
+                }
                 <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,marginBottom:'4px'}}>{m.n}</div>
                 <div className="trole">{m.r}</div>
                 <div className="tbio">{m.b}</div>
