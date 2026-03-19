@@ -2,25 +2,26 @@
 
 import React, { useState, useEffect } from 'react';
 import { 
+  Menu, 
+  X, 
   ChevronDown, 
   Globe, 
-  Bell, 
-  UserCircle, 
   Search, 
   LayoutGrid, 
   TrendingUp, 
   ShieldCheck, 
   Building2, 
   PieChart, 
-  FileText 
+  FileText,
+  UserCircle,
+  Bell
 } from 'lucide-react';
 
 const Header = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [activeMenu, setActiveMenu] = useState<string | null>(null);
-  const isConnected = false; // Toggle this for development testing
 
-  // Handle glassmorphism effect on scroll
+  // Handle glassmorphism on scroll
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
@@ -44,56 +45,43 @@ const Header = () => {
         { label: 'Documentation', desc: 'Legal & Technical Guides', icon: FileText },
       ]
     },
-    {
-      title: 'Secondary Market',
-      link: '/trade'
-    }
+    { title: 'Markets', link: '/markets' }
   ];
 
   return (
-    <header className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-      isScrolled ? 'bg-[#0b0e11]/80 backdrop-blur-md border-b border-gray-800' : 'bg-transparent'
+    <header className={`fixed top-0 left-0 w-full z-[100] transition-all duration-300 ${
+      isScrolled || isMenuOpen ? 'bg-[#0b0e11] border-b border-white/10' : 'bg-transparent'
     }`}>
+      {/* --- TOP NAV BAR --- */}
       <div className="max-w-[1440px] mx-auto px-4 h-16 flex items-center justify-between">
         
-        {/* LEFT: LOGO & NAV */}
+        {/* LEFT: LOGO */}
         <div className="flex items-center gap-8">
-          <div className="flex items-center gap-2 group cursor-pointer">
-            <div className="w-8 h-8 bg-[#F0B90B] rounded-lg flex items-center justify-center font-bold text-black group-hover:rotate-12 transition-transform">
-              NXT
+          <div className="flex items-center gap-2 cursor-pointer group">
+            <div className="w-8 h-8 bg-gold rounded flex items-center justify-center font-black text-black text-lg transition-transform group-hover:rotate-12">
+              N
             </div>
-            <span className="text-white font-bold text-xl tracking-tight hidden md:block">
-              Nextoken<span className="text-[#F0B90B]">Capital</span>
-            </span>
+            <div className="hidden xs:flex flex-col leading-none">
+              <span className="text-white font-black text-sm tracking-tight">NEXTOKEN</span>
+              <span className="text-gold font-bold text-[8px] tracking-[3px] uppercase">Capital</span>
+            </div>
           </div>
 
+          {/* DESKTOP NAV */}
           <nav className="hidden lg:flex items-center gap-6">
             {navLinks.map((menu) => (
-              <div 
-                key={menu.title}
-                className="relative group py-5"
-                onMouseEnter={() => setActiveMenu(menu.title)}
-                onMouseLeave={() => setActiveMenu(null)}
-              >
-                <button className="flex items-center gap-1 text-gray-300 hover:text-[#F0B90B] font-medium text-sm transition-colors">
+              <div key={menu.title} className="relative group py-5">
+                <button className="flex items-center gap-1 text-white/70 hover:text-gold text-sm font-bold transition-colors">
                   {menu.title} {menu.items && <ChevronDown size={14} />}
                 </button>
-
-                {/* DROPDOWN MEGA-MENU */}
-                {menu.items && activeMenu === menu.title && (
-                  <div className="absolute top-full left-0 w-[450px] bg-[#1e2329] border border-gray-700 rounded-xl shadow-2xl p-4 grid grid-cols-1 gap-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                {menu.items && (
+                  <div className="absolute top-full left-0 w-80 bg-dark-3 border border-white/10 rounded-xl shadow-2xl p-3 hidden group-hover:grid grid-cols-1 gap-1 animate-in fade-in slide-in-from-top-2">
                     {menu.items.map((item) => (
-                      <a 
-                        key={item.label}
-                        href="#" 
-                        className="flex items-start gap-4 p-3 rounded-lg hover:bg-[#2b3139] transition-colors group/item"
-                      >
-                        <div className="mt-1 p-2 bg-gray-800 rounded-md group-hover/item:text-[#F0B90B] transition-colors">
-                          <item.icon size={20} />
-                        </div>
+                      <a key={item.label} href="#" className="flex items-start gap-3 p-3 rounded-lg hover:bg-dark-5 transition-colors">
+                        <item.icon size={18} className="text-gold mt-0.5" />
                         <div>
-                          <p className="text-white font-semibold text-sm">{item.label}</p>
-                          <p className="text-gray-400 text-xs mt-0.5">{item.desc}</p>
+                          <p className="text-white font-bold text-xs">{item.label}</p>
+                          <p className="text-white/40 text-[10px]">{item.desc}</p>
                         </div>
                       </a>
                     ))}
@@ -104,70 +92,81 @@ const Header = () => {
           </nav>
         </div>
 
-        {/* CENTER: SEARCH (BINANCE STYLE) */}
-        <div className="hidden xl:flex flex-1 max-w-md mx-8">
-          <div className="relative w-full group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-[#F0B90B]" size={16} />
+        {/* RIGHT: SEARCH & TOOLS */}
+        <div className="flex items-center gap-4">
+          <div className="hidden sm:flex relative group">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30 group-focus-within:text-gold transition-colors" size={16} />
             <input 
               type="text" 
-              placeholder="Search RWA, Bonds, or Assets..." 
-              className="w-full bg-[#2b3139] border border-transparent focus:border-[#F0B90B] rounded-full py-1.5 pl-10 pr-4 text-sm text-white outline-none transition-all"
+              placeholder="Search Assets..." 
+              className="bg-dark-5 border border-transparent focus:border-gold/30 rounded-full py-1.5 pl-10 pr-4 text-xs text-white outline-none w-40 focus:w-60 transition-all"
             />
           </div>
-        </div>
 
-        {/* RIGHT: AUTH & ACTIONS */}
-        <div className="flex items-center gap-4">
-          <div className="hidden sm:flex items-center gap-4 text-gray-300">
-             <button className="hover:text-white"><Globe size={18} /></button>
-             <button className="relative hover:text-white">
-                <Bell size={18} />
-                <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full border border-[#0b0e11]"></span>
-             </button>
+          <div className="flex items-center gap-3">
+            <button className="btn-gold px-4 py-1.5 rounded text-xs">Join</button>
+            
+            {/* MOBILE TOGGLE */}
+            <button 
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="lg:hidden text-white hover:text-gold p-1"
+            >
+              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* --- MOBILE OVERLAY --- */}
+      <div className={`lg:hidden fixed inset-0 top-16 bg-dark z-[-1] transition-transform duration-300 ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+        <div className="flex flex-col p-6 gap-6 h-full overflow-y-auto">
+          {navLinks.map((menu) => (
+            <div key={menu.title} className="flex flex-col gap-3">
+              <h3 className="text-gold text-xs font-black uppercase tracking-widest">{menu.title}</h3>
+              {menu.items ? (
+                <div className="grid grid-cols-1 gap-4 pl-2">
+                  {menu.items.map((item) => (
+                    <a key={item.label} href="#" className="flex items-center gap-4 group">
+                      <div className="p-2 bg-dark-5 rounded group-active:bg-gold/10 transition-colors">
+                        <item.icon size={20} className="text-white/60 group-active:text-gold" />
+                      </div>
+                      <span className="text-white font-bold text-sm">{item.label}</span>
+                    </a>
+                  ))}
+                </div>
+              ) : (
+                <a href={menu.link} className="text-white font-bold text-lg pl-2">Markets</a>
+              )}
+            </div>
+          ))}
+
+          <hr className="border-white/5 my-2" />
+
+          <div className="flex flex-col gap-3">
+            <button className="btn-dark w-full py-3 rounded font-bold">Log In</button>
+            <button className="btn-gold w-full py-3 rounded font-bold">Register Now</button>
           </div>
 
-          {!isConnected ? (
-            <div className="flex items-center gap-2">
-              <button className="text-white text-sm font-semibold px-4 py-2 hover:text-[#F0B90B] transition-colors">
-                Log In
-              </button>
-              <button className="bg-[#F0B90B] text-black text-sm font-bold px-5 py-2 rounded-lg hover:bg-[#fcd535] transition-all shadow-lg active:scale-95">
-                Get Started
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-3 bg-gray-800 rounded-full pl-4 pr-1 py-1 cursor-pointer hover:bg-gray-700 transition-colors">
-              <span className="text-xs text-white font-medium">0.45 ETH</span>
-              <UserCircle size={28} className="text-[#F0B90B]" />
-            </div>
-          )}
+          <div className="flex justify-center gap-8 mt-auto py-6 text-white/30 border-t border-white/5">
+            <Globe size={20} />
+            <Bell size={20} />
+            <UserCircle size={20} />
+          </div>
         </div>
       </div>
 
-      {/* SUB-HEADER: LIVE TICKER TAPE */}
-      <div className="w-full bg-[#181a20] border-t border-gray-800 overflow-hidden py-1">
-        <div className="flex gap-8 whitespace-nowrap animate-marquee items-center text-[10px] font-mono text-gray-400 uppercase tracking-widest">
-          <span>Potatoes Export Fund: <span className="text-green-400">+12.4%</span></span>
-          <span className="opacity-30">|</span>
-          <span>Vilnius RE Bond A: <span className="text-green-400">7.2% Yield</span></span>
-          <span className="opacity-30">|</span>
-          <span>NXT Capital IPO: <span className="text-yellow-400">Subscription Open</span></span>
-          <span className="opacity-30">|</span>
-          <span>Himalayan Agro-Token: <span className="text-red-400">-1.2%</span></span>
-          <span className="opacity-30">|</span>
-          <span>Potatoes Export Fund: <span className="text-green-400">+12.4%</span></span>
+      {/* --- TICKER TAPE (Hides on very small screens) --- */}
+      <div className="hidden md:block w-full bg-dark-2 border-t border-white/5 overflow-hidden py-1">
+        <div className="animate-marquee flex gap-12 text-[9px] font-mono text-white/30 uppercase tracking-[2px]">
+          <span>Himalayan Potato Index <span className="text-green-up">+4.2%</span></span>
+          <span>Vilnius RE Bond-A <span className="text-green-up">7.2% Yield</span></span>
+          <span>NEXTOKEN IPO <span className="text-gold">Subscribing</span></span>
+          <span>Pokhara Agro-Credit <span className="text-red-down">-0.8%</span></span>
+          {/* Repeating for seamless loop */}
+          <span>Himalayan Potato Index <span className="text-green-up">+4.2%</span></span>
+          <span>Vilnius RE Bond-A <span className="text-green-up">7.2% Yield</span></span>
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes marquee {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-        .animate-marquee {
-          animation: marquee 30s linear infinite;
-        }
-      `}</style>
     </header>
   );
 };
