@@ -861,6 +861,8 @@ NXT.tradeFeed = {
     this.el = document.getElementById(containerId);
     if (!this.el) return;
 
+
+NXT.toast.show('🎉 Application submitted! We\'ll be in touch within 5 business days.', 'success', 7000);
     // Generate initial trades
     for (let i = 0; i < 15; i++) this._generateTrade(true);
     this.render();
