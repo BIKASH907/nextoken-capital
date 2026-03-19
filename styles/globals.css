@@ -20,80 +20,64 @@ html, body {
   color: rgba(255, 255, 255, 0.85);
   font-family: 'Inter', sans-serif;
   scroll-behavior: smooth;
+  margin: 0;
+  padding: 0;
 }
 
+/* Custom Scrollbar */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: var(--dark); }
 ::-webkit-scrollbar-thumb { background: var(--dark-3); border-radius: 2px; }
 
 @layer components {
-  /* Logo */
+  /* Logo Styles */
   .logo-nxt { font-family: 'Arial Black', sans-serif; font-size: 22px; font-weight: 900; color: var(--gold); letter-spacing: -1px; }
-  .logo-sep { width: 1px; height: 24px; background: rgba(240,185,11,0.2); margin: 0 11px; }
   .logo-name { font-family: 'Arial Black', sans-serif; font-size: 12.5px; font-weight: 900; color: white; letter-spacing: -0.3px; line-height: 1.1; }
-  .logo-cap { font-size: 6.5px; font-weight: 600; color: var(--gold); letter-spacing: 4px; text-transform: uppercase; line-height: 1.2; }
+  
+  /* Buttons - Cleaned up @apply logic */
+  .btn { 
+    @apply inline-flex items-center justify-center gap-2 px-6 py-2.5 text-sm font-bold rounded cursor-pointer transition-all duration-150 border-none outline-none; 
+  }
+  .btn-gold { 
+    @apply bg-[#F0B90B] text-black hover:bg-[#fcd535] active:scale-95; 
+  }
+  .btn-dark { 
+    @apply bg-[#252930] text-white/80 hover:bg-[#2B3139] active:scale-95; 
+  }
+  .btn-ghost { 
+    @apply bg-transparent border border-gold/25 text-white/60 hover:border-gold hover:text-gold; 
+  }
 
-  /* Buttons */
-  .btn { @apply inline-flex items-center justify-center gap-2 px-6 py-2.5 text-sm font-bold rounded cursor-pointer transition-all duration-150 border-none; }
-  .btn-gold { @apply bg-yellow-400 text-black hover:bg-yellow-300; background: var(--gold); }
-  .btn-dark { background: #252930; color: rgba(255,255,255,0.8); }
-  .btn-dark:hover { background: #2B3139; }
-  .btn-ghost { background: transparent; border: 1px solid rgba(240,185,11,0.25); color: rgba(255,255,255,0.6); }
-  .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
-  .btn-green { background: var(--green); color: black; }
-  .btn-green:hover { background: #00C07A; }
-  .btn-red { background: var(--red); color: white; }
-  .btn-red:hover { background: #E03050; }
-
-  /* Form inputs */
-  .inp { @apply w-full px-3.5 py-2.5 text-sm rounded outline-none transition-colors duration-150; background: #1E2329; border: 1px solid rgba(255,255,255,0.06); color: white; }
-  .inp:focus { border-color: rgba(240,185,11,0.4); }
-  .inp::placeholder { color: rgba(255,255,255,0.2); }
-  .lbl { @apply block text-xs font-bold uppercase tracking-wider mb-1.5; color: rgba(255,255,255,0.4); }
-
-  /* Cards */
-  .card { background: #161A1E; border: 1px solid rgba(255,255,255,0.06); border-radius: 4px; }
-  .card-header { @apply flex items-center justify-between px-5 py-3.5; border-bottom: 1px solid rgba(255,255,255,0.06); }
-  .card-body { @apply p-5; }
-  .card-title { @apply text-sm font-bold; }
-
-  /* Badges */
-  .badge { @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-bold; }
-  .badge-gold { background: rgba(240,185,11,0.1); color: var(--gold); }
-  .badge-green { background: rgba(14,203,129,0.1); color: var(--green); }
-  .badge-red { background: rgba(246,70,93,0.08); color: var(--red); }
-  .badge-blue { background: rgba(24,144,255,0.1); color: #1890FF; }
-  .badge-grey { background: #252930; color: rgba(255,255,255,0.4); }
+  /* Form Inputs */
+  .inp { 
+    @apply w-full px-3.5 py-2.5 text-sm rounded outline-none transition-colors duration-150 bg-[#1E2329] border border-white/5 text-white focus:border-gold/40; 
+  }
+  .lbl { 
+    @apply block text-xs font-bold uppercase tracking-wider mb-1.5 text-white/40; 
+  }
 
   /* Tables */
-  .tbl { @apply w-full; border-collapse: collapse; }
-  .tbl th { @apply px-4 py-2.5 text-left text-xs font-bold uppercase tracking-wider; color: rgba(255,255,255,0.3); background: #1E2329; border-bottom: 1px solid rgba(255,255,255,0.06); }
-  .tbl td { @apply px-4 py-3.5 text-sm; border-bottom: 1px solid rgba(255,255,255,0.04); color: rgba(255,255,255,0.7); }
-  .tbl tbody tr:hover td { background: rgba(255,255,255,0.02); }
-  .tbl tbody tr:last-child td { border-bottom: none; }
+  .tbl { @apply w-full border-collapse; }
+  .tbl th { 
+    @apply px-4 py-2.5 text-left text-xs font-bold uppercase tracking-wider text-white/30 bg-[#1E2329] border-b border-white/5; 
+  }
+  .tbl td { 
+    @apply px-4 py-3.5 text-sm border-b border-white/5 text-white/70; 
+  }
 
-  /* Alerts */
-  .alert-err { @apply p-3 rounded text-sm font-medium mb-4; background: rgba(246,70,93,0.1); border: 1px solid rgba(246,70,93,0.2); color: #F6465D; }
-  .alert-ok { @apply p-3 rounded text-sm font-medium mb-4; background: rgba(14,203,129,0.1); border: 1px solid rgba(14,203,129,0.2); color: var(--green); }
-  .alert-info { @apply p-3 rounded text-sm font-medium mb-4; background: rgba(240,185,11,0.08); border: 1px solid rgba(240,185,11,0.15); color: var(--gold); }
+  /* Stat Cards */
+  .stat-card { @apply p-5 bg-[#161A1E] rounded; }
+  .stat-n { @apply text-2xl font-black tracking-tight text-white; }
+}
 
-  /* Progress */
-  .prog { @apply h-1 rounded overflow-hidden; background: rgba(255,255,255,0.08); }
-  .prog-fill { @apply h-full rounded; background: var(--gold); }
+/* ANIMATION FOR TICKER TAPE */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
 
-  /* Sidebar item */
-  .sb-item { @apply flex items-center gap-2.5 px-3 py-2 rounded text-sm font-medium cursor-pointer transition-all duration-150; color: rgba(255,255,255,0.4); }
-  .sb-item:hover { background: #1E2329; color: rgba(255,255,255,0.85); }
-  .sb-item.active { background: rgba(240,185,11,0.08); color: var(--gold); font-weight: 700; }
-
-  /* Stat card */
-  .stat-card { @apply p-5; background: #161A1E; }
-  .stat-n { @apply text-2xl font-black tracking-tight; color: white; }
-  .stat-l { @apply text-xs mt-0.5; color: rgba(255,255,255,0.3); }
-  .stat-up { @apply text-xs font-semibold mt-1; color: var(--green); }
-  .stat-dn { @apply text-xs font-semibold mt-1; color: var(--red); }
-
-  /* Section labels */
-  .sec-tag { @apply text-xs font-bold uppercase tracking-widest mb-2; color: var(--gold); }
-  .sec-h2 { @apply text-2xl font-black tracking-tight leading-tight mb-4; }
+.animate-marquee {
+  display: flex;
+  white-space: nowrap;
+  animation: marquee 30s linear infinite;
 }
