@@ -3,7 +3,6 @@ import { useState, useEffect, useRef, useCallback, createContext, useContext } f
 import Head from 'next/head'
 import Link from 'next/link'
 
-// ─── SHARED LIVE PRICE CONTEXT ────────────────────────────────────────────────
 const PriceCtx = createContext({})
 
 const BASE_PAIRS = [
@@ -34,7 +33,6 @@ function buildCandles(base, count, tf) {
   return candles
 }
 
-// ─── CANDLE CHART ─────────────────────────────────────────────────────────────
 function Chart({ pair, tf }) {
   const { livePrice } = useContext(PriceCtx)
   const cvs = useRef(null)
@@ -46,13 +44,10 @@ function Chart({ pair, tf }) {
 
   useEffect(()=>{ candles.current=buildCandles(base,200,tf); dirty.current=true },[pair,tf,base])
 
-  // Sync live price into last candle
   useEffect(()=>{
     if(!candles.current.length||!livePrice[pair]) return
     const last=candles.current[candles.current.length-1]
-    last.c=livePrice[pair]
-    last.h=Math.max(last.h,last.c)
-    last.l=Math.min(last.l,last.c)
+    last.c=livePrice[pair]; last.h=Math.max(last.h,last.c); last.l=Math.min(last.l,last.c)
     dirty.current=true
   },[livePrice,pair])
 
@@ -73,7 +68,6 @@ function Chart({ pair, tf }) {
     const toY=p=>P.t+cH-((p-yMin)/(yMax-yMin))*cH
     const toX=i=>P.l+(i+0.5)*(cW/VIEW)
     const bW=Math.max(2,(cW/VIEW)*0.72)
-    // Grid
     ctx.strokeStyle=GR; ctx.lineWidth=1
     for(let i=0;i<=5;i++){
       const y=P.t+(cH/5)*i; ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(W-P.r,y);ctx.stroke()
@@ -81,14 +75,12 @@ function Chart({ pair, tf }) {
       ctx.fillStyle=TX;ctx.font='10px monospace';ctx.textAlign='left'
       ctx.fillText(pr.toFixed(pr>100?2:pr>1?4:6),W-P.r+4,y+4)
     }
-    // Volume
     const mxV=Math.max(...data.map(c=>c.v))
     data.forEach((c,i)=>{
       const x=toX(i),bh=(c.v/mxV)*vH
       ctx.fillStyle=c.c>=c.o?'rgba(14,203,129,0.22)':'rgba(246,70,93,0.22)'
       ctx.fillRect(x-bW/2,H-P.b-bh,bW,bh)
     })
-    // Candles
     data.forEach((c,i)=>{
       const x=toX(i),up=c.c>=c.o,col=up?UP:DN
       if(i===hover.current){ctx.fillStyle='rgba(255,255,255,0.03)';ctx.fillRect(x-bW,P.t,bW*2,cH)}
@@ -98,7 +90,6 @@ function Chart({ pair, tf }) {
       ctx.fillStyle=col;ctx.fillRect(x-bW/2,top,bW,ht)
       if(!up){ctx.strokeStyle=col;ctx.strokeRect(x-bW/2,top,bW,ht)}
     })
-    // Last price line
     const last=data[data.length-1]
     if(last){
       const y=toY(last.c),up=last.c>=last.o,col=up?UP:DN
@@ -108,7 +99,6 @@ function Chart({ pair, tf }) {
       ctx.fillStyle='#0b0e11';ctx.font='bold 10px monospace';ctx.textAlign='center'
       ctx.fillText(last.c.toFixed(last.c>100?2:last.c>1?4:6),W-P.r+35,y+4)
     }
-    // Tooltip
     if(hover.current>=0&&hover.current<data.length){
       const c=data[hover.current],x=toX(hover.current)
       const dp=c.c>100?2:c.c>1?4:6
@@ -122,7 +112,6 @@ function Chart({ pair, tf }) {
       ctx.save();ctx.setLineDash([2,2]);ctx.strokeStyle='rgba(255,255,255,0.1)';ctx.lineWidth=1
       ctx.beginPath();ctx.moveTo(x,P.t);ctx.lineTo(x,H-P.b);ctx.stroke();ctx.restore()
     }
-    // Time axis
     ctx.fillStyle=TX;ctx.font='9px monospace';ctx.textAlign='center'
     const step=Math.max(1,Math.floor(VIEW/8))
     data.forEach((c,i)=>{
@@ -134,10 +123,7 @@ function Chart({ pair, tf }) {
     })
   },[])
 
-  useEffect(()=>{
-    const loop=()=>{draw();raf.current=requestAnimationFrame(loop)}
-    loop(); return()=>cancelAnimationFrame(raf.current)
-  },[draw])
+  useEffect(()=>{ const loop=()=>{draw();raf.current=requestAnimationFrame(loop)}; loop(); return()=>cancelAnimationFrame(raf.current) },[draw])
 
   const onMove=useCallback(e=>{
     const el=cvs.current; if(!el) return
@@ -153,31 +139,25 @@ function Chart({ pair, tf }) {
     onMouseMove={onMove} onMouseLeave={()=>{hover.current=-1;dirty.current=true}} onTouchMove={onMove}/>
 }
 
-// ─── ORDER BOOK ───────────────────────────────────────────────────────────────
 function Book({ pair }) {
   const { livePrice } = useContext(PriceCtx)
   const [book, setBook] = useState({asks:[],bids:[],mid:0})
-
   useEffect(()=>{
     const gen=()=>{
-      const mid=(livePrice[pair]||BASE_PAIRS.find(p=>p.sym===pair)?.price||1000)
+      const mid=livePrice[pair]||BASE_PAIRS.find(p=>p.sym===pair)?.price||1000
       const asks=[],bids=[]
       let ap=mid+mid*0.0002,bp=mid-mid*0.0002
       for(let i=0;i<12;i++){
-        asks.push({p:ap,a:r(0.01,3),t:r(50,5000)})
-        bids.push({p:bp,a:r(0.01,3),t:r(50,5000)})
+        asks.push({p:ap,a:r(0.01,3),t:r(50,5000)}); bids.push({p:bp,a:r(0.01,3),t:r(50,5000)})
         ap+=r(0.1,mid*0.0006); bp-=r(0.1,mid*0.0006)
       }
       const mxT=Math.max(...[...asks,...bids].map(x=>x.t))
-      asks.forEach(x=>x.pct=(x.t/mxT)*100)
-      bids.forEach(x=>x.pct=(x.t/mxT)*100)
+      asks.forEach(x=>x.pct=(x.t/mxT)*100); bids.forEach(x=>x.pct=(x.t/mxT)*100)
       setBook({asks:asks.reverse(),bids,mid})
     }
     gen(); const iv=setInterval(gen,1000); return()=>clearInterval(iv)
   },[pair,livePrice])
-
   const fmt=n=>n>1000?n.toFixed(2):n>1?n.toFixed(4):n.toFixed(6)
-
   return(
     <div style={{height:'100%',display:'flex',flexDirection:'column',fontSize:'11px',fontFamily:'monospace'}}>
       <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',padding:'4px 8px',color:'#848e9c',borderBottom:'1px solid #1e2329',fontSize:'10px'}}>
@@ -193,7 +173,7 @@ function Book({ pair }) {
           </div>
         ))}
         <div style={{padding:'5px 8px',borderTop:'1px solid #1e2329',borderBottom:'1px solid #1e2329',display:'flex',alignItems:'center',gap:'8px',background:'#0d1117'}}>
-          <span style={{color:'#0ecb81',fontSize:'14px',fontWeight:700,fontFamily:'monospace'}}>{fmt(book.mid)}</span>
+          <span style={{color:'#0ecb81',fontSize:'14px',fontWeight:700}}>{fmt(book.mid)}</span>
           <span style={{color:'#848e9c',fontSize:'10px'}}>≈ EUR {fmt(book.mid)}</span>
         </div>
         {book.bids.map((row,i)=>(
@@ -209,20 +189,16 @@ function Book({ pair }) {
   )
 }
 
-// ─── TRADE FEED ───────────────────────────────────────────────────────────────
 function Feed({ pair }) {
   const { livePrice } = useContext(PriceCtx)
   const [trades, setTrades] = useState([])
-  const base = livePrice[pair] || BASE_PAIRS.find(p=>p.sym===pair)?.price || 1000
-
+  const base = livePrice[pair]||BASE_PAIRS.find(p=>p.sym===pair)?.price||1000
   useEffect(()=>{
     setTrades(Array.from({length:18},()=>({id:Math.random(),p:base*r(0.9998,1.0002),a:r(0.001,2),side:Math.random()>.5?'buy':'sell',t:new Date()})))
-    const iv=setInterval(()=>setTrades(prev=>[{id:Math.random(),p:(livePrice[pair]||base)*r(0.9998,1.0002),a:r(0.001,2),side:Math.random()>.5?'buy':'sell',t:new Date(),isNew:true},...prev].slice(0,22)),r(400,1800))
+    const iv=setInterval(()=>setTrades(prev=>[{id:Math.random(),p:(livePrice[pair]||base)*r(0.9998,1.0002),a:r(0.001,2),side:Math.random()>.5?'buy':'sell',t:new Date()},...prev].slice(0,22)),r(400,1800))
     return()=>clearInterval(iv)
   },[pair])
-
   const fmt=n=>n>1000?n.toFixed(2):n>1?n.toFixed(4):n.toFixed(6)
-
   return(
     <div style={{height:'100%',overflow:'hidden',fontFamily:'monospace',fontSize:'11px'}}>
       <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',padding:'4px 8px',color:'#848e9c',borderBottom:'1px solid #1e2329',fontSize:'10px'}}>
@@ -241,7 +217,6 @@ function Feed({ pair }) {
   )
 }
 
-// ─── ORDER FORM ───────────────────────────────────────────────────────────────
 function Form({ pair }) {
   const { livePrice } = useContext(PriceCtx)
   const [side, setSide] = useState('buy')
@@ -250,31 +225,23 @@ function Form({ pair }) {
   const [amount, setAmount] = useState('')
   const [pct, setPct] = useState(null)
   const base = pair.split('/')[0]
-  const lp = livePrice[pair] || BASE_PAIRS.find(p=>p.sym===pair)?.price || 1000
-
+  const lp = livePrice[pair]||BASE_PAIRS.find(p=>p.sym===pair)?.price||1000
   useEffect(()=>{ setPrice(lp.toFixed(lp>100?2:lp>1?4:6)) },[pair,lp])
-
   const total = ((parseFloat(price)||0)*(parseFloat(amount)||0)).toFixed(2)
-
   return(
     <div style={{padding:'12px',display:'flex',flexDirection:'column',gap:'10px',height:'100%'}}>
       <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'3px',background:'#0b0e11',borderRadius:'6px',padding:'3px'}}>
         {['buy','sell'].map(s=>(
-          <button key={s} onClick={()=>setSide(s)} style={{padding:'8px',borderRadius:'4px',border:'none',cursor:'pointer',fontWeight:700,fontSize:'13px',transition:'all .2s',background:side===s?(s==='buy'?'#0ecb81':'#f6465d'):'transparent',color:side===s?(s==='buy'?'#0b0e11':'#fff'):'#848e9c',textTransform:'capitalize'}}>
-            {s}
-          </button>
+          <button key={s} onClick={()=>setSide(s)} style={{padding:'8px',borderRadius:'4px',border:'none',cursor:'pointer',fontWeight:700,fontSize:'13px',transition:'all .2s',background:side===s?(s==='buy'?'#0ecb81':'#f6465d'):'transparent',color:side===s?(s==='buy'?'#0b0e11':'#fff'):'#848e9c',textTransform:'capitalize'}}>{s}</button>
         ))}
       </div>
-      <div style={{display:'flex',gap:'0',borderBottom:'1px solid #1e2329'}}>
+      <div style={{display:'flex',borderBottom:'1px solid #1e2329'}}>
         {['limit','market','stop'].map(t=>(
-          <button key={t} onClick={()=>setType(t)} style={{flex:1,background:'none',border:'none',cursor:'pointer',fontSize:'11px',color:type===t?'#f0b90b':'#848e9c',fontWeight:type===t?600:400,padding:'6px 4px',borderBottom:type===t?'2px solid #f0b90b':'2px solid transparent',textTransform:'capitalize',fontFamily:'monospace',transition:'all .15s'}}>
-            {t}
-          </button>
+          <button key={t} onClick={()=>setType(t)} style={{flex:1,background:'none',border:'none',cursor:'pointer',fontSize:'11px',color:type===t?'#f0b90b':'#848e9c',fontWeight:type===t?600:400,padding:'6px 4px',borderBottom:type===t?'2px solid #f0b90b':'2px solid transparent',textTransform:'capitalize',fontFamily:'monospace',transition:'all .15s'}}>{t}</button>
         ))}
       </div>
       <div style={{display:'flex',justifyContent:'space-between',fontSize:'11px',color:'#848e9c'}}>
-        <span>Available</span>
-        <span style={{color:'#c4cdd4'}}>{side==='buy'?'5,000.00 EUR':`0.1420 ${base}`}</span>
+        <span>Available</span><span style={{color:'#c4cdd4'}}>{side==='buy'?'5,000.00 EUR':`0.1420 ${base}`}</span>
       </div>
       {type!=='market'&&(
         <div>
@@ -294,7 +261,7 @@ function Form({ pair }) {
       </div>
       <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:'4px'}}>
         {[25,50,75,100].map(p=>(
-          <button key={p} onClick={()=>{setPct(p);setAmount((p/100*0.142).toFixed(6))}} style={{padding:'4px',background:pct===p?'rgba(240,185,11,0.15)':'#1e2329',border:`1px solid ${pct===p?'#f0b90b':'#2b3139'}`,borderRadius:'4px',color:pct===p?'#f0b90b':'#848e9c',fontSize:'10px',cursor:'pointer',fontFamily:'monospace',transition:'all .15s'}}>{p}%</button>
+          <button key={p} onClick={()=>{setPct(p);setAmount((p/100*0.142).toFixed(6))}} style={{padding:'4px',background:pct===p?'rgba(240,185,11,0.15)':'#1e2329',border:`1px solid ${pct===p?'#f0b90b':'#2b3139'}`,borderRadius:'4px',color:pct===p?'#f0b90b':'#848e9c',fontSize:'10px',cursor:'pointer',fontFamily:'monospace'}}>{p}%</button>
         ))}
       </div>
       <div>
@@ -304,7 +271,7 @@ function Form({ pair }) {
           <span style={{position:'absolute',right:'8px',top:'50%',transform:'translateY(-50%)',color:'#848e9c',fontSize:'11px'}}>EUR</span>
         </div>
       </div>
-      <button onClick={()=>alert(`${side.toUpperCase()} order placed for ${amount||'0'} ${base} @ ${price} EUR`)} style={{padding:'11px',borderRadius:'4px',border:'none',cursor:'pointer',fontWeight:700,fontSize:'13px',background:side==='buy'?'#0ecb81':'#f6465d',color:side==='buy'?'#0b0e11':'#fff',transition:'opacity .2s'}} onMouseOver={e=>e.target.style.opacity='.85'} onMouseOut={e=>e.target.style.opacity='1'}>
+      <button onClick={()=>alert(`${side.toUpperCase()} order: ${amount||'0'} ${base} @ ${price} EUR`)} style={{padding:'11px',borderRadius:'4px',border:'none',cursor:'pointer',fontWeight:700,fontSize:'13px',background:side==='buy'?'#0ecb81':'#f6465d',color:side==='buy'?'#0b0e11':'#fff'}} onMouseOver={e=>e.target.style.opacity='.85'} onMouseOut={e=>e.target.style.opacity='1'}>
         {side==='buy'?`Buy ${base}`:`Sell ${base}`}
       </button>
       <p style={{textAlign:'center',fontSize:'11px',color:'#848e9c',margin:0}}>
@@ -314,25 +281,17 @@ function Form({ pair }) {
   )
 }
 
-// ─── MARKETS VIEW ─────────────────────────────────────────────────────────────
 function Markets({ onSelect }) {
   const { livePrice } = useContext(PriceCtx)
   const [search, setSearch] = useState('')
   const [tab, setTab] = useState('all')
   const [sort, setSort] = useState('vol')
   const [dir, setDir] = useState(-1)
-
   const rows = BASE_PAIRS
     .filter(p=>p.sym.toLowerCase().includes(search.toLowerCase()))
     .filter(p=>tab==='all'||(tab==='up'&&p.chg>0)||(tab==='down'&&p.chg<0))
-    .sort((a,b)=>{
-      const av=sort==='price'?a.price:sort==='chg'?a.chg:parseFloat(a.vol)
-      const bv=sort==='price'?b.price:sort==='chg'?b.chg:parseFloat(b.vol)
-      return(av-bv)*dir
-    })
-
+    .sort((a,b)=>{ const av=sort==='price'?a.price:sort==='chg'?a.chg:parseFloat(a.vol); const bv=sort==='price'?b.price:sort==='chg'?b.chg:parseFloat(b.vol); return(av-bv)*dir })
   const tog=col=>{ if(sort===col)setDir(d=>d*-1); else{setSort(col);setDir(-1)} }
-
   return(
     <div style={{background:'#0b0e11',minHeight:'100%',color:'#c4cdd4'}}>
       <div style={{background:'#161a1e',borderBottom:'1px solid #1e2329',padding:'16px 20px'}}>
@@ -348,19 +307,19 @@ function Markets({ onSelect }) {
             </div>
           ))}
         </div>
-        <div style={{display:'flex',alignItems:'center',gap:'0',marginBottom:'0',borderBottom:'1px solid #1e2329'}}>
+        <div style={{display:'flex',alignItems:'center',borderBottom:'1px solid #1e2329'}}>
           {[['all','All'],['up','Gainers'],['down','Losers']].map(([v,l])=>(
-            <button key={v} onClick={()=>setTab(v)} style={{background:'none',border:'none',cursor:'pointer',padding:'8px 16px',color:tab===v?'#f0b90b':'#848e9c',borderBottom:tab===v?'2px solid #f0b90b':'2px solid transparent',fontSize:'12px',fontWeight:tab===v?600:400,fontFamily:'monospace',marginBottom:'-1px'}}>{l}</button>
+            <button key={v} onClick={()=>setTab(v)} style={{background:'none',border:'none',cursor:'pointer',padding:'8px 16px',color:tab===v?'#f0b90b':'#848e9c',borderBottom:tab===v?'2px solid #f0b90b':'2px solid transparent',fontSize:'12px',fontFamily:'monospace',marginBottom:'-1px'}}>{l}</button>
           ))}
           <div style={{marginLeft:'auto',paddingBottom:'8px'}}>
-            <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search pair..." style={{background:'#1e2329',border:'1px solid #2b3139',borderRadius:'5px',padding:'5px 10px',color:'#c4cdd4',fontSize:'11px',outline:'none',fontFamily:'monospace'}}/>
+            <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search..." style={{background:'#1e2329',border:'1px solid #2b3139',borderRadius:'5px',padding:'5px 10px',color:'#c4cdd4',fontSize:'11px',outline:'none',fontFamily:'monospace'}}/>
           </div>
         </div>
-        <div style={{background:'#161a1e',borderRadius:'8px',overflow:'hidden',border:'1px solid #1e2329',marginTop:'0'}}>
+        <div style={{background:'#161a1e',borderRadius:'8px',overflow:'hidden',border:'1px solid #1e2329'}}>
           <div style={{display:'grid',gridTemplateColumns:'2fr 1.5fr 1fr 1fr 1fr',padding:'8px 16px',borderBottom:'1px solid #1e2329',fontSize:'10px',color:'#848e9c',fontFamily:'monospace'}}>
             <span>Pair</span>
             <span style={{textAlign:'right',cursor:'pointer'}} onClick={()=>tog('price')}>Price {sort==='price'?(dir===1?'↑':'↓'):''}</span>
-            <span style={{textAlign:'right',cursor:'pointer'}} onClick={()=>tog('chg')}>24h Change {sort==='chg'?(dir===1?'↑':'↓'):''}</span>
+            <span style={{textAlign:'right',cursor:'pointer'}} onClick={()=>tog('chg')}>24h% {sort==='chg'?(dir===1?'↑':'↓'):''}</span>
             <span style={{textAlign:'right',cursor:'pointer'}} onClick={()=>tog('vol')}>Volume {sort==='vol'?(dir===1?'↑':'↓'):''}</span>
             <span style={{textAlign:'right'}}>Action</span>
           </div>
@@ -368,19 +327,12 @@ function Markets({ onSelect }) {
             <div key={p.sym} onClick={()=>onSelect(p.sym)} style={{display:'grid',gridTemplateColumns:'2fr 1.5fr 1fr 1fr 1fr',padding:'11px 16px',borderBottom:'1px solid #1e2329',cursor:'pointer',transition:'background .12s'}} onMouseOver={e=>e.currentTarget.style.background='#1e2329'} onMouseOut={e=>e.currentTarget.style.background='transparent'}>
               <div style={{display:'flex',alignItems:'center',gap:'10px'}}>
                 <div style={{width:'30px',height:'30px',borderRadius:'50%',background:'linear-gradient(135deg,#f0b90b,#c8830a)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'9px',fontWeight:700,color:'#0b0e11',flexShrink:0}}>{p.sym.split('/')[0].slice(0,3)}</div>
-                <div>
-                  <div style={{color:'#fff',fontWeight:600,fontSize:'13px'}}>{p.sym.split('/')[0]}</div>
-                  <div style={{color:'#848e9c',fontSize:'10px',fontFamily:'monospace'}}>{p.sym}</div>
-                </div>
+                <div><div style={{color:'#fff',fontWeight:600,fontSize:'13px'}}>{p.sym.split('/')[0]}</div><div style={{color:'#848e9c',fontSize:'10px',fontFamily:'monospace'}}>{p.sym}</div></div>
               </div>
-              <div style={{textAlign:'right',alignSelf:'center',color:'#fff',fontWeight:600,fontFamily:'monospace',fontSize:'13px'}}>
-                €{(livePrice[p.sym]||p.price).toLocaleString('en',{minimumFractionDigits:p.price>1?2:4})}
-              </div>
+              <div style={{textAlign:'right',alignSelf:'center',color:'#fff',fontWeight:600,fontFamily:'monospace',fontSize:'13px'}}>€{(livePrice[p.sym]||p.price).toLocaleString('en',{minimumFractionDigits:p.price>1?2:4})}</div>
               <div style={{textAlign:'right',alignSelf:'center',color:p.chg>=0?'#0ecb81':'#f6465d',fontWeight:600,fontFamily:'monospace',fontSize:'12px'}}>{p.chg>=0?'+':''}{p.chg.toFixed(2)}%</div>
               <div style={{textAlign:'right',alignSelf:'center',color:'#848e9c',fontSize:'12px',fontFamily:'monospace'}}>{p.vol}</div>
-              <div style={{textAlign:'right',alignSelf:'center'}}>
-                <button style={{background:'transparent',border:'1px solid #f0b90b',borderRadius:'4px',padding:'4px 10px',color:'#f0b90b',fontSize:'11px',cursor:'pointer',fontFamily:'monospace'}}>Trade</button>
-              </div>
+              <div style={{textAlign:'right',alignSelf:'center'}}><button style={{background:'transparent',border:'1px solid #f0b90b',borderRadius:'4px',padding:'4px 10px',color:'#f0b90b',fontSize:'11px',cursor:'pointer',fontFamily:'monospace'}}>Trade</button></div>
             </div>
           ))}
         </div>
@@ -389,10 +341,9 @@ function Markets({ onSelect }) {
   )
 }
 
-// ─── TICKER BAR ───────────────────────────────────────────────────────────────
 function Ticker({ livePrice, onSelect }) {
   return(
-    <div style={{background:'#161a1e',borderBottom:'1px solid #1e2329',display:'flex',gap:'0',overflowX:'auto',scrollbarWidth:'none',flexShrink:0}}>
+    <div style={{background:'#161a1e',borderBottom:'1px solid #1e2329',display:'flex',overflowX:'auto',scrollbarWidth:'none',flexShrink:0}}>
       {BASE_PAIRS.slice(0,8).map(p=>{
         const pr=livePrice[p.sym]||p.price
         return(
@@ -409,25 +360,20 @@ function Ticker({ livePrice, onSelect }) {
   )
 }
 
-// ─── MAIN PAGE ────────────────────────────────────────────────────────────────
 export default function Exchange() {
   const [pair, setPair] = useState('BTC/EUR')
   const [tf, setTf] = useState('1h')
   const [rightTab, setRightTab] = useState('book')
-  const [page, setPage] = useState('exchange') // 'exchange' | 'markets'
+  const [page, setPage] = useState('exchange')
   const [mobileTab, setMobileTab] = useState('chart')
   const [livePrice, setLivePrice] = useState(()=>Object.fromEntries(BASE_PAIRS.map(p=>[p.sym,p.price])))
   const [isMobile, setIsMobile] = useState(false)
 
-  // Single source of truth for all live prices
   useEffect(()=>{
     const iv=setInterval(()=>{
       setLivePrice(prev=>{
         const next={...prev}
-        BASE_PAIRS.forEach(p=>{
-          const v=next[p.sym]*0.0005
-          next[p.sym]=Math.max(0.0001,next[p.sym]+r(-v,v))
-        })
+        BASE_PAIRS.forEach(p=>{ const v=next[p.sym]*0.0005; next[p.sym]=Math.max(0.0001,next[p.sym]+r(-v,v)) })
         return next
       })
     },600)
@@ -436,13 +382,11 @@ export default function Exchange() {
 
   useEffect(()=>{
     const check=()=>setIsMobile(window.innerWidth<900)
-    check(); window.addEventListener('resize',check)
-    return()=>window.removeEventListener('resize',check)
+    check(); window.addEventListener('resize',check); return()=>window.removeEventListener('resize',check)
   },[])
 
   const cp=BASE_PAIRS.find(p=>p.sym===pair)||BASE_PAIRS[0]
   const lp=livePrice[pair]||cp.price
-
   const handleSelect=(sym)=>{ setPair(sym); setPage('exchange') }
 
   return(
@@ -457,16 +401,12 @@ export default function Exchange() {
           ::-webkit-scrollbar-track{background:#0b0e11}
           ::-webkit-scrollbar-thumb{background:#2b3139;border-radius:2px}
           input:focus{border-color:#f0b90b!important;outline:none}
-          .exch-wrap{display:flex;flex-direction:column;min-height:100%;overflow:auto}
-          @media(max-width:899px){.exch-wrap{height:calc(100vh - 120px)}}
+          .exch-wrap{position:fixed;top:64px;left:0;right:0;bottom:0;display:flex;flex-direction:column;overflow:hidden}
         `}</style>
       </Head>
 
-      <div className="exch-wrap" style={{flex:1}}>
-        {/* ── TICKER BAR ── */}
+      <div className="exch-wrap">
         <Ticker livePrice={livePrice} onSelect={handleSelect}/>
-
-        {/* ── PAIR HEADER ── */}
         <div style={{background:'#161a1e',borderBottom:'1px solid #1e2329',padding:'8px 12px',display:'flex',alignItems:'center',gap:'12px',flexShrink:0,overflowX:'auto'}}>
           <button onClick={()=>setPage(p=>p==='markets'?'exchange':'markets')} style={{display:'flex',alignItems:'center',gap:'8px',background:'none',border:'none',cursor:'pointer',flexShrink:0}}>
             <div style={{width:'28px',height:'28px',borderRadius:'50%',background:'linear-gradient(135deg,#f0b90b,#c8830a)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'9px',fontWeight:700,color:'#0b0e11'}}>{pair.split('/')[0].slice(0,3)}</div>
@@ -475,15 +415,10 @@ export default function Exchange() {
           </button>
           <div style={{flexShrink:0}}>
             <div style={{color:cp.chg>=0?'#0ecb81':'#f6465d',fontWeight:700,fontSize:'17px',fontFamily:'monospace'}}>{lp.toLocaleString('en',{minimumFractionDigits:lp>100?2:4})}</div>
-            <div style={{color:'#848e9c',fontSize:'10px',fontFamily:'monospace'}}>≈ EUR {lp.toLocaleString('en',{minimumFractionDigits:lp>100?2:4})}</div>
+            <div style={{color:'#848e9c',fontSize:'10px',fontFamily:'monospace'}}>EUR {lp.toLocaleString('en',{minimumFractionDigits:lp>100?2:4})}</div>
           </div>
           <div style={{display:'flex',gap:'20px',flexShrink:0,overflowX:'auto'}}>
-            {[
-              {l:'24h Change',v:`${cp.chg>=0?'+':''}${cp.chg.toFixed(2)}%`,c:cp.chg>=0?'#0ecb81':'#f6465d'},
-              {l:'24h High',v:cp.high.toLocaleString(),c:'#c4cdd4'},
-              {l:'24h Low',v:cp.low.toLocaleString(),c:'#c4cdd4'},
-              {l:'Volume',v:cp.vol,c:'#c4cdd4'},
-            ].map(s=>(
+            {[{l:'24h Change',v:`${cp.chg>=0?'+':''}${cp.chg.toFixed(2)}%`,c:cp.chg>=0?'#0ecb81':'#f6465d'},{l:'24h High',v:cp.high.toLocaleString(),c:'#c4cdd4'},{l:'24h Low',v:cp.low.toLocaleString(),c:'#c4cdd4'},{l:'Volume',v:cp.vol,c:'#c4cdd4'}].map(s=>(
               <div key={s.l} style={{flexShrink:0}}>
                 <div style={{fontSize:'10px',color:'#848e9c',fontFamily:'monospace'}}>{s.l}</div>
                 <div style={{fontSize:'12px',color:s.c,fontFamily:'monospace'}}>{s.v}</div>
@@ -495,11 +430,9 @@ export default function Exchange() {
           </button>
         </div>
 
-        {/* ── CONTENT ── */}
         {page==='markets' ? (
           <div style={{flex:1,overflow:'auto'}}><Markets onSelect={handleSelect}/></div>
         ) : isMobile ? (
-          // MOBILE
           <div style={{flex:1,display:'flex',flexDirection:'column',overflow:'hidden'}}>
             <div style={{display:'flex',background:'#161a1e',borderBottom:'1px solid #1e2329',flexShrink:0}}>
               {[['chart','Chart'],['book','Book'],['trades','Trades'],['order','Trade']].map(([v,l])=>(
@@ -508,9 +441,7 @@ export default function Exchange() {
             </div>
             {mobileTab==='chart'&&(
               <div style={{display:'flex',background:'#161a1e',borderBottom:'1px solid #1e2329',overflowX:'auto',flexShrink:0}}>
-                {TFS.map(t=>(
-                  <button key={t} onClick={()=>setTf(t)} style={{padding:'5px 12px',background:'none',border:'none',cursor:'pointer',color:tf===t?'#f0b90b':'#848e9c',fontFamily:'monospace',fontSize:'11px',borderBottom:tf===t?'2px solid #f0b90b':'2px solid transparent',whiteSpace:'nowrap',fontWeight:tf===t?600:400,flexShrink:0}}>{t}</button>
-                ))}
+                {TFS.map(t=>(<button key={t} onClick={()=>setTf(t)} style={{padding:'5px 12px',background:'none',border:'none',cursor:'pointer',color:tf===t?'#f0b90b':'#848e9c',fontFamily:'monospace',fontSize:'11px',borderBottom:tf===t?'2px solid #f0b90b':'2px solid transparent',whiteSpace:'nowrap',fontWeight:tf===t?600:400,flexShrink:0}}>{t}</button>))}
               </div>
             )}
             <div style={{flex:1,overflow:'hidden'}}>
@@ -521,9 +452,7 @@ export default function Exchange() {
             </div>
           </div>
         ) : (
-          // DESKTOP
           <div style={{flex:1,display:'grid',gridTemplateColumns:'190px 1fr 210px 210px',gap:'1px',background:'#1e2329',overflow:'hidden'}}>
-            {/* Pair list */}
             <div style={{background:'#161a1e',display:'flex',flexDirection:'column',overflow:'hidden'}}>
               <div style={{padding:'8px',borderBottom:'1px solid #1e2329',flexShrink:0}}>
                 <input placeholder="Search..." style={{width:'100%',background:'#1e2329',border:'1px solid #2b3139',borderRadius:'4px',padding:'5px 8px',color:'#c4cdd4',fontSize:'11px',fontFamily:'monospace'}}/>
@@ -546,40 +475,24 @@ export default function Exchange() {
                 })}
               </div>
             </div>
-
-            {/* Chart */}
             <div style={{background:'#0b0e11',display:'flex',flexDirection:'column',overflow:'hidden'}}>
               <div style={{display:'flex',alignItems:'center',background:'#161a1e',borderBottom:'1px solid #1e2329',flexShrink:0,overflowX:'auto'}}>
-                {TFS.map(t=>(
-                  <button key={t} onClick={()=>setTf(t)} style={{padding:'6px 13px',background:'none',border:'none',cursor:'pointer',color:tf===t?'#f0b90b':'#848e9c',fontFamily:'monospace',fontSize:'11px',borderBottom:tf===t?'2px solid #f0b90b':'2px solid transparent',fontWeight:tf===t?600:400,whiteSpace:'nowrap',transition:'all .12s'}}>{t}</button>
-                ))}
+                {TFS.map(t=>(<button key={t} onClick={()=>setTf(t)} style={{padding:'6px 13px',background:'none',border:'none',cursor:'pointer',color:tf===t?'#f0b90b':'#848e9c',fontFamily:'monospace',fontSize:'11px',borderBottom:tf===t?'2px solid #f0b90b':'2px solid transparent',fontWeight:tf===t?600:400,whiteSpace:'nowrap'}}>{t}</button>))}
                 <span style={{marginLeft:'auto',padding:'0 12px',fontSize:'10px',color:'#2b3139',fontFamily:'monospace',flexShrink:0}}>NXT · MiCA Regulated</span>
               </div>
-              <div style={{flex:1,position:'relative',overflow:'hidden'}}>
-                <Chart pair={pair} tf={tf}/>
-              </div>
+              <div style={{flex:1,position:'relative',overflow:'hidden'}}><Chart pair={pair} tf={tf}/></div>
               <div style={{height:'100px',borderTop:'1px solid #1e2329',background:'#161a1e',flexShrink:0}}>
                 <div style={{padding:'5px 12px',borderBottom:'1px solid #1e2329',fontSize:'11px',color:'#848e9c',fontFamily:'monospace'}}>Open Orders (0)</div>
                 <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'68px',color:'#848e9c',fontSize:'12px',fontFamily:'monospace'}}>No open orders</div>
               </div>
             </div>
-
-            {/* Book / Trades */}
             <div style={{background:'#161a1e',display:'flex',flexDirection:'column',overflow:'hidden'}}>
               <div style={{display:'flex',borderBottom:'1px solid #1e2329',flexShrink:0}}>
-                {[['book','Order Book'],['trades','Trades']].map(([v,l])=>(
-                  <button key={v} onClick={()=>setRightTab(v)} style={{flex:1,padding:'7px 6px',background:'none',border:'none',cursor:'pointer',color:rightTab===v?'#f0b90b':'#848e9c',borderBottom:rightTab===v?'2px solid #f0b90b':'2px solid transparent',fontSize:'11px',fontFamily:'monospace',fontWeight:rightTab===v?600:400}}>{l}</button>
-                ))}
+                {[['book','Order Book'],['trades','Trades']].map(([v,l])=>(<button key={v} onClick={()=>setRightTab(v)} style={{flex:1,padding:'7px 6px',background:'none',border:'none',cursor:'pointer',color:rightTab===v?'#f0b90b':'#848e9c',borderBottom:rightTab===v?'2px solid #f0b90b':'2px solid transparent',fontSize:'11px',fontFamily:'monospace',fontWeight:rightTab===v?600:400}}>{l}</button>))}
               </div>
-              <div style={{flex:1,overflow:'hidden'}}>
-                {rightTab==='book'?<Book pair={pair}/>:<Feed pair={pair}/>}
-              </div>
+              <div style={{flex:1,overflow:'hidden'}}>{rightTab==='book'?<Book pair={pair}/>:<Feed pair={pair}/>}</div>
             </div>
-
-            {/* Order Form */}
-            <div style={{background:'#161a1e',overflow:'auto'}}>
-              <Form pair={pair}/>
-            </div>
+            <div style={{background:'#161a1e',overflow:'auto'}}><Form pair={pair}/></div>
           </div>
         )}
       </div>
