@@ -3,28 +3,30 @@ import Head from "next/head";
 import Link from "next/link";
 
 const PAIRS = [
-  { label: "BTC/EUR", binance: "BTCEUR" },
-  { label: "ETH/EUR", binance: "ETHEUR" },
-  { label: "BNB/EUR", binance: "BNBEUR" },
-  { label: "SOL/EUR", binance: "SOLEUR" },
-  { label: "XRP/EUR", binance: "XRPEUR" },
-  { label: "ADA/EUR", binance: "ADAEUR" },
-  { label: "DOGE/EUR", binance: "DOGEEUR" },
-  { label: "LINK/EUR", binance: "LINKEUR" },
+  { label: "BNB/USDT", symbol: "BNBUSDT" },
+  { label: "BTC/USDT", symbol: "BTCUSDT" },
+  { label: "ETH/USDT", symbol: "ETHUSDT" },
+  { label: "SOL/USDT", symbol: "SOLUSDT" },
+  { label: "XRP/USDT", symbol: "XRPUSDT" },
+  { label: "ADA/USDT", symbol: "ADAUSDT" },
+  { label: "DOGE/USDT", symbol: "DOGEUSDT" },
+  { label: "LINK/USDT", symbol: "LINKUSDT" },
+  { label: "AVAX/USDT", symbol: "AVAXUSDT" },
+  { label: "DOT/USDT", symbol: "DOTUSDT" },
 ];
 
 const TIMEFRAMES = [
-  { label: "1m", api: "1m" },
-  { label: "5m", api: "5m" },
-  { label: "15m", api: "15m" },
-  { label: "1h", api: "1h" },
-  { label: "4h", api: "4h" },
-  { label: "1d", api: "1d" },
+  { label: "1m", value: "1m" },
+  { label: "5m", value: "5m" },
+  { label: "15m", value: "15m" },
+  { label: "1h", value: "1h" },
+  { label: "4h", value: "4h" },
+  { label: "1d", value: "1d" },
 ];
 
 function formatPrice(value) {
-  if (value === null || value === undefined || Number.isNaN(Number(value))) return "--";
   const n = Number(value);
+  if (!Number.isFinite(n)) return "--";
   if (n >= 1000) {
     return n.toLocaleString("en-US", {
       minimumFractionDigits: 2,
@@ -43,72 +45,64 @@ function formatPrice(value) {
   });
 }
 
-function formatChange(value) {
-  if (value === null || value === undefined || Number.isNaN(Number(value))) return "--";
+function formatSmall(value) {
   const n = Number(value);
-  return `${n >= 0 ? "+" : ""}${n.toFixed(2)}%`;
-}
-
-function formatNumber(value) {
-  if (value === null || value === undefined || Number.isNaN(Number(value))) return "--";
-  const n = Number(value);
-  if (n >= 1_000_000_000) return `${(n / 1_000_000_000).toFixed(2)}B`;
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(2)}M`;
-  if (n >= 1_000) return `${(n / 1_000).toFixed(2)}K`;
+  if (!Number.isFinite(n)) return "--";
+  if (n >= 1000000000) return `${(n / 1000000000).toFixed(2)}B`;
+  if (n >= 1000000) return `${(n / 1000000).toFixed(2)}M`;
+  if (n >= 1000) return `${(n / 1000).toFixed(2)}K`;
   return n.toFixed(2);
 }
 
-function useIsMobile(breakpoint = 980) {
+function formatPercent(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return "--";
+  return `${n >= 0 ? "+" : ""}${n.toFixed(2)}%`;
+}
+
+function useIsMobile(width = 980) {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < breakpoint);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, [breakpoint]);
+    const update = () => setIsMobile(window.innerWidth < width);
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, [width]);
 
   return isMobile;
 }
 
-function useMarketData(symbol) {
+function useTicker(symbol) {
   const [ticker, setTicker] = useState(null);
-  const [loadingTicker, setLoadingTicker] = useState(true);
 
   useEffect(() => {
-    let active = true;
+    let alive = true;
     let ws;
 
-    async function fetchInitial() {
+    async function load() {
       try {
-        setLoadingTicker(true);
         const res = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`);
         const data = await res.json();
-        if (active) {
-          setTicker(data);
-          setLoadingTicker(false);
-        }
-      } catch (error) {
-        if (active) setLoadingTicker(false);
-      }
+        if (alive) setTicker(data);
+      } catch (error) {}
     }
 
-    fetchInitial();
+    load();
 
     try {
       ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@ticker`);
       ws.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
-          if (!active) return;
-
+          if (!alive) return;
           setTicker((prev) => ({
-            ...prev,
+            ...(prev || {}),
+            symbol,
             lastPrice: data.c,
             priceChangePercent: data.P,
             highPrice: data.h,
             lowPrice: data.l,
-            volume: data.v,
             quoteVolume: data.q,
           }));
         } catch (error) {}
@@ -116,12 +110,82 @@ function useMarketData(symbol) {
     } catch (error) {}
 
     return () => {
-      active = false;
+      alive = false;
       if (ws) ws.close();
     };
   }, [symbol]);
 
-  return { ticker, loadingTicker };
+  return ticker;
+}
+
+function useSidebarTickers() {
+  const [tickers, setTickers] = useState({});
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadAll() {
+      try {
+        const results = await Promise.all(
+          PAIRS.map(async (pair) => {
+            const res = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${pair.symbol}`);
+            const data = await res.json();
+            return [pair.symbol, data];
+          })
+        );
+        if (active) {
+          setTickers(Object.fromEntries(results));
+        }
+      } catch (error) {}
+    }
+
+    loadAll();
+    const timer = setInterval(loadAll, 4000);
+
+    return () => {
+      active = false;
+      clearInterval(timer);
+    };
+  }, []);
+
+  return tickers;
+}
+
+function useCandles(symbol, interval) {
+  const [candles, setCandles] = useState([]);
+
+  useEffect(() => {
+    let active = true;
+
+    async function load() {
+      try {
+        const res = await fetch(
+          `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=90`
+        );
+        const data = await res.json();
+
+        if (!active) return;
+
+        setCandles(
+          (data || []).map((row) => ({
+            openTime: row[0],
+            open: Number(row[1]),
+            high: Number(row[2]),
+            low: Number(row[3]),
+            close: Number(row[4]),
+            volume: Number(row[5]),
+          }))
+        );
+      } catch (error) {}
+    }
+
+    load();
+    return () => {
+      active = false;
+    };
+  }, [symbol, interval]);
+
+  return candles;
 }
 
 function useOrderBook(symbol) {
@@ -129,21 +193,21 @@ function useOrderBook(symbol) {
 
   useEffect(() => {
     let active = true;
-    let interval;
 
-    async function fetchBook() {
+    async function load() {
       try {
-        const res = await fetch(`https://api.binance.com/api/v3/depth?symbol=${symbol}&limit=12`);
+        const res = await fetch(`https://api.binance.com/api/v3/depth?symbol=${symbol}&limit=14`);
         const data = await res.json();
+
         if (!active) return;
 
-        const asks = (data.asks || []).map(([price, qty]) => ({
+        const bids = (data.bids || []).map(([price, qty]) => ({
           price: Number(price),
           qty: Number(qty),
           total: Number(price) * Number(qty),
         }));
 
-        const bids = (data.bids || []).map(([price, qty]) => ({
+        const asks = (data.asks || []).map(([price, qty]) => ({
           price: Number(price),
           qty: Number(qty),
           total: Number(price) * Number(qty),
@@ -153,61 +217,61 @@ function useOrderBook(symbol) {
       } catch (error) {}
     }
 
-    fetchBook();
-    interval = setInterval(fetchBook, 2000);
+    load();
+    const timer = setInterval(load, 2000);
 
     return () => {
       active = false;
-      clearInterval(interval);
+      clearInterval(timer);
     };
   }, [symbol]);
 
   return book;
 }
 
-function useRecentTrades(symbol) {
+function useTrades(symbol) {
   const [trades, setTrades] = useState([]);
 
   useEffect(() => {
     let active = true;
     let ws;
 
-    async function fetchInitial() {
+    async function loadInitial() {
       try {
-        const res = await fetch(`https://api.binance.com/api/v3/trades?symbol=${symbol}&limit=20`);
+        const res = await fetch(`https://api.binance.com/api/v3/trades?symbol=${symbol}&limit=24`);
         const data = await res.json();
         if (!active) return;
 
         setTrades(
-          (data || []).map((t) => ({
-            id: t.id,
-            price: Number(t.price),
-            qty: Number(t.qty),
-            time: t.time,
-            side: t.isBuyerMaker ? "sell" : "buy",
+          (data || []).map((item) => ({
+            id: item.id,
+            price: Number(item.price),
+            qty: Number(item.qty),
+            time: item.time,
+            side: item.isBuyerMaker ? "sell" : "buy",
           }))
         );
       } catch (error) {}
     }
 
-    fetchInitial();
+    loadInitial();
 
     try {
       ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@trade`);
       ws.onmessage = (event) => {
         try {
-          const t = JSON.parse(event.data);
+          const item = JSON.parse(event.data);
           if (!active) return;
 
           setTrades((prev) => [
             {
-              id: t.t,
-              price: Number(t.p),
-              qty: Number(t.q),
-              time: t.T,
-              side: t.m ? "sell" : "buy",
+              id: item.t,
+              price: Number(item.p),
+              qty: Number(item.q),
+              time: item.T,
+              side: item.m ? "sell" : "buy",
             },
-            ...prev.slice(0, 19),
+            ...prev.slice(0, 23),
           ]);
         } catch (error) {}
       };
@@ -222,43 +286,7 @@ function useRecentTrades(symbol) {
   return trades;
 }
 
-function useCandles(symbol, interval) {
-  const [candles, setCandles] = useState([]);
-
-  useEffect(() => {
-    let active = true;
-
-    async function fetchCandles() {
-      try {
-        const res = await fetch(
-          `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=80`
-        );
-        const data = await res.json();
-        if (!active) return;
-
-        const parsed = (data || []).map((item) => ({
-          openTime: item[0],
-          open: Number(item[1]),
-          high: Number(item[2]),
-          low: Number(item[3]),
-          close: Number(item[4]),
-          volume: Number(item[5]),
-        }));
-
-        setCandles(parsed);
-      } catch (error) {}
-    }
-
-    fetchCandles();
-    return () => {
-      active = false;
-    };
-  }, [symbol, interval]);
-
-  return candles;
-}
-
-function CandlestickChart({ candles }) {
+function CandleChart({ candles, timeframe }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -275,79 +303,94 @@ function CandlestickChart({ candles }) {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, width, height);
 
-    const padding = { top: 16, right: 76, bottom: 30, left: 10 };
-    const chartWidth = width - padding.left - padding.right;
-    const chartHeight = height - padding.top - padding.bottom;
+    const pad = { top: 14, right: 74, bottom: 28, left: 10 };
+    const chartW = width - pad.left - pad.right;
+    const chartH = height - pad.top - pad.bottom;
 
     const highs = candles.map((c) => c.high);
     const lows = candles.map((c) => c.low);
     const max = Math.max(...highs);
     const min = Math.min(...lows);
     const range = max - min || 1;
-    const candleWidth = Math.max(4, (chartWidth / candles.length) * 0.6);
+    const stepX = chartW / candles.length;
+    const bodyW = Math.max(4, stepX * 0.58);
 
-    const toY = (price) =>
-      padding.top + chartHeight - ((price - min) / range) * chartHeight;
+    const y = (price) => pad.top + chartH - ((price - min) / range) * chartH;
 
-    ctx.strokeStyle = "rgba(255,255,255,0.08)";
+    ctx.strokeStyle = "rgba(255,255,255,0.07)";
     ctx.lineWidth = 1;
 
-    for (let i = 0; i <= 5; i += 1) {
-      const py = padding.top + (chartHeight / 5) * i;
+    for (let i = 0; i <= 5; i++) {
+      const py = pad.top + (chartH / 5) * i;
       ctx.beginPath();
-      ctx.moveTo(padding.left, py);
-      ctx.lineTo(width - padding.right, py);
+      ctx.moveTo(pad.left, py);
+      ctx.lineTo(width - pad.right, py);
       ctx.stroke();
 
       const value = max - (range / 5) * i;
-      ctx.fillStyle = "rgba(196,205,212,0.72)";
+      ctx.fillStyle = "rgba(175,185,196,0.78)";
       ctx.font = "11px monospace";
       ctx.textAlign = "left";
-      ctx.fillText(formatPrice(value), width - padding.right + 8, py + 4);
+      ctx.fillText(formatPrice(value), width - pad.right + 6, py + 4);
     }
 
-    candles.forEach((candle, index) => {
-      const x = padding.left + (index + 0.5) * (chartWidth / candles.length);
+    candles.forEach((candle, i) => {
+      const x = pad.left + stepX * i + stepX / 2;
       const isUp = candle.close >= candle.open;
-      const color = isUp ? "#0ecb81" : "#f6465d";
+      const color = isUp ? "#0ECB81" : "#F6465D";
 
       ctx.strokeStyle = color;
-      ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.moveTo(x, toY(candle.high));
-      ctx.lineTo(x, toY(candle.low));
+      ctx.moveTo(x, y(candle.high));
+      ctx.lineTo(x, y(candle.low));
       ctx.stroke();
 
-      const bodyTop = toY(Math.max(candle.open, candle.close));
-      const bodyBottom = toY(Math.min(candle.open, candle.close));
-      const bodyHeight = Math.max(2, bodyBottom - bodyTop);
+      const top = y(Math.max(candle.open, candle.close));
+      const bottom = y(Math.min(candle.open, candle.close));
+      const heightBody = Math.max(2, bottom - top);
 
       ctx.fillStyle = color;
-      ctx.fillRect(x - candleWidth / 2, bodyTop, candleWidth, bodyHeight);
+      ctx.fillRect(x - bodyW / 2, top, bodyW, heightBody);
     });
-  }, [candles]);
+
+    const every = Math.max(1, Math.floor(candles.length / 6));
+    ctx.fillStyle = "rgba(148,158,169,0.7)";
+    ctx.font = "10px monospace";
+    ctx.textAlign = "center";
+
+    candles.forEach((c, i) => {
+      if (i % every !== 0) return;
+      const d = new Date(c.openTime);
+      const label =
+        timeframe === "1d"
+          ? `${d.getMonth() + 1}/${d.getDate()}`
+          : `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+      const x = pad.left + stepX * i + stepX / 2;
+      ctx.fillText(label, x, height - 8);
+    });
+  }, [candles, timeframe]);
 
   return (
-    <div className="chartCanvasWrap">
+    <div className="chartCanvasShell">
       <canvas ref={canvasRef} className="chartCanvas" />
     </div>
   );
 }
 
-function PairSidebar({ selectedPair, onSelect, liveTickerMap }) {
+function MarketSidebar({ selectedPair, onSelect, tickers }) {
   const [search, setSearch] = useState("");
 
-  const filtered = useMemo(() => {
+  const rows = useMemo(() => {
     return PAIRS.filter((pair) =>
       pair.label.toLowerCase().includes(search.toLowerCase())
     );
   }, [search]);
 
   return (
-    <aside className="pairSidebar panel">
-      <div className="panelHeader">Markets</div>
+    <aside className="panel sidebarPanel">
+      <div className="panelTitle">Markets</div>
 
-      <div className="pairSearch">
+      <div className="sidebarSearch">
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -355,28 +398,28 @@ function PairSidebar({ selectedPair, onSelect, liveTickerMap }) {
         />
       </div>
 
-      <div className="pairList">
-        {filtered.map((pair) => {
-          const ticker = liveTickerMap[pair.binance];
-          const lastPrice = ticker?.lastPrice ?? "--";
-          const change = Number(ticker?.priceChangePercent ?? 0);
+      <div className="marketRows">
+        {rows.map((pair) => {
+          const ticker = tickers[pair.symbol];
+          const price = ticker?.lastPrice;
+          const change = ticker?.priceChangePercent;
 
           return (
             <button
-              key={pair.binance}
-              className={`pairRow ${selectedPair.binance === pair.binance ? "pairRowActive" : ""}`}
-              onClick={() => onSelect(pair)}
               type="button"
+              key={pair.symbol}
+              className={`marketRow ${selectedPair.symbol === pair.symbol ? "marketRowActive" : ""}`}
+              onClick={() => onSelect(pair)}
             >
-              <div className="pairLeftWrap">
-                <div className="pairName">{pair.label}</div>
-                <div className="pairSub">{pair.binance}</div>
+              <div className="marketRowLeft">
+                <div className="marketLabel">{pair.label}</div>
+                <div className="marketSymbol">{pair.symbol}</div>
               </div>
 
-              <div className="pairRight">
-                <div className="pairPrice">{formatPrice(lastPrice)}</div>
-                <div className={change >= 0 ? "upText" : "downText"}>
-                  {formatChange(change)}
+              <div className="marketRowRight">
+                <div className="marketPrice">{formatPrice(price)}</div>
+                <div className={Number(change) >= 0 ? "upText" : "downText"}>
+                  {formatPercent(change)}
                 </div>
               </div>
             </button>
@@ -387,48 +430,39 @@ function PairSidebar({ selectedPair, onSelect, liveTickerMap }) {
   );
 }
 
-function OrderBook({ asks, bids }) {
+function OrderBookPanel({ asks, bids }) {
   const maxTotal = Math.max(
     1,
-    ...asks.map((row) => row.total),
-    ...bids.map((row) => row.total)
+    ...asks.map((x) => x.total),
+    ...bids.map((x) => x.total)
   );
 
   return (
-    <div className="panelFill">
-      <div className="miniHead">
-        <span>Price (EUR)</span>
+    <div className="orderBookWrap">
+      <div className="tableHead compactGrid">
+        <span>Price</span>
         <span>Amount</span>
         <span>Total</span>
       </div>
 
-      <div className="bookRows">
-        {asks
-          .slice()
-          .reverse()
-          .map((row, i) => (
-            <div className="bookRow" key={`ask-${i}`}>
-              <div
-                className="depth askDepth"
-                style={{ width: `${(row.total / maxTotal) * 100}%` }}
-              />
-              <span className="downText">{formatPrice(row.price)}</span>
-              <span>{row.qty.toFixed(5)}</span>
-              <span>{formatNumber(row.total)}</span>
-            </div>
-          ))}
+      <div className="tableBody">
+        {asks.slice().reverse().map((row, i) => (
+          <div className="bookRow compactGrid" key={`ask-${i}`}>
+            <div className="depthBar askBar" style={{ width: `${(row.total / maxTotal) * 100}%` }} />
+            <span className="downText">{formatPrice(row.price)}</span>
+            <span>{row.qty.toFixed(5)}</span>
+            <span>{formatSmall(row.total)}</span>
+          </div>
+        ))}
 
-        <div className="midPriceRow">Mid Market</div>
+        <div className="midRow">Mid Market</div>
 
         {bids.map((row, i) => (
-          <div className="bookRow" key={`bid-${i}`}>
-            <div
-              className="depth bidDepth"
-              style={{ width: `${(row.total / maxTotal) * 100}%` }}
-            />
+          <div className="bookRow compactGrid" key={`bid-${i}`}>
+            <div className="depthBar bidBar" style={{ width: `${(row.total / maxTotal) * 100}%` }} />
             <span className="upText">{formatPrice(row.price)}</span>
             <span>{row.qty.toFixed(5)}</span>
-            <span>{formatNumber(row.total)}</span>
+            <span>{formatSmall(row.total)}</span>
           </div>
         ))}
       </div>
@@ -438,27 +472,27 @@ function OrderBook({ asks, bids }) {
 
 function TradesPanel({ trades }) {
   return (
-    <div className="panelFill">
-      <div className="miniHead">
+    <div className="tradesWrap">
+      <div className="tableHead compactGrid">
         <span>Price</span>
         <span>Amount</span>
         <span>Time</span>
       </div>
 
-      <div className="tradeRows">
+      <div className="tableBody">
         {trades.map((trade) => {
           const d = new Date(trade.time);
-          const timeLabel = `${String(d.getHours()).padStart(2, "0")}:${String(
-            d.getMinutes()
-          ).padStart(2, "0")}:${String(d.getSeconds()).padStart(2, "0")}`;
+          const time = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}:${String(
+            d.getSeconds()
+          ).padStart(2, "0")}`;
 
           return (
-            <div className="tradeRow" key={trade.id}>
+            <div className="tradeRow compactGrid" key={trade.id}>
               <span className={trade.side === "buy" ? "upText" : "downText"}>
                 {formatPrice(trade.price)}
               </span>
               <span>{trade.qty.toFixed(5)}</span>
-              <span className="muted">{timeLabel}</span>
+              <span className="mutedText">{time}</span>
             </div>
           );
         })}
@@ -467,61 +501,63 @@ function TradesPanel({ trades }) {
   );
 }
 
-function TradeForm({ pairLabel, lastPrice }) {
-  const base = pairLabel.split("/")[0];
+function TradeBox({ pair, lastPrice }) {
   const [side, setSide] = useState("buy");
-  const [type, setType] = useState("limit");
+  const [orderType, setOrderType] = useState("limit");
   const [price, setPrice] = useState("");
   const [amount, setAmount] = useState("");
 
+  const base = pair.label.split("/")[0];
+
   useEffect(() => {
     if (lastPrice) {
-      setPrice(String(Number(lastPrice).toFixed(Number(lastPrice) >= 1 ? 2 : 6)));
+      const n = Number(lastPrice);
+      setPrice(String(n >= 1 ? n.toFixed(2) : n.toFixed(6)));
     }
   }, [lastPrice]);
 
   const total = ((Number(price) || 0) * (Number(amount) || 0)).toFixed(2);
 
   return (
-    <div className="panelFill tradeForm">
-      <div className="sideSwitch">
+    <div className="tradeBox">
+      <div className="buySellSwitch">
         <button
-          className={side === "buy" ? "buyActive" : ""}
-          onClick={() => setSide("buy")}
           type="button"
+          className={side === "buy" ? "activeBuy" : ""}
+          onClick={() => setSide("buy")}
         >
           Buy
         </button>
         <button
-          className={side === "sell" ? "sellActive" : ""}
-          onClick={() => setSide("sell")}
           type="button"
+          className={side === "sell" ? "activeSell" : ""}
+          onClick={() => setSide("sell")}
         >
           Sell
         </button>
       </div>
 
-      <div className="typeSwitch">
-        {["limit", "market", "stop"].map((item) => (
+      <div className="subTabs">
+        {["limit", "market", "stop"].map((tab) => (
           <button
-            key={item}
-            className={type === item ? "typeActive" : ""}
             type="button"
-            onClick={() => setType(item)}
+            key={tab}
+            className={orderType === tab ? "subTabActive" : ""}
+            onClick={() => setOrderType(tab)}
           >
-            {item}
+            {tab}
           </button>
         ))}
       </div>
 
-      {type !== "market" && (
-        <div className="field">
-          <label>Price (EUR)</label>
+      {orderType !== "market" && (
+        <div className="formRow">
+          <label>Price (USDT)</label>
           <input value={price} onChange={(e) => setPrice(e.target.value)} />
         </div>
       )}
 
-      <div className="field">
+      <div className="formRow">
         <label>Amount ({base})</label>
         <input
           value={amount}
@@ -530,92 +566,53 @@ function TradeForm({ pairLabel, lastPrice }) {
         />
       </div>
 
-      <div className="field">
-        <label>Total (EUR)</label>
+      <div className="percentRow">
+        {[25, 50, 75, 100].map((p) => (
+          <button
+            key={p}
+            type="button"
+            onClick={() => setAmount((p / 100).toFixed(2))}
+          >
+            {p}%
+          </button>
+        ))}
+      </div>
+
+      <div className="formRow">
+        <label>Total (USDT)</label>
         <input value={total} readOnly />
       </div>
 
       <button
         type="button"
-        className={`submitBtn ${side === "buy" ? "submitBuy" : "submitSell"}`}
+        className={`submitTradeBtn ${side === "buy" ? "buyBtn" : "sellBtn"}`}
       >
         {side === "buy" ? `Buy ${base}` : `Sell ${base}`}
       </button>
 
-      <p className="formHint">
+      <p className="loginHint">
         <Link href="/login">Log In</Link> or <Link href="/register">Register</Link>
       </p>
     </div>
   );
 }
 
-function MobileTabs({ current, setCurrent }) {
-  const tabs = [
-    ["chart", "Chart"],
-    ["book", "Book"],
-    ["trades", "Trades"],
-    ["trade", "Trade"],
-  ];
-
-  return (
-    <div className="mobileTabs">
-      {tabs.map(([key, label]) => (
-        <button
-          key={key}
-          className={current === key ? "mobileTabActive" : ""}
-          onClick={() => setCurrent(key)}
-          type="button"
-        >
-          {label}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-export default function ExchangePage() {
+export default function Exchange() {
   const [selectedPair, setSelectedPair] = useState(PAIRS[0]);
   const [timeframe, setTimeframe] = useState("1h");
   const [rightTab, setRightTab] = useState("book");
   const [mobileTab, setMobileTab] = useState("chart");
+
   const isMobile = useIsMobile();
 
-  const { ticker, loadingTicker } = useMarketData(selectedPair.binance);
-  const book = useOrderBook(selectedPair.binance);
-  const trades = useRecentTrades(selectedPair.binance);
-  const candles = useCandles(selectedPair.binance, timeframe);
+  const ticker = useTicker(selectedPair.symbol);
+  const candles = useCandles(selectedPair.symbol, timeframe);
+  const orderBook = useOrderBook(selectedPair.symbol);
+  const trades = useTrades(selectedPair.symbol);
+  const sideTickers = useSidebarTickers();
 
-  const [liveTickerMap, setLiveTickerMap] = useState({});
-
-  useEffect(() => {
-    let mounted = true;
-
-    async function fetchSideList() {
-      try {
-        const results = await Promise.all(
-          PAIRS.map(async (pair) => {
-            const res = await fetch(
-              `https://api.binance.com/api/v3/ticker/24hr?symbol=${pair.binance}`
-            );
-            const data = await res.json();
-            return [pair.binance, data];
-          })
-        );
-
-        if (!mounted) return;
-        setLiveTickerMap(Object.fromEntries(results));
-      } catch (error) {}
-    }
-
-    fetchSideList();
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  const lastPrice = Number(ticker?.lastPrice || 0);
-  const changePercent = Number(ticker?.priceChangePercent || 0);
+  const price = ticker?.lastPrice;
+  const change = ticker?.priceChangePercent;
   const high = ticker?.highPrice;
   const low = ticker?.lowPrice;
   const volume = ticker?.quoteVolume;
@@ -628,158 +625,171 @@ export default function ExchangePage() {
       </Head>
 
       <main className="exchangePage">
-        <div className="exchangeWrap">
-          <header className="topSummary">
-            <div className="pairMain">
-              <div className="pairBadge">
-                {selectedPair.label.split("/")[0].slice(0, 3)}
-              </div>
+        <div className="exchangeContainer">
+          <section className="topBar panel">
+            <div className="pairIdentity">
+              <div className="pairCoin">{selectedPair.label.split("/")[0].slice(0, 3)}</div>
               <div>
                 <h1>{selectedPair.label}</h1>
-                <p>Professional trading interface</p>
+                <p>Spot trading · Binance-inspired UI</p>
               </div>
             </div>
 
-            <div className="topStats">
-              <div className="topStat">
+            <div className="statsGrid">
+              <div className="statCard">
                 <span>Last Price</span>
-                <strong className={changePercent >= 0 ? "upText" : "downText"}>
-                  {loadingTicker ? "Loading..." : formatPrice(lastPrice)}
+                <strong className={Number(change) >= 0 ? "upText" : "downText"}>
+                  {formatPrice(price)}
                 </strong>
               </div>
-              <div className="topStat">
+              <div className="statCard">
                 <span>24h Change</span>
-                <strong className={changePercent >= 0 ? "upText" : "downText"}>
-                  {loadingTicker ? "--" : formatChange(changePercent)}
+                <strong className={Number(change) >= 0 ? "upText" : "downText"}>
+                  {formatPercent(change)}
                 </strong>
               </div>
-              <div className="topStat">
+              <div className="statCard">
                 <span>24h High</span>
-                <strong>{loadingTicker ? "--" : formatPrice(high)}</strong>
+                <strong>{formatPrice(high)}</strong>
               </div>
-              <div className="topStat">
+              <div className="statCard">
                 <span>24h Low</span>
-                <strong>{loadingTicker ? "--" : formatPrice(low)}</strong>
+                <strong>{formatPrice(low)}</strong>
               </div>
-              <div className="topStat">
+              <div className="statCard">
                 <span>Volume</span>
-                <strong>{loadingTicker ? "--" : formatNumber(volume)}</strong>
+                <strong>{formatSmall(volume)}</strong>
               </div>
             </div>
-          </header>
+          </section>
 
           {isMobile ? (
-            <section className="mobileLayout">
-              <div className="mobilePairSelect panel">
+            <section className="mobileOnly">
+              <div className="panel mobilePairSelect">
                 <select
-                  value={selectedPair.binance}
+                  value={selectedPair.symbol}
                   onChange={(e) => {
-                    const pair = PAIRS.find((p) => p.binance === e.target.value);
+                    const pair = PAIRS.find((item) => item.symbol === e.target.value);
                     if (pair) setSelectedPair(pair);
                   }}
                 >
                   {PAIRS.map((pair) => (
-                    <option key={pair.binance} value={pair.binance}>
+                    <option key={pair.symbol} value={pair.symbol}>
                       {pair.label}
                     </option>
                   ))}
                 </select>
               </div>
 
-              <MobileTabs current={mobileTab} setCurrent={setMobileTab} />
+              <div className="mobileTabs">
+                {[
+                  ["chart", "Chart"],
+                  ["book", "Book"],
+                  ["trades", "Trades"],
+                  ["trade", "Trade"],
+                ].map(([value, label]) => (
+                  <button
+                    key={value}
+                    type="button"
+                    className={mobileTab === value ? "mobileTabActive" : ""}
+                    onClick={() => setMobileTab(value)}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
 
               {mobileTab === "chart" && (
                 <div className="panel chartPanel">
-                  <div className="panelHeader withTabs">
+                  <div className="panelTitle panelRow">
                     <span>Chart</span>
-                    <div className="tfTabs">
-                      {TIMEFRAMES.map((tf) => (
+                    <div className="timeTabs">
+                      {TIMEFRAMES.map((item) => (
                         <button
-                          key={tf.api}
                           type="button"
-                          className={timeframe === tf.api ? "tfActive" : ""}
-                          onClick={() => setTimeframe(tf.api)}
+                          key={item.value}
+                          className={timeframe === item.value ? "timeTabActive" : ""}
+                          onClick={() => setTimeframe(item.value)}
                         >
-                          {tf.label}
+                          {item.label}
                         </button>
                       ))}
                     </div>
                   </div>
-                  <CandlestickChart candles={candles} />
+                  <CandleChart candles={candles} timeframe={timeframe} />
                 </div>
               )}
 
               {mobileTab === "book" && (
-                <div className="panel panelTall">
-                  <div className="panelHeader">Order Book</div>
-                  <OrderBook asks={book.asks} bids={book.bids} />
+                <div className="panel sidePanel">
+                  <div className="panelTitle">Order Book</div>
+                  <OrderBookPanel asks={orderBook.asks} bids={orderBook.bids} />
                 </div>
               )}
 
               {mobileTab === "trades" && (
-                <div className="panel panelTall">
-                  <div className="panelHeader">Recent Trades</div>
+                <div className="panel sidePanel">
+                  <div className="panelTitle">Market Trades</div>
                   <TradesPanel trades={trades} />
                 </div>
               )}
 
               {mobileTab === "trade" && (
-                <div className="panel">
-                  <div className="panelHeader">Trade</div>
-                  <TradeForm pairLabel={selectedPair.label} lastPrice={lastPrice} />
+                <div className="panel sidePanel">
+                  <div className="panelTitle">Trade</div>
+                  <TradeBox pair={selectedPair} lastPrice={price} />
                 </div>
               )}
             </section>
           ) : (
             <section className="desktopGrid">
-              <PairSidebar
+              <MarketSidebar
                 selectedPair={selectedPair}
                 onSelect={setSelectedPair}
-                liveTickerMap={liveTickerMap}
+                tickers={sideTickers}
               />
 
-              <div className="centerColumn">
+              <div className="middleColumn">
                 <div className="panel chartPanel">
-                  <div className="panelHeader withTabs">
+                  <div className="panelTitle panelRow">
                     <span>Chart</span>
-                    <div className="tfTabs">
-                      {TIMEFRAMES.map((tf) => (
+                    <div className="timeTabs">
+                      {TIMEFRAMES.map((item) => (
                         <button
-                          key={tf.api}
                           type="button"
-                          className={timeframe === tf.api ? "tfActive" : ""}
-                          onClick={() => setTimeframe(tf.api)}
+                          key={item.value}
+                          className={timeframe === item.value ? "timeTabActive" : ""}
+                          onClick={() => setTimeframe(item.value)}
                         >
-                          {tf.label}
+                          {item.label}
                         </button>
                       ))}
                     </div>
                   </div>
-
-                  <CandlestickChart candles={candles} />
+                  <CandleChart candles={candles} timeframe={timeframe} />
                 </div>
 
-                <div className="panel openOrders">
-                  <div className="panelHeader">Open Orders</div>
-                  <div className="emptyBox">No open orders</div>
+                <div className="panel ordersPanel">
+                  <div className="panelTitle">Open Orders</div>
+                  <div className="emptyState">No open orders</div>
                 </div>
               </div>
 
-              <div className="panel rightPanel">
-                <div className="panelHeader withTabs">
-                  <span>{rightTab === "book" ? "Order Book" : "Recent Trades"}</span>
-                  <div className="rtTabs">
+              <div className="panel sidePanel">
+                <div className="panelTitle panelRow">
+                  <span>{rightTab === "book" ? "Order Book" : "Market Trades"}</span>
+                  <div className="rightTabs">
                     <button
-                      className={rightTab === "book" ? "tfActive" : ""}
-                      onClick={() => setRightTab("book")}
                       type="button"
+                      className={rightTab === "book" ? "timeTabActive" : ""}
+                      onClick={() => setRightTab("book")}
                     >
                       Book
                     </button>
                     <button
-                      className={rightTab === "trades" ? "tfActive" : ""}
-                      onClick={() => setRightTab("trades")}
                       type="button"
+                      className={rightTab === "trades" ? "timeTabActive" : ""}
+                      onClick={() => setRightTab("trades")}
                     >
                       Trades
                     </button>
@@ -787,15 +797,15 @@ export default function ExchangePage() {
                 </div>
 
                 {rightTab === "book" ? (
-                  <OrderBook asks={book.asks} bids={book.bids} />
+                  <OrderBookPanel asks={orderBook.asks} bids={orderBook.bids} />
                 ) : (
                   <TradesPanel trades={trades} />
                 )}
               </div>
 
-              <div className="panel tradePanel">
-                <div className="panelHeader">Trade</div>
-                <TradeForm pairLabel={selectedPair.label} lastPrice={lastPrice} />
+              <div className="panel sidePanel">
+                <div className="panelTitle">Trade</div>
+                <TradeBox pair={selectedPair} lastPrice={price} />
               </div>
             </section>
           )}
@@ -814,227 +824,218 @@ export default function ExchangePage() {
         }
 
         body {
-          background: #05070c;
-          color: #e7edf5;
+          background: #0b0e11;
+          color: #eaecef;
           font-family: Inter, "Segoe UI", system-ui, sans-serif;
         }
 
         .exchangePage {
           min-height: 100vh;
+          padding: 96px 16px 18px;
           background:
-            radial-gradient(circle at top left, rgba(240, 185, 11, 0.08), transparent 25%),
-            radial-gradient(circle at top right, rgba(59, 130, 246, 0.08), transparent 22%),
-            linear-gradient(180deg, #05070c 0%, #0a0f17 100%);
-          color: #e7edf5;
-          padding: 96px 18px 18px;
+            radial-gradient(circle at top left, rgba(240, 185, 11, 0.06), transparent 22%),
+            radial-gradient(circle at top right, rgba(59, 130, 246, 0.06), transparent 18%),
+            linear-gradient(180deg, #0b0e11 0%, #12171f 100%);
         }
 
-        .exchangeWrap {
-          max-width: 1500px;
+        .exchangeContainer {
+          max-width: 1520px;
           margin: 0 auto;
         }
 
-        .topSummary {
+        .panel {
+          border: 1px solid rgba(255, 255, 255, 0.07);
+          background: rgba(22, 26, 30, 0.92);
+          border-radius: 18px;
+          overflow: hidden;
+          box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25);
+          min-width: 0;
+        }
+
+        .topBar {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          gap: 18px;
-          margin-bottom: 16px;
+          gap: 16px;
           padding: 18px 20px;
-          border-radius: 20px;
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          background: rgba(255, 255, 255, 0.04);
-          backdrop-filter: blur(16px);
+          margin-bottom: 14px;
         }
 
-        .pairMain {
+        .pairIdentity {
           display: flex;
           align-items: center;
           gap: 14px;
           min-width: 0;
         }
 
-        .pairBadge {
+        .pairCoin {
           width: 48px;
           height: 48px;
           border-radius: 14px;
           display: grid;
           place-items: center;
-          background: linear-gradient(135deg, #f0b90b, #c8830a);
+          background: linear-gradient(135deg, #f0b90b, #c98a09);
           color: #111;
           font-weight: 900;
           flex-shrink: 0;
         }
 
-        .pairMain h1 {
+        .pairIdentity h1 {
           margin: 0;
           font-size: 24px;
           color: #fff;
         }
 
-        .pairMain p {
+        .pairIdentity p {
           margin: 4px 0 0;
-          color: rgba(231, 237, 245, 0.58);
+          color: #848e9c;
           font-size: 13px;
         }
 
-        .topStats {
+        .statsGrid {
           display: flex;
           flex-wrap: wrap;
-          gap: 12px;
+          gap: 10px;
         }
 
-        .topStat {
-          min-width: 120px;
-          padding: 10px 14px;
+        .statCard {
+          min-width: 118px;
+          padding: 10px 12px;
           border-radius: 14px;
           background: rgba(255, 255, 255, 0.03);
           border: 1px solid rgba(255, 255, 255, 0.06);
         }
 
-        .topStat span {
+        .statCard span {
           display: block;
-          font-size: 11px;
-          color: rgba(231, 237, 245, 0.52);
-          margin-bottom: 4px;
+          font-size: 10px;
+          color: #848e9c;
           text-transform: uppercase;
-          letter-spacing: 0.7px;
+          letter-spacing: 0.8px;
+          margin-bottom: 4px;
         }
 
-        .topStat strong {
+        .statCard strong {
           font-size: 14px;
           color: #fff;
         }
 
         .desktopGrid {
           display: grid;
-          grid-template-columns: 250px minmax(0, 1fr) 320px 320px;
+          grid-template-columns: 260px minmax(0, 1fr) 320px 320px;
           gap: 14px;
           min-height: 760px;
         }
 
-        .centerColumn {
+        .middleColumn {
           display: grid;
           grid-template-rows: 1fr 130px;
           gap: 14px;
           min-width: 0;
         }
 
-        .panel {
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          background: rgba(255, 255, 255, 0.035);
-          border-radius: 20px;
-          overflow: hidden;
-          backdrop-filter: blur(14px);
-          box-shadow: 0 14px 34px rgba(0, 0, 0, 0.24);
+        .sidebarPanel,
+        .sidePanel {
+          display: flex;
+          flex-direction: column;
           min-width: 0;
         }
 
-        .panelHeader {
+        .panelTitle {
           padding: 14px 16px;
           border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-          font-size: 13px;
-          font-weight: 800;
           color: #fff;
+          font-weight: 800;
+          font-size: 13px;
+        }
+
+        .panelRow {
           display: flex;
-          align-items: center;
           justify-content: space-between;
+          align-items: center;
+          gap: 10px;
+          flex-wrap: wrap;
         }
 
-        .withTabs {
-          gap: 12px;
-        }
-
-        .pairSidebar {
-          display: flex;
-          flex-direction: column;
-          min-height: 0;
-        }
-
-        .pairSearch {
+        .sidebarSearch {
           padding: 12px;
           border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
 
-        .pairSearch input,
+        .sidebarSearch input,
         .mobilePairSelect select,
-        .field input {
+        .formRow input {
           width: 100%;
           height: 42px;
+          padding: 0 12px;
           border-radius: 12px;
           border: 1px solid rgba(255, 255, 255, 0.1);
-          background: rgba(255, 255, 255, 0.05);
-          color: #e7edf5;
-          padding: 0 12px;
+          background: rgba(255, 255, 255, 0.04);
+          color: #eaecef;
           outline: none;
-          box-shadow: none;
           font-size: 14px;
         }
 
-        .pairSearch input::placeholder,
-        .field input::placeholder {
-          color: rgba(231, 237, 245, 0.35);
-        }
-
-        .pairSearch input:focus,
+        .sidebarSearch input:focus,
         .mobilePairSelect select:focus,
-        .field input:focus {
+        .formRow input:focus {
           border-color: rgba(240, 185, 11, 0.45);
         }
 
-        .pairList {
-          overflow: auto;
-          flex: 1;
-          min-height: 0;
+        .sidebarSearch input::placeholder,
+        .formRow input::placeholder {
+          color: #6f7781;
         }
 
-        .pairRow {
+        .marketRows {
+          overflow: auto;
+          min-height: 0;
+          flex: 1;
+        }
+
+        .marketRow {
           width: 100%;
           border: none;
           background: transparent;
           color: inherit;
-          text-align: left;
           display: flex;
           justify-content: space-between;
           align-items: center;
           gap: 12px;
+          text-align: left;
           padding: 12px 14px;
-          cursor: pointer;
           border-left: 2px solid transparent;
           border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+          cursor: pointer;
         }
 
-        .pairRow:hover {
-          background: rgba(255, 255, 255, 0.04);
+        .marketRow:hover {
+          background: rgba(255, 255, 255, 0.035);
         }
 
-        .pairRowActive {
+        .marketRowActive {
           background: rgba(240, 185, 11, 0.08);
           border-left-color: #f0b90b;
         }
 
-        .pairLeftWrap {
-          min-width: 0;
-        }
-
-        .pairName {
+        .marketLabel {
           color: #fff;
-          font-weight: 700;
           font-size: 13px;
+          font-weight: 700;
         }
 
-        .pairSub {
-          color: rgba(231, 237, 245, 0.45);
+        .marketSymbol {
+          color: #848e9c;
           font-size: 11px;
           margin-top: 3px;
         }
 
-        .pairRight {
+        .marketRowRight {
           text-align: right;
           flex-shrink: 0;
         }
 
-        .pairPrice {
+        .marketPrice {
           color: #fff;
           font-size: 13px;
           font-weight: 700;
@@ -1045,9 +1046,9 @@ export default function ExchangePage() {
           flex-direction: column;
         }
 
-        .chartCanvasWrap {
+        .chartCanvasShell {
           flex: 1;
-          min-height: 420px;
+          min-height: 460px;
           padding: 8px 0;
         }
 
@@ -1057,105 +1058,96 @@ export default function ExchangePage() {
           display: block;
         }
 
-        .tfTabs,
-        .rtTabs,
-        .typeSwitch,
+        .timeTabs,
+        .rightTabs,
+        .subTabs,
         .mobileTabs {
           display: flex;
           gap: 8px;
           flex-wrap: wrap;
         }
 
-        .tfTabs button,
-        .rtTabs button,
-        .typeSwitch button,
-        .mobileTabs button {
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          background: rgba(255, 255, 255, 0.04);
-          color: rgba(231, 237, 245, 0.72);
+        .timeTabs button,
+        .rightTabs button,
+        .subTabs button,
+        .mobileTabs button,
+        .percentRow button {
           min-height: 34px;
           padding: 0 12px;
           border-radius: 10px;
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          background: rgba(255, 255, 255, 0.04);
+          color: #aeb4bc;
           cursor: pointer;
-          font-weight: 700;
           font-size: 12px;
+          font-weight: 700;
         }
 
-        .tfTabs button.tfActive,
-        .rtTabs button.tfActive,
-        .typeSwitch button.typeActive,
+        .timeTabActive,
+        .subTabActive,
         .mobileTabActive {
           background: rgba(240, 185, 11, 0.12) !important;
-          border-color: rgba(240, 185, 11, 0.35) !important;
+          border-color: rgba(240, 185, 11, 0.32) !important;
           color: #f0b90b !important;
         }
 
-        .openOrders {
+        .ordersPanel {
           display: flex;
           flex-direction: column;
         }
 
-        .emptyBox {
+        .emptyState {
           flex: 1;
           display: grid;
           place-items: center;
-          color: rgba(231, 237, 245, 0.48);
+          color: #848e9c;
           font-size: 14px;
         }
 
-        .rightPanel,
-        .tradePanel {
+        .orderBookWrap,
+        .tradesWrap {
           display: flex;
           flex-direction: column;
-          min-width: 0;
-        }
-
-        .panelFill {
-          display: flex;
-          flex-direction: column;
-          height: 100%;
           min-height: 0;
+          height: 100%;
         }
 
-        .miniHead,
+        .tableHead,
         .bookRow,
         .tradeRow {
           display: grid;
           grid-template-columns: 1fr 1fr 1fr;
           gap: 8px;
           padding: 6px 12px;
-          font-family: monospace;
           font-size: 11px;
+          font-family: monospace;
         }
 
-        .miniHead {
-          color: rgba(231, 237, 245, 0.5);
+        .tableHead {
+          color: #848e9c;
           border-bottom: 1px solid rgba(255, 255, 255, 0.06);
           text-transform: uppercase;
           letter-spacing: 0.6px;
         }
 
-        .miniHead span:nth-child(2),
-        .miniHead span:nth-child(3),
-        .bookRow span:nth-child(2),
-        .bookRow span:nth-child(3),
-        .tradeRow span:nth-child(2),
-        .tradeRow span:nth-child(3) {
+        .compactGrid span:nth-child(2),
+        .compactGrid span:nth-child(3) {
           text-align: right;
         }
 
-        .bookRows,
-        .tradeRows {
+        .tableBody {
           overflow: auto;
           min-height: 0;
         }
 
-        .bookRow {
+        .bookRow,
+        .tradeRow {
           position: relative;
           border-bottom: 1px solid rgba(255, 255, 255, 0.03);
         }
 
-        .bookRow span {
+        .bookRow span,
+        .tradeRow span {
           position: relative;
           z-index: 1;
           white-space: nowrap;
@@ -1163,7 +1155,7 @@ export default function ExchangePage() {
           text-overflow: ellipsis;
         }
 
-        .depth {
+        .depthBar {
           position: absolute;
           top: 0;
           bottom: 0;
@@ -1171,104 +1163,102 @@ export default function ExchangePage() {
           z-index: 0;
         }
 
-        .askDepth {
+        .askBar {
           background: rgba(246, 70, 93, 0.1);
         }
 
-        .bidDepth {
+        .bidBar {
           background: rgba(14, 203, 129, 0.1);
         }
 
-        .midPriceRow {
+        .midRow {
           padding: 10px 12px;
+          text-align: center;
+          color: #fff;
           font-size: 12px;
           font-weight: 800;
-          color: #fff;
-          text-align: center;
+          background: rgba(255, 255, 255, 0.03);
           border-top: 1px solid rgba(255, 255, 255, 0.06);
           border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-          background: rgba(255, 255, 255, 0.03);
         }
 
-        .tradeRow {
-          border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-        }
-
-        .tradeRow span {
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-
-        .tradeForm {
+        .tradeBox {
           padding: 14px;
+          display: flex;
+          flex-direction: column;
           gap: 12px;
         }
 
-        .sideSwitch {
+        .buySellSwitch {
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 8px;
         }
 
-        .sideSwitch button {
+        .buySellSwitch button {
           min-height: 42px;
           border: none;
           border-radius: 12px;
-          cursor: pointer;
-          font-weight: 800;
           background: rgba(255, 255, 255, 0.05);
-          color: rgba(231, 237, 245, 0.82);
+          color: #d8dde3;
+          font-weight: 800;
+          cursor: pointer;
         }
 
-        .buyActive {
+        .activeBuy {
           background: #0ecb81 !important;
-          color: #0c1117 !important;
+          color: #0b0e11 !important;
         }
 
-        .sellActive {
+        .activeSell {
           background: #f6465d !important;
           color: #fff !important;
         }
 
-        .field {
+        .formRow {
           display: flex;
           flex-direction: column;
           gap: 6px;
         }
 
-        .field label {
+        .formRow label {
           font-size: 11px;
-          color: rgba(231, 237, 245, 0.58);
+          color: #848e9c;
         }
 
-        .submitBtn {
+        .percentRow {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 8px;
+        }
+
+        .submitTradeBtn {
           min-height: 46px;
           border: none;
           border-radius: 14px;
+          font-size: 14px;
           font-weight: 800;
           cursor: pointer;
-          font-size: 14px;
         }
 
-        .submitBuy {
+        .buyBtn {
           background: #0ecb81;
           color: #0b0e11;
         }
 
-        .submitSell {
+        .sellBtn {
           background: #f6465d;
           color: #fff;
         }
 
-        .formHint {
-          text-align: center;
-          color: rgba(231, 237, 245, 0.52);
-          font-size: 12px;
+        .loginHint {
           margin: 0;
+          text-align: center;
+          color: #848e9c;
+          font-size: 12px;
         }
 
-        .formHint a {
+        .loginHint a {
           color: #f0b90b;
           text-decoration: none;
         }
@@ -1281,11 +1271,11 @@ export default function ExchangePage() {
           color: #f6465d !important;
         }
 
-        .muted {
-          color: rgba(231, 237, 245, 0.5);
+        .mutedText {
+          color: #848e9c;
         }
 
-        .mobileLayout {
+        .mobileOnly {
           display: flex;
           flex-direction: column;
           gap: 12px;
@@ -1295,13 +1285,9 @@ export default function ExchangePage() {
           padding: 12px;
         }
 
-        .panelTall {
-          min-height: 420px;
-        }
-
-        @media (max-width: 1200px) {
+        @media (max-width: 1280px) {
           .desktopGrid {
-            grid-template-columns: 220px minmax(0, 1fr) 280px 300px;
+            grid-template-columns: 230px minmax(0, 1fr) 290px 300px;
           }
         }
 
@@ -1310,36 +1296,32 @@ export default function ExchangePage() {
             padding: 88px 12px 12px;
           }
 
-          .topSummary {
+          .topBar {
             flex-direction: column;
             align-items: flex-start;
           }
 
-          .topStats {
+          .statsGrid {
             width: 100%;
             display: grid;
             grid-template-columns: repeat(2, 1fr);
           }
 
-          .chartCanvasWrap {
-            min-height: 340px;
+          .chartCanvasShell {
+            min-height: 360px;
           }
         }
 
         @media (max-width: 640px) {
-          .pairMain h1 {
+          .pairIdentity h1 {
             font-size: 20px;
           }
 
-          .topStats {
+          .statsGrid {
             grid-template-columns: 1fr;
           }
 
-          .tfTabs {
-            width: 100%;
-          }
-
-          .tfTabs button {
+          .timeTabs button {
             flex: 1;
             min-width: 52px;
           }
