@@ -1,74 +1,153 @@
-import Head from 'next/head';
-import Image from 'next/image';
+import Head from "next/head";
+import Navbar from "../components/Navbar";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[#0b0e11] text-white font-sans selection:bg-[#F0B90B] selection:text-black">
+    <>
       <Head>
-        <title>Nextoken Capital | The Global Platform</title>
-        <meta name="description" content="Institutional-grade private equity and tokenized bonds on regulated European infrastructure." />
+        <title>Nextoken Capital</title>
+        <meta
+          name="description"
+          content="Nextoken Capital digital capital markets platform"
+        />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      {/* Hero Section */}
-      <main className="relative w-full overflow-hidden">
-        
-        {/* Background Image with Next/Image for Optimization */}
-        <div className="absolute inset-0 z-0">
-          <Image
-            src="/hero-bg.jpg" // Ensure this file is in your /public folder
-            alt="Global Finance Background"
-            layout="fill"
-            objectFit="cover"
-            priority
-            className="opacity-30"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#0b0e11]/60 via-[#0b0e11]/90 to-[#0b0e11]" />
-        </div>
+      <Navbar />
 
-        <div className="relative z-10 max-w-7xl mx-auto px-6 pt-32 pb-40 text-center">
-          
-          {/* Regulatory Badge */}
-          <div className="flex justify-center mb-10">
-            <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-              </span>
-              <span className="text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] text-white/90">
-                MiCA Licensed • EU Regulated • DLT Pilot Regime
-              </span>
+      <main
+        style={{
+          minHeight: "100vh",
+          background: "#050816",
+          color: "#ffffff",
+        }}
+      >
+        <section
+          className="hero-bg"
+          style={{
+            minHeight: "calc(100vh - 140px)",
+            display: "flex",
+            alignItems: "center",
+            padding: "80px 20px",
+          }}
+        >
+          <div
+            style={{
+              width: "100%",
+              maxWidth: "1280px",
+              margin: "0 auto",
+            }}
+          >
+            <div
+              style={{
+                maxWidth: "760px",
+              }}
+            >
+              <div
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "10px",
+                  padding: "10px 16px",
+                  borderRadius: "999px",
+                  background: "rgba(255,255,255,0.06)",
+                  border: "1px solid rgba(255,255,255,0.10)",
+                  color: "#cbd5e1",
+                  fontWeight: 700,
+                  fontSize: "14px",
+                  marginBottom: "22px",
+                }}
+              >
+                Next Generation Digital Capital Markets
+              </div>
+
+              <h1
+                style={{
+                  margin: "0 0 20px",
+                  fontSize: "clamp(42px, 8vw, 84px)",
+                  lineHeight: "1.04",
+                  fontWeight: 800,
+                  letterSpacing: "-0.03em",
+                }}
+              >
+                The Future of
+                <br />
+                <span
+                  style={{
+                    background:
+                      "linear-gradient(135deg, #60a5fa, #22d3ee, #a78bfa)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text",
+                  }}
+                >
+                  Digital Capital
+                </span>
+              </h1>
+
+              <p
+                style={{
+                  margin: "0 0 32px",
+                  maxWidth: "680px",
+                  color: "rgba(255,255,255,0.74)",
+                  fontSize: "18px",
+                  lineHeight: "1.8",
+                }}
+              >
+                Nextoken Capital delivers a modern platform for exchange,
+                bonds, equity offerings, and tokenization with a secure,
+                investor-friendly experience built for global capital markets.
+              </p>
+
+              <div
+                style={{
+                  display: "flex",
+                  gap: "16px",
+                  flexWrap: "wrap",
+                }}
+              >
+                <a
+                  href="/register"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    minHeight: "52px",
+                    padding: "14px 24px",
+                    borderRadius: "14px",
+                    background: "linear-gradient(135deg, #2563eb, #06b6d4)",
+                    color: "#ffffff",
+                    textDecoration: "none",
+                    fontWeight: 700,
+                  }}
+                >
+                  Get Started
+                </a>
+
+                <a
+                  href="/markets"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    minHeight: "52px",
+                    padding: "14px 24px",
+                    borderRadius: "14px",
+                    border: "1px solid rgba(255,255,255,0.16)",
+                    background: "rgba(255,255,255,0.04)",
+                    color: "#ffffff",
+                    textDecoration: "none",
+                    fontWeight: 700,
+                  }}
+                >
+                  Explore Markets
+                </a>
+              </div>
             </div>
           </div>
-
-          {/* Headline Container */}
-          <div className="max-w-5xl mx-auto mb-12">
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black leading-[1.1] tracking-tight mb-8">
-              The Global Platform <br />
-              <span className="text-[#F0B90B] drop-shadow-lg">for Tokenized Capital Markets</span>
-            </h1>
-            
-            <p className="text-white/60 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-              Access institutional-grade private equity, venture capital, and tokenized bonds 
-              on a fully regulated European infrastructure.
-            </p>
-          </div>
-
-          {/* CTAs */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-            <button className="w-full sm:w-auto bg-[#F0B90B] text-black px-12 py-4 rounded-md font-black text-sm uppercase tracking-widest shadow-[0_0_30px_rgba(240,185,11,0.2)] hover:scale-105 transition-all active:scale-95">
-              Start Investing
-            </button>
-            <button className="w-full sm:w-auto bg-transparent text-white border border-white/20 px-12 py-4 rounded-md font-bold text-sm uppercase tracking-widest hover:bg-white/5 hover:border-white/40 transition-all">
-              Tokenize Assets
-            </button>
-          </div>
-        </div>
+        </section>
       </main>
-
-      {/* Decorative Bottom Glow */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-96 bg-[#F0B90B]/5 blur-[120px] pointer-events-none" />
-    </div>
+    </>
   );
 }
