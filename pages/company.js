@@ -1863,7 +1863,7 @@ NXT.careers = {
       btn.disabled    = true;
       await new Promise(r => setTimeout(r, 1600));
       NXT.modal.close();
-      NXT.toast.show('🎉 Application submitted! We'll be in touch within 5 business days.', 'success', 7000);
+    NXT.toast.show("🎉 Application submitted! We'll be in touch within 5 business days.", 'success', 7000);
       btn.textContent = 'Submit Application →';
       btn.disabled    = false;
     });
