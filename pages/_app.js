@@ -2,9 +2,10 @@ import React from 'react';
 import '../styles/globals.css';
 import Footer from '../components/Footer';
 
-function MyApp({ Component, pageProps }) {
+// This MUST be "export default" to reveal your pages
+export default function MyApp({ Component, pageProps }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: '#05060a' }}>
+    <div style={{ backgroundColor: "#05060a", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
       <main style={{ flex: 1 }}>
         <Component {...pageProps} />
       </main>
@@ -12,5 +13,3 @@ function MyApp({ Component, pageProps }) {
     </div>
   );
 }
-
-export default MyApp;
