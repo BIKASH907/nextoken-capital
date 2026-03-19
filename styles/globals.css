@@ -2,40 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Reset default margins to zero to kill the gap */
-html, body, #__next {
+/* THE GAP KILLER */
+* {
   margin: 0 !important;
-  padding: 0 !important;
-  background-color: #0b0e11;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body, html, #__next {
+  background-color: #0b0e11 !important;
+  width: 100% !important;
   overflow-x: hidden;
 }
 
-@layer components {
-  /* LOGO STYLING - Image 7 and 10 match */
-  .logo-nxt { 
-    font-family: 'Arial Black', sans-serif; 
-    font-size: 22px; 
-    font-weight: 900; 
-    color: #F0B90B; 
-    letter-spacing: -1px; 
-  }
-  .logo-sep { 
-    width: 1px; 
-    height: 24px; 
-    background: rgba(240,185,11,0.25); 
-    margin: 0 12px; 
-  }
-  .logo-name { 
-    font-family: 'Arial Black', sans-serif; 
-    font-size: 13px; 
-    font-weight: 900; 
-    color: white; 
-    line-height: 1.1; 
-  }
-  .logo-cap { 
-    font-size: 7px; 
-    font-weight: 700; 
-    color: #F0B90B; 
-    letter-spacing: 4px; 
-  }
-}
+/* LOGO SYSTEM */
+.logo-nxt { font-family: 'Arial Black', sans-serif; font-size: 24px; color: #F0B90B; }
+.logo-sep { width: 1px; height: 26px; background: rgba(255,255,255,0.2); margin: 0 12px; }
+.logo-name { font-family: 'Arial Black', sans-serif; font-size: 14px; color: white; line-height: 1; }
+.logo-cap { font-size: 8px; color: #F0B90B; letter-spacing: 3px; font-weight: bold; }
