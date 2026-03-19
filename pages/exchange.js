@@ -25,9 +25,22 @@ const TIMEFRAMES = [
 function formatPrice(value) {
   if (value === null || value === undefined || Number.isNaN(Number(value))) return "--";
   const n = Number(value);
-  if (n >= 1000) return n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  if (n >= 1) return n.toLocaleString("en-US", { minimumFractionDigits: 4, maximumFractionDigits: 4 });
-  return n.toLocaleString("en-US", { minimumFractionDigits: 6, maximumFractionDigits: 6 });
+  if (n >= 1000) {
+    return n.toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  }
+  if (n >= 1) {
+    return n.toLocaleString("en-US", {
+      minimumFractionDigits: 4,
+      maximumFractionDigits: 4,
+    });
+  }
+  return n.toLocaleString("en-US", {
+    minimumFractionDigits: 6,
+    maximumFractionDigits: 6,
+  });
 }
 
 function formatChange(value) {
@@ -88,6 +101,7 @@ function useMarketData(symbol) {
         try {
           const data = JSON.parse(event.data);
           if (!active) return;
+
           setTicker((prev) => ({
             ...prev,
             lastPrice: data.c,
@@ -236,7 +250,6 @@ function useCandles(symbol, interval) {
     }
 
     fetchCandles();
-
     return () => {
       active = false;
     };
@@ -262,7 +275,7 @@ function CandlestickChart({ candles }) {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, width, height);
 
-    const padding = { top: 16, right: 70, bottom: 28, left: 8 };
+    const padding = { top: 16, right: 76, bottom: 30, left: 10 };
     const chartWidth = width - padding.left - padding.right;
     const chartHeight = height - padding.top - padding.bottom;
 
@@ -271,9 +284,9 @@ function CandlestickChart({ candles }) {
     const max = Math.max(...highs);
     const min = Math.min(...lows);
     const range = max - min || 1;
-    const candleWidth = Math.max(4, (chartWidth / candles.length) * 0.62);
+    const candleWidth = Math.max(4, (chartWidth / candles.length) * 0.6);
 
-    const y = (price) =>
+    const toY = (price) =>
       padding.top + chartHeight - ((price - min) / range) * chartHeight;
 
     ctx.strokeStyle = "rgba(255,255,255,0.08)";
@@ -287,29 +300,26 @@ function CandlestickChart({ candles }) {
       ctx.stroke();
 
       const value = max - (range / 5) * i;
-      ctx.fillStyle = "rgba(196,205,212,0.7)";
+      ctx.fillStyle = "rgba(196,205,212,0.72)";
       ctx.font = "11px monospace";
       ctx.textAlign = "left";
       ctx.fillText(formatPrice(value), width - padding.right + 8, py + 4);
     }
 
     candles.forEach((candle, index) => {
-      const x =
-        padding.left +
-        (index + 0.5) * (chartWidth / candles.length);
-
+      const x = padding.left + (index + 0.5) * (chartWidth / candles.length);
       const isUp = candle.close >= candle.open;
       const color = isUp ? "#0ecb81" : "#f6465d";
 
       ctx.strokeStyle = color;
       ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.moveTo(x, y(candle.high));
-      ctx.lineTo(x, y(candle.low));
+      ctx.moveTo(x, toY(candle.high));
+      ctx.lineTo(x, toY(candle.low));
       ctx.stroke();
 
-      const bodyTop = y(Math.max(candle.open, candle.close));
-      const bodyBottom = y(Math.min(candle.open, candle.close));
+      const bodyTop = toY(Math.max(candle.open, candle.close));
+      const bodyBottom = toY(Math.min(candle.open, candle.close));
       const bodyHeight = Math.max(2, bodyBottom - bodyTop);
 
       ctx.fillStyle = color;
@@ -356,8 +366,9 @@ function PairSidebar({ selectedPair, onSelect, liveTickerMap }) {
               key={pair.binance}
               className={`pairRow ${selectedPair.binance === pair.binance ? "pairRowActive" : ""}`}
               onClick={() => onSelect(pair)}
+              type="button"
             >
-              <div>
+              <div className="pairLeftWrap">
                 <div className="pairName">{pair.label}</div>
                 <div className="pairSub">{pair.binance}</div>
               </div>
@@ -392,21 +403,22 @@ function OrderBook({ asks, bids }) {
       </div>
 
       <div className="bookRows">
-        {asks.slice().reverse().map((row, i) => (
-          <div className="bookRow" key={`ask-${i}`}>
-            <div
-              className="depth askDepth"
-              style={{ width: `${(row.total / maxTotal) * 100}%` }}
-            />
-            <span className="downText">{formatPrice(row.price)}</span>
-            <span>{row.qty.toFixed(5)}</span>
-            <span>{formatNumber(row.total)}</span>
-          </div>
-        ))}
+        {asks
+          .slice()
+          .reverse()
+          .map((row, i) => (
+            <div className="bookRow" key={`ask-${i}`}>
+              <div
+                className="depth askDepth"
+                style={{ width: `${(row.total / maxTotal) * 100}%` }}
+              />
+              <span className="downText">{formatPrice(row.price)}</span>
+              <span>{row.qty.toFixed(5)}</span>
+              <span>{formatNumber(row.total)}</span>
+            </div>
+          ))}
 
-        <div className="midPriceRow">
-          Mid Market
-        </div>
+        <div className="midPriceRow">Mid Market</div>
 
         {bids.map((row, i) => (
           <div className="bookRow" key={`bid-${i}`}>
@@ -596,6 +608,10 @@ export default function ExchangePage() {
     }
 
     fetchSideList();
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   const lastPrice = Number(ticker?.lastPrice || 0);
@@ -615,7 +631,9 @@ export default function ExchangePage() {
         <div className="exchangeWrap">
           <header className="topSummary">
             <div className="pairMain">
-              <div className="pairBadge">{selectedPair.label.split("/")[0].slice(0, 3)}</div>
+              <div className="pairBadge">
+                {selectedPair.label.split("/")[0].slice(0, 3)}
+              </div>
               <div>
                 <h1>{selectedPair.label}</h1>
                 <p>Professional trading interface</p>
@@ -784,16 +802,31 @@ export default function ExchangePage() {
         </div>
       </main>
 
-      <style jsx>{`
+      <style jsx global>{`
+        * {
+          box-sizing: border-box;
+        }
+
+        html,
+        body {
+          margin: 0;
+          padding: 0;
+        }
+
+        body {
+          background: #05070c;
+          color: #e7edf5;
+          font-family: Inter, "Segoe UI", system-ui, sans-serif;
+        }
+
         .exchangePage {
           min-height: 100vh;
           background:
-            radial-gradient(circle at top left, rgba(240,185,11,0.08), transparent 25%),
-            radial-gradient(circle at top right, rgba(59,130,246,0.08), transparent 22%),
+            radial-gradient(circle at top left, rgba(240, 185, 11, 0.08), transparent 25%),
+            radial-gradient(circle at top right, rgba(59, 130, 246, 0.08), transparent 22%),
             linear-gradient(180deg, #05070c 0%, #0a0f17 100%);
           color: #e7edf5;
-          font-family: Inter, "Segoe UI", system-ui, sans-serif;
-          padding: 18px;
+          padding: 96px 18px 18px;
         }
 
         .exchangeWrap {
@@ -809,8 +842,8 @@ export default function ExchangePage() {
           margin-bottom: 16px;
           padding: 18px 20px;
           border-radius: 20px;
-          border: 1px solid rgba(255,255,255,0.08);
-          background: rgba(255,255,255,0.04);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          background: rgba(255, 255, 255, 0.04);
           backdrop-filter: blur(16px);
         }
 
@@ -818,6 +851,7 @@ export default function ExchangePage() {
           display: flex;
           align-items: center;
           gap: 14px;
+          min-width: 0;
         }
 
         .pairBadge {
@@ -829,6 +863,7 @@ export default function ExchangePage() {
           background: linear-gradient(135deg, #f0b90b, #c8830a);
           color: #111;
           font-weight: 900;
+          flex-shrink: 0;
         }
 
         .pairMain h1 {
@@ -839,7 +874,7 @@ export default function ExchangePage() {
 
         .pairMain p {
           margin: 4px 0 0;
-          color: rgba(231,237,245,0.58);
+          color: rgba(231, 237, 245, 0.58);
           font-size: 13px;
         }
 
@@ -853,14 +888,14 @@ export default function ExchangePage() {
           min-width: 120px;
           padding: 10px 14px;
           border-radius: 14px;
-          background: rgba(255,255,255,0.03);
-          border: 1px solid rgba(255,255,255,0.06);
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.06);
         }
 
         .topStat span {
           display: block;
           font-size: 11px;
-          color: rgba(231,237,245,0.52);
+          color: rgba(231, 237, 245, 0.52);
           margin-bottom: 4px;
           text-transform: uppercase;
           letter-spacing: 0.7px;
@@ -873,7 +908,7 @@ export default function ExchangePage() {
 
         .desktopGrid {
           display: grid;
-          grid-template-columns: 250px 1fr 320px 320px;
+          grid-template-columns: 250px minmax(0, 1fr) 320px 320px;
           gap: 14px;
           min-height: 760px;
         }
@@ -882,20 +917,22 @@ export default function ExchangePage() {
           display: grid;
           grid-template-rows: 1fr 130px;
           gap: 14px;
+          min-width: 0;
         }
 
         .panel {
-          border: 1px solid rgba(255,255,255,0.08);
-          background: rgba(255,255,255,0.035);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          background: rgba(255, 255, 255, 0.035);
           border-radius: 20px;
           overflow: hidden;
           backdrop-filter: blur(14px);
-          box-shadow: 0 14px 34px rgba(0,0,0,0.24);
+          box-shadow: 0 14px 34px rgba(0, 0, 0, 0.24);
+          min-width: 0;
         }
 
         .panelHeader {
           padding: 14px 16px;
-          border-bottom: 1px solid rgba(255,255,255,0.06);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.06);
           font-size: 13px;
           font-weight: 800;
           color: #fff;
@@ -911,35 +948,44 @@ export default function ExchangePage() {
         .pairSidebar {
           display: flex;
           flex-direction: column;
+          min-height: 0;
         }
 
         .pairSearch {
           padding: 12px;
-          border-bottom: 1px solid rgba(255,255,255,0.06);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
 
         .pairSearch input,
         .mobilePairSelect select,
-        .field input,
-        .tradeForm input {
+        .field input {
           width: 100%;
           height: 42px;
           border-radius: 12px;
-          border: 1px solid rgba(255,255,255,0.1);
-          background: rgba(255,255,255,0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          background: rgba(255, 255, 255, 0.05);
           color: #e7edf5;
           padding: 0 12px;
           outline: none;
+          box-shadow: none;
+          font-size: 14px;
         }
 
         .pairSearch input::placeholder,
         .field input::placeholder {
-          color: rgba(231,237,245,0.35);
+          color: rgba(231, 237, 245, 0.35);
+        }
+
+        .pairSearch input:focus,
+        .mobilePairSelect select:focus,
+        .field input:focus {
+          border-color: rgba(240, 185, 11, 0.45);
         }
 
         .pairList {
           overflow: auto;
           flex: 1;
+          min-height: 0;
         }
 
         .pairRow {
@@ -950,20 +996,25 @@ export default function ExchangePage() {
           text-align: left;
           display: flex;
           justify-content: space-between;
+          align-items: center;
           gap: 12px;
           padding: 12px 14px;
           cursor: pointer;
           border-left: 2px solid transparent;
-          border-bottom: 1px solid rgba(255,255,255,0.04);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.04);
         }
 
         .pairRow:hover {
-          background: rgba(255,255,255,0.04);
+          background: rgba(255, 255, 255, 0.04);
         }
 
         .pairRowActive {
-          background: rgba(240,185,11,0.08);
+          background: rgba(240, 185, 11, 0.08);
           border-left-color: #f0b90b;
+        }
+
+        .pairLeftWrap {
+          min-width: 0;
         }
 
         .pairName {
@@ -973,13 +1024,14 @@ export default function ExchangePage() {
         }
 
         .pairSub {
-          color: rgba(231,237,245,0.45);
+          color: rgba(231, 237, 245, 0.45);
           font-size: 11px;
           margin-top: 3px;
         }
 
         .pairRight {
           text-align: right;
+          flex-shrink: 0;
         }
 
         .pairPrice {
@@ -1018,10 +1070,10 @@ export default function ExchangePage() {
         .rtTabs button,
         .typeSwitch button,
         .mobileTabs button {
-          border: 1px solid rgba(255,255,255,0.08);
-          background: rgba(255,255,255,0.04);
-          color: rgba(231,237,245,0.72);
-          height: 34px;
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          background: rgba(255, 255, 255, 0.04);
+          color: rgba(231, 237, 245, 0.72);
+          min-height: 34px;
           padding: 0 12px;
           border-radius: 10px;
           cursor: pointer;
@@ -1033,8 +1085,8 @@ export default function ExchangePage() {
         .rtTabs button.tfActive,
         .typeSwitch button.typeActive,
         .mobileTabActive {
-          background: rgba(240,185,11,0.12) !important;
-          border-color: rgba(240,185,11,0.35) !important;
+          background: rgba(240, 185, 11, 0.12) !important;
+          border-color: rgba(240, 185, 11, 0.35) !important;
           color: #f0b90b !important;
         }
 
@@ -1047,7 +1099,7 @@ export default function ExchangePage() {
           flex: 1;
           display: grid;
           place-items: center;
-          color: rgba(231,237,245,0.48);
+          color: rgba(231, 237, 245, 0.48);
           font-size: 14px;
         }
 
@@ -1055,6 +1107,7 @@ export default function ExchangePage() {
         .tradePanel {
           display: flex;
           flex-direction: column;
+          min-width: 0;
         }
 
         .panelFill {
@@ -1076,8 +1129,8 @@ export default function ExchangePage() {
         }
 
         .miniHead {
-          color: rgba(231,237,245,0.5);
-          border-bottom: 1px solid rgba(255,255,255,0.06);
+          color: rgba(231, 237, 245, 0.5);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.06);
           text-transform: uppercase;
           letter-spacing: 0.6px;
         }
@@ -1099,12 +1152,15 @@ export default function ExchangePage() {
 
         .bookRow {
           position: relative;
-          border-bottom: 1px solid rgba(255,255,255,0.03);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.03);
         }
 
         .bookRow span {
           position: relative;
           z-index: 1;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
         .depth {
@@ -1116,11 +1172,11 @@ export default function ExchangePage() {
         }
 
         .askDepth {
-          background: rgba(246,70,93,0.1);
+          background: rgba(246, 70, 93, 0.1);
         }
 
         .bidDepth {
-          background: rgba(14,203,129,0.1);
+          background: rgba(14, 203, 129, 0.1);
         }
 
         .midPriceRow {
@@ -1129,13 +1185,19 @@ export default function ExchangePage() {
           font-weight: 800;
           color: #fff;
           text-align: center;
-          border-top: 1px solid rgba(255,255,255,0.06);
-          border-bottom: 1px solid rgba(255,255,255,0.06);
-          background: rgba(255,255,255,0.03);
+          border-top: 1px solid rgba(255, 255, 255, 0.06);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+          background: rgba(255, 255, 255, 0.03);
         }
 
         .tradeRow {
-          border-bottom: 1px solid rgba(255,255,255,0.03);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .tradeRow span {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
         .tradeForm {
@@ -1150,13 +1212,13 @@ export default function ExchangePage() {
         }
 
         .sideSwitch button {
-          height: 42px;
+          min-height: 42px;
           border: none;
           border-radius: 12px;
           cursor: pointer;
           font-weight: 800;
-          background: rgba(255,255,255,0.05);
-          color: rgba(231,237,245,0.82);
+          background: rgba(255, 255, 255, 0.05);
+          color: rgba(231, 237, 245, 0.82);
         }
 
         .buyActive {
@@ -1177,11 +1239,11 @@ export default function ExchangePage() {
 
         .field label {
           font-size: 11px;
-          color: rgba(231,237,245,0.58);
+          color: rgba(231, 237, 245, 0.58);
         }
 
         .submitBtn {
-          height: 46px;
+          min-height: 46px;
           border: none;
           border-radius: 14px;
           font-weight: 800;
@@ -1201,12 +1263,12 @@ export default function ExchangePage() {
 
         .formHint {
           text-align: center;
-          color: rgba(231,237,245,0.52);
+          color: rgba(231, 237, 245, 0.52);
           font-size: 12px;
           margin: 0;
         }
 
-        .formHint :global(a) {
+        .formHint a {
           color: #f0b90b;
           text-decoration: none;
         }
@@ -1220,7 +1282,7 @@ export default function ExchangePage() {
         }
 
         .muted {
-          color: rgba(231,237,245,0.5);
+          color: rgba(231, 237, 245, 0.5);
         }
 
         .mobileLayout {
@@ -1239,13 +1301,13 @@ export default function ExchangePage() {
 
         @media (max-width: 1200px) {
           .desktopGrid {
-            grid-template-columns: 220px 1fr 280px 300px;
+            grid-template-columns: 220px minmax(0, 1fr) 280px 300px;
           }
         }
 
         @media (max-width: 980px) {
           .exchangePage {
-            padding: 12px;
+            padding: 88px 12px 12px;
           }
 
           .topSummary {
