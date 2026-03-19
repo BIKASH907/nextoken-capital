@@ -3,10 +3,10 @@ import Header from "../components/Header";
 
 export default function App({ Component, pageProps }) {
   return (
-    <div style={{ backgroundColor: '#0b0e11', minHeight: '100vh' }}>
+    <div className="bg-[#0b0e11] min-h-screen flex flex-col m-0 p-0">
       <Header />
-      {/* pt-16 (64px) ensures the content starts perfectly after the header ends */}
-      <main className="pt-16">
+      {/* pt-[64px] (16rem) matches the h-16 (64px) height of the fixed header */}
+      <main className="flex-grow pt-[64px] m-0 p-0 overflow-x-hidden">
         <Component {...pageProps} />
       </main>
     </div>
