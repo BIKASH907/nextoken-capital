@@ -457,12 +457,12 @@ export default function Exchange() {
           ::-webkit-scrollbar-track{background:#0b0e11}
           ::-webkit-scrollbar-thumb{background:#2b3139;border-radius:2px}
           input:focus{border-color:#f0b90b!important;outline:none}
-          .exch-wrap{display:flex;flex-direction:column;min-height:calc(100vh - 80px);overflow:auto}
+          .exch-wrap{display:flex;flex-direction:column;min-height:100%;overflow:auto}
           @media(max-width:899px){.exch-wrap{height:calc(100vh - 120px)}}
         `}</style>
       </Head>
 
-      <div className="exch-wrap">
+      <div className="exch-wrap" style={{flex:1}}>
         {/* ── TICKER BAR ── */}
         <Ticker livePrice={livePrice} onSelect={handleSelect}/>
 
