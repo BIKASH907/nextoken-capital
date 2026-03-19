@@ -3,10 +3,12 @@ import Header from "../components/Header";
 
 export default function App({ Component, pageProps }) {
   return (
-    <div style={{ backgroundColor: '#0b0e11', minHeight: '100vh' }}>
+    <div className="bg-[#0b0e11] min-h-screen flex flex-col">
       <Header />
-      {/* This pt-[64px] ensures your content starts right at the edge of the header */}
-      <main className="pt-[64px]">
+      {/* pt-16 (64px) exactly offsets the fixed header. 
+          The 'overflow-hidden' prevents internal margins from escaping.
+      */}
+      <main className="flex-grow pt-16 overflow-hidden">
         <Component {...pageProps} />
       </main>
     </div>
