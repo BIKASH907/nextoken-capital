@@ -12,10 +12,7 @@ import {
   TrendingUp, 
   LayoutGrid, 
   PieChart, 
-  FileText,
-  Globe,
-  Bell,
-  UserCircle
+  FileText
 } from 'lucide-react';
 
 const Header = () => {
@@ -31,23 +28,11 @@ const Header = () => {
   const closeMenu = () => setIsMenuOpen(false);
 
   const navLinks = [
-    {
-      title: 'Invest',
-      items: [
-        { label: 'RWA Marketplace', desc: 'Real Estate & Agriculture', icon: Building2 },
-        { label: 'Bond Board', desc: 'Fixed Income & Corporate Bonds', icon: ShieldCheck },
-        { label: 'IPOs / Launchpad', desc: 'New Asset Offerings', icon: TrendingUp },
-      ]
-    },
-    {
-      title: 'Issuance',
-      items: [
-        { label: 'Tokenize Assets', desc: 'Digitalize your RWA', icon: LayoutGrid },
-        { label: 'Raise Capital', desc: 'Equity & Debt Financing', icon: PieChart },
-        { label: 'Documentation', desc: 'Legal & Technical Guides', icon: FileText },
-      ]
-    },
-    { title: 'Markets', link: '/markets' }
+    { title: 'Markets', link: '/markets' },
+    { title: 'Exchange', link: '/exchange' },
+    { title: 'Bonds', link: '/bonds' },
+    { title: 'Equity & IPO', link: '/equity' },
+    { title: 'Tokenize', link: '/tokenize' }
   ];
 
   return (
@@ -56,7 +41,7 @@ const Header = () => {
     }`}>
       <div className="max-w-[1440px] mx-auto px-4 h-16 flex items-center justify-between">
         
-        {/* --- LOGO: IDENTICAL TO HOME PAGE --- */}
+        {/* --- LOGO SECTION (Exact Match to Image 4 & 6) --- */}
         <Link href="/" className="flex items-center no-underline group">
           <div className="logo-nxt">NXT</div>
           <div className="logo-sep"></div>
@@ -66,31 +51,20 @@ const Header = () => {
           </div>
         </Link>
 
-        {/* --- DESKTOP NAVIGATION --- */}
-        <nav className="hidden lg:flex items-center gap-6">
-          {navLinks.map((menu) => (
-            <div key={menu.title} className="relative group py-5">
-              <button className="flex items-center gap-1 text-white/70 hover:text-gold text-sm font-bold transition-colors">
-                {menu.title} {menu.items && <ChevronDown size={14} />}
-              </button>
-              {menu.items && (
-                <div className="absolute top-full left-0 w-80 bg-[#1E2329] border border-white/10 rounded-xl shadow-2xl p-3 hidden group-hover:grid grid-cols-1 gap-1">
-                  {menu.items.map((item) => (
-                    <a key={item.label} href="#" className="flex items-start gap-3 p-3 rounded-lg hover:bg-[#2B3139] transition-colors">
-                      <item.icon size={18} className="text-gold mt-0.5" />
-                      <div>
-                        <p className="text-white font-bold text-xs">{item.label}</p>
-                        <p className="text-white/40 text-[10px]">{item.desc}</p>
-                      </div>
-                    </a>
-                  ))}
-                </div>
-              )}
-            </div>
+        {/* --- DESKTOP NAVIGATION (Exact Match to Image 6) --- */}
+        <nav className="hidden lg:flex items-center gap-8">
+          {navLinks.map((item) => (
+            <Link 
+              key={item.title} 
+              href={item.link} 
+              className="text-white/70 hover:text-white text-[13px] font-bold transition-colors no-underline"
+            >
+              {item.title}
+            </Link>
           ))}
         </nav>
 
-        {/* --- RIGHT SECTION: LOGIN/JOIN COLORS PRESERVED --- */}
+        {/* --- RIGHT TOOLS: LOGIN & REGISTER (Exact Match to Image 6) --- */}
         <div className="flex items-center gap-4">
           <div className="hidden sm:flex relative group">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" size={14} />
@@ -101,12 +75,16 @@ const Header = () => {
             />
           </div>
 
-          <div className="flex items-center gap-2">
-            {/* Login button: Keep same font size and color from your global styles */}
-            <button className="hidden sm:block text-white/80 hover:text-white text-xs font-bold px-3">Log In</button>
+          <div className="flex items-center gap-3">
+            {/* Log In Button: Same font size and color as Image 6 */}
+            <button className="hidden sm:block text-white font-bold text-sm px-2 hover:text-gold transition-colors">
+              Log In
+            </button>
             
-            {/* Join button: Exact Gold color #F0B90B */}
-            <button className="btn-gold px-4 py-1.5 rounded text-xs font-bold">Join</button>
+            {/* Register Button: Exact Gold/Yellow color from Image 6 */}
+            <button className="bg-[#F0B90B] text-black px-5 py-2 rounded text-sm font-bold hover:bg-[#fcd535] transition-all">
+              Register
+            </button>
             
             {/* MOBILE HAMBURGER */}
             <button 
@@ -119,32 +97,25 @@ const Header = () => {
         </div>
       </div>
 
-      {/* --- MOBILE MENU --- */}
+      {/* --- MOBILE OVERLAY MENU --- */}
       <div className={`lg:hidden fixed inset-0 top-16 bg-[#0B0E11] z-[-1] transition-transform duration-300 ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <div className="flex flex-col p-6 gap-8 h-full overflow-y-auto">
-          {navLinks.map((menu) => (
-            <div key={menu.title} className="flex flex-col gap-4">
-              <h3 className="text-gold text-xs font-black uppercase tracking-[3px] opacity-60">{menu.title}</h3>
-              {menu.items ? (
-                <div className="grid grid-cols-1 gap-5 pl-2">
-                  {menu.items.map((item) => (
-                    <a key={item.label} href="#" onClick={closeMenu} className="flex items-center gap-4">
-                      <div className="p-2 bg-[#1E2329] rounded">
-                        <item.icon size={20} className="text-white/60" />
-                      </div>
-                      <span className="text-white font-bold text-sm">{item.label}</span>
-                    </a>
-                  ))}
-                </div>
-              ) : (
-                <Link href={menu.link || '#'} onClick={closeMenu} className="text-white font-bold text-lg pl-2">Markets</Link>
-              )}
-            </div>
-          ))}
+          <nav className="flex flex-col gap-6">
+            {navLinks.map((item) => (
+              <Link 
+                key={item.title} 
+                href={item.link} 
+                onClick={closeMenu}
+                className="text-white font-bold text-lg border-b border-white/5 pb-2 no-underline"
+              >
+                {item.title}
+              </Link>
+            ))}
+          </nav>
 
-          <div className="mt-auto pt-6 flex flex-col gap-3 border-t border-white/5 pb-10">
-            <button className="btn-dark w-full py-3 rounded font-bold text-white/80">Log In</button>
-            <button className="btn-gold w-full py-3 rounded font-bold">Join Now</button>
+          <div className="mt-auto pt-6 flex flex-col gap-3 pb-10">
+            <button className="w-full py-3 rounded font-bold border border-white/10 text-white">Log In</button>
+            <button className="bg-[#F0B90B] text-black w-full py-3 rounded font-bold">Register Now</button>
           </div>
         </div>
       </div>
