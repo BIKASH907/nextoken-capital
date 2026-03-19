@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+// --- ADDED: Wallet Imports ---
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 export default function Navbar() {
   const router = useRouter();
@@ -59,9 +61,12 @@ export default function Navbar() {
             <Link href="/login" className="loginBtn">
               Log In
             </Link>
-            <Link href="/register" className="registerBtn">
-              Register
-            </Link>
+            {/* --- ADDED: Desktop Wallet Connection --- */}
+            <ConnectButton 
+              label="Connect Wallet" 
+              accountStatus="address" 
+              showBalance={false} 
+            />
           </div>
 
           <button
@@ -99,9 +104,10 @@ export default function Navbar() {
               <Link href="/login" className="loginBtn mobileBtn">
                 Log In
               </Link>
-              <Link href="/register" className="registerBtn mobileBtn">
-                Register
-              </Link>
+              {/* --- ADDED: Mobile Wallet Connection --- */}
+              <div style={{ display: 'flex', justifyContent: 'center', width: '100%', marginTop: '10px' }}>
+                <ConnectButton label="Connect" />
+              </div>
             </div>
           </div>
         </div>
@@ -226,8 +232,7 @@ export default function Navbar() {
           flex-shrink: 0;
         }
 
-        .loginBtn,
-        .registerBtn {
+        .loginBtn {
           min-height: 40px;
           padding: 0 18px;
           border-radius: 8px;
@@ -239,9 +244,6 @@ export default function Navbar() {
           justify-content: center;
           white-space: nowrap;
           transition: all 0.2s ease;
-        }
-
-        .loginBtn {
           color: #ffffff;
           background: transparent;
           border: 1px solid rgba(255, 255, 255, 0.14);
@@ -251,18 +253,6 @@ export default function Navbar() {
           color: #f0b90b;
           border-color: rgba(240, 185, 11, 0.45);
           background: rgba(255, 255, 255, 0.03);
-        }
-
-        .registerBtn {
-          color: #111111;
-          background: #f0b90b;
-          border: 1px solid #f0b90b;
-          box-shadow: 0 10px 22px rgba(240, 185, 11, 0.2);
-        }
-
-        .registerBtn:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 14px 28px rgba(240, 185, 11, 0.3);
         }
 
         .menuButton {
@@ -359,31 +349,14 @@ export default function Navbar() {
 
           .mobileActions {
             display: flex;
+            flex-direction: column;
             gap: 10px;
             padding: 16px;
           }
 
           .mobileBtn {
             flex: 1;
-          }
-        }
-
-        @media (max-width: 640px) {
-          .brandLogoText {
-            font-size: 20px;
-          }
-
-          .brandTitle {
-            font-size: 15px;
-          }
-
-          .brandSub {
-            font-size: 9px;
-            letter-spacing: 0.8px;
-          }
-
-          .mobileActions {
-            flex-direction: column;
+            width: 100%;
           }
         }
       `}</style>

@@ -1,16 +1,28 @@
 import React from 'react';
 import '../styles/globals.css';
-import Navbar from '../components/Navbar'; // Import the new Navbar
-import Footer from '../components/Footer';
+import '@rainbow-me/rainbowkit/styles.css'; // Don't forget this!
 
-export default function MyApp({ Component, pageProps }) {
+import { getDefaultConfig, RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+import { WagmiProvider } from 'wagmi';
+import { mainnet, polygon } from 'wagmi/chains';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const config = getDefaultConfig({
+  appName: 'Nextoken Capital',
+  projectId: 'YOUR_PROJECT_ID', // Get yours at cloud.walletconnect.com
+  chains: [mainnet, polygon],
+});
+
+const queryClient = new QueryClient();
+
+export default function App({ Component, pageProps }) {
   return (
-    <div style={{ backgroundColor: "#05060a", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
-      <Navbar /> {/* This makes it appear on every page */}
-      <main style={{ flex: 1 }}>
-        <Component {...pageProps} />
-      </main>
-      <Footer />
-    </div>
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <RainbowKitProvider theme={darkTheme({ accentColor: '#f0b90b' })}>
+          <Component {...pageProps} />
+        </RainbowKitProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
   );
 }
