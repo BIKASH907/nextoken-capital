@@ -14,18 +14,6 @@ export default function EquityIpoPage() {
       </Head>
 
       <main style={styles.page}>
-        <header style={styles.header}>
-          <div style={styles.logoWrap}>
-            <img src="/logo.png" alt="Nextoken Capital" style={styles.logo} />
-            <span style={styles.brand}>Nextoken Capital</span>
-          </div>
-
-          <nav style={styles.nav}>
-            <Link href="/" style={styles.link}>Home</Link>
-            <Link href="/equity" style={styles.link}>Equity & IPO</Link>
-          </nav>
-        </header>
-
         <section style={styles.hero}>
           <div style={styles.card}>
             <p style={styles.badge}>Capital Markets</p>
@@ -36,8 +24,12 @@ export default function EquityIpoPage() {
             </p>
 
             <div style={styles.actions}>
-              <Link href="/" style={styles.primaryBtn}>Back to Home</Link>
-              <a href="#learn-more" style={styles.secondaryBtn}>Learn More</a>
+              <Link href="/" style={styles.primaryBtn}>
+                Back to Home
+              </Link>
+              <a href="#learn-more" style={styles.secondaryBtn}>
+                Learn More
+              </a>
             </div>
           </div>
         </section>
@@ -63,43 +55,6 @@ const styles = {
     color: "#ffffff",
     fontFamily: "Arial, Helvetica, sans-serif",
     boxSizing: "border-box",
-  },
-  header: {
-    width: "100%",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "18px 24px",
-    borderBottom: "1px solid rgba(255,255,255,0.08)",
-    background: "rgba(5,8,22,0.92)",
-    position: "sticky",
-    top: 0,
-    zIndex: 50,
-    boxSizing: "border-box",
-  },
-  logoWrap: {
-    display: "flex",
-    alignItems: "center",
-    gap: "12px",
-  },
-  logo: {
-    width: "42px",
-    height: "42px",
-    objectFit: "contain",
-  },
-  brand: {
-    fontSize: "18px",
-    fontWeight: 700,
-  },
-  nav: {
-    display: "flex",
-    gap: "18px",
-    alignItems: "center",
-  },
-  link: {
-    color: "#ffffff",
-    textDecoration: "none",
-    fontWeight: 600,
   },
   hero: {
     padding: "80px 20px",
