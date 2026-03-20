@@ -1,5 +1,4 @@
 import Head from "next/head";
-import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
 import StatsSection from "../components/StatsSection";
 import ServicesSection from "../components/ServicesSection";
@@ -20,7 +19,6 @@ export default function Home() {
       </Head>
 
       <div className={styles.page}>
-        <Navbar />
         <Hero />
         <StatsSection />
         <ServicesSection />
