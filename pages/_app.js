@@ -1,3 +1,4 @@
+import Navbar from "../components/Navbar";
 import React from 'react';
 import '../styles/globals.css';
 import '@rainbow-me/rainbowkit/styles.css';
@@ -23,6 +24,7 @@ export default function MyApp({ Component, pageProps }) {
         <RainbowKitProvider theme={darkTheme({ accentColor: '#f0b90b' })}>
           <div style={{ backgroundColor: "#05060a", minHeight: "100vh" }}>
             <Component {...pageProps} />
+            <Navbar />
           </div>
         </RainbowKitProvider>
       </QueryClientProvider>
