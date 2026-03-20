@@ -1,129 +1,332 @@
-import { useState } from 'react'
-import { useAuth } from '../lib/AuthContext'
-import { useRouter } from 'next/router'
+import { useEffect, useState } from "react";
+import { useAuth } from "../lib/AuthContext";
+import { useRouter } from "next/router";
 
 export default function AuthModal({ mode, onClose, onSwitch }) {
-  const { login, register } = useAuth()
-  const router = useRouter()
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [form, setForm] = useState({
-    first_name: '', last_name: '', email: '', password: '', account_type: 'investor'
-  })
+  const { login, register } = useAuth();
+  const router = useRouter();
 
-  const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [form, setForm] = useState({
+    first_name: "",
+    last_name: "",
+    email: "",
+    password: "",
+    account_type: "investor",
+  });
+
+  useEffect(() => {
+    function handleEsc(e) {
+      if (e.key === "Escape") onClose();
+    }
+
+    document.addEventListener("keydown", handleEsc);
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.removeEventListener("keydown", handleEsc);
+      document.body.style.overflow = "";
+    };
+  }, [onClose]);
+
+  const set = (key, value) => {
+    setForm((prev) => ({ ...prev, [key]: value }));
+  };
 
   async function handleSubmit(e) {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
+    e.preventDefault();
+    setError("");
+    setLoading(true);
 
-    let result
-    if (mode === 'login') {
-      result = await login(form.email, form.password)
+    let result;
+
+    if (mode === "login") {
+      result = await login(form.email, form.password);
     } else {
-      if (form.password.length < 8) { setError('Password must be at least 8 characters'); setLoading(false); return }
-      result = await register(form)
+      if (form.password.length < 8) {
+        setError("Password must be at least 8 characters");
+        setLoading(false);
+        return;
+      }
+      result = await register(form);
     }
 
-    setLoading(false)
-    if (result.success) {
-      onClose()
-      router.push('/dashboard')
+    setLoading(false);
+
+    if (result?.success) {
+      onClose();
+      router.push("/dashboard");
     } else {
-      setError(result.error || 'Something went wrong. Please try again.')
+      setError(result?.error || "Something went wrong. Please try again.");
     }
   }
 
-  const inp = {
-    width: '100%', padding: '0.65rem 0.9rem', background: '#1E2329',
-    border: '1px solid rgba(255,255,255,0.08)', borderRadius: 4,
-    color: 'white', fontSize: '0.85rem', fontFamily: 'Inter,sans-serif',
-    outline: 'none', marginTop: 2, boxSizing: 'border-box'
-  }
-  const lbl = { display: 'block', fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)', marginBottom: 2 }
+  const overlayStyle = {
+    position: "fixed",
+    inset: 0,
+    background: "rgba(0,0,0,0.88)",
+    zIndex: 9999,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "1rem",
+    backdropFilter: "blur(4px)",
+  };
+
+  const modalStyle = {
+    background: "#0F141B",
+    border: "1px solid rgba(255,255,255,0.08)",
+    borderRadius: "16px",
+    padding: "2.5rem 2.25rem",
+    width: "100%",
+    maxWidth: "600px",
+    position: "relative",
+    boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
+    fontFamily: "Inter, Arial, sans-serif",
+  };
+
+  const closeButtonStyle = {
+    position: "absolute",
+    top: "1rem",
+    right: "1rem",
+    background: "transparent",
+    border: "none",
+    color: "rgba(255,255,255,0.35)",
+    fontSize: "2rem",
+    lineHeight: 1,
+    cursor: "pointer",
+  };
+
+  const logoWrapStyle = {
+    display: "flex",
+    alignItems: "flex-start",
+    gap: "12px",
+    marginBottom: "2rem",
+  };
+
+  const logoMarkStyle = {
+    color: "#F0B90B",
+    fontSize: "2rem",
+    fontWeight: 900,
+    lineHeight: 1,
+    letterSpacing: "0.08em",
+    fontFamily: "Inter, Arial, sans-serif",
+  };
+
+  const logoTextWrapStyle = {
+    display: "flex",
+    flexDirection: "column",
+    lineHeight: 1.05,
+    marginTop: "1px",
+  };
+
+  const logoTextStyle = {
+    color: "#FFFFFF",
+    fontSize: "1.15rem",
+    fontWeight: 800,
+    letterSpacing: "0.04em",
+    textTransform: "uppercase",
+    fontFamily: "Inter, Arial, sans-serif",
+  };
+
+  const headingStyle = {
+    fontSize: "2.2rem",
+    fontWeight: 800,
+    color: "#FFFFFF",
+    marginBottom: "0.4rem",
+    lineHeight: 1.1,
+  };
+
+  const subTextStyle = {
+    fontSize: "1.05rem",
+    color: "rgba(255,255,255,0.5)",
+    marginBottom: "2rem",
+  };
+
+  const labelStyle = {
+    display: "block",
+    fontSize: "0.78rem",
+    fontWeight: 700,
+    letterSpacing: "0.06em",
+    textTransform: "uppercase",
+    color: "rgba(255,255,255,0.42)",
+    marginBottom: "0.5rem",
+  };
+
+  const inputStyle = {
+    width: "100%",
+    padding: "1rem 1rem",
+    background: "#1A2029",
+    border: "1px solid rgba(255,255,255,0.10)",
+    borderRadius: "8px",
+    color: "#FFFFFF",
+    fontSize: "16px",
+    boxSizing: "border-box",
+    outline: "none",
+    fontFamily: "Inter, Arial, sans-serif",
+  };
+
+  const submitButtonStyle = {
+    width: "100%",
+    padding: "1rem",
+    background: loading ? "#B8930A" : "#F0B90B",
+    color: "#111111",
+    border: "none",
+    borderRadius: "8px",
+    fontSize: "1rem",
+    fontWeight: 800,
+    cursor: loading ? "not-allowed" : "pointer",
+    marginTop: "0.5rem",
+    fontFamily: "Inter, Arial, sans-serif",
+  };
+
+  const footerTextStyle = {
+    textAlign: "center",
+    marginTop: "1.5rem",
+    fontSize: "0.95rem",
+    color: "rgba(255,255,255,0.35)",
+  };
+
+  const switchLinkStyle = {
+    color: "#F0B90B",
+    fontWeight: 700,
+    cursor: "pointer",
+  };
+
+  const errorStyle = {
+    padding: "0.8rem 1rem",
+    background: "rgba(246,70,93,0.12)",
+    border: "1px solid rgba(246,70,93,0.2)",
+    borderRadius: "8px",
+    color: "#F6465D",
+    marginBottom: "1rem",
+    fontSize: "0.9rem",
+  };
 
   return (
     <div
-      onClick={e => e.target === e.currentTarget && onClose()}
-      style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.88)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+      style={overlayStyle}
     >
-      <div style={{ background: '#161A1E', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, padding: '2.25rem', width: '100%', maxWidth: 400, position: 'relative' }}>
+      <div style={modalStyle}>
+        <button type="button" onClick={onClose} style={closeButtonStyle} aria-label="Close modal">
+          ✕
+        </button>
 
-        {/* Close */}
-        <button onClick={onClose} style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', fontSize: '1.1rem', cursor: 'pointer', lineHeight: 1 }}>✕</button>
-
-        {/* Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1.75rem' }}>
-          <span className="logo-nxt">NXT</span>
-          <div className="logo-sep" />
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span className="logo-name">NEXTOKEN</span>
-            <span className="logo-cap">CAPITAL</span>
+        <div style={logoWrapStyle}>
+          <span style={logoMarkStyle}>NXT</span>
+          <div style={logoTextWrapStyle}>
+            <span style={logoTextStyle}>NEXTOKEN</span>
+            <span style={logoTextStyle}>CAPITAL</span>
           </div>
         </div>
 
-        <div style={{ fontSize: '1.15rem', fontWeight: 900, marginBottom: 4, letterSpacing: '-0.3px' }}>
-          {mode === 'login' ? 'Log In' : 'Create Account'}
-        </div>
-        <div style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.35)', marginBottom: '1.5rem' }}>
-          {mode === 'login' ? 'Welcome back to Nextoken Capital' : 'Start tokenizing assets in minutes — free'}
+        <div style={headingStyle}>
+          {mode === "login" ? "Log In" : "Create Account"}
         </div>
 
-        {error && <div style={{ padding: '0.7rem 1rem', background: 'rgba(246,70,93,0.1)', border: '1px solid rgba(246,70,93,0.2)', borderRadius: 4, color: '#F6465D', fontSize: '0.8rem', marginBottom: '1rem' }}>{error}</div>}
+        <div style={subTextStyle}>
+          {mode === "login"
+            ? "Welcome back to Nextoken Capital"
+            : "Create your Nextoken Capital account to get started."}
+        </div>
+
+        {error ? <div style={errorStyle}>{error}</div> : null}
 
         <form onSubmit={handleSubmit}>
-          {mode === 'register' && (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '1rem' }}>
+          {mode === "register" && (
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
+                gap: "0.9rem",
+                marginBottom: "1rem",
+              }}
+            >
               <div>
-                <label style={lbl}>First Name</label>
-                <input style={inp} placeholder="John" value={form.first_name} onChange={e => set('first_name', e.target.value)} required />
+                <label style={labelStyle}>First Name</label>
+                <input
+                  style={inputStyle}
+                  value={form.first_name}
+                  onChange={(e) => set("first_name", e.target.value)}
+                  required
+                />
               </div>
               <div>
-                <label style={lbl}>Last Name</label>
-                <input style={inp} placeholder="Smith" value={form.last_name} onChange={e => set('last_name', e.target.value)} required />
+                <label style={labelStyle}>Last Name</label>
+                <input
+                  style={inputStyle}
+                  value={form.last_name}
+                  onChange={(e) => set("last_name", e.target.value)}
+                  required
+                />
               </div>
             </div>
           )}
 
-          <div style={{ marginBottom: '1rem' }}>
-            <label style={lbl}>Email Address</label>
-            <input style={inp} type="email" placeholder="you@company.com" value={form.email} onChange={e => set('email', e.target.value)} required />
+          <div style={{ marginBottom: "1rem" }}>
+            <label style={labelStyle}>Email Address</label>
+            <input
+              style={inputStyle}
+              type="email"
+              placeholder="you@company.com"
+              value={form.email}
+              onChange={(e) => set("email", e.target.value)}
+              required
+            />
           </div>
 
-          <div style={{ marginBottom: mode === 'register' ? '1rem' : '1.5rem' }}>
-            <label style={lbl}>Password</label>
-            <input style={inp} type="password" placeholder={mode === 'register' ? 'Min. 8 characters' : '••••••••'} value={form.password} onChange={e => set('password', e.target.value)} required />
+          <div style={{ marginBottom: mode === "register" ? "1rem" : "1.5rem" }}>
+            <label style={labelStyle}>Password</label>
+            <input
+              style={inputStyle}
+              type="password"
+              placeholder={mode === "register" ? "Min. 8 characters" : "••••••••"}
+              value={form.password}
+              onChange={(e) => set("password", e.target.value)}
+              required
+            />
           </div>
 
-          {mode === 'register' && (
-            <div style={{ marginBottom: '1.5rem' }}>
-              <label style={lbl}>Account Type</label>
-              <select style={{ ...inp, appearance: 'none' }} value={form.account_type} onChange={e => set('account_type', e.target.value)}>
-                <option value="investor">Investor — Invest in tokenized assets</option>
-                <option value="issuer">Issuer — Tokenize assets / issue bonds</option>
-                <option value="institution">Institution — Enterprise / API access</option>
+          {mode === "register" && (
+            <div style={{ marginBottom: "1.5rem" }}>
+              <label style={labelStyle}>Account Type</label>
+              <select
+                style={inputStyle}
+                value={form.account_type}
+                onChange={(e) => set("account_type", e.target.value)}
+              >
+                <option value="investor">Investor</option>
+                <option value="issuer">Issuer</option>
+                <option value="institution">Institution</option>
               </select>
             </div>
           )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            style={{ width: '100%', padding: '0.85rem', background: loading ? '#B8930A' : '#F0B90B', color: 'black', border: 'none', borderRadius: 4, fontSize: '0.88rem', fontWeight: 800, cursor: loading ? 'not-allowed' : 'pointer', fontFamily: 'Inter,sans-serif' }}
-          >
-            {loading ? 'Please wait...' : mode === 'login' ? 'Log In' : 'Create Account'}
+          <button type="submit" disabled={loading} style={submitButtonStyle}>
+            {loading ? "Please wait..." : mode === "login" ? "Log In" : "Create Account"}
           </button>
         </form>
 
-        <div style={{ textAlign: 'center', marginTop: '1.1rem', fontSize: '0.78rem', color: 'rgba(255,255,255,0.3)' }}>
-          {mode === 'login' ? (
-            <>New to Nextoken? <span onClick={() => onSwitch('register')} style={{ color: '#F0B90B', fontWeight: 700, cursor: 'pointer' }}>Create Account →</span></>
+        <div style={footerTextStyle}>
+          {mode === "login" ? (
+            <>
+              New to Nextoken?{" "}
+              <span onClick={() => onSwitch("register")} style={switchLinkStyle}>
+                Create Account →
+              </span>
+            </>
           ) : (
-            <>Already have an account? <span onClick={() => onSwitch('login')} style={{ color: '#F0B90B', fontWeight: 700, cursor: 'pointer' }}>Log In →</span></>
+            <>
+              Already have an account?{" "}
+              <span onClick={() => onSwitch("login")} style={switchLinkStyle}>
+                Log In →
+              </span>
+            </>
           )}
         </div>
       </div>
     </div>
-  )
+  );
 }
