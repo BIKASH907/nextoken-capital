@@ -10,11 +10,60 @@ const Header = () => {
         
         {/* BRANDING */}
         <Link href="/" className="flex items-center no-underline">
-          <div className="logo-nxt">NXT</div>
-          <div className="logo-sep"></div>
-          <div className="flex flex-col">
-            <span className="logo-name uppercase">Nextoken</span>
-            <span className="logo-cap uppercase">Capital</span>
+          <div
+  style={{
+    display: "flex",
+    alignItems: "flex-start",
+    gap: "12px",
+  }}
+>
+  <span
+    style={{
+      color: "#F0B90B",
+      fontSize: "2rem",
+      fontWeight: 900,
+      lineHeight: 1,
+      letterSpacing: "0.08em",
+      fontFamily: "Inter, Arial, sans-serif",
+    }}
+  >
+    NXT
+  </span>
+
+  <div
+    style={{
+      display: "flex",
+      flexDirection: "column",
+      lineHeight: 1.05,
+      marginTop: "1px",
+    }}
+  >
+    <span
+      style={{
+        color: "#FFFFFF",
+        fontSize: "1.15rem",
+        fontWeight: 800,
+        letterSpacing: "0.04em",
+        textTransform: "uppercase",
+        fontFamily: "Inter, Arial, sans-serif",
+      }}
+    >
+      NEXTOKEN
+    </span>
+    <span
+      style={{
+        color: "#FFFFFF",
+        fontSize: "1.15rem",
+        fontWeight: 800,
+        letterSpacing: "0.04em",
+        textTransform: "uppercase",
+        fontFamily: "Inter, Arial, sans-serif",
+      }}
+    >
+      CAPITAL
+    </span>
+  </div>
+</div>
           </div>
         </Link>
 
