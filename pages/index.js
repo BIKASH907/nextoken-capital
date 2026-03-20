@@ -1,9 +1,7 @@
-import { useState } from "react";
 import Head from "next/head";
 import Link from "next/link";
 
 export default function Home() {
-  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <>
@@ -17,51 +15,6 @@ export default function Home() {
       </Head>
 
       <div style={styles.page}>
-        {/* NAVBAR */}
-        <header style={styles.navbar}>
-          <div style={styles.navInner}>
-            <Link href="/" style={styles.brandWrap}>
-              <span style={styles.brandMark}>NXT</span>
-              <span style={styles.brandText}>Nextoken Capital</span>
-            </Link>
-
-            <nav
-              style={{
-                ...styles.navLinks,
-                ...(menuOpen ? styles.navLinksMobileOpen : {}),
-              }}
-            >
-              <Link href="/markets" style={styles.navLink} onClick={() => setMenuOpen(false)}>
-                Markets
-              </Link>
-              <Link href="/exchange" style={styles.navLink} onClick={() => setMenuOpen(false)}>
-                Exchange
-              </Link>
-              <Link href="/bonds" style={styles.navLink} onClick={() => setMenuOpen(false)}>
-                Bonds
-              </Link>
-              <Link href="/equity" style={styles.navLink} onClick={() => setMenuOpen(false)}>
-                Equity & IPO
-              </Link>
-            </nav>
-
-            <div style={styles.navActions}>
-              <button style={styles.loginBtn}>Log In</button>
-              <button style={styles.registerBtn}>Register</button>
-
-              <button
-                type="button"
-                aria-label="Toggle menu"
-                onClick={() => setMenuOpen(!menuOpen)}
-                style={styles.menuButton}
-              >
-                <span style={styles.menuLine}></span>
-                <span style={styles.menuLine}></span>
-                <span style={styles.menuLine}></span>
-              </button>
-            </div>
-          </div>
-        </header>
 
         {/* HERO */}
         <section style={styles.hero}>
