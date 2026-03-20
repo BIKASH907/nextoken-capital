@@ -2,6 +2,47 @@ import { useState } from 'react'
 import { useRouter } from 'next/router'
 import AuthModal from '../components/AuthModal'
 
+const inputStyle = {
+  width: '100%',
+  background: '#0B0E11',
+  color: 'white',
+  border: '1px solid rgba(255,255,255,0.08)',
+  borderRadius: 4,
+  padding: '0.8rem 0.9rem',
+  fontSize: '0.92rem',
+  outline: 'none',
+  fontFamily: 'Inter, sans-serif'
+}
+
+function Field({ label, children }) {
+  return (
+    <div style={{ marginBottom: '1rem' }}>
+      <label
+        style={{
+          display: 'block',
+          marginBottom: '0.45rem',
+          fontSize: '0.78rem',
+          fontWeight: 700,
+          color: 'rgba(255,255,255,0.7)',
+          letterSpacing: '0.2px'
+        }}
+      >
+        {label}
+      </label>
+      {children}
+    </div>
+  )
+}
+
+function SummaryRow({ label, value }) {
+  return (
+    <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem' }}>
+      <span style={{ color: 'rgba(255,255,255,0.5)' }}>{label}</span>
+      <span style={{ color: '#fff', textAlign: 'right' }}>{value}</span>
+    </div>
+  )
+}
+
 export default function TokenizePage() {
   const router = useRouter()
   const [modal, setModal] = useState(null)
@@ -38,7 +79,14 @@ export default function TokenizePage() {
   }
 
   return (
-    <div style={{ background: dark, minHeight: '100vh', color: 'rgba(255,255,255,0.88)', fontFamily: 'Inter, sans-serif' }}>
+    <div
+      style={{
+        background: dark,
+        minHeight: '100vh',
+        color: 'rgba(255,255,255,0.88)',
+        fontFamily: 'Inter, sans-serif'
+      }}
+    >
       {modal && (
         <AuthModal
           mode={modal}
@@ -104,7 +152,14 @@ export default function TokenizePage() {
                 marginBottom: '1rem'
               }}
             >
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: green }} />
+              <span
+                style={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: '50%',
+                  background: green
+                }}
+              />
               Issuer Portal
             </div>
 
@@ -135,7 +190,14 @@ export default function TokenizePage() {
               funds, and bonds with issuer-focused workflows designed for modern capital access.
             </p>
 
-            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '2rem' }}>
+            <div
+              style={{
+                display: 'flex',
+                gap: '0.75rem',
+                flexWrap: 'wrap',
+                marginBottom: '2rem'
+              }}
+            >
               <button
                 onClick={() => {
                   const el = document.getElementById('issuance-form')
@@ -180,8 +242,17 @@ export default function TokenizePage() {
                 ['Exchange Ready', 'Secondary Market Path']
               ].map(([n, l]) => (
                 <div key={l}>
-                  <div style={{ fontSize: '1.15rem', fontWeight: 900, color: gold }}>{n}</div>
-                  <div style={{ fontSize: '0.68rem', color: muted, textTransform: 'uppercase', letterSpacing: '1px' }}>
+                  <div style={{ fontSize: '1.15rem', fontWeight: 900, color: gold }}>
+                    {n}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: '0.68rem',
+                      color: muted,
+                      textTransform: 'uppercase',
+                      letterSpacing: '1px'
+                    }}
+                  >
                     {l}
                   </div>
                 </div>
@@ -197,10 +268,23 @@ export default function TokenizePage() {
               borderRadius: 6
             }}
           >
-            <div style={{ fontSize: '0.78rem', color: muted, marginBottom: '0.6rem' }}>
+            <div
+              style={{
+                fontSize: '0.78rem',
+                color: muted,
+                marginBottom: '0.6rem'
+              }}
+            >
               Estimated issuance preview
             </div>
-            <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#fff', marginBottom: '1rem' }}>
+            <div
+              style={{
+                fontSize: '1.8rem',
+                fontWeight: 900,
+                color: '#fff',
+                marginBottom: '1rem'
+              }}
+            >
               €5M Asset Tokenization
             </div>
             <div style={{ display: 'grid', gap: '0.8rem' }}>
@@ -252,7 +336,14 @@ export default function TokenizePage() {
           ].map(([n, l]) => (
             <div key={l}>
               <div style={{ color: gold, fontSize: '1.2rem', fontWeight: 900 }}>{n}</div>
-              <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
+              <div
+                style={{
+                  color: 'rgba(255,255,255,0.45)',
+                  fontSize: '0.72rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px'
+                }}
+              >
                 {l}
               </div>
             </div>
@@ -275,7 +366,14 @@ export default function TokenizePage() {
           >
             Asset Classes
           </div>
-          <h2 style={{ color: '#fff', fontSize: '2rem', fontWeight: 900, marginBottom: '2rem' }}>
+          <h2
+            style={{
+              color: '#fff',
+              fontSize: '2rem',
+              fontWeight: 900,
+              marginBottom: '2rem'
+            }}
+          >
             What You Can Tokenize
           </h2>
 
@@ -296,8 +394,12 @@ export default function TokenizePage() {
               ['Commodities', 'Build asset-backed token structures with transparent supply logic.']
             ].map(([title, desc]) => (
               <div key={title} style={{ background: dark2, padding: '1.5rem' }}>
-                <div style={{ color: '#fff', fontWeight: 800, marginBottom: '0.5rem' }}>{title}</div>
-                <div style={{ color: muted, fontSize: '0.85rem', lineHeight: 1.7 }}>{desc}</div>
+                <div style={{ color: '#fff', fontWeight: 800, marginBottom: '0.5rem' }}>
+                  {title}
+                </div>
+                <div style={{ color: muted, fontSize: '0.85rem', lineHeight: 1.7 }}>
+                  {desc}
+                </div>
               </div>
             ))}
           </div>
@@ -319,7 +421,14 @@ export default function TokenizePage() {
           >
             Workflow
           </div>
-          <h2 style={{ color: '#fff', fontSize: '2rem', fontWeight: 900, marginBottom: '2rem' }}>
+          <h2
+            style={{
+              color: '#fff',
+              fontSize: '2rem',
+              fontWeight: 900,
+              marginBottom: '2rem'
+            }}
+          >
             How Tokenization Works
           </h2>
 
@@ -338,10 +447,23 @@ export default function TokenizePage() {
               ['04', 'Investor Access', 'Eligible investors can participate under defined rules.'],
               ['05', 'Market Readiness', 'Assets can progress toward exchange and liquidity workflows.']
             ].map(([n, title, desc]) => (
-              <div key={n} style={{ background: dark3, padding: '1.5rem', borderTop: `2px solid ${gold}` }}>
-                <div style={{ color: gold, fontWeight: 900, marginBottom: '0.75rem' }}>{n}</div>
-                <div style={{ color: '#fff', fontWeight: 800, marginBottom: '0.4rem' }}>{title}</div>
-                <div style={{ color: muted, fontSize: '0.85rem', lineHeight: 1.7 }}>{desc}</div>
+              <div
+                key={n}
+                style={{
+                  background: dark3,
+                  padding: '1.5rem',
+                  borderTop: `2px solid ${gold}`
+                }}
+              >
+                <div style={{ color: gold, fontWeight: 900, marginBottom: '0.75rem' }}>
+                  {n}
+                </div>
+                <div style={{ color: '#fff', fontWeight: 800, marginBottom: '0.4rem' }}>
+                  {title}
+                </div>
+                <div style={{ color: muted, fontSize: '0.85rem', lineHeight: 1.7 }}>
+                  {desc}
+                </div>
               </div>
             ))}
           </div>
@@ -380,7 +502,14 @@ export default function TokenizePage() {
             >
               Issuer Intake
             </div>
-            <h2 style={{ color: '#fff', fontSize: '1.7rem', fontWeight: 900, marginBottom: '0.75rem' }}>
+            <h2
+              style={{
+                color: '#fff',
+                fontSize: '1.7rem',
+                fontWeight: 900,
+                marginBottom: '0.75rem'
+              }}
+            >
               Start Your Issuance
             </h2>
             <p style={{ color: muted, marginBottom: '1.5rem', lineHeight: 1.7 }}>
@@ -397,11 +526,22 @@ export default function TokenizePage() {
                 }}
               >
                 <Field label="Asset Name">
-                  <input name="assetName" value={form.assetName} onChange={handleChange} placeholder="Baltic Office Tower" style={inputStyle} />
+                  <input
+                    name="assetName"
+                    value={form.assetName}
+                    onChange={handleChange}
+                    placeholder="Baltic Office Tower"
+                    style={inputStyle}
+                  />
                 </Field>
 
                 <Field label="Asset Type">
-                  <select name="assetType" value={form.assetType} onChange={handleChange} style={inputStyle}>
+                  <select
+                    name="assetType"
+                    value={form.assetType}
+                    onChange={handleChange}
+                    style={inputStyle}
+                  >
                     <option>Commercial Real Estate</option>
                     <option>Residential Real Estate</option>
                     <option>Private Equity</option>
@@ -414,27 +554,63 @@ export default function TokenizePage() {
                 </Field>
 
                 <Field label="Total Asset Value">
-                  <input name="totalValue" value={form.totalValue} onChange={handleChange} placeholder="€5,000,000" style={inputStyle} />
+                  <input
+                    name="totalValue"
+                    value={form.totalValue}
+                    onChange={handleChange}
+                    placeholder="€5,000,000"
+                    style={inputStyle}
+                  />
                 </Field>
 
                 <Field label="Token Supply">
-                  <input name="tokenSupply" value={form.tokenSupply} onChange={handleChange} placeholder="500000" style={inputStyle} />
+                  <input
+                    name="tokenSupply"
+                    value={form.tokenSupply}
+                    onChange={handleChange}
+                    placeholder="500000"
+                    style={inputStyle}
+                  />
                 </Field>
 
                 <Field label="Token Price">
-                  <input name="tokenPrice" value={form.tokenPrice} onChange={handleChange} placeholder="€10" style={inputStyle} />
+                  <input
+                    name="tokenPrice"
+                    value={form.tokenPrice}
+                    onChange={handleChange}
+                    placeholder="€10"
+                    style={inputStyle}
+                  />
                 </Field>
 
                 <Field label="Expected Return">
-                  <input name="expectedReturn" value={form.expectedReturn} onChange={handleChange} placeholder="8% annual" style={inputStyle} />
+                  <input
+                    name="expectedReturn"
+                    value={form.expectedReturn}
+                    onChange={handleChange}
+                    placeholder="8% annual"
+                    style={inputStyle}
+                  />
                 </Field>
 
                 <Field label="Minimum Investment">
-                  <input name="minInvestment" value={form.minInvestment} onChange={handleChange} placeholder="€500" style={inputStyle} />
+                  <input
+                    name="minInvestment"
+                    value={form.minInvestment}
+                    onChange={handleChange}
+                    placeholder="€500"
+                    style={inputStyle}
+                  />
                 </Field>
 
                 <Field label="Fundraising Deadline">
-                  <input name="deadline" type="date" value={form.deadline} onChange={handleChange} style={inputStyle} />
+                  <input
+                    name="deadline"
+                    type="date"
+                    value={form.deadline}
+                    onChange={handleChange}
+                    style={inputStyle}
+                  />
                 </Field>
               </div>
 
@@ -459,7 +635,12 @@ export default function TokenizePage() {
                 }}
               >
                 <Field label="Token Standard">
-                  <select name="tokenStandard" value={form.tokenStandard} onChange={handleChange} style={inputStyle}>
+                  <select
+                    name="tokenStandard"
+                    value={form.tokenStandard}
+                    onChange={handleChange}
+                    style={inputStyle}
+                  >
                     <option>ERC-3643</option>
                     <option>ERC-1400</option>
                     <option>ERC-20</option>
@@ -467,7 +648,12 @@ export default function TokenizePage() {
                 </Field>
 
                 <Field label="Investor Eligibility">
-                  <select name="eligibility" value={form.eligibility} onChange={handleChange} style={inputStyle}>
+                  <select
+                    name="eligibility"
+                    value={form.eligibility}
+                    onChange={handleChange}
+                    style={inputStyle}
+                  >
                     <option>EU Verified Investors</option>
                     <option>Accredited Investors</option>
                     <option>Retail + Verified</option>
@@ -488,14 +674,24 @@ export default function TokenizePage() {
                     fontSize: '0.9rem'
                   }}
                 >
-                  • Asset Valuation Report<br />
-                  • Legal Ownership Proof<br />
-                  • Financial Statements<br />
+                  • Asset Valuation Report
+                  <br />
+                  • Legal Ownership Proof
+                  <br />
+                  • Financial Statements
+                  <br />
                   • Insurance Documents
                 </div>
               </Field>
 
-              <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginTop: '1.5rem' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  gap: '0.75rem',
+                  flexWrap: 'wrap',
+                  marginTop: '1.5rem'
+                }}
+              >
                 <button
                   type="submit"
                   style={{
@@ -542,7 +738,9 @@ export default function TokenizePage() {
               top: 90
             }}
           >
-            <h3 style={{ color: '#fff', fontWeight: 800, marginBottom: '1rem' }}>Issuance Summary</h3>
+            <h3 style={{ color: '#fff', fontWeight: 800, marginBottom: '1rem' }}>
+              Issuance Summary
+            </h3>
             <div style={{ display: 'grid', gap: '0.8rem', marginBottom: '1.25rem' }}>
               <SummaryRow label="Asset Type" value={form.assetType || '—'} />
               <SummaryRow label="Token Standard" value={form.tokenStandard || '—'} />
@@ -552,8 +750,16 @@ export default function TokenizePage() {
               <SummaryRow label="Min. Investment" value={form.minInvestment || '—'} />
             </div>
 
-            <div style={{ borderTop: `1px solid ${border}`, paddingTop: '1rem', marginTop: '1rem' }}>
-              <div style={{ color: '#fff', fontWeight: 800, marginBottom: '0.75rem' }}>Why this flow works</div>
+            <div
+              style={{
+                borderTop: `1px solid ${border}`,
+                paddingTop: '1rem',
+                marginTop: '1rem'
+              }}
+            >
+              <div style={{ color: '#fff', fontWeight: 800, marginBottom: '0.75rem' }}>
+                Why this flow works
+              </div>
               <div style={{ display: 'grid', gap: '0.7rem' }}>
                 {[
                   'Structured issuer intake',
@@ -586,7 +792,14 @@ export default function TokenizePage() {
           >
             Documents
           </div>
-          <h2 style={{ color: '#fff', fontSize: '2rem', fontWeight: 900, marginBottom: '2rem' }}>
+          <h2
+            style={{
+              color: '#fff',
+              fontSize: '2rem',
+              fontWeight: 900,
+              marginBottom: '2rem'
+            }}
+          >
             Required Documents
           </h2>
 
@@ -605,8 +818,12 @@ export default function TokenizePage() {
               ['Insurance Documents', 'Coverage details for insurable assets where applicable.']
             ].map(([title, desc]) => (
               <div key={title} style={{ background: dark3, padding: '1.5rem' }}>
-                <div style={{ color: '#fff', fontWeight: 800, marginBottom: '0.5rem' }}>{title}</div>
-                <div style={{ color: muted, fontSize: '0.85rem', lineHeight: 1.7 }}>{desc}</div>
+                <div style={{ color: '#fff', fontWeight: 800, marginBottom: '0.5rem' }}>
+                  {title}
+                </div>
+                <div style={{ color: muted, fontSize: '0.85rem', lineHeight: 1.7 }}>
+                  {desc}
+                </div>
               </div>
             ))}
           </div>
@@ -628,7 +845,14 @@ export default function TokenizePage() {
           >
             Why Nextoken
           </div>
-          <h2 style={{ color: '#fff', fontSize: '2rem', fontWeight: 900, marginBottom: '2rem' }}>
+          <h2
+            style={{
+              color: '#fff',
+              fontSize: '2rem',
+              fontWeight: 900,
+              marginBottom: '2rem'
+            }}
+          >
             Built for Modern Capital Formation
           </h2>
 
@@ -649,8 +873,12 @@ export default function TokenizePage() {
               ['Distribution Logic', 'Support digital payout and ownership management structures.']
             ].map(([title, desc]) => (
               <div key={title} style={{ background: dark2, padding: '1.5rem' }}>
-                <div style={{ color: '#fff', fontWeight: 800, marginBottom: '0.5rem' }}>{title}</div>
-                <div style={{ color: muted, fontSize: '0.85rem', lineHeight: 1.7 }}>{desc}</div>
+                <div style={{ color: '#fff', fontWeight: 800, marginBottom: '0.5rem' }}>
+                  {title}
+                </div>
+                <div style={{ color: muted, fontSize: '0.85rem', lineHeight: 1.7 }}>
+                  {desc}
+                </div>
               </div>
             ))}
           </div>
@@ -672,7 +900,14 @@ export default function TokenizePage() {
           >
             FAQ
           </div>
-          <h2 style={{ color: '#fff', fontSize: '2rem', fontWeight: 900, marginBottom: '2rem' }}>
+          <h2
+            style={{
+              color: '#fff',
+              fontSize: '2rem',
+              fontWeight: 900,
+              marginBottom: '2rem'
+            }}
+          >
             Common Questions
           </h2>
 
@@ -684,7 +919,9 @@ export default function TokenizePage() {
             ['What documents are required?', 'This intake requests valuation, ownership, financial statements, and insurance documents.']
           ].map(([q, a]) => (
             <div key={q} style={{ borderBottom: `1px solid ${border}`, padding: '1rem 0' }}>
-              <div style={{ color: '#fff', fontWeight: 800, marginBottom: '0.35rem' }}>{q}</div>
+              <div style={{ color: '#fff', fontWeight: 800, marginBottom: '0.35rem' }}>
+                {q}
+              </div>
               <div style={{ color: muted, lineHeight: 1.8 }}>{a}</div>
             </div>
           ))}
@@ -692,16 +929,53 @@ export default function TokenizePage() {
       </section>
 
       {/* CTA */}
-      <section style={{ background: gold, padding: '4rem 5%', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 30% 50%,rgba(255,255,255,0.12),transparent 50%)' }} />
+      <section
+        style={{
+          background: gold,
+          padding: '4rem 5%',
+          textAlign: 'center',
+          position: 'relative',
+          overflow: 'hidden'
+        }}
+      >
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'radial-gradient(ellipse at 30% 50%,rgba(255,255,255,0.12),transparent 50%)'
+          }}
+        />
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <div style={{ fontSize: 'clamp(1.8rem,3vw,2.8rem)', fontWeight: 900, color: 'black', letterSpacing: '-1px', marginBottom: '0.75rem' }}>
+          <div
+            style={{
+              fontSize: 'clamp(1.8rem,3vw,2.8rem)',
+              fontWeight: 900,
+              color: 'black',
+              letterSpacing: '-1px',
+              marginBottom: '0.75rem'
+            }}
+          >
             Ready to Structure Your Asset?
           </div>
-          <p style={{ fontSize: '0.9rem', color: 'rgba(0,0,0,0.6)', margin: '0 auto 2rem', maxWidth: 480, lineHeight: 1.7 }}>
+          <p
+            style={{
+              fontSize: '0.9rem',
+              color: 'rgba(0,0,0,0.6)',
+              margin: '0 auto 2rem',
+              maxWidth: 480,
+              lineHeight: 1.7
+            }}
+          >
             Start your issuer intake, define your token structure, and prepare for digital capital formation.
           </p>
-          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+          <div
+            style={{
+              display: 'flex',
+              gap: '0.75rem',
+              justifyContent: 'center',
+              flexWrap: 'wrap'
+            }}
+          >
             <button
               onClick={() => {
                 const el = document.getElementById('issuance-form')
@@ -750,7 +1024,13 @@ export default function TokenizePage() {
         }}
       >
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.78rem', lineHeight: 1.8 }}>
+          <div
+            style={{
+              color: 'rgba(255,255,255,0.35)',
+              fontSize: '0.78rem',
+              lineHeight: 1.8
+            }}
+          >
             Risk notice: Digital offerings, tokenized assets, and real-world asset investments may involve regulatory,
             market, custody, technology, and liquidity risks. Issuer eligibility, investor access, and secondary market
             availability depend on jurisdiction, structure, and internal review outcomes.
@@ -760,175 +1040,3 @@ export default function TokenizePage() {
     </div>
   )
 }
-
-function Field({ label, children }) {
-  return (
-    <div style={{ marginBottom: '1rem' }}>
-      <label
-        style={{
-          display: 'block',
-          marginBottom: '0.45rem',
-          fontSize: '0.78rem',
-          fontWeight: 700,
-          color: 'rgba(255,255,255,0.7)',
-          letterSpacing: '0.2px'
-        }}
-      >
-        {label}
-      </label>
-      {children}
-    </div>
-  )
-}
-
-function SummaryRow({ label, value }) {
-  return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem' }}>
-      <span style={{ color: 'rgba(255,255,255,0.5)' }}>{label}</span>
-      <span style={{ color: '#fff', textAlign: 'right' }}>{value}</span>
-    </div>
-  )
-}
-
-const inputStyle = {
-  width: '100%',
-  background: '#0B0E11',
-  color: 'white',
-  border: '1px solid rgba(255,255,255,0.08)',
-  borderRadius: 4,
-  padding: '0.8rem 0.9rem',
-  fontSize: '0.92rem',
-  outline: 'none',
-  fontFamily: 'Inter, sans-serif'
-}
-// ... existing code ...
-      import React from 'react';
-
-export default function TokenizePage() {
-  return (
-    <div style={containerStyle}>
-      {/* Header Section */}
-      <section style={headerSection}>
-        <div style={badgeStyle}>● Issuer Portal</div>
-        <h1 style={mainTitle}>
-          Tokenize Real-World <br />
-          <span style={{ color: "#f5c15a" }}>Assets in 48 Hours</span>
-        </h1>
-        <p style={subText}>
-          Launch digital offerings for real estate, infrastructure, private equity, and 
-          bonds with issuer-focused workflows.
-        </p>
-      </section>
-
-      {/* Security & Backup Section */}
-      <section style={securitySection}>
-        <div style={securityGrid}>
-          {/* Safety Warning Card */}
-          <div style={warningCard}>
-            <h3 style={cardTitle}>⚠️ Safety Warning</h3>
-            <ul style={listStyle}>
-              <li style={listItem}>Nextoken Capital will <strong>never</strong> ask for your Private Key or Seed Phrase.</li>
-              <li style={listItem}>Always verify the URL is <strong>nextokencapital.com</strong> before connecting.</li>
-              <li style={listItem}>Blockchain transactions are irreversible; double-check all addresses.</li>
-            </ul>
-          </div>
-
-          {/* Backup Guide Card */}
-          <div style={backupCard}>
-            <h3 style={cardTitle}>🔐 Wallet Backup Guide</h3>
-            <ul style={listStyle}>
-              <li style={listItem}>Write down your 12 or 24-word recovery phrase on physical paper.</li>
-              <li style={listItem}>Store your backup in a secure, fireproof location.</li>
-              <li style={listItem}>If you lose your phrase, your assets <strong>cannot</strong> be recovered.</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-    </div>
-  );
-}
-
-// --- Styles ---
-const containerStyle = { 
-  backgroundColor: "#05060a", 
-  color: "#fff", 
-  minHeight: "100vh", 
-  padding: "80px 40px",
-  fontFamily: 'Inter, sans-serif'
-};
-
-const headerSection = { 
-  maxWidth: "1280px", 
-  margin: "0 auto", 
-  paddingBottom: "80px" 
-};
-
-const badgeStyle = { 
-  color: "#4ade80", 
-  fontSize: "12px", 
-  fontWeight: "700", 
-  border: "1px solid rgba(74, 222, 128, 0.2)", 
-  padding: "4px 12px", 
-  borderRadius: "20px", 
-  display: "inline-block" 
-};
-
-const mainTitle = { 
-  fontSize: "56px", 
-  fontWeight: "800", 
-  marginTop: "24px", 
-  lineHeight: "1.1" 
-};
-
-const subText = { 
-  color: "#6e7686", 
-  fontSize: "18px", 
-  maxWidth: "600px", 
-  marginTop: "20px" 
-};
-
-const securitySection = { 
-  maxWidth: "1280px", 
-  margin: "0 auto", 
-  borderTop: "1px solid #1a1d26", 
-  paddingTop: "60px" 
-};
-
-const securityGrid = { 
-  display: "grid", 
-  gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", 
-  gap: "30px" 
-};
-
-const warningCard = { 
-  background: "rgba(255, 68, 68, 0.05)", 
-  border: "1px solid rgba(255, 68, 68, 0.2)", 
-  padding: "30px", 
-  borderRadius: "16px" 
-};
-
-const backupCard = { 
-  background: "rgba(245, 193, 90, 0.05)", 
-  border: "1px solid rgba(245, 193, 90, 0.2)", 
-  padding: "30px", 
-  borderRadius: "16px" 
-};
-
-const cardTitle = { 
-  fontSize: "20px", 
-  fontWeight: "700", 
-  marginBottom: "15px", 
-  color: "#fff" 
-};
-
-const listStyle = { 
-  color: "#6e7686", 
-  lineHeight: "1.8", 
-  fontSize: "14px", 
-  paddingLeft: "0", 
-  listStyleType: "none" 
-};
-
-const listItem = {
-  marginBottom: "10px"
-};
