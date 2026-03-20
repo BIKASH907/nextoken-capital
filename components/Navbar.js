@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useState } from "react";
 import styles from "../styles/Navbar.module.css";
 
@@ -21,10 +22,12 @@ export default function Navbar() {
           <Link href="/tokenize" className={styles.navLink}>Tokenize</Link>
         </nav>
 
-        <div className={styles.navActions}>
-          <button className={styles.loginBtn}>Log In</button>
-          <button className={styles.registerBtn}>Register</button>
-        </div>
+<div className={styles.navActions}>
+  <ConnectButton />
+
+  <button className={styles.loginBtn}>Log In</button>
+  <button className={styles.registerBtn}>Register</button>
+</div>
 
         <button
           aria-label="Toggle menu"
