@@ -1,739 +1,1098 @@
 import Head from "next/head";
 import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
 
-const stats = [
-  { value: "12", label: "Live Equity Pipelines" },
-  { value: "28", label: "Issuer Reviews" },
-  { value: "9", label: "IPO Readiness Tracks" },
-  { value: "4.6K", label: "Investor Interest Signals" },
-];
-
-const featuredDeals = [
+const initialAssets = [
   {
     code: "NGTI",
     title: "Nextoken Growth Token IPO",
-    meta: "Token IPO • EU Regulated",
+    category: "Primary Offering",
+    price: 12.3,
+    holdings: 420,
+    allocation: "32%",
     status: "New",
-    description:
-      "Primary issuance presentation designed for growth-stage opportunities with a clear investor-facing structure.",
-    detail1: "Price",
-    value1: "€12.30",
-    detail2: "Interest",
-    value2: "Rising",
   },
   {
     code: "VPOP",
     title: "Vilnius Prime Office Portfolio",
-    meta: "Real Estate • Vilnius, Lithuania",
+    category: "Real Estate",
+    price: 104.2,
+    holdings: 120,
+    allocation: "41%",
     status: "Live",
-    description:
-      "Institutional-style presentation for issuer visibility, asset context, and structured offering communication.",
-    detail1: "Price",
-    value1: "€104.20",
-    detail2: "Demand",
-    value2: "Strong",
   },
   {
     code: "LCIF",
     title: "Logistics Chain Income Fund",
-    meta: "Infrastructure • Central Europe",
+    category: "Infrastructure",
+    price: 112.08,
+    holdings: 85,
+    allocation: "27%",
     status: "Live",
-    description:
-      "A cleaner interface for showing offering summaries, market context, and investor-ready access points.",
-    detail1: "Price",
-    value1: "€112.08",
-    detail2: "Liquidity",
-    value2: "High",
-  },
-];
-
-const workflow = [
-  {
-    step: "01",
-    title: "Issuer Readiness",
-    text: "Present company background, offering direction, and key preparation steps in a structured format.",
-  },
-  {
-    step: "02",
-    title: "Onboarding & KYC",
-    text: "Make onboarding and verification steps visible so the page feels process-driven and credible.",
-  },
-  {
-    step: "03",
-    title: "Compliance Review",
-    text: "Show documentation and review stages with a layout that supports trust and transparency.",
-  },
-  {
-    step: "04",
-    title: "Investor Access",
-    text: "Create a more polished way for users to review opportunities and follow offering progress.",
-  },
-];
-
-const insights = [
-  {
-    title: "Issuer Dashboard View",
-    text: "A stronger visual section for onboarding progress, document flow, and readiness milestones.",
-  },
-  {
-    title: "Offering Overview",
-    text: "A cleaner block for presenting investment summary, project category, and current workflow stage.",
-  },
-  {
-    title: "Investor Updates",
-    text: "A more trustworthy layout for showing updates, timelines, and opportunity visibility.",
   },
 ];
 
 export default function EquityIpoPage() {
+  const [assets, setAssets] = useState(
+    initialAssets.map((item) => ({
+      ...item,
+      change: "+0.00%",
+      isUp: true,
+    }))
+  );
+
+  const [activeTab, setActiveTab] = useState("market");
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setAssets((prev) =>
+        prev.map((item) => {
+          const rawChange = (Math.random() - 0.5) * 2.4;
+          const nextPrice = Math.max(0.01, +(item.price + rawChange).toFixed(2));
+          return {
+            ...item,
+            price: nextPrice,
+            change: `${rawChange >= 0 ? "+" : ""}${rawChange.toFixed(2)}%`,
+            isUp: rawChange >= 0,
+          };
+        })
+      );
+    }, 2500);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const portfolio = useMemo(() => {
+    const totalValue = assets.reduce(
+      (sum, item) => sum + item.price * item.holdings,
+      0
+    );
+    const dayMove = assets.reduce((sum, item) => {
+      const pct = parseFloat(item.change);
+      return sum + item.price * item.holdings * (pct / 100);
+    }, 0);
+
+    return {
+      totalValue,
+      dayMove,
+      investorName: "Investor Dashboard",
+      accountLevel: "Verified",
+    };
+  }, [assets]);
+
   return (
     <>
       <Head>
         <title>Equity & IPO | Nextoken Capital</title>
         <meta
           name="description"
-          content="Equity and IPO presentation page for Nextoken Capital with issuer onboarding, compliance workflow, and investor-focused offering design."
+          content="Equity and IPO dashboard for Nextoken Capital with market overview, investor dashboard, login call-to-action, and portfolio tracking."
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main style={styles.page}>
-        <section style={styles.heroSection}>
-          <div style={styles.container}>
-            <div style={styles.heroGrid}>
-              <div style={styles.heroLeft}>
-                <p style={styles.badge}>Capital Markets</p>
-                <h1 style={styles.title}>Equity & IPO</h1>
-                <p style={styles.text}>
-                  Nextoken Capital supports modern equity offerings and public
-                  market readiness with a more structured, trustworthy, and
-                  investor-focused digital experience.
-                </p>
+      <main className="page">
+        <section className="hero">
+          <div className="heroGlow heroGlowOne" />
+          <div className="heroGlow heroGlowTwo" />
 
-                <div style={styles.actions}>
-                  <Link href="/" style={styles.primaryBtn}>
-                    Back to Home
-                  </Link>
-                  <a href="#featured" style={styles.secondaryBtn}>
-                    Explore Offerings
-                  </a>
-                </div>
-
-                <div style={styles.statsGrid}>
-                  {stats.map((item) => (
-                    <div key={item.label} style={styles.statCard}>
-                      <span style={styles.statValue}>{item.value}</span>
-                      <span style={styles.statLabel}>{item.label}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div style={styles.heroRight}>
-                <div style={styles.previewCard}>
-                  <div style={styles.previewTop}>
-                    <span style={styles.previewPill}>Equity Workflow</span>
-                    <span style={styles.previewStatus}>Active</span>
-                  </div>
-
-                  <h3 style={styles.previewTitle}>Issuer Presentation Layer</h3>
-                  <p style={styles.previewText}>
-                    A professional equity page should connect opportunity
-                    summary, onboarding, review stages, and investor access in
-                    one clear interface.
-                  </p>
-
-                  <div style={styles.previewMetrics}>
-                    <div style={styles.previewMetricCard}>
-                      <span style={styles.metricLabel}>Onboarding</span>
-                      <strong style={styles.metricValue}>Structured</strong>
-                    </div>
-                    <div style={styles.previewMetricCard}>
-                      <span style={styles.metricLabel}>Compliance</span>
-                      <strong style={styles.metricValue}>Visible</strong>
-                    </div>
-                    <div style={styles.previewMetricCard}>
-                      <span style={styles.metricLabel}>Investor View</span>
-                      <strong style={styles.metricValue}>Enhanced</strong>
-                    </div>
-                    <div style={styles.previewMetricCard}>
-                      <span style={styles.metricLabel}>Offering Flow</span>
-                      <strong style={styles.metricValue}>Clear</strong>
-                    </div>
-                  </div>
-
-                  <div style={styles.progressWrap}>
-                    <div style={styles.progressRow}>
-                      <span style={styles.progressLabel}>Issuer onboarding</span>
-                      <div style={styles.progressBar}>
-                        <div style={{ ...styles.progressFill, width: "86%" }} />
-                      </div>
-                    </div>
-                    <div style={styles.progressRow}>
-                      <span style={styles.progressLabel}>KYC review</span>
-                      <div style={styles.progressBar}>
-                        <div style={{ ...styles.progressFill, width: "74%" }} />
-                      </div>
-                    </div>
-                    <div style={styles.progressRow}>
-                      <span style={styles.progressLabel}>Offer visibility</span>
-                      <div style={styles.progressBar}>
-                        <div style={{ ...styles.progressFill, width: "82%" }} />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section id="featured" style={styles.section}>
-          <div style={styles.container}>
-            <div style={styles.sectionHeader}>
-              <p style={styles.sectionTag}>Featured Opportunities</p>
-              <h2 style={styles.sectionTitle}>Equity content connected to platform themes</h2>
-              <p style={styles.sectionText}>
-                This page now feels closer to the Exchange experience by using a
-                similar card structure, strong hierarchy, and platform-connected
-                offering sections.
+          <div className="heroCard">
+            <div className="heroContent">
+              <span className="badge">Capital Markets</span>
+              <h1>Equity & IPO</h1>
+              <p className="subtitle">
+                Nextoken Capital supports issuer onboarding, compliance
+                visibility, investor access, and portfolio tracking in one
+                structured interface.
               </p>
+
+              <div className="actions">
+                <Link href="/" className="btnPrimary">
+                  Back to Home
+                </Link>
+                <a href="#dashboard" className="btnSecondary">
+                  Open Dashboard
+                </a>
+                <Link href="/login" className="btnGhost">
+                  Log In
+                </Link>
+              </div>
+
+              <div className="heroStats">
+                <div className="statBox">
+                  <span className="statValue">3</span>
+                  <span className="statLabel">Featured Offerings</span>
+                </div>
+                <div className="statBox">
+                  <span className="statValue">Live</span>
+                  <span className="statLabel">Market Tracking</span>
+                </div>
+                <div className="statBox">
+                  <span className="statValue">24/7</span>
+                  <span className="statLabel">Portfolio Visibility</span>
+                </div>
+              </div>
             </div>
 
-            <div style={styles.dealsGrid}>
-              {featuredDeals.map((item) => (
-                <div key={item.code} style={styles.dealCard}>
-                  <div style={styles.dealTop}>
-                    <div>
-                      <span style={styles.dealCode}>{item.code}</span>
-                      <h3 style={styles.dealTitle}>{item.title}</h3>
-                      <p style={styles.dealMeta}>{item.meta}</p>
-                    </div>
-                    <span style={styles.dealStatus}>{item.status}</span>
+            <div className="heroPanel">
+              <div className="miniPanel">
+                <div className="miniPanelTop">
+                  <span className="miniPill">Investor View</span>
+                  <span className="miniStatus">Active</span>
+                </div>
+
+                <h3>Portfolio Snapshot</h3>
+                <p>
+                  A cleaner equity experience with market overview, dashboard
+                  access, and portfolio visibility.
+                </p>
+
+                <div className="miniGrid">
+                  <div className="miniCard">
+                    <span>Total Value</span>
+                    <strong>
+                      €
+                      {portfolio.totalValue.toLocaleString(undefined, {
+                        maximumFractionDigits: 2,
+                      })}
+                    </strong>
                   </div>
-
-                  <p style={styles.dealText}>{item.description}</p>
-
-                  <div style={styles.dealBottom}>
-                    <div>
-                      <span style={styles.dealLabel}>{item.detail1}</span>
-                      <strong style={styles.dealValue}>{item.value1}</strong>
-                    </div>
-                    <div>
-                      <span style={styles.dealLabel}>{item.detail2}</span>
-                      <strong style={styles.dealValue}>{item.value2}</strong>
-                    </div>
+                  <div className="miniCard">
+                    <span>Daily Move</span>
+                    <strong
+                      className={portfolio.dayMove >= 0 ? "green" : "red"}
+                    >
+                      {portfolio.dayMove >= 0 ? "+" : "-"}€
+                      {Math.abs(portfolio.dayMove).toLocaleString(undefined, {
+                        maximumFractionDigits: 2,
+                      })}
+                    </strong>
+                  </div>
+                  <div className="miniCard">
+                    <span>Access</span>
+                    <strong>Dashboard</strong>
+                  </div>
+                  <div className="miniCard">
+                    <span>Status</span>
+                    <strong>Verified</strong>
                   </div>
                 </div>
-              ))}
+              </div>
             </div>
           </div>
         </section>
 
-        <section style={styles.sectionAlt}>
-          <div style={styles.container}>
-            <div style={styles.workflowGrid}>
-              <div>
-                <p style={styles.sectionTag}>Offering Workflow</p>
-                <h2 style={styles.sectionTitle}>A more trustworthy equity journey</h2>
-                <p style={styles.sectionText}>
-                  Instead of a placeholder section, this layout shows the
-                  sequence users expect on a serious capital markets platform:
-                  issuer preparation, onboarding, review, and investor access.
-                </p>
+        <section id="dashboard" className="dashboardSection">
+          <div className="sectionHeader">
+            <span className="sectionTag">Investor Dashboard</span>
+            <h2>Market overview, account access, and portfolio tracking</h2>
+            <p>
+              This layout adds a stronger investor-facing experience while
+              keeping the page aligned with the rest of the site.
+            </p>
+          </div>
+
+          <div className="tabBar">
+            <button
+              type="button"
+              className={`tabBtn ${activeTab === "market" ? "tabActive" : ""}`}
+              onClick={() => setActiveTab("market")}
+            >
+              Market
+            </button>
+            <button
+              type="button"
+              className={`tabBtn ${activeTab === "dashboard" ? "tabActive" : ""}`}
+              onClick={() => setActiveTab("dashboard")}
+            >
+              Dashboard
+            </button>
+            <button
+              type="button"
+              className={`tabBtn ${activeTab === "portfolio" ? "tabActive" : ""}`}
+              onClick={() => setActiveTab("portfolio")}
+            >
+              Portfolio
+            </button>
+          </div>
+
+          {activeTab === "market" && (
+            <div className="panel">
+              <div className="panelHeader">
+                <div>
+                  <h3>Featured Equity Opportunities</h3>
+                  <p>Live-style pricing and offering visibility.</p>
+                </div>
+                <div className="panelActions">
+                  <Link href="/login" className="smallBtn">
+                    Investor Login
+                  </Link>
+                </div>
               </div>
 
-              <div style={styles.workflowCards}>
-                {workflow.map((item) => (
-                  <div key={item.step} style={styles.workflowCard}>
-                    <div style={styles.workflowStep}>{item.step}</div>
+              <div className="marketTable">
+                <div className="tableHead">
+                  <span>Asset</span>
+                  <span>Category</span>
+                  <span>Price</span>
+                  <span>Change</span>
+                  <span>Status</span>
+                </div>
+
+                {assets.map((item) => (
+                  <div key={item.code} className="tableRow">
+                    <div className="assetCell">
+                      <strong>{item.code}</strong>
+                      <p>{item.title}</p>
+                    </div>
+                    <div className="mutedCell">{item.category}</div>
+                    <div className={`priceCell ${item.isUp ? "flashGreen" : "flashRed"}`}>
+                      €{item.price.toFixed(2)}
+                    </div>
+                    <div className={item.isUp ? "green strong" : "red strong"}>
+                      {item.change}
+                    </div>
                     <div>
-                      <h3 style={styles.workflowTitle}>{item.title}</h3>
-                      <p style={styles.workflowText}>{item.text}</p>
+                      <span className="statusPill">{item.status}</span>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
-          </div>
+          )}
+
+          {activeTab === "dashboard" && (
+            <div className="panel">
+              <div className="dashboardGrid">
+                <div className="summaryCard">
+                  <span className="cardLabel">Account</span>
+                  <h3>{portfolio.investorName}</h3>
+                  <p className="cardText">
+                    Access offering summaries, onboarding progress, compliance
+                    workflow, and portfolio visibility from one place.
+                  </p>
+
+                  <div className="summaryMeta">
+                    <div className="summaryMini">
+                      <span>Level</span>
+                      <strong>{portfolio.accountLevel}</strong>
+                    </div>
+                    <div className="summaryMini">
+                      <span>Access</span>
+                      <strong>Investor</strong>
+                    </div>
+                    <div className="summaryMini">
+                      <span>Workflow</span>
+                      <strong>Enabled</strong>
+                    </div>
+                  </div>
+
+                  <div className="summaryActions">
+                    <Link href="/login" className="btnPrimary">
+                      Log In
+                    </Link>
+                    <a href="#portfolio-panel" className="btnSecondary">
+                      View Portfolio
+                    </a>
+                  </div>
+                </div>
+
+                <div className="loginCard">
+                  <span className="cardLabel">Secure Access</span>
+                  <h3>Login & account entry</h3>
+                  <p className="cardText">
+                    Provide secure access for investors to review offerings,
+                    monitor positions, and follow market changes.
+                  </p>
+
+                  <div className="loginMock">
+                    <div className="inputMock">Email address</div>
+                    <div className="inputMock">Password</div>
+                    <div className="loginButtonMock">Continue to Dashboard</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "portfolio" && (
+            <div id="portfolio-panel" className="panel">
+              <div className="panelHeader">
+                <div>
+                  <h3>Portfolio Tracking</h3>
+                  <p>Track holdings, allocation, and portfolio value.</p>
+                </div>
+              </div>
+
+              <div className="portfolioTop">
+                <div className="portfolioStat">
+                  <span>Total Value</span>
+                  <strong>
+                    €
+                    {portfolio.totalValue.toLocaleString(undefined, {
+                      maximumFractionDigits: 2,
+                    })}
+                  </strong>
+                </div>
+                <div className="portfolioStat">
+                  <span>Daily Change</span>
+                  <strong className={portfolio.dayMove >= 0 ? "green" : "red"}>
+                    {portfolio.dayMove >= 0 ? "+" : "-"}€
+                    {Math.abs(portfolio.dayMove).toLocaleString(undefined, {
+                      maximumFractionDigits: 2,
+                    })}
+                  </strong>
+                </div>
+                <div className="portfolioStat">
+                  <span>Tracked Assets</span>
+                  <strong>{assets.length}</strong>
+                </div>
+              </div>
+
+              <div className="portfolioList">
+                {assets.map((item) => {
+                  const currentValue = item.price * item.holdings;
+                  return (
+                    <div key={item.code} className="portfolioRow">
+                      <div className="portfolioAsset">
+                        <strong>{item.code}</strong>
+                        <p>{item.title}</p>
+                      </div>
+                      <div className="portfolioCol">
+                        <span>Holdings</span>
+                        <strong>{item.holdings}</strong>
+                      </div>
+                      <div className="portfolioCol">
+                        <span>Allocation</span>
+                        <strong>{item.allocation}</strong>
+                      </div>
+                      <div className="portfolioCol">
+                        <span>Value</span>
+                        <strong>
+                          €
+                          {currentValue.toLocaleString(undefined, {
+                            maximumFractionDigits: 2,
+                          })}
+                        </strong>
+                      </div>
+                      <div className="portfolioCol">
+                        <span>Move</span>
+                        <strong className={item.isUp ? "green" : "red"}>
+                          {item.change}
+                        </strong>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </section>
 
-        <section style={styles.section}>
-          <div style={styles.container}>
-            <div style={styles.sectionHeader}>
-              <p style={styles.sectionTag}>Platform Sections</p>
-              <h2 style={styles.sectionTitle}>What makes this page look more real</h2>
-              <p style={styles.sectionText}>
-                These blocks help the Equity & IPO page feel connected to the
-                wider Nextoken Capital product experience.
+        <section className="bottomSection">
+          <div className="bottomGrid">
+            <div className="bottomCard">
+              <span className="sectionTag">Issuer Readiness</span>
+              <h3>Structured offering presentation</h3>
+              <p>
+                Present equity opportunities with stronger visibility,
+                onboarding structure, and a more professional investor
+                experience.
               </p>
             </div>
 
-            <div style={styles.insightsGrid}>
-              {insights.map((item) => (
-                <div key={item.title} style={styles.insightCard}>
-                  <h3 style={styles.insightTitle}>{item.title}</h3>
-                  <p style={styles.insightText}>{item.text}</p>
-                </div>
-              ))}
+            <div className="bottomCard">
+              <span className="sectionTag">Compliance Flow</span>
+              <h3>KYC and review visibility</h3>
+              <p>
+                Make onboarding, verification, and workflow stages easier to
+                understand across the page.
+              </p>
+            </div>
+
+            <div className="bottomCard">
+              <span className="sectionTag">Investor Access</span>
+              <h3>Portfolio-first dashboard design</h3>
+              <p>
+                Connect market data, login access, and portfolio tracking in a
+                cleaner layout.
+              </p>
             </div>
           </div>
         </section>
 
-        <section style={styles.ctaSection}>
-          <div style={styles.container}>
-            <div style={styles.ctaCard}>
-              <div>
-                <p style={styles.sectionTag}>Nextoken Capital</p>
-                <h2 style={styles.ctaTitle}>Build a stronger Equity & IPO presence</h2>
-                <p style={styles.ctaText}>
-                  Present offerings, issuer readiness, compliance steps, and
-                  investor-facing information in a way that feels aligned with
-                  the rest of the platform.
-                </p>
-              </div>
+        <style jsx>{`
+          .page {
+            min-height: 100vh;
+            background: linear-gradient(180deg, #05060a 0%, #090b12 45%, #0c1018 100%);
+            color: #ffffff;
+            font-family: Arial, Helvetica, sans-serif;
+          }
 
-              <div style={styles.ctaActions}>
-                <Link href="/exchange" style={styles.primaryBtn}>
-                  Open Exchange
-                </Link>
-                <Link href="/markets" style={styles.secondaryBtn}>
-                  View Markets
-                </Link>
-              </div>
-            </div>
-          </div>
-        </section>
+          .hero {
+            position: relative;
+            overflow: hidden;
+            padding: 56px 20px 72px;
+          }
+
+          .heroGlow {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+          }
+
+          .heroGlowOne {
+            width: 320px;
+            height: 320px;
+            top: -80px;
+            right: -40px;
+            background: rgba(240, 185, 11, 0.12);
+          }
+
+          .heroGlowTwo {
+            width: 240px;
+            height: 240px;
+            left: -40px;
+            top: 140px;
+            background: rgba(240, 185, 11, 0.08);
+          }
+
+          .heroCard {
+            max-width: 1240px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 22px;
+            position: relative;
+            z-index: 1;
+          }
+
+          .heroContent,
+          .heroPanel {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(240, 185, 11, 0.16);
+            border-radius: 24px;
+            padding: 36px;
+            box-shadow: 0 14px 40px rgba(0, 0, 0, 0.24);
+          }
+
+          .badge {
+            display: inline-flex;
+            align-items: center;
+            min-height: 36px;
+            padding: 0 14px;
+            border-radius: 999px;
+            background: rgba(240, 185, 11, 0.12);
+            color: #f0b90b;
+            font-size: 14px;
+            font-weight: 700;
+          }
+
+          h1 {
+            margin: 18px 0 14px;
+            font-size: 56px;
+            line-height: 1.05;
+          }
+
+          .subtitle {
+            margin: 0;
+            color: rgba(255, 255, 255, 0.76);
+            line-height: 1.75;
+            font-size: 18px;
+            max-width: 760px;
+          }
+
+          .actions {
+            margin-top: 28px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+          }
+
+          .btnPrimary,
+          .btnSecondary,
+          .btnGhost,
+          .smallBtn {
+            text-decoration: none;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            transition: 0.2s ease;
+            box-sizing: border-box;
+          }
+
+          .btnPrimary {
+            min-height: 48px;
+            padding: 0 20px;
+            background: linear-gradient(135deg, #f0b90b, #ffd54a);
+            color: #111111;
+            box-shadow: 0 10px 24px rgba(240, 185, 11, 0.22);
+          }
+
+          .btnPrimary:hover {
+            transform: translateY(-1px);
+          }
+
+          .btnSecondary {
+            min-height: 48px;
+            padding: 0 20px;
+            border: 1px solid rgba(240, 185, 11, 0.24);
+            color: #f0b90b;
+            background: rgba(255, 255, 255, 0.02);
+          }
+
+          .btnGhost {
+            min-height: 48px;
+            padding: 0 20px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #ffffff;
+            background: transparent;
+          }
+
+          .smallBtn {
+            min-height: 40px;
+            padding: 0 16px;
+            background: linear-gradient(135deg, #f0b90b, #ffd54a);
+            color: #111111;
+          }
+
+          .heroStats {
+            margin-top: 32px;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+          }
+
+          .statBox {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(240, 185, 11, 0.12);
+            border-radius: 18px;
+            padding: 16px;
+          }
+
+          .statValue {
+            display: block;
+            font-size: 24px;
+            font-weight: 800;
+            color: #f0b90b;
+            margin-bottom: 6px;
+          }
+
+          .statLabel {
+            display: block;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.62);
+            line-height: 1.5;
+          }
+
+          .miniPanelTop {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+          }
+
+          .miniPill {
+            display: inline-flex;
+            align-items: center;
+            min-height: 32px;
+            padding: 0 12px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 700;
+          }
+
+          .miniStatus {
+            display: inline-flex;
+            align-items: center;
+            min-height: 32px;
+            padding: 0 12px;
+            border-radius: 999px;
+            background: rgba(240, 185, 11, 0.12);
+            color: #f0b90b;
+            font-size: 12px;
+            font-weight: 700;
+          }
+
+          .miniPanel h3 {
+            margin: 0 0 10px;
+            font-size: 28px;
+          }
+
+          .miniPanel p {
+            margin: 0;
+            color: rgba(255, 255, 255, 0.72);
+            line-height: 1.7;
+          }
+
+          .miniGrid {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+          }
+
+          .miniCard {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(240, 185, 11, 0.12);
+            border-radius: 16px;
+            padding: 16px;
+          }
+
+          .miniCard span {
+            display: block;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.58);
+            margin-bottom: 8px;
+          }
+
+          .miniCard strong {
+            font-size: 18px;
+            color: #ffffff;
+          }
+
+          .dashboardSection,
+          .bottomSection {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 0 20px 80px;
+          }
+
+          .sectionHeader {
+            margin-bottom: 24px;
+            max-width: 760px;
+          }
+
+          .sectionTag {
+            display: inline-block;
+            margin-bottom: 10px;
+            color: #f0b90b;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+          }
+
+          .sectionHeader h2 {
+            margin: 0 0 12px;
+            font-size: 40px;
+            line-height: 1.15;
+          }
+
+          .sectionHeader p {
+            margin: 0;
+            color: rgba(255, 255, 255, 0.72);
+            line-height: 1.75;
+            font-size: 17px;
+          }
+
+          .tabBar {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+          }
+
+          .tabBtn {
+            min-height: 44px;
+            padding: 0 18px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.03);
+            color: #ffffff;
+            cursor: pointer;
+            font-weight: 700;
+          }
+
+          .tabActive {
+            color: #111111;
+            background: linear-gradient(135deg, #f0b90b, #ffd54a);
+            border-color: transparent;
+          }
+
+          .panel {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(240, 185, 11, 0.16);
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: 0 14px 40px rgba(0, 0, 0, 0.22);
+          }
+
+          .panelHeader {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+          }
+
+          .panelHeader h3 {
+            margin: 0 0 6px;
+            font-size: 28px;
+          }
+
+          .panelHeader p {
+            margin: 0;
+            color: rgba(255, 255, 255, 0.68);
+          }
+
+          .marketTable {
+            width: 100%;
+            border-radius: 18px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+          }
+
+          .tableHead,
+          .tableRow {
+            display: grid;
+            grid-template-columns: 2fr 1.2fr 1fr 1fr 0.8fr;
+            gap: 14px;
+            align-items: center;
+            padding: 16px 18px;
+          }
+
+          .tableHead {
+            background: rgba(255, 255, 255, 0.04);
+            font-size: 13px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.68);
+          }
+
+          .tableRow {
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            transition: background 0.2s ease;
+          }
+
+          .tableRow:hover {
+            background: rgba(240, 185, 11, 0.04);
+          }
+
+          .assetCell strong,
+          .portfolioAsset strong {
+            display: block;
+            color: #f0b90b;
+            font-size: 14px;
+            margin-bottom: 4px;
+          }
+
+          .assetCell p,
+          .portfolioAsset p {
+            margin: 0;
+            color: rgba(255, 255, 255, 0.74);
+            line-height: 1.5;
+          }
+
+          .mutedCell {
+            color: rgba(255, 255, 255, 0.7);
+          }
+
+          .priceCell {
+            font-weight: 700;
+            color: #ffffff;
+            border-radius: 8px;
+            padding: 6px 8px;
+            width: fit-content;
+          }
+
+          .strong {
+            font-weight: 700;
+          }
+
+          .statusPill {
+            display: inline-flex;
+            align-items: center;
+            min-height: 32px;
+            padding: 0 12px;
+            border-radius: 999px;
+            background: rgba(240, 185, 11, 0.12);
+            color: #f0b90b;
+            font-size: 12px;
+            font-weight: 700;
+          }
+
+          .dashboardGrid {
+            display: grid;
+            grid-template-columns: 1.05fr 0.95fr;
+            gap: 18px;
+          }
+
+          .summaryCard,
+          .loginCard {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(240, 185, 11, 0.12);
+            border-radius: 20px;
+            padding: 24px;
+          }
+
+          .cardLabel {
+            display: inline-block;
+            color: #f0b90b;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 12px;
+          }
+
+          .summaryCard h3,
+          .loginCard h3 {
+            margin: 0 0 10px;
+            font-size: 28px;
+          }
+
+          .cardText {
+            margin: 0;
+            color: rgba(255, 255, 255, 0.72);
+            line-height: 1.7;
+          }
+
+          .summaryMeta {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+          }
+
+          .summaryMini {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            padding: 14px;
+          }
+
+          .summaryMini span,
+          .portfolioCol span,
+          .portfolioStat span {
+            display: block;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.58);
+            margin-bottom: 8px;
+          }
+
+          .summaryMini strong,
+          .portfolioCol strong,
+          .portfolioStat strong {
+            color: #ffffff;
+            font-size: 17px;
+          }
+
+          .summaryActions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+          }
+
+          .loginMock {
+            margin-top: 20px;
+            display: grid;
+            gap: 12px;
+          }
+
+          .inputMock,
+          .loginButtonMock {
+            min-height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            box-sizing: border-box;
+          }
+
+          .inputMock {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.5);
+          }
+
+          .loginButtonMock {
+            background: linear-gradient(135deg, #f0b90b, #ffd54a);
+            color: #111111;
+            font-weight: 700;
+            justify-content: center;
+          }
+
+          .portfolioTop {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+            margin-bottom: 20px;
+          }
+
+          .portfolioStat,
+          .portfolioRow {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(240, 185, 11, 0.12);
+            border-radius: 16px;
+            padding: 18px;
+          }
+
+          .portfolioList {
+            display: grid;
+            gap: 12px;
+          }
+
+          .portfolioRow {
+            display: grid;
+            grid-template-columns: 2fr repeat(4, 1fr);
+            gap: 14px;
+            align-items: center;
+          }
+
+          .portfolioCol {
+            min-width: 0;
+          }
+
+          .bottomGrid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+          }
+
+          .bottomCard {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(240, 185, 11, 0.14);
+            border-radius: 22px;
+            padding: 24px;
+          }
+
+          .bottomCard h3 {
+            margin: 0 0 10px;
+            font-size: 24px;
+          }
+
+          .bottomCard p {
+            margin: 0;
+            color: rgba(255, 255, 255, 0.72);
+            line-height: 1.7;
+          }
+
+          .green {
+            color: #22c55e;
+          }
+
+          .red {
+            color: #ef4444;
+          }
+
+          .flashGreen {
+            animation: greenFlash 0.45s ease;
+          }
+
+          .flashRed {
+            animation: redFlash 0.45s ease;
+          }
+
+          @keyframes greenFlash {
+            0% {
+              background: rgba(34, 197, 94, 0.22);
+            }
+            100% {
+              background: transparent;
+            }
+          }
+
+          @keyframes redFlash {
+            0% {
+              background: rgba(239, 68, 68, 0.22);
+            }
+            100% {
+              background: transparent;
+            }
+          }
+
+          @media (max-width: 1100px) {
+            .heroCard,
+            .dashboardGrid,
+            .bottomGrid,
+            .portfolioTop {
+              grid-template-columns: 1fr;
+            }
+
+            .heroContent,
+            .heroPanel {
+              padding: 28px;
+            }
+
+            h1 {
+              font-size: 44px;
+            }
+          }
+
+          @media (max-width: 860px) {
+            .heroStats,
+            .summaryMeta {
+              grid-template-columns: 1fr;
+            }
+
+            .tableHead {
+              display: none;
+            }
+
+            .tableRow {
+              grid-template-columns: 1fr;
+              gap: 10px;
+            }
+
+            .portfolioRow {
+              grid-template-columns: 1fr;
+            }
+
+            .panel,
+            .bottomCard {
+              padding: 20px;
+            }
+
+            .sectionHeader h2 {
+              font-size: 32px;
+            }
+          }
+
+          @media (max-width: 640px) {
+            .hero {
+              padding: 36px 16px 56px;
+            }
+
+            .dashboardSection,
+            .bottomSection {
+              padding: 0 16px 56px;
+            }
+
+            .heroCard {
+              gap: 16px;
+            }
+
+            h1 {
+              font-size: 34px;
+            }
+
+            .subtitle,
+            .sectionHeader p {
+              font-size: 16px;
+            }
+
+            .actions,
+            .summaryActions,
+            .tabBar {
+              flex-direction: column;
+            }
+
+            .btnPrimary,
+            .btnSecondary,
+            .btnGhost,
+            .smallBtn,
+            .tabBtn {
+              width: 100%;
+            }
+          }
+        `}</style>
       </main>
     </>
   );
 }
-
-const styles = {
-  page: {
-    minHeight: "100vh",
-    background: "linear-gradient(180deg, #050816 0%, #07111f 48%, #091427 100%)",
-    color: "#ffffff",
-    fontFamily: "Arial, Helvetica, sans-serif",
-    boxSizing: "border-box",
-  },
-  container: {
-    width: "100%",
-    maxWidth: "1240px",
-    margin: "0 auto",
-    padding: "0 20px",
-    boxSizing: "border-box",
-  },
-  heroSection: {
-    padding: "52px 0 76px",
-    position: "relative",
-    overflow: "hidden",
-    background:
-      "radial-gradient(circle at top right, rgba(37,99,235,0.16), transparent 28%), radial-gradient(circle at left center, rgba(6,182,212,0.12), transparent 24%)",
-  },
-  heroGrid: {
-    display: "grid",
-    gridTemplateColumns: "1.15fr 0.85fr",
-    gap: "24px",
-    alignItems: "stretch",
-  },
-  heroLeft: {
-    background: "rgba(255,255,255,0.05)",
-    border: "1px solid rgba(255,255,255,0.08)",
-    borderRadius: "28px",
-    padding: "42px",
-    boxShadow: "0 14px 48px rgba(0,0,0,0.24)",
-    boxSizing: "border-box",
-  },
-  heroRight: {
-    display: "flex",
-  },
-  badge: {
-    display: "inline-block",
-    margin: 0,
-    marginBottom: "16px",
-    padding: "8px 14px",
-    borderRadius: "999px",
-    background: "rgba(37,99,235,0.18)",
-    color: "#93c5fd",
-    fontWeight: 700,
-    fontSize: "14px",
-  },
-  title: {
-    fontSize: "56px",
-    lineHeight: 1.05,
-    margin: "0 0 16px",
-    fontWeight: 800,
-    letterSpacing: "-0.03em",
-  },
-  text: {
-    fontSize: "18px",
-    lineHeight: 1.75,
-    color: "rgba(255,255,255,0.78)",
-    margin: 0,
-  },
-  actions: {
-    display: "flex",
-    gap: "14px",
-    marginTop: "30px",
-    flexWrap: "wrap",
-  },
-  primaryBtn: {
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: "50px",
-    padding: "12px 22px",
-    borderRadius: "14px",
-    background: "linear-gradient(135deg, #2563eb, #06b6d4)",
-    color: "#fff",
-    textDecoration: "none",
-    fontWeight: 700,
-    boxShadow: "0 10px 26px rgba(37,99,235,0.28)",
-  },
-  secondaryBtn: {
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: "50px",
-    padding: "12px 22px",
-    borderRadius: "14px",
-    background: "rgba(255,255,255,0.03)",
-    border: "1px solid rgba(255,255,255,0.16)",
-    color: "#fff",
-    textDecoration: "none",
-    fontWeight: 700,
-  },
-  statsGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
-    gap: "14px",
-    marginTop: "34px",
-  },
-  statCard: {
-    background: "rgba(255,255,255,0.04)",
-    border: "1px solid rgba(255,255,255,0.08)",
-    borderRadius: "18px",
-    padding: "16px",
-    boxSizing: "border-box",
-  },
-  statValue: {
-    display: "block",
-    fontSize: "24px",
-    fontWeight: 800,
-    color: "#ffffff",
-    marginBottom: "6px",
-  },
-  statLabel: {
-    display: "block",
-    fontSize: "13px",
-    color: "rgba(255,255,255,0.62)",
-    lineHeight: 1.5,
-  },
-  previewCard: {
-    width: "100%",
-    background: "linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04))",
-    border: "1px solid rgba(255,255,255,0.08)",
-    borderRadius: "28px",
-    padding: "26px",
-    boxShadow: "0 14px 48px rgba(0,0,0,0.24)",
-    boxSizing: "border-box",
-  },
-  previewTop: {
-    display: "flex",
-    justifyContent: "space-between",
-    gap: "12px",
-    alignItems: "center",
-    marginBottom: "16px",
-  },
-  previewPill: {
-    display: "inline-flex",
-    alignItems: "center",
-    minHeight: "32px",
-    padding: "0 12px",
-    borderRadius: "999px",
-    background: "rgba(255,255,255,0.06)",
-    color: "#cbd5e1",
-    fontSize: "12px",
-    fontWeight: 700,
-  },
-  previewStatus: {
-    display: "inline-flex",
-    alignItems: "center",
-    minHeight: "32px",
-    padding: "0 12px",
-    borderRadius: "999px",
-    background: "rgba(34,197,94,0.16)",
-    color: "#86efac",
-    fontSize: "12px",
-    fontWeight: 700,
-  },
-  previewTitle: {
-    margin: "0 0 10px",
-    fontSize: "24px",
-    fontWeight: 800,
-  },
-  previewText: {
-    margin: 0,
-    fontSize: "15px",
-    lineHeight: 1.7,
-    color: "rgba(255,255,255,0.74)",
-  },
-  previewMetrics: {
-    display: "grid",
-    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-    gap: "12px",
-    marginTop: "18px",
-    marginBottom: "18px",
-  },
-  previewMetricCard: {
-    background: "rgba(255,255,255,0.04)",
-    border: "1px solid rgba(255,255,255,0.08)",
-    borderRadius: "16px",
-    padding: "16px",
-  },
-  metricLabel: {
-    display: "block",
-    fontSize: "12px",
-    color: "rgba(255,255,255,0.56)",
-    marginBottom: "8px",
-  },
-  metricValue: {
-    fontSize: "16px",
-    color: "#ffffff",
-  },
-  progressWrap: {
-    background: "rgba(255,255,255,0.04)",
-    border: "1px solid rgba(255,255,255,0.08)",
-    borderRadius: "18px",
-    padding: "16px",
-  },
-  progressRow: {
-    display: "grid",
-    gridTemplateColumns: "140px 1fr",
-    gap: "12px",
-    alignItems: "center",
-    marginBottom: "12px",
-  },
-  progressLabel: {
-    fontSize: "13px",
-    color: "rgba(255,255,255,0.72)",
-  },
-  progressBar: {
-    width: "100%",
-    height: "10px",
-    borderRadius: "999px",
-    background: "rgba(255,255,255,0.08)",
-    overflow: "hidden",
-  },
-  progressFill: {
-    height: "100%",
-    borderRadius: "999px",
-    background: "linear-gradient(135deg, #2563eb, #06b6d4)",
-  },
-  section: {
-    padding: "30px 0 80px",
-    boxSizing: "border-box",
-  },
-  sectionAlt: {
-    padding: "80px 0",
-    background: "rgba(255,255,255,0.02)",
-    borderTop: "1px solid rgba(255,255,255,0.06)",
-    borderBottom: "1px solid rgba(255,255,255,0.06)",
-  },
-  sectionHeader: {
-    maxWidth: "760px",
-    marginBottom: "28px",
-  },
-  sectionTag: {
-    margin: "0 0 10px",
-    color: "#93c5fd",
-    fontSize: "13px",
-    fontWeight: 700,
-    textTransform: "uppercase",
-    letterSpacing: "0.08em",
-  },
-  sectionTitle: {
-    margin: "0 0 14px",
-    fontSize: "40px",
-    lineHeight: 1.15,
-    fontWeight: 800,
-    letterSpacing: "-0.02em",
-  },
-  sectionText: {
-    margin: 0,
-    fontSize: "17px",
-    lineHeight: 1.75,
-    color: "rgba(255,255,255,0.74)",
-  },
-  dealsGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-    gap: "18px",
-  },
-  dealCard: {
-    background: "linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.04))",
-    border: "1px solid rgba(255,255,255,0.08)",
-    borderRadius: "22px",
-    padding: "24px",
-    boxShadow: "0 12px 32px rgba(0,0,0,0.18)",
-  },
-  dealTop: {
-    display: "flex",
-    justifyContent: "space-between",
-    gap: "12px",
-    alignItems: "flex-start",
-    marginBottom: "14px",
-  },
-  dealCode: {
-    display: "inline-block",
-    marginBottom: "8px",
-    color: "#93c5fd",
-    fontSize: "13px",
-    fontWeight: 800,
-    letterSpacing: "0.08em",
-  },
-  dealTitle: {
-    margin: "0 0 6px",
-    fontSize: "22px",
-    lineHeight: 1.25,
-    fontWeight: 800,
-  },
-  dealMeta: {
-    margin: 0,
-    fontSize: "14px",
-    color: "rgba(255,255,255,0.58)",
-  },
-  dealStatus: {
-    display: "inline-flex",
-    alignItems: "center",
-    minHeight: "32px",
-    padding: "0 12px",
-    borderRadius: "999px",
-    background: "rgba(37,99,235,0.16)",
-    color: "#93c5fd",
-    fontSize: "12px",
-    fontWeight: 700,
-    whiteSpace: "nowrap",
-  },
-  dealText: {
-    margin: "0 0 16px",
-    fontSize: "15px",
-    lineHeight: 1.7,
-    color: "rgba(255,255,255,0.74)",
-  },
-  dealBottom: {
-    display: "grid",
-    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-    gap: "12px",
-  },
-  dealLabel: {
-    display: "block",
-    fontSize: "12px",
-    color: "rgba(255,255,255,0.56)",
-    marginBottom: "8px",
-  },
-  dealValue: {
-    fontSize: "17px",
-    color: "#ffffff",
-  },
-  workflowGrid: {
-    display: "grid",
-    gridTemplateColumns: "0.9fr 1.1fr",
-    gap: "24px",
-    alignItems: "start",
-  },
-  workflowCards: {
-    display: "grid",
-    gap: "14px",
-  },
-  workflowCard: {
-    display: "grid",
-    gridTemplateColumns: "72px 1fr",
-    gap: "16px",
-    alignItems: "start",
-    background: "rgba(255,255,255,0.05)",
-    border: "1px solid rgba(255,255,255,0.08)",
-    borderRadius: "20px",
-    padding: "20px",
-  },
-  workflowStep: {
-    width: "72px",
-    height: "72px",
-    borderRadius: "18px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    background: "rgba(37,99,235,0.14)",
-    border: "1px solid rgba(37,99,235,0.28)",
-    color: "#93c5fd",
-    fontWeight: 800,
-    fontSize: "20px",
-  },
-  workflowTitle: {
-    margin: "2px 0 8px",
-    fontSize: "20px",
-    fontWeight: 800,
-  },
-  workflowText: {
-    margin: 0,
-    fontSize: "15px",
-    lineHeight: 1.7,
-    color: "rgba(255,255,255,0.72)",
-  },
-  insightsGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-    gap: "18px",
-  },
-  insightCard: {
-    background: "rgba(255,255,255,0.05)",
-    border: "1px solid rgba(255,255,255,0.08)",
-    borderRadius: "22px",
-    padding: "24px",
-    boxShadow: "0 10px 30px rgba(0,0,0,0.18)",
-  },
-  insightTitle: {
-    margin: "0 0 10px",
-    fontSize: "20px",
-    fontWeight: 800,
-  },
-  insightText: {
-    margin: 0,
-    fontSize: "15px",
-    lineHeight: 1.7,
-    color: "rgba(255,255,255,0.74)",
-  },
-  ctaSection: {
-    padding: "0 0 88px",
-  },
-  ctaCard: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: "20px",
-    padding: "30px",
-    borderRadius: "26px",
-    background: "linear-gradient(135deg, rgba(37,99,235,0.16), rgba(6,182,212,0.12))",
-    border: "1px solid rgba(255,255,255,0.08)",
-    boxShadow: "0 16px 40px rgba(0,0,0,0.2)",
-  },
-  ctaTitle: {
-    margin: "0 0 10px",
-    fontSize: "34px",
-    lineHeight: 1.15,
-    fontWeight: 800,
-  },
-  ctaText: {
-    margin: 0,
-    fontSize: "16px",
-    lineHeight: 1.7,
-    color: "rgba(255,255,255,0.78)",
-    maxWidth: "680px",
-  },
-  ctaActions: {
-    display: "flex",
-    gap: "12px",
-    flexWrap: "wrap",
-  },
-};
