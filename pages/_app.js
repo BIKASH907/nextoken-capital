@@ -9,8 +9,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // CRITICAL: Ensure this import path is exactly where your Navbar file is
 import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
-
 const queryClient = new QueryClient();
 
 export default function MyApp({ Component, pageProps }) {
