@@ -23,8 +23,13 @@ export default function MyApp({ Component, pageProps }) {
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider theme={darkTheme({ accentColor: '#f0b90b' })}>
           <div style={{ backgroundColor: "#05060a", minHeight: "100vh" }}>
-            <Component {...pageProps} />
+            
+            {/* ✅ NAVBAR AT TOP */}
             <Navbar />
+
+            {/* PAGE CONTENT */}
+            <Component {...pageProps} />
+
           </div>
         </RainbowKitProvider>
       </QueryClientProvider>
