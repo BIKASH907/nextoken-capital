@@ -9,8 +9,6 @@ export default function KYC() {
       <Navbar />
 
       <div style={{ maxWidth: "900px", margin: "0 auto", padding: "3rem 1rem" }}>
-        
-        {/* Title */}
         <h1 style={{ fontSize: "2rem", fontWeight: 800, marginBottom: "0.5rem" }}>
           Identity Verification
         </h1>
@@ -19,14 +17,15 @@ export default function KYC() {
           Complete verification to unlock full access to your account.
         </p>
 
-        {/* Status Box */}
-        <div style={{
-          padding: "1.5rem",
-          borderRadius: "12px",
-          border: "1px solid rgba(255,255,255,0.08)",
-          background: "#161A1E",
-          marginBottom: "2rem"
-        }}>
+        <div
+          style={{
+            padding: "1.5rem",
+            borderRadius: "12px",
+            border: "1px solid rgba(255,255,255,0.08)",
+            background: "#161A1E",
+            marginBottom: "2rem",
+          }}
+        >
           <h3 style={{ marginBottom: "0.5rem" }}>
             Status:{" "}
             <span style={{ color: "#F0B90B" }}>
@@ -42,25 +41,28 @@ export default function KYC() {
           </p>
         </div>
 
-        {/* Steps */}
-        <div style={{
-          display: "grid",
-          gap: "1rem",
-          marginBottom: "2rem"
-        }}>
+        <div
+          style={{
+            display: "grid",
+            gap: "1rem",
+            marginBottom: "2rem",
+          }}
+        >
           {["Personal Info", "Document Upload", "Selfie Check", "Review"].map((step, i) => (
-            <div key={i} style={{
-              padding: "1rem",
-              borderRadius: "10px",
-              background: "#1E2329",
-              border: "1px solid rgba(255,255,255,0.05)"
-            }}>
+            <div
+              key={i}
+              style={{
+                padding: "1rem",
+                borderRadius: "10px",
+                background: "#1E2329",
+                border: "1px solid rgba(255,255,255,0.05)",
+              }}
+            >
               {i + 1}. {step}
             </div>
           ))}
         </div>
 
-        {/* Button */}
         <button
           onClick={() => setStatus("pending")}
           style={{
@@ -71,7 +73,7 @@ export default function KYC() {
             border: "none",
             borderRadius: "10px",
             fontWeight: 800,
-            cursor: "pointer"
+            cursor: "pointer",
           }}
         >
           Start Verification
