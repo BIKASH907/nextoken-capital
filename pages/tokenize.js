@@ -829,11 +829,14 @@ const inputStyle = {
     </div> // This is the final closing div of your page
   );
 }
-
 // PASTE THE STYLES BELOW THE COMPONENT
 const securitySection = { maxWidth: "1280px", margin: "0 auto", borderTop: "1px solid #1a1d26", paddingTop: "60px", marginTop: "40px" };
 const securityGrid = { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "30px" };
 const warningCard = { background: "rgba(255, 68, 68, 0.05)", border: "1px solid rgba(255, 68, 68, 0.2)", padding: "30px", borderRadius: "16px" };
 const backupCard = { background: "rgba(245, 193, 90, 0.05)", border: "1px solid rgba(245, 193, 90, 0.2)", padding: "30px", borderRadius: "16px" };
 const cardTitle = { fontSize: "20px", fontWeight: "700", marginBottom: "15px", color: "#fff" };
-const listStyle = { color: "#6e7686", lineHeight: "1.8", fontSize: "14px", paddingLeft: "20px" };
+const listStyle = { color: "#6e7686", lineHeight: "1.8", fontSize: "14px", paddingLeft: "20px", listStyleType: "none" };
+</section>
+    </div> // This MUST be inside the );
+  );
+}
