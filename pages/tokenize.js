@@ -801,3 +801,39 @@ const inputStyle = {
   outline: 'none',
   fontFamily: 'Inter, sans-serif'
 }
+// ... existing code ...
+      </section>
+
+      {/* PASTE THE SECURITY SECTION HERE */}
+      <section style={securitySection}>
+        <div style={securityGrid}>
+          <div style={warningCard}>
+            <h3 style={cardTitle}>⚠️ Safety Warning</h3>
+            <ul style={listStyle}>
+              <li>Nextoken Capital will <strong>never</strong> ask for your Private Key or Seed Phrase.</li>
+              <li>Always verify the URL is <strong>nextokencapital.com</strong> before connecting your wallet.</li>
+              <li>Transactions on the blockchain are irreversible; double-check all addresses.</li>
+            </ul>
+          </div>
+
+          <div style={backupCard}>
+            <h3 style={cardTitle}>🔐 Wallet Backup Guide</h3>
+            <ul style={listStyle}>
+              <li>Write down your 12 or 24-word recovery phrase on physical paper.</li>
+              <li>Store your backup in a secure, fireproof location (not on your phone or email).</li>
+              <li>If you lose your recovery phrase, your assets <strong>cannot</strong> be recovered.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </div> // This is the final closing div of your page
+  );
+}
+
+// PASTE THE STYLES BELOW THE COMPONENT
+const securitySection = { maxWidth: "1280px", margin: "0 auto", borderTop: "1px solid #1a1d26", paddingTop: "60px", marginTop: "40px" };
+const securityGrid = { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "30px" };
+const warningCard = { background: "rgba(255, 68, 68, 0.05)", border: "1px solid rgba(255, 68, 68, 0.2)", padding: "30px", borderRadius: "16px" };
+const backupCard = { background: "rgba(245, 193, 90, 0.05)", border: "1px solid rgba(245, 193, 90, 0.2)", padding: "30px", borderRadius: "16px" };
+const cardTitle = { fontSize: "20px", fontWeight: "700", marginBottom: "15px", color: "#fff" };
+const listStyle = { color: "#6e7686", lineHeight: "1.8", fontSize: "14px", paddingLeft: "20px" };

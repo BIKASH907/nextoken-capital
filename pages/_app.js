@@ -38,3 +38,11 @@ export default function MyApp({ Component, pageProps }) {
     </WagmiProvider>
   );
 }
+// pages/_app.js
+
+const config = getDefaultConfig({
+  appName: 'Nextoken Capital',
+  projectId: 'b00090bb1fd858afec43b9d5c3bee3a6', // Your new Project ID
+  chains: [mainnet, polygon],
+  ssr: true,
+});
