@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-// --- ADDED: Wallet Imports ---
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 export default function Navbar() {
@@ -14,6 +13,7 @@ export default function Navbar() {
       setScrolled(window.scrollY > 8);
     };
 
+    handleScroll();
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -61,12 +61,13 @@ export default function Navbar() {
             <Link href="/login" className="loginBtn">
               Log In
             </Link>
-            {/* --- ADDED: Desktop Wallet Connection --- */}
-            <ConnectButton 
-              label="Connect Wallet" 
-              accountStatus="address" 
-              showBalance={false} 
-            />
+            <div className="walletDesktop">
+              <ConnectButton
+                label="Connect Wallet"
+                accountStatus="address"
+                showBalance={false}
+              />
+            </div>
           </div>
 
           <button
@@ -104,9 +105,13 @@ export default function Navbar() {
               <Link href="/login" className="loginBtn mobileBtn">
                 Log In
               </Link>
-              {/* --- ADDED: Mobile Wallet Connection --- */}
-              <div style={{ display: 'flex', justifyContent: 'center', width: '100%', marginTop: '10px' }}>
-                <ConnectButton label="Connect" />
+
+              <div className="walletMobile">
+                <ConnectButton
+                  label="Connect"
+                  accountStatus="address"
+                  showBalance={false}
+                />
               </div>
             </div>
           </div>
@@ -139,6 +144,7 @@ export default function Navbar() {
           align-items: center;
           justify-content: space-between;
           gap: 20px;
+          box-sizing: border-box;
         }
 
         .brand {
@@ -232,6 +238,11 @@ export default function Navbar() {
           flex-shrink: 0;
         }
 
+        .walletDesktop {
+          display: flex;
+          align-items: center;
+        }
+
         .loginBtn {
           min-height: 40px;
           padding: 0 18px;
@@ -247,6 +258,7 @@ export default function Navbar() {
           color: #ffffff;
           background: transparent;
           border: 1px solid rgba(255, 255, 255, 0.14);
+          box-sizing: border-box;
         }
 
         .loginBtn:hover {
@@ -293,6 +305,13 @@ export default function Navbar() {
 
         .mobileMenu {
           display: none;
+        }
+
+        .walletMobile {
+          display: flex;
+          justify-content: center;
+          width: 100%;
+          margin-top: 10px;
         }
 
         @media (max-width: 980px) {
@@ -355,7 +374,6 @@ export default function Navbar() {
           }
 
           .mobileBtn {
-            flex: 1;
             width: 100%;
           }
         }
