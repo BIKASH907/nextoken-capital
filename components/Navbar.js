@@ -4,53 +4,68 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import AuthModal from "./AuthModal";
 import styles from "../styles/Navbar.module.css";
 
+const NAV_LINKS = [
+  { label: "Markets", href: "/markets" },
+  { label: "Exchange", href: "/exchange" },
+  { label: "Bonds", href: "/bonds" },
+  { label: "Equity & IPO", href: "/equity" },
+  { label: "Tokenize", href: "/tokenize" },
+];
+
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [modal, setModal] = useState(null);
+
+  const openLoginModal = () => {
+    setModal("login");
+    setMenuOpen(false);
+  };
+
+  const closeModal = () => {
+    setModal(null);
+  };
+
+  const closeMobileMenu = () => {
+    setMenuOpen(false);
+  };
 
   return (
     <>
       <header className={styles.navbar}>
         <div className={styles.navInner}>
-          <Link href="/" className={styles.brandWrap}>
+          <Link href="/" className={styles.brandWrap} onClick={closeMobileMenu}>
             <span className={styles.brandMark}>NXT</span>
             <span className={styles.brandText}>Nextoken Capital</span>
           </Link>
 
           <nav className={styles.navLinks}>
-            <Link href="/markets" className={styles.navLink}>
-              Markets
-            </Link>
-            <Link href="/exchange" className={styles.navLink}>
-              Exchange
-            </Link>
-            <Link href="/bonds" className={styles.navLink}>
-              Bonds
-            </Link>
-            <Link href="/equity" className={styles.navLink}>
-              Equity & IPO
-            </Link>
-            <Link href="/tokenize" className={styles.navLink}>
-              Tokenize
-            </Link>
+            {NAV_LINKS.map((item) => (
+              <Link key={item.href} href={item.href} className={styles.navLink}>
+                {item.label}
+              </Link>
+            ))}
           </nav>
 
           <div className={styles.navActions}>
-            <ConnectButton />
+            <div className={styles.walletWrap}>
+              <ConnectButton />
+            </div>
+
             <button
               type="button"
               className={styles.loginBtn}
-              onClick={() => setModal("login")}
+              onClick={openLoginModal}
             >
               Log In
             </button>
           </div>
 
           <button
-            aria-label="Toggle menu"
+            type="button"
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
             className={styles.menuButton}
             onClick={() => setMenuOpen((prev) => !prev)}
-            type="button"
           >
             <span className={styles.menuLine} />
             <span className={styles.menuLine} />
@@ -60,29 +75,21 @@ export default function Navbar() {
 
         {menuOpen && (
           <nav className={styles.mobileMenu}>
-            <Link href="/markets" className={styles.navLink}>
-              Markets
-            </Link>
-            <Link href="/exchange" className={styles.navLink}>
-              Exchange
-            </Link>
-            <Link href="/bonds" className={styles.navLink}>
-              Bonds
-            </Link>
-            <Link href="/equity" className={styles.navLink}>
-              Equity & IPO
-            </Link>
-            <Link href="/tokenize" className={styles.navLink}>
-              Tokenize
-            </Link>
+            {NAV_LINKS.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={styles.mobileNavLink}
+                onClick={closeMobileMenu}
+              >
+                {item.label}
+              </Link>
+            ))}
 
             <button
               type="button"
-              className={styles.loginBtn}
-              onClick={() => {
-                setModal("login");
-                setMenuOpen(false);
-              }}
+              className={styles.mobileLoginBtn}
+              onClick={openLoginModal}
             >
               Log In
             </button>
@@ -93,7 +100,7 @@ export default function Navbar() {
       {modal && (
         <AuthModal
           mode={modal}
-          onClose={() => setModal(null)}
+          onClose={closeModal}
           onSwitch={(type) => setModal(type)}
         />
       )}
