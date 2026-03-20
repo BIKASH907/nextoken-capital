@@ -22,7 +22,7 @@ export default function EquityIpoPage() {
 
           <nav style={styles.nav}>
             <Link href="/" style={styles.link}>Home</Link>
-            <Link href="/equity-ipo" style={styles.link}>Equity & IPO</Link>
+            <Link href="/equity" style={styles.link}>Equity & IPO</Link>
           </nav>
         </header>
 
@@ -62,6 +62,7 @@ const styles = {
     background: "#050816",
     color: "#ffffff",
     fontFamily: "Arial, Helvetica, sans-serif",
+    boxSizing: "border-box",
   },
   header: {
     width: "100%",
@@ -74,6 +75,7 @@ const styles = {
     position: "sticky",
     top: 0,
     zIndex: 50,
+    boxSizing: "border-box",
   },
   logoWrap: {
     display: "flex",
@@ -104,6 +106,7 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+    boxSizing: "border-box",
   },
   card: {
     width: "100%",
@@ -113,6 +116,7 @@ const styles = {
     borderRadius: "24px",
     padding: "40px",
     boxShadow: "0 10px 40px rgba(0,0,0,0.25)",
+    boxSizing: "border-box",
   },
   badge: {
     display: "inline-block",
@@ -171,6 +175,7 @@ const styles = {
     padding: "0 20px 80px",
     display: "flex",
     justifyContent: "center",
+    boxSizing: "border-box",
   },
   infoBox: {
     width: "100%",
@@ -179,6 +184,7 @@ const styles = {
     border: "1px solid rgba(255,255,255,0.08)",
     borderRadius: "20px",
     padding: "28px",
+    boxSizing: "border-box",
   },
   sectionTitle: {
     margin: "0 0 12px",
