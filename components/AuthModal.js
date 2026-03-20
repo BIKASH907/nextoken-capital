@@ -39,9 +39,9 @@ export default function AuthModal({ mode, onClose, onSwitch }) {
     setError("");
     setLoading(true);
 
-    let result;
-
     try {
+      let result;
+
       if (mode === "login") {
         result = await login(form.email, form.password);
       } else {
