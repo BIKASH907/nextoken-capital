@@ -802,41 +802,133 @@ const inputStyle = {
   fontFamily: 'Inter, sans-serif'
 }
 // ... existing code ...
+      import React from 'react';
+
+export default function TokenizePage() {
+  return (
+    <div style={containerStyle}>
+      {/* Header Section */}
+      <section style={headerSection}>
+        <div style={badgeStyle}>● Issuer Portal</div>
+        <h1 style={mainTitle}>
+          Tokenize Real-World <br />
+          <span style={{ color: "#f5c15a" }}>Assets in 48 Hours</span>
+        </h1>
+        <p style={subText}>
+          Launch digital offerings for real estate, infrastructure, private equity, and 
+          bonds with issuer-focused workflows.
+        </p>
       </section>
 
-      {/* PASTE THE SECURITY SECTION HERE */}
+      {/* Security & Backup Section */}
       <section style={securitySection}>
         <div style={securityGrid}>
+          {/* Safety Warning Card */}
           <div style={warningCard}>
             <h3 style={cardTitle}>⚠️ Safety Warning</h3>
             <ul style={listStyle}>
-              <li>Nextoken Capital will <strong>never</strong> ask for your Private Key or Seed Phrase.</li>
-              <li>Always verify the URL is <strong>nextokencapital.com</strong> before connecting your wallet.</li>
-              <li>Transactions on the blockchain are irreversible; double-check all addresses.</li>
+              <li style={listItem}>Nextoken Capital will <strong>never</strong> ask for your Private Key or Seed Phrase.</li>
+              <li style={listItem}>Always verify the URL is <strong>nextokencapital.com</strong> before connecting.</li>
+              <li style={listItem}>Blockchain transactions are irreversible; double-check all addresses.</li>
             </ul>
           </div>
 
+          {/* Backup Guide Card */}
           <div style={backupCard}>
             <h3 style={cardTitle}>🔐 Wallet Backup Guide</h3>
             <ul style={listStyle}>
-              <li>Write down your 12 or 24-word recovery phrase on physical paper.</li>
-              <li>Store your backup in a secure, fireproof location (not on your phone or email).</li>
-              <li>If you lose your recovery phrase, your assets <strong>cannot</strong> be recovered.</li>
+              <li style={listItem}>Write down your 12 or 24-word recovery phrase on physical paper.</li>
+              <li style={listItem}>Store your backup in a secure, fireproof location.</li>
+              <li style={listItem}>If you lose your phrase, your assets <strong>cannot</strong> be recovered.</li>
             </ul>
           </div>
         </div>
       </section>
-    </div> // This is the final closing div of your page
+    </div>
   );
 }
-// PASTE THE STYLES BELOW THE COMPONENT
-const securitySection = { maxWidth: "1280px", margin: "0 auto", borderTop: "1px solid #1a1d26", paddingTop: "60px", marginTop: "40px" };
-const securityGrid = { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "30px" };
-const warningCard = { background: "rgba(255, 68, 68, 0.05)", border: "1px solid rgba(255, 68, 68, 0.2)", padding: "30px", borderRadius: "16px" };
-const backupCard = { background: "rgba(245, 193, 90, 0.05)", border: "1px solid rgba(245, 193, 90, 0.2)", padding: "30px", borderRadius: "16px" };
-const cardTitle = { fontSize: "20px", fontWeight: "700", marginBottom: "15px", color: "#fff" };
-const listStyle = { color: "#6e7686", lineHeight: "1.8", fontSize: "14px", paddingLeft: "20px", listStyleType: "none" };
-</section>
-    </div> // This MUST be inside the );
-  );
-}
+
+// --- Styles ---
+const containerStyle = { 
+  backgroundColor: "#05060a", 
+  color: "#fff", 
+  minHeight: "100vh", 
+  padding: "80px 40px",
+  fontFamily: 'Inter, sans-serif'
+};
+
+const headerSection = { 
+  maxWidth: "1280px", 
+  margin: "0 auto", 
+  paddingBottom: "80px" 
+};
+
+const badgeStyle = { 
+  color: "#4ade80", 
+  fontSize: "12px", 
+  fontWeight: "700", 
+  border: "1px solid rgba(74, 222, 128, 0.2)", 
+  padding: "4px 12px", 
+  borderRadius: "20px", 
+  display: "inline-block" 
+};
+
+const mainTitle = { 
+  fontSize: "56px", 
+  fontWeight: "800", 
+  marginTop: "24px", 
+  lineHeight: "1.1" 
+};
+
+const subText = { 
+  color: "#6e7686", 
+  fontSize: "18px", 
+  maxWidth: "600px", 
+  marginTop: "20px" 
+};
+
+const securitySection = { 
+  maxWidth: "1280px", 
+  margin: "0 auto", 
+  borderTop: "1px solid #1a1d26", 
+  paddingTop: "60px" 
+};
+
+const securityGrid = { 
+  display: "grid", 
+  gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", 
+  gap: "30px" 
+};
+
+const warningCard = { 
+  background: "rgba(255, 68, 68, 0.05)", 
+  border: "1px solid rgba(255, 68, 68, 0.2)", 
+  padding: "30px", 
+  borderRadius: "16px" 
+};
+
+const backupCard = { 
+  background: "rgba(245, 193, 90, 0.05)", 
+  border: "1px solid rgba(245, 193, 90, 0.2)", 
+  padding: "30px", 
+  borderRadius: "16px" 
+};
+
+const cardTitle = { 
+  fontSize: "20px", 
+  fontWeight: "700", 
+  marginBottom: "15px", 
+  color: "#fff" 
+};
+
+const listStyle = { 
+  color: "#6e7686", 
+  lineHeight: "1.8", 
+  fontSize: "14px", 
+  paddingLeft: "0", 
+  listStyleType: "none" 
+};
+
+const listItem = {
+  marginBottom: "10px"
+};

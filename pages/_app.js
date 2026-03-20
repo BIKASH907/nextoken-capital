@@ -11,13 +11,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
-const config = getDefaultConfig({
-  appName: 'Nextoken Capital',
-  projectId: 'YOUR_PROJECT_ID', 
-  chains: [mainnet, polygon],
-  ssr: true,
-});
-
 const queryClient = new QueryClient();
 
 export default function MyApp({ Component, pageProps }) {
