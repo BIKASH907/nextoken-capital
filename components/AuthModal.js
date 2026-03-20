@@ -9,11 +9,11 @@ export default function AuthModal({ mode, onClose, onSwitch }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [form, setForm] = useState({
-    first_name: "",
-    last_name: "",
+    firstName: "",
+    lastName: "",
     email: "",
     password: "",
-    account_type: "investor",
+    accountType: "Investor",
   });
 
   useEffect(() => {
@@ -41,24 +41,35 @@ export default function AuthModal({ mode, onClose, onSwitch }) {
 
     let result;
 
-    if (mode === "login") {
-      result = await login(form.email, form.password);
-    } else {
-      if (form.password.length < 8) {
-        setError("Password must be at least 8 characters");
-        setLoading(false);
-        return;
+    try {
+      if (mode === "login") {
+        result = await login(form.email, form.password);
+      } else {
+        if (form.password.length < 8) {
+          setError("Password must be at least 8 characters");
+          setLoading(false);
+          return;
+        }
+
+        result = await register({
+          name: `${form.firstName} ${form.lastName}`.trim(),
+          email: form.email,
+          password: form.password,
+          accountType: form.accountType,
+        });
       }
-      result = await register(form);
-    }
 
-    setLoading(false);
+      setLoading(false);
 
-    if (result?.success) {
-      onClose();
-      router.push("/dashboard");
-    } else {
-      setError(result?.error || "Something went wrong. Please try again.");
+      if (result?.success) {
+        onClose();
+        router.push("/dashboard");
+      } else {
+        setError(result?.error || "Something went wrong. Please try again.");
+      }
+    } catch (err) {
+      setLoading(false);
+      setError("Something went wrong. Please try again.");
     }
   }
 
@@ -248,8 +259,8 @@ export default function AuthModal({ mode, onClose, onSwitch }) {
                 <label style={labelStyle}>First Name</label>
                 <input
                   style={inputStyle}
-                  value={form.first_name}
-                  onChange={(e) => set("first_name", e.target.value)}
+                  value={form.firstName}
+                  onChange={(e) => set("firstName", e.target.value)}
                   required
                 />
               </div>
@@ -257,8 +268,8 @@ export default function AuthModal({ mode, onClose, onSwitch }) {
                 <label style={labelStyle}>Last Name</label>
                 <input
                   style={inputStyle}
-                  value={form.last_name}
-                  onChange={(e) => set("last_name", e.target.value)}
+                  value={form.lastName}
+                  onChange={(e) => set("lastName", e.target.value)}
                   required
                 />
               </div>
@@ -294,12 +305,12 @@ export default function AuthModal({ mode, onClose, onSwitch }) {
               <label style={labelStyle}>Account Type</label>
               <select
                 style={inputStyle}
-                value={form.account_type}
-                onChange={(e) => set("account_type", e.target.value)}
+                value={form.accountType}
+                onChange={(e) => set("accountType", e.target.value)}
               >
-                <option value="investor">Investor</option>
-                <option value="issuer">Issuer</option>
-                <option value="institution">Institution</option>
+                <option value="Investor">Investor</option>
+                <option value="Issuer">Issuer</option>
+                <option value="Institution">Institution</option>
               </select>
             </div>
           )}
