@@ -1,3 +1,4 @@
+cat << 'EOF' > pages/dashboard.js
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { useAuth } from '../lib/AuthContext'
@@ -71,15 +72,11 @@ export default function Dashboard() {
       {modal && <AuthModal mode={modal} onClose={() => { setModal(null); if (!user) router.push('/') }} onSwitch={m => setModal(m)} />}
 
       <div style={{ paddingTop: 60, display: 'flex', minHeight: 'calc(100vh - 60px)' }}>
-        {/* Sidebar */}
         <aside style={{ width: 220, background: dark2, borderRight: `1px solid ${border}`, padding: '1rem 0', flexShrink: 0, position: 'sticky', top: 60, height: 'calc(100vh - 60px)', overflowY: 'auto' }}>
           {navItems.map(item => <div key={item.id} style={{ padding: item.sep ? '0' : '0 0.75rem' }}><SbItem item={item} /></div>)}
         </aside>
 
-        {/* Content */}
         <main style={{ flex: 1, padding: '1.75rem', overflowX: 'hidden' }}>
-
-          {/* OVERVIEW */}
           {panel === 'overview' && (
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
@@ -91,7 +88,7 @@ export default function Dashboard() {
                 </div>
                 <button onClick={() => setPanel('tokenize')} style={{ padding: '0.45rem 1.1rem', background: gold, color: 'black', border: 'none', borderRadius: 4, fontSize: '0.78rem', fontWeight: 800, cursor: 'pointer', fontFamily: 'Inter,sans-serif' }}>+ New Issuance</button>
               </div>
-              {/* Stat cards */}
+
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 1, background: border, marginBottom: '1.5rem' }}>
                 {[['Portfolio Value','€0.00','Start investing'],['Active Investments','0','Browse markets'],['Pending Returns','€0.00','No positions yet'],['Assets Issued','0','Issue first asset']].map(([l,v,c]) => (
                   <div key={l} style={{ background: dark2, padding: '1.25rem 1.5rem' }}>
@@ -101,7 +98,7 @@ export default function Dashboard() {
                   </div>
                 ))}
               </div>
-              {/* Grid */}
+
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: '1.25rem' }}>
                 <div style={{ background: dark2, border: `1px solid ${border}`, borderRadius: 4, overflow: 'hidden' }}>
                   <div style={{ padding: '1rem 1.25rem', borderBottom: `1px solid ${border}`, display: 'flex', justifyContent: 'space-between' }}>
@@ -127,7 +124,7 @@ export default function Dashboard() {
                   <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                     {[['+ Tokenize an Asset','tokenize',gold,'black'],['+ Issue a Bond','issue-bond',dark4,'rgba(255,255,255,0.7)'],['+ Launch IPO','ipo',dark4,'rgba(255,255,255,0.7)'],['Open Exchange','/exchange',dark4,'rgba(255,255,255,0.7)'],['Complete KYC','kyc',dark4,'rgba(255,255,255,0.7)']].map(([label,target,bg,color]) => (
                       <button key={label} onClick={() => target.startsWith('/') ? router.push(target) : setPanel(target)}
-                        style={{ width: '100%', padding: '0.65rem', background: bg, color, border: 'none', borderRadius: 4, fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer', fontFamily: 'Inter,sans-serif', textAlign: 'left', paddingLeft: '1rem' }}>
+                        style={{ width: '100%', background: bg, color, border: 'none', borderRadius: 4, fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer', fontFamily: 'Inter,sans-serif', textAlign: 'left', padding: '0.65rem 1rem' }}>
                         {label}
                       </button>
                     ))}
@@ -137,7 +134,6 @@ export default function Dashboard() {
             </div>
           )}
 
-          {/* PORTFOLIO */}
           {panel === 'portfolio' && (
             <div>
               <div style={{ marginBottom: '1.5rem' }}><div style={{ fontSize: '1.3rem', fontWeight: 900 }}>Portfolio</div><div style={{ fontSize: '0.78rem', color: muted }}>Your investments and holdings</div></div>
@@ -148,7 +144,6 @@ export default function Dashboard() {
             </div>
           )}
 
-          {/* TOKENIZE */}
           {panel === 'tokenize' && (
             <div>
               <div style={{ marginBottom: '1.5rem' }}><div style={{ fontSize: '1.3rem', fontWeight: 900 }}>Tokenize an Asset</div><div style={{ fontSize: '0.78rem', color: muted }}>Convert your real-world asset into a regulated digital token in under 48 hours</div></div>
@@ -185,7 +180,6 @@ export default function Dashboard() {
             </div>
           )}
 
-          {/* ISSUE BOND */}
           {panel === 'issue-bond' && (
             <div>
               <div style={{ marginBottom: '1.5rem' }}><div style={{ fontSize: '1.3rem', fontWeight: 900 }}>Issue a Bond</div><div style={{ fontSize: '0.78rem', color: muted }}>Structure and launch your tokenized bond offering</div></div>
@@ -219,7 +213,6 @@ export default function Dashboard() {
             </div>
           )}
 
-          {/* IPO */}
           {panel === 'ipo' && (
             <div>
               <div style={{ marginBottom: '1.5rem' }}><div style={{ fontSize: '1.3rem', fontWeight: 900 }}>Launch IPO / Equity</div><div style={{ fontSize: '0.78rem', color: muted }}>Take your company public on Nextoken Capital</div></div>
@@ -256,7 +249,6 @@ export default function Dashboard() {
             </div>
           )}
 
-          {/* KYC */}
           {panel === 'kyc' && (
             <div>
               <div style={{ marginBottom: '1.5rem' }}><div style={{ fontSize: '1.3rem', fontWeight: 900 }}>KYC Verification</div><div style={{ fontSize: '0.78rem', color: muted }}>Verify your identity to unlock full platform access</div></div>
@@ -290,7 +282,6 @@ export default function Dashboard() {
             </div>
           )}
 
-          {/* SETTINGS */}
           {panel === 'settings' && (
             <div>
               <div style={{ marginBottom: '1.5rem' }}><div style={{ fontSize: '1.3rem', fontWeight: 900 }}>Account Settings</div><div style={{ fontSize: '0.78rem', color: muted }}>Manage your account preferences</div></div>
@@ -320,9 +311,10 @@ export default function Dashboard() {
               </div>
             </div>
           )}
-
         </main>
       </div>
     </div>
   )
 }
+EOF
+
