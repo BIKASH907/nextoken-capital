@@ -1,28 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from 'next/link';
-import { ethers } from "ethers";
 
 export default function Navbar() {
-  const [account, setAccount] = useState("");
+  const [showWalletOptions, setShowWalletOptions] = useState(false);
 
-  const connectWallet = async () => {
-    if (window.ethereum) {
-      try {
-        const accounts = await window.ethereum.request({ 
-          method: "eth_requestAccounts" 
-        });
-        setAccount(accounts[0]);
-      } catch (err) {
-        console.error("User denied connection");
-      }
-    } else {
-      alert("Please install MetaMask!");
-    }
-  };
+  const toggleWallet = () => setShowWalletOptions(!showWalletOptions);
 
   return (
     <nav style={styles.nav}>
       <div style={styles.container}>
+        {/* Branding */}
         <Link href="/" style={styles.logoContainer}>
           <div style={styles.nxtBox}>NXT</div>
           <div style={styles.logoText}>
@@ -30,14 +17,33 @@ export default function Navbar() {
             <div style={styles.brandSub}>CAPITAL</div>
           </div>
         </Link>
-        
+
+        {/* Full Navigation Links from Image */}
+        <div style={styles.links}>
+          <Link href="/markets" style={styles.navLink}>Markets</Link>
+          <Link href="/exchange" style={styles.navLink}>Exchange</Link>
+          <Link href="/bonds" style={styles.navLink}>Bonds</Link>
+          <Link href="/equity-ipo" style={styles.navLink}>Equity & IPO</Link>
+          <Link href="/tokenize" style={styles.navLink}>Tokenize</Link>
+        </div>
+
+        {/* Actions */}
         <div style={styles.actions}>
-          <Link href="/login">
-            <button style={styles.loginBtn}>Log In</button>
-          </Link>
-          <button onClick={connectWallet} style={styles.connectBtn}>
-            {account ? `${account.substring(0,6)}...${account.substring(38)}` : "Connect Wallet"}
-          </button>
+          <Link href="/login" style={styles.loginBtn}>Log In</Link>
+          <div style={{ position: "relative" }}>
+            <button onClick={toggleWallet} style={styles.connectBtn}>Connect Wallet</button>
+            
+            {showWalletOptions && (
+              <div style={styles.walletDropdown}>
+                <div style={styles.walletOption} onClick={() => alert("Connecting MetaMask...")}>
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Logo.svg" width="20" alt="MetaMask" /> MetaMask
+                </div>
+                <div style={styles.walletOption} onClick={() => alert("Connecting WalletConnect...")}>
+                  <img src="https://raw.githubusercontent.com/WalletConnect/walletconnect-assets/master/Logo/Blue%20(Default)/Logo.svg" width="20" alt="WalletConnect" /> WalletConnect
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </nav>
@@ -45,14 +51,17 @@ export default function Navbar() {
 }
 
 const styles = {
-  nav: { background: "#05060a", borderBottom: "1px solid #1a1b1f", padding: "15px 0" },
-  container: { display: "flex", justifyContent: "space-between", alignItems: "center", maxWidth: "1200px", margin: "0 auto", padding: "0 20px" },
-  logoContainer: { display: "flex", alignItems: "center", textDecoration: "none", gap: "10px" },
-  nxtBox: { background: "#F0B90B", color: "black", fontWeight: "bold", padding: "4px 8px", borderRadius: "4px" },
-  logoText: { display: "flex", flexDirection: "column" },
-  brandMain: { color: "white", fontSize: "18px", fontWeight: "bold", letterSpacing: "1px" },
-  brandSub: { color: "#F0B90B", fontSize: "10px", fontWeight: "bold", marginTop: "-4px" },
-  actions: { display: "flex", gap: "15px" },
-  loginBtn: { background: "transparent", color: "white", border: "1px solid #333", padding: "8px 20px", borderRadius: "6px", cursor: "pointer" },
-  connectBtn: { background: "#F0B90B", color: "black", border: "none", padding: "8px 20px", borderRadius: "6px", fontWeight: "bold", cursor: "pointer" }
+  nav: { background: "#05060a", borderBottom: "1px solid #1a1b23", padding: "15px 0", position: "sticky", top: 0, zIndex: 1000 },
+  container: { display: "flex", justifyContent: "space-between", alignItems: "center", maxWidth: "1400px", margin: "0 auto", padding: "0 40px" },
+  logoContainer: { display: "flex", alignItems: "center", textDecoration: "none", color: "white", gap: "12px" },
+  nxtBox: { background: "#F0B90B", color: "black", padding: "4px 8px", fontWeight: "900", borderRadius: "4px", fontSize: "16px" },
+  brandMain: { fontSize: "18px", fontWeight: "bold", letterSpacing: "1px", color: "white" },
+  brandSub: { fontSize: "10px", color: "#F0B90B", fontWeight: "bold", marginTop: "-2px" },
+  links: { display: "flex", gap: "30px" },
+  navLink: { color: "#848e9c", textDecoration: "none", fontSize: "14px", fontWeight: "500", transition: "0.2s" },
+  actions: { display: "flex", alignItems: "center", gap: "20px" },
+  loginBtn: { color: "white", textDecoration: "none", fontSize: "14px", border: "1px solid #333", padding: "8px 20px", borderRadius: "8px" },
+  connectBtn: { background: "#F0B90B", color: "black", border: "none", padding: "10px 20px", borderRadius: "8px", fontWeight: "bold", cursor: "pointer" },
+  walletDropdown: { position: "absolute", top: "50px", right: 0, background: "#1e2026", borderRadius: "8px", padding: "10px", width: "200px", boxShadow: "0 10px 30px rgba(0,0,0,0.5)" },
+  walletOption: { display: "flex", alignItems: "center", gap: "10px", color: "white", padding: "10px", cursor: "pointer", borderRadius: "4px", fontSize: "14px", transition: "0.2s" }
 };
