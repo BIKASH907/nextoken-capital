@@ -26,7 +26,6 @@ export async function POST(req: Request) {
     }, { status: 201 });
 
   } catch (error) {
-    console.error("Tokenize Error:", error);
-    return NextResponse.json({ success: false, error: 'Failed to save asset' }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Failed to save' }, { status: 500 });
   }
 }
