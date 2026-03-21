@@ -1,11 +1,14 @@
 import { NextResponse } from 'next/server';
-// Changed from '@/lib/mongodb' to the relative path below
-import clientPromise from '../../../lib/mongodb';
+import clientPromise from '@/lib/mongodb';
 
 export async function POST(req: Request) {
   try {
     const client = await clientPromise;
-    const db = client.db("nextoken");
+    if (!client) {
+      return NextResponse.json({ success: false, error: 'Database not connected' }, { status: 500 });
+    }
+    
+    const db = client.db('nextoken_capital');
     const data = await req.json();
     
     const assetSubmission = { 
@@ -14,19 +17,16 @@ export async function POST(req: Request) {
       createdAt: new Date() 
     };
 
-    const result = await db.collection("tokenized_assets").insertOne(assetSubmission);
+    const result = await db.collection('tokenized_assets').insertOne(assetSubmission);
     
     return NextResponse.json({ 
       success: true, 
-      message: "Asset saved", 
+      message: 'Asset saved successfully', 
       id: result.insertedId 
     }, { status: 201 });
 
   } catch (error) {
-    console.error("API Error:", error);
-    return NextResponse.json({ 
-      success: false, 
-      error: "Database Error" 
-    }, { status: 500 });
+    console.error("Tokenize Error:", error);
+    return NextResponse.json({ success: false, error: 'Failed to save asset' }, { status: 500 });
   }
 }
