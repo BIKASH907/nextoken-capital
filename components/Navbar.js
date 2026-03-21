@@ -54,7 +54,7 @@ export default function Navbar({ onLogin, onRegister }) {
             <span style={styles.brandText}>Nextoken Capital</span>
           </Link>
 
-          <nav className="nextoken-desktop-nav" style={styles.desktopNav}>
+          <nav style={styles.desktopNav}>
             {links.map((link) => (
               <Link
                 key={link.href}
@@ -69,89 +69,81 @@ export default function Navbar({ onLogin, onRegister }) {
             ))}
           </nav>
 
-          <div className="nextoken-desktop-actions" style={styles.desktopActions}>
+          <div style={styles.actions}>
             <button type="button" onClick={handleLoginClick} style={styles.loginBtn}>
               Log In
             </button>
-            <button
-              type="button"
-              onClick={handleRegisterClick}
-              style={styles.registerBtn}
-            >
+
+            <button type="button" onClick={handleRegisterClick} style={styles.registerBtn}>
               Register
             </button>
-          </div>
 
-          <button
-            type="button"
-            aria-label="Toggle menu"
-            onClick={() => setMenuOpen((prev) => !prev)}
-            style={styles.menuButton}
-            className="nextoken-mobile-toggle"
-          >
-            <span style={styles.menuBar} />
-            <span style={styles.menuBar} />
-            <span style={styles.menuBar} />
-          </button>
+            <button
+              type="button"
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen((prev) => !prev)}
+              style={styles.menuButton}
+            >
+              <span style={styles.menuLine} />
+              <span style={styles.menuLine} />
+              <span style={styles.menuLine} />
+            </button>
+          </div>
         </div>
 
         {menuOpen && (
-          <div className="nextoken-mobile-menu" style={styles.mobileMenu}>
-            <div style={styles.mobileLinks}>
-              {links.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={closeMenu}
-                  style={{
-                    ...styles.mobileLink,
-                    ...(isActive(link.href) ? styles.mobileLinkActive : {}),
-                  }}
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
+          <nav style={styles.mobileMenu}>
+            {links.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={closeMenu}
+                style={{
+                  ...styles.mobileLink,
+                  ...(isActive(link.href) ? styles.mobileLinkActive : {}),
+                }}
+              >
+                {link.label}
+              </Link>
+            ))}
 
-            <div style={styles.mobileButtons}>
-              <button
-                type="button"
-                onClick={handleLoginClick}
-                style={styles.mobileLoginBtn}
-              >
-                Log In
-              </button>
-              <button
-                type="button"
-                onClick={handleRegisterClick}
-                style={styles.mobileRegisterBtn}
-              >
-                Register
-              </button>
-            </div>
-          </div>
+            <button type="button" onClick={handleLoginClick} style={styles.mobileLoginBtn}>
+              Log In
+            </button>
+
+            <button type="button" onClick={handleRegisterClick} style={styles.mobileRegisterBtn}>
+              Register
+            </button>
+          </nav>
         )}
       </header>
 
-      <style jsx global>{`
+      <style jsx global>{\`
         @media (max-width: 1100px) {
-          .nextoken-desktop-nav,
-          .nextoken-desktop-actions {
+          .nextoken-desktop-nav {
             display: none !important;
           }
-
-          .nextoken-mobile-toggle {
-            display: inline-flex !important;
+          .nextoken-menu-button {
+            display: flex !important;
           }
-        }
-
-        @media (min-width: 1101px) {
-          .nextoken-mobile-toggle,
           .nextoken-mobile-menu {
+            display: flex !important;
+          }
+        }
+
+        @media (max-width: 700px) {
+          .nextoken-brand-mark {
+            font-size: 22px !important;
+          }
+          .nextoken-brand-text {
+            font-size: 20px !important;
+          }
+          .nextoken-actions .nextoken-register-btn {
             display: none !important;
           }
         }
-      `}</style>
+      \`}</style>
     </>
   );
 }
@@ -161,180 +153,154 @@ const styles = {
     position: "sticky",
     top: 0,
     zIndex: 1000,
-    width: "100%",
-    background:
-      "linear-gradient(180deg, rgba(10,12,18,0.96) 0%, rgba(10,12,18,0.9) 100%)",
-    backdropFilter: "blur(12px)",
+    background: "#0b0e11",
     borderBottom: "1px solid rgba(255,255,255,0.08)",
+    backdropFilter: "blur(10px)",
   },
-
   inner: {
     maxWidth: "1280px",
     margin: "0 auto",
-    minHeight: "72px",
+    minHeight: "76px",
+    padding: "0 20px",
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
     gap: "18px",
-    padding: "0 20px",
   },
-
   brand: {
-    display: "inline-flex",
+    display: "flex",
     alignItems: "center",
     gap: "10px",
     textDecoration: "none",
     flexShrink: 0,
   },
-
   brandMark: {
-    fontSize: "26px",
-    fontWeight: 800,
-    lineHeight: 1,
     color: "#f0b90b",
-    letterSpacing: "0.08em",
+    fontWeight: 900,
+    fontSize: "28px",
+    lineHeight: 1,
+    letterSpacing: "0.06em",
+    className: "nextoken-brand-mark",
   },
-
   brandText: {
-    fontSize: "18px",
-    fontWeight: 700,
     color: "#ffffff",
-    whiteSpace: "nowrap",
+    fontWeight: 800,
+    fontSize: "26px",
+    lineHeight: 1,
+    className: "nextoken-brand-text",
   },
-
   desktopNav: {
     display: "flex",
     alignItems: "center",
-    gap: "8px",
+    gap: "18px",
     flex: 1,
     justifyContent: "center",
+    className: "nextoken-desktop-nav",
   },
-
   navLink: {
-    textDecoration: "none",
     color: "rgba(255,255,255,0.78)",
-    fontSize: "14px",
-    fontWeight: 500,
-    padding: "10px 14px",
-    borderRadius: "10px",
-    transition: "all 0.2s ease",
+    textDecoration: "none",
+    fontSize: "15px",
+    fontWeight: 600,
+    padding: "8px 2px",
+    transition: "0.2s ease",
   },
-
   navLinkActive: {
-    color: "#ffffff",
-    background: "rgba(240,185,11,0.12)",
-    border: "1px solid rgba(240,185,11,0.28)",
+    color: "#f0b90b",
   },
-
-  desktopActions: {
+  actions: {
     display: "flex",
     alignItems: "center",
-    gap: "10px",
+    gap: "12px",
     flexShrink: 0,
+    className: "nextoken-actions",
   },
-
   loginBtn: {
-    border: "1px solid rgba(255,255,255,0.16)",
-    background: "transparent",
-    color: "#ffffff",
-    padding: "10px 18px",
-    borderRadius: "10px",
-    fontSize: "14px",
-    fontWeight: 600,
-    cursor: "pointer",
-  },
-
-  registerBtn: {
-    border: "none",
     background: "#f0b90b",
     color: "#111111",
-    padding: "10px 18px",
+    border: "none",
     borderRadius: "10px",
-    fontSize: "14px",
-    fontWeight: 700,
+    padding: "11px 18px",
+    fontWeight: 800,
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
     cursor: "pointer",
   },
-
+  registerBtn: {
+    background: "#1e2329",
+    color: "#ffffff",
+    border: "1px solid rgba(255,255,255,0.08)",
+    borderRadius: "10px",
+    padding: "11px 18px",
+    fontWeight: 800,
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    cursor: "pointer",
+    className: "nextoken-register-btn",
+  },
   menuButton: {
     display: "none",
     width: "44px",
     height: "44px",
     borderRadius: "10px",
-    border: "1px solid rgba(255,255,255,0.14)",
-    background: "transparent",
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "column",
-    gap: "5px",
+    border: "1px solid rgba(255,255,255,0.08)",
+    background: "#161a1e",
     cursor: "pointer",
-    padding: 0,
-    flexShrink: 0,
+    padding: "10px",
+    flexDirection: "column",
+    justifyContent: "center",
+    gap: "4px",
+    className: "nextoken-menu-button",
   },
-
-  menuBar: {
-    width: "18px",
+  menuLine: {
+    display: "block",
+    width: "100%",
     height: "2px",
     background: "#ffffff",
-    borderRadius: "999px",
-    display: "block",
+    borderRadius: "20px",
   },
-
   mobileMenu: {
-    padding: "0 20px 18px",
+    display: "none",
+    padding: "0 20px 20px",
+    maxWidth: "1280px",
+    margin: "0 auto",
+    background: "#0b0e11",
     borderTop: "1px solid rgba(255,255,255,0.06)",
-    background: "rgba(10,12,18,0.98)",
-  },
-
-  mobileLinks: {
-    display: "flex",
     flexDirection: "column",
-    gap: "8px",
-    paddingTop: "14px",
-  },
-
-  mobileLink: {
-    textDecoration: "none",
-    color: "rgba(255,255,255,0.82)",
-    fontSize: "15px",
-    fontWeight: 500,
-    padding: "12px 14px",
-    borderRadius: "10px",
-    background: "rgba(255,255,255,0.03)",
-    border: "1px solid rgba(255,255,255,0.05)",
-  },
-
-  mobileLinkActive: {
-    color: "#ffffff",
-    background: "rgba(240,185,11,0.12)",
-    border: "1px solid rgba(240,185,11,0.25)",
-  },
-
-  mobileButtons: {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
     gap: "10px",
-    marginTop: "16px",
+    className: "nextoken-mobile-menu",
   },
-
-  mobileLoginBtn: {
-    border: "1px solid rgba(255,255,255,0.16)",
-    background: "transparent",
-    color: "#ffffff",
-    padding: "12px 14px",
-    borderRadius: "10px",
-    fontSize: "14px",
+  mobileLink: {
+    color: "rgba(255,255,255,0.82)",
+    textDecoration: "none",
+    padding: "12px 0",
     fontWeight: 600,
-    cursor: "pointer",
+    borderBottom: "1px solid rgba(255,255,255,0.05)",
   },
-
-  mobileRegisterBtn: {
-    border: "none",
+  mobileLinkActive: {
+    color: "#f0b90b",
+  },
+  mobileLoginBtn: {
+    marginTop: "10px",
     background: "#f0b90b",
     color: "#111111",
-    padding: "12px 14px",
+    border: "none",
     borderRadius: "10px",
-    fontSize: "14px",
-    fontWeight: 700,
+    padding: "12px 16px",
+    fontWeight: 800,
+    textAlign: "center",
+    cursor: "pointer",
+  },
+  mobileRegisterBtn: {
+    background: "#1e2329",
+    color: "#ffffff",
+    border: "1px solid rgba(255,255,255,0.08)",
+    borderRadius: "10px",
+    padding: "12px 16px",
+    fontWeight: 800,
+    textAlign: "center",
     cursor: "pointer",
   },
 };
