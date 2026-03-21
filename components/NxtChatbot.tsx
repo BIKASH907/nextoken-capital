@@ -41,6 +41,7 @@ const WELCOME: Message = {
 
 export default function NxtChatbot() {
   const [open, setOpen] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
   const [view, setView] = useState<'chat' | 'agent'>('chat');
   const [messages, setMessages] = useState<Message[]>([WELCOME]);
   const [input, setInput] = useState('');
@@ -51,37 +52,23 @@ export default function NxtChatbot() {
   const [agentMsg, setAgentMsg] = useState('');
   const [agentSent, setAgentSent] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const dismissedRef = useRef(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const office = getOfficeStatus();
 
-  const doAutoOpen = () => {
-    if (timerRef.current) clearTimeout(timerRef.current);
+  const handleClose = () => {
     setOpen(false);
-    timerRef.current = setTimeout(() => setOpen(true), 1500);
+    setDismissed(true);
+    dismissedRef.current = true;
+    if (timerRef.current) clearTimeout(timerRef.current);
   };
 
   useEffect(() => {
-    // Auto-open on first load
-    doAutoOpen();
-
-    // Auto-open on every URL change (works for both App Router and Pages Router)
-    const handlePopState = () => doAutoOpen();
-    const handleClick = (e: MouseEvent) => {
-      const a = (e.target as HTMLElement).closest('a');
-      if (a && a.href && !a.href.startsWith('mailto') && !a.target) {
-        setTimeout(() => doAutoOpen(), 100);
-      }
-    };
-
-    window.addEventListener('popstate', handlePopState);
-    document.addEventListener('click', handleClick);
-
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-      window.removeEventListener('popstate', handlePopState);
-      document.removeEventListener('click', handleClick);
-    };
+    timerRef.current = setTimeout(() => {
+      if (!dismissedRef.current) setOpen(true);
+    }, 1500);
+    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
   }, []);
 
   useEffect(() => {
@@ -159,8 +146,9 @@ export default function NxtChatbot() {
                 </div>
               </div>
             </div>
-            <button onClick={() => setOpen(false)} style={{ background: '#2B3139', border: 'none', borderRadius: '50%', width: 32, height: 32, cursor: 'pointer', color: '#848E9C', fontSize: 18, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
+            <button onClick={handleClose} style={{ background: '#2B3139', border: 'none', borderRadius: '50%', width: 32, height: 32, cursor: 'pointer', color: '#848E9C', fontSize: 18, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
           </div>
+
           {/* Tabs */}
           <div style={{ display: 'flex', background: '#0B0E11', borderRadius: 12, padding: 3, gap: 3 }}>
             {(['chat', 'agent'] as const).map(tab => (
@@ -199,6 +187,7 @@ export default function NxtChatbot() {
               )}
               <div ref={messagesEndRef} />
             </div>
+
             {showSuggestions && (
               <div style={{ padding: '10px 12px', background: '#0D1117', borderTop: '1px solid #1E2329', flexShrink: 0 }}>
                 <div style={{ fontSize: 10, color: '#474D57', fontWeight: 700, marginBottom: 7, textTransform: 'uppercase', letterSpacing: '0.07em' }}>Quick questions</div>
@@ -212,6 +201,7 @@ export default function NxtChatbot() {
                 </div>
               </div>
             )}
+
             <div style={{ display: 'flex', gap: 8, padding: '10px 12px', borderTop: '1px solid #2B3139', background: '#151A1F', flexShrink: 0 }}>
               <input ref={inputRef} value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && sendMessage(input)} placeholder="Ask anything about Nextoken..."
                 style={{ flex: 1, fontSize: 13, border: '1px solid #2B3139', borderRadius: 24, padding: '10px 16px', background: '#0B0E11', color: '#EAECEF', outline: 'none', transition: 'border-color 0.2s' }}
@@ -235,19 +225,31 @@ export default function NxtChatbot() {
                 <div style={{ fontSize: 11, color: '#474D57', marginTop: 2 }}>{office.label}</div>
               </div>
             </div>
+
             <div style={{ background: '#151A1F', border: '1px solid #2B3139', borderRadius: 14, padding: '14px 16px', marginBottom: 18 }}>
               <div style={{ fontSize: 12, fontWeight: 700, color: '#F0B90B', marginBottom: 12 }}>🕐 Office Hours — Vilnius, Lithuania</div>
-              {[{ day: 'Monday – Friday', hours: '9:00 AM – 6:00 PM EET', active: true }, { day: 'Saturday', hours: 'Closed', active: false }, { day: 'Sunday', hours: 'Closed', active: false }, { day: 'AI Assistant', hours: '24/7 Always online', active: true }].map(r => (
+              {[
+                { day: 'Monday – Friday', hours: '9:00 AM – 6:00 PM EET', active: true },
+                { day: 'Saturday', hours: 'Closed', active: false },
+                { day: 'Sunday', hours: 'Closed', active: false },
+                { day: 'AI Assistant', hours: '24/7 Always online', active: true },
+              ].map(r => (
                 <div key={r.day} style={{ display: 'flex', justifyContent: 'space-between', padding: '7px 0', borderBottom: '1px solid #1E2329', fontSize: 12 }}>
                   <span style={{ color: '#848E9C' }}>{r.day}</span>
                   <span style={{ color: r.active ? '#EAECEF' : '#474D57', fontWeight: r.active ? 600 : 400 }}>{r.hours}</span>
                 </div>
               ))}
             </div>
+
             {!agentSent ? (
               <>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#EAECEF', marginBottom: 14 }}>{office.online ? '💬 Send a message to a live agent' : "📩 Leave a message — we'll reply soon"}</div>
-                {[{ val: agentName, set: setAgentName, ph: 'Your full name', type: 'text' }, { val: agentEmail, set: setAgentEmail, ph: 'Your email address', type: 'email' }].map(f => (
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#EAECEF', marginBottom: 14 }}>
+                  {office.online ? '💬 Send a message to a live agent' : "📩 Leave a message — we'll reply soon"}
+                </div>
+                {[
+                  { val: agentName, set: setAgentName, ph: 'Your full name', type: 'text' },
+                  { val: agentEmail, set: setAgentEmail, ph: 'Your email address', type: 'email' },
+                ].map(f => (
                   <input key={f.ph} value={f.val} type={f.type} onChange={e => f.set(e.target.value)} placeholder={f.ph}
                     style={{ width: '100%', fontSize: 13, border: '1px solid #2B3139', borderRadius: 10, padding: '10px 13px', marginBottom: 10, background: '#1E2329', color: '#EAECEF', outline: 'none', boxSizing: 'border-box' as const, transition: 'border-color 0.2s' }}
                     onFocus={e => (e.currentTarget.style.borderColor = '#F0B90B')}
@@ -271,8 +273,15 @@ export default function NxtChatbot() {
               <div style={{ background: 'rgba(2,192,118,0.08)', border: '1px solid #02C076', borderRadius: 16, padding: '24px 20px', textAlign: 'center' }}>
                 <div style={{ fontSize: 40, marginBottom: 12 }}>✅</div>
                 <div style={{ fontSize: 15, fontWeight: 700, color: '#02C076', marginBottom: 8 }}>Message Sent!</div>
-                <div style={{ fontSize: 12, color: '#848E9C', lineHeight: 1.7 }}>Thanks <strong style={{ color: '#EAECEF' }}>{agentName}</strong>!<br />We'll reply to <strong style={{ color: '#F0B90B' }}>{agentEmail}</strong><br />during office hours (Mon–Fri 9am–6pm EET).</div>
-                <button onClick={() => { setAgentSent(false); setAgentName(''); setAgentEmail(''); setAgentMsg(''); }} style={{ marginTop: 16, background: 'transparent', border: '1px solid #2B3139', borderRadius: 10, padding: '8px 20px', color: '#848E9C', fontSize: 12, cursor: 'pointer' }}>Send another message</button>
+                <div style={{ fontSize: 12, color: '#848E9C', lineHeight: 1.7 }}>
+                  Thanks <strong style={{ color: '#EAECEF' }}>{agentName}</strong>!<br />
+                  We'll reply to <strong style={{ color: '#F0B90B' }}>{agentEmail}</strong><br />
+                  during office hours (Mon–Fri 9am–6pm EET).
+                </div>
+                <button onClick={() => { setAgentSent(false); setAgentName(''); setAgentEmail(''); setAgentMsg(''); }}
+                  style={{ marginTop: 16, background: 'transparent', border: '1px solid #2B3139', borderRadius: 10, padding: '8px 20px', color: '#848E9C', fontSize: 12, cursor: 'pointer' }}>
+                  Send another message
+                </button>
               </div>
             )}
           </div>
@@ -284,14 +293,20 @@ export default function NxtChatbot() {
       </div>
 
       {/* Launcher */}
-      <button onClick={() => setOpen(o => !o)} title="24/7 Nextoken Support" style={{
-        position: 'fixed', bottom: '20px', right: '20px', width: '60px', height: '60px', borderRadius: '50%',
-        background: open ? '#1E2329' : 'linear-gradient(135deg,#F0B90B,#F8D12F)',
-        border: open ? '2px solid #2B3139' : '2px solid #F8D12F', cursor: 'pointer', zIndex: 999999,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        boxShadow: open ? '0 4px 20px rgba(0,0,0,0.4)' : '0 0 0 4px rgba(240,185,11,0.15),0 8px 32px rgba(240,185,11,0.5)',
-        transition: 'all 0.3s',
-      }}>
+      <button
+        onClick={() => { setDismissed(false); dismissedRef.current = false; setOpen(o => !o); }}
+        title="24/7 Nextoken Support"
+        style={{
+          position: 'fixed', bottom: '20px', right: '20px',
+          width: '60px', height: '60px', borderRadius: '50%',
+          background: open ? '#1E2329' : 'linear-gradient(135deg,#F0B90B,#F8D12F)',
+          border: open ? '2px solid #2B3139' : '2px solid #F8D12F',
+          cursor: 'pointer', zIndex: 999999,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          boxShadow: open ? '0 4px 20px rgba(0,0,0,0.4)' : '0 0 0 4px rgba(240,185,11,0.15),0 8px 32px rgba(240,185,11,0.5)',
+          transition: 'all 0.3s',
+        }}
+      >
         {open
           ? <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6L18 18" stroke="#848E9C" strokeWidth="2.5" strokeLinecap="round" /></svg>
           : <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.477 2 2 6.477 2 12C2 13.89 2.525 15.66 3.438 17.168L2.079 21.121C1.962 21.48 2.303 21.82 2.661 21.703L6.668 20.33C8.15 21.389 9.995 22 12 22C17.523 22 22 17.523 22 12C22 6.477 17.523 2 12 2Z" fill="#0B0E11" /><circle cx="8.5" cy="12" r="1.4" fill="#F0B90B" /><circle cx="12" cy="12" r="1.4" fill="#F0B90B" /><circle cx="15.5" cy="12" r="1.4" fill="#F0B90B" /></svg>
