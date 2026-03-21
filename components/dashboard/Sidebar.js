@@ -7,6 +7,21 @@ export default function Sidebar({
   dark3,
   muted,
 }) {
+  const items = Array.isArray(navItems) ? navItems : [];
+
+  const handleClick = (item) => {
+    if (!item) return;
+
+    if (item.link) {
+      router.push(item.link);
+      return;
+    }
+
+    if (item.id) {
+      setPanel(item.id);
+    }
+  };
+
   const SbItem = ({ item }) => {
     if (item.sep) {
       return (
@@ -28,12 +43,14 @@ export default function Sidebar({
     const active = panel === item.id;
 
     return (
-      <div
-        onClick={() => (item.link ? router.push(item.link) : setPanel(item.id))}
+      <button
+        type="button"
+        onClick={() => handleClick(item)}
         style={{
           display: "flex",
           alignItems: "center",
           gap: 9,
+          width: "100%",
           padding: "0.6rem 0.75rem",
           borderRadius: 6,
           fontSize: "0.82rem",
@@ -41,7 +58,11 @@ export default function Sidebar({
           color: active ? gold : muted,
           background: active ? "rgba(240,185,11,0.08)" : "transparent",
           cursor: "pointer",
-          transition: "all 0.15s",
+          transition: "all 0.15s ease",
+          border: "none",
+          outline: "none",
+          textAlign: "left",
+          fontFamily: "Inter, sans-serif",
         }}
         onMouseEnter={(e) => {
           if (!active) e.currentTarget.style.background = dark3;
@@ -50,11 +71,13 @@ export default function Sidebar({
           if (!active) e.currentTarget.style.background = "transparent";
         }}
       >
-        <span style={{ fontSize: "0.75rem", width: 16, textAlign: "center" }}>
-          {item.icon}
+        <span style={{ fontSize: "0.75rem", width: 16, textAlign: "center", flexShrink: 0 }}>
+          {item.icon || "•"}
         </span>
+
         <span style={{ flex: 1 }}>{item.label}</span>
-        {item.badge && (
+
+        {item.badge ? (
           <span
             style={{
               padding: "1px 6px",
@@ -63,12 +86,13 @@ export default function Sidebar({
               fontSize: "0.6rem",
               fontWeight: 800,
               color: "black",
+              flexShrink: 0,
             }}
           >
             {item.badge}
           </span>
-        )}
-      </div>
+        ) : null}
+      </button>
     );
   };
 
@@ -86,8 +110,11 @@ export default function Sidebar({
         overflowY: "auto",
       }}
     >
-      {navItems.map((item) => (
-        <div key={item.id} style={{ padding: item.sep ? "0" : "0 0.75rem" }}>
+      {items.map((item, index) => (
+        <div
+          key={item.id || item.label || index}
+          style={{ padding: item.sep ? "0" : "0 0.75rem" }}
+        >
           <SbItem item={item} />
         </div>
       ))}

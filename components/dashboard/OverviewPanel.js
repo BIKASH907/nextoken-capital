@@ -1,3 +1,4 @@
+cat << 'EOF' > components/OverviewPanel.js
 export default function OverviewPanel({
   user,
   setPanel,
@@ -34,13 +35,13 @@ export default function OverviewPanel({
     { label: "Complete KYC", target: "kyc", bg: dark4, color: "rgba(255,255,255,0.7)" },
   ];
 
-  function openPanelOrRoute(target) {
+  const openPanelOrRoute = (target) => {
     if (target.startsWith("/")) {
       router.push(target);
     } else {
       setPanel(target);
     }
-  }
+  };
 
   return (
     <div>
@@ -70,6 +71,7 @@ export default function OverviewPanel({
         </div>
 
         <button
+          type="button"
           onClick={() => setPanel("tokenize")}
           style={{
             padding: "0.5rem 1.1rem",
@@ -80,7 +82,7 @@ export default function OverviewPanel({
             fontSize: "0.78rem",
             fontWeight: 800,
             cursor: "pointer",
-            fontFamily: "Inter,sans-serif",
+            fontFamily: "Inter, sans-serif",
           }}
         >
           + New Issuance
@@ -96,13 +98,17 @@ export default function OverviewPanel({
           marginBottom: "1.5rem",
         }}
       >
-        {statCards.map(([l, v, c]) => (
-          <div key={l} style={{ background: dark2, padding: "1.25rem 1.5rem" }}>
-            <div style={{ fontSize: "0.72rem", color: muted, marginBottom: "0.35rem" }}>{l}</div>
-            <div style={{ fontSize: "1.5rem", fontWeight: 900, color: "#fff", letterSpacing: "-0.5px" }}>
-              {v}
+        {statCards.map(([label, value, caption]) => (
+          <div key={label} style={{ background: dark2, padding: "1.25rem 1.5rem" }}>
+            <div style={{ fontSize: "0.72rem", color: muted, marginBottom: "0.35rem" }}>
+              {label}
             </div>
-            <div style={{ fontSize: "0.72rem", color: muted, marginTop: 4 }}>{c}</div>
+            <div style={{ fontSize: "1.5rem", fontWeight: 900, color: "#fff", letterSpacing: "-0.5px" }}>
+              {value}
+            </div>
+            <div style={{ fontSize: "0.72rem", color: muted, marginTop: 4 }}>
+              {caption}
+            </div>
           </div>
         ))}
       </div>
@@ -137,9 +143,9 @@ export default function OverviewPanel({
           <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 560 }}>
             <thead>
               <tr>
-                {["Asset", "Price", "24h Change", "Volume"].map((h) => (
+                {["Asset", "Price", "24h Change", "Volume"].map((heading) => (
                   <th
-                    key={h}
+                    key={heading}
                     style={{
                       padding: "0.6rem 1rem",
                       textAlign: "left",
@@ -152,16 +158,20 @@ export default function OverviewPanel({
                       borderBottom: `1px solid ${border}`,
                     }}
                   >
-                    {h}
+                    {heading}
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {marketRows.map(([n, p, c, up, v]) => (
-                <tr key={n}>
-                  <td style={{ padding: "0.85rem 1rem", borderBottom: `1px solid ${border}`, fontWeight: 700 }}>{n}</td>
-                  <td style={{ padding: "0.85rem 1rem", borderBottom: `1px solid ${border}` }}>{p}</td>
+              {marketRows.map(([name, price, change, up, volume]) => (
+                <tr key={name}>
+                  <td style={{ padding: "0.85rem 1rem", borderBottom: `1px solid ${border}`, fontWeight: 700 }}>
+                    {name}
+                  </td>
+                  <td style={{ padding: "0.85rem 1rem", borderBottom: `1px solid ${border}` }}>
+                    {price}
+                  </td>
                   <td style={{ padding: "0.85rem 1rem", borderBottom: `1px solid ${border}` }}>
                     <span
                       style={{
@@ -173,10 +183,12 @@ export default function OverviewPanel({
                         color: up ? green : red,
                       }}
                     >
-                      {c}
+                      {change}
                     </span>
                   </td>
-                  <td style={{ padding: "0.85rem 1rem", borderBottom: `1px solid ${border}`, color: muted }}>{v}</td>
+                  <td style={{ padding: "0.85rem 1rem", borderBottom: `1px solid ${border}`, color: muted }}>
+                    {volume}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -198,6 +210,7 @@ export default function OverviewPanel({
             {quickActions.map((item) => (
               <button
                 key={item.label}
+                type="button"
                 onClick={() => openPanelOrRoute(item.target)}
                 style={{
                   width: "100%",
@@ -209,7 +222,7 @@ export default function OverviewPanel({
                   fontSize: "0.82rem",
                   fontWeight: 700,
                   cursor: "pointer",
-                  fontFamily: "Inter,sans-serif",
+                  fontFamily: "Inter, sans-serif",
                   textAlign: "left",
                 }}
               >

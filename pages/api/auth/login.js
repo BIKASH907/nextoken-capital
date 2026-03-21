@@ -1,7 +1,5 @@
-import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { serialize } from "cookie";
-import { connectDB } from "../../../lib/db";
+import connectDB from '../../../lib/db';
 import User from "../../../models/User";
 
 export default async function handler(req, res) {
@@ -15,21 +13,17 @@ export default async function handler(req, res) {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({
-        message: "Email and password are required",
-      });
+      return res.status(400).json({ message: "Email and password are required" });
     }
 
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    const validPassword = await bcrypt.compare(password, user.password);
-
-    if (!validPassword) {
-      return res.status(400).json({ message: "Invalid credentials" });
+    if (user.password !== password) {
+      return res.status(401).json({ message: "Invalid email or password" });
     }
 
     const token = jwt.sign(
@@ -40,18 +34,22 @@ export default async function handler(req, res) {
 
     res.setHeader(
       "Set-Cookie",
-      serialize("token", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        path: "/",
-        maxAge: 60 * 60 * 24 * 7,
-      })
+      `token=${token}; HttpOnly; Path=/; Max-Age=604800; SameSite=Lax`
     );
 
-    return res.status(200).json({ message: "Logged in successfully" });
+    return res.status(200).json({
+      message: "Login successful",
+      user: {
+        id: user._id,
+        email: user.email,
+        first_name: user.first_name,
+        last_name: user.last_name,
+      },
+    });
   } catch (error) {
-    console.error("LOGIN ERROR:", error);
-    return res.status(500).json({ message: "Server error" });
+    console.error("LOGIN API ERROR FULL:", error);
+    return res.status(500).json({
+      message: error?.message || "Server error",
+    });
   }
 }

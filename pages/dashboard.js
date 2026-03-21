@@ -1,4 +1,4 @@
-cat << 'EOF' > pages/dashboard.js
+
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { useAuth } from '../lib/AuthContext'
@@ -68,7 +68,7 @@ export default function Dashboard() {
 
   return (
     <div style={{ background: dark, minHeight: '100vh', color: 'rgba(255,255,255,0.85)', fontFamily: 'Inter,sans-serif' }}>
-      <Navbar onLogin={() => setModal('login')} onRegister={() => setModal('register')} />
+   
       {modal && <AuthModal mode={modal} onClose={() => { setModal(null); if (!user) router.push('/') }} onSwitch={m => setModal(m)} />}
 
       <div style={{ paddingTop: 60, display: 'flex', minHeight: 'calc(100vh - 60px)' }}>
@@ -316,5 +316,4 @@ export default function Dashboard() {
     </div>
   )
 }
-EOF
 

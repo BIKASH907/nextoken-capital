@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { connectDB } from "../../../lib/db";
+import connectDB from '../../../lib/db';
 import User from "../../../models/User";
 
 export default async function handler(req, res) {
@@ -26,6 +26,8 @@ export default async function handler(req, res) {
     return res.status(200).json(user);
   } catch (error) {
     console.error("ME API ERROR:", error);
-    return res.status(401).json({ message: "Invalid token" });
+    return res.status(401).json({
+      message: error?.message || "Invalid token",
+    });
   }
 }

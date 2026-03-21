@@ -1,6 +1,7 @@
 import "../styles/globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
 
+import Navbar from "../components/Navbar";
 import { AuthProvider } from "../lib/AuthContext";
 import { getDefaultConfig, RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit";
 import { WagmiProvider } from "wagmi";
@@ -23,6 +24,7 @@ export default function MyApp({ Component, pageProps }) {
         <QueryClientProvider client={queryClient}>
           <RainbowKitProvider theme={darkTheme({ accentColor: "#f0b90b" })}>
             <div style={{ backgroundColor: "#05060a", minHeight: "100vh" }}>
+              <Navbar />
               <Component {...pageProps} />
             </div>
           </RainbowKitProvider>
