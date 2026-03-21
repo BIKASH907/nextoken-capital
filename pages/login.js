@@ -38,59 +38,96 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setMessage(data.message || "Login failed. Please try again.");
+        setMessage(data.message || "Invalid email or password.");
         setLoading(false);
         return;
       }
 
-      setMessage("Login successful");
-      router.push("/dashboard");
+      // Success: The browser automatically stores the HttpOnly cookie.
+      setMessage("Login successful! Redirecting to dashboard...");
+      
+      // Brief delay to allow the user to see the success message
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 1200);
+
     } catch (error) {
-      setMessage("Login failed. Please try again.");
-    } finally {
+      console.error("Login Error:", error);
+      setMessage("Connection error. Please try again later.");
       setLoading(false);
     }
   };
 
   return (
     <div style={styles.page}>
+      {/* Global CSS for focus states and transitions */}
+      <style jsx global>{`
+        input:focus {
+          border-color: #F0B90B !important;
+          box-shadow: 0 0 10px rgba(240, 185, 11, 0.15);
+          transition: all 0.3s ease;
+        }
+        button:hover:not(:disabled) {
+          background: #d4a30a !important;
+          transform: translateY(-1px);
+        }
+        button:active:not(:disabled) {
+          transform: translateY(0);
+        }
+      `}</style>
+
       <main style={styles.main}>
         <div style={styles.card}>
-          <h1 style={styles.title}>Log In</h1>
-          <p style={styles.subtitle}>Welcome back to Nextoken Capital</p>
+          <div style={styles.header}>
+            <h1 style={styles.title}>Log In</h1>
+            <p style={styles.subtitle}>Secure Access to Nextoken Capital</p>
+          </div>
 
           <form onSubmit={handleSubmit} style={styles.form}>
-            <input
-              type="email"
-              name="email"
-              placeholder="Email Address"
-              value={form.email}
-              onChange={handleChange}
-              required
-              style={styles.input}
-            />
+            <div style={styles.inputGroup}>
+              <label style={styles.label}>Email Address</label>
+              <input
+                type="email"
+                name="email"
+                placeholder="name@company.com"
+                value={form.email}
+                onChange={handleChange}
+                required
+                style={styles.input}
+              />
+            </div>
 
-            <input
-              type="password"
-              name="password"
-              placeholder="Password"
-              value={form.password}
-              onChange={handleChange}
-              required
-              style={styles.input}
-            />
+            <div style={styles.inputGroup}>
+              <label style={styles.label}>Password</label>
+              <input
+                type="password"
+                name="password"
+                placeholder="••••••••"
+                value={form.password}
+                onChange={handleChange}
+                required
+                style={styles.input}
+              />
+            </div>
 
             <button type="submit" style={styles.button} disabled={loading}>
-              {loading ? "Logging In..." : "Log In"}
+              {loading ? "Authenticating..." : "Sign In"}
             </button>
           </form>
 
-          {message ? <p style={styles.message}>{message}</p> : null}
+          {message && (
+            <p style={{ 
+              ...styles.message, 
+              color: message.includes("successful") ? "#4BB543" : "#F0B90B" 
+            }}>
+              {message}
+            </p>
+          )}
 
-          <div style={styles.bottomText}>
-            <span style={styles.bottomMuted}>Don&apos;t have an account? </span>
-            <Link href="/register" style={styles.registerLink}>
-              Register / Sign Up
+          <div style={styles.footerText}>
+            <span style={styles.muted}>New to the platform?</span>
+            <Link href="/register" style={styles.link}>
+              Create an account
             </Link>
           </div>
         </div>
@@ -104,80 +141,97 @@ const styles = {
     minHeight: "100vh",
     background: "#05060a",
     color: "#ffffff",
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
   },
   main: {
-    minHeight: "calc(100vh - 80px)",
+    minHeight: "100vh",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    padding: "40px 20px",
+    padding: "20px",
   },
   card: {
     width: "100%",
-    maxWidth: "560px",
+    maxWidth: "480px",
     background: "#111111",
     border: "1px solid rgba(255,255,255,0.08)",
-    borderRadius: "24px",
-    padding: "38px",
-    boxShadow: "0 10px 40px rgba(0,0,0,0.35)",
+    borderRadius: "28px",
+    padding: "40px",
+    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
+  },
+  header: {
+    textAlign: "center",
+    marginBottom: "32px",
   },
   title: {
     margin: 0,
-    fontSize: "40px",
+    fontSize: "32px",
     fontWeight: "700",
-    color: "#ffffff",
+    letterSpacing: "-0.5px",
   },
   subtitle: {
-    marginTop: "10px",
-    marginBottom: "28px",
-    fontSize: "18px",
-    color: "rgba(255,255,255,0.65)",
+    marginTop: "8px",
+    fontSize: "16px",
+    color: "rgba(255,255,255,0.5)",
   },
   form: {
     display: "flex",
     flexDirection: "column",
-    gap: "18px",
+    gap: "24px",
+  },
+  inputGroup: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+  },
+  label: {
+    fontSize: "14px",
+    fontWeight: "500",
+    color: "rgba(255,255,255,0.7)",
+    marginLeft: "4px",
   },
   input: {
     width: "100%",
-    padding: "18px 20px",
-    borderRadius: "14px",
-    border: "1px solid rgba(255,255,255,0.08)",
+    padding: "16px",
+    borderRadius: "12px",
+    border: "1px solid rgba(255,255,255,0.1)",
     background: "#1a1a1a",
     color: "#ffffff",
-    fontSize: "18px",
+    fontSize: "16px",
     outline: "none",
     boxSizing: "border-box",
   },
   button: {
     marginTop: "8px",
     width: "100%",
-    padding: "18px 20px",
-    borderRadius: "14px",
+    padding: "16px",
+    borderRadius: "12px",
     border: "none",
     background: "#F0B90B",
-    color: "#111111",
-    fontSize: "18px",
+    color: "#000000",
+    fontSize: "16px",
     fontWeight: "700",
     cursor: "pointer",
+    transition: "all 0.2s ease",
   },
   message: {
-    marginTop: "18px",
-    textAlign: "center",
-    color: "#F0B90B",
-    fontSize: "15px",
-  },
-  bottomText: {
     marginTop: "24px",
     textAlign: "center",
-    fontSize: "16px",
+    fontSize: "14px",
+    fontWeight: "500",
   },
-  bottomMuted: {
-    color: "rgba(255,255,255,0.65)",
+  footerText: {
+    marginTop: "32px",
+    textAlign: "center",
+    fontSize: "15px",
   },
-  registerLink: {
+  muted: {
+    color: "rgba(255,255,255,0.4)",
+  },
+  link: {
     color: "#F0B90B",
-    fontWeight: "700",
+    fontWeight: "600",
     textDecoration: "none",
+    marginLeft: "6px",
   },
 };
