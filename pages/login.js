@@ -32,10 +32,18 @@ export default function LoginPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          email: form.email.trim(),
+          password: form.password,
+        }),
       });
 
-      const data = await res.json();
+      let data = {};
+      try {
+        data = await res.json();
+      } catch {
+        data = {};
+      }
 
       if (!res.ok) {
         setMessage(data.message || "Invalid email or password.");
@@ -43,14 +51,11 @@ export default function LoginPage() {
         return;
       }
 
-      // Success: The browser automatically stores the HttpOnly cookie.
       setMessage("Login successful! Redirecting to dashboard...");
-      
-      // Brief delay to allow the user to see the success message
+
       setTimeout(() => {
         router.push("/dashboard");
       }, 1200);
-
     } catch (error) {
       console.error("Login Error:", error);
       setMessage("Connection error. Please try again later.");
@@ -60,10 +65,9 @@ export default function LoginPage() {
 
   return (
     <div style={styles.page}>
-      {/* Global CSS for focus states and transitions */}
       <style jsx global>{`
         input:focus {
-          border-color: #F0B90B !important;
+          border-color: #f0b90b !important;
           box-shadow: 0 0 10px rgba(240, 185, 11, 0.15);
           transition: all 0.3s ease;
         }
@@ -85,27 +89,35 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit} style={styles.form}>
             <div style={styles.inputGroup}>
-              <label style={styles.label}>Email Address</label>
+              <label htmlFor="email" style={styles.label}>
+                Email Address
+              </label>
               <input
+                id="email"
                 type="email"
                 name="email"
                 placeholder="name@company.com"
                 value={form.email}
                 onChange={handleChange}
                 required
+                autoComplete="email"
                 style={styles.input}
               />
             </div>
 
             <div style={styles.inputGroup}>
-              <label style={styles.label}>Password</label>
+              <label htmlFor="password" style={styles.label}>
+                Password
+              </label>
               <input
+                id="password"
                 type="password"
                 name="password"
                 placeholder="••••••••"
                 value={form.password}
                 onChange={handleChange}
                 required
+                autoComplete="current-password"
                 style={styles.input}
               />
             </div>
@@ -116,10 +128,12 @@ export default function LoginPage() {
           </form>
 
           {message && (
-            <p style={{ 
-              ...styles.message, 
-              color: message.includes("successful") ? "#4BB543" : "#F0B90B" 
-            }}>
+            <p
+              style={{
+                ...styles.message,
+                color: message.includes("successful") ? "#4BB543" : "#F0B90B",
+              }}
+            >
               {message}
             </p>
           )}
