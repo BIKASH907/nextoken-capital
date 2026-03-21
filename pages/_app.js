@@ -2,6 +2,7 @@ import "../styles/globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
 
 import Navbar from "../components/Navbar";
+import NxtChatbot from "../components/NxtChatbot";
 import { AuthProvider } from "../lib/AuthContext";
 import { getDefaultConfig, RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit";
 import { WagmiProvider } from "wagmi";
@@ -22,10 +23,17 @@ export default function MyApp({ Component, pageProps }) {
     <AuthProvider>
       <WagmiProvider config={config}>
         <QueryClientProvider client={queryClient}>
-          <RainbowKitProvider theme={darkTheme({ accentColor: "#f0b90b" })}>
+          <RainbowKitProvider
+            theme={darkTheme({
+              accentColor: "#f0b90b",
+              accentColorForeground: "#05060a",
+              borderRadius: "medium",
+            })}
+          >
             <div style={{ backgroundColor: "#05060a", minHeight: "100vh" }}>
               <Navbar />
               <Component {...pageProps} />
+              <NxtChatbot />
             </div>
           </RainbowKitProvider>
         </QueryClientProvider>
