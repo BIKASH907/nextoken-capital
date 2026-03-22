@@ -1,54 +1,104 @@
+// pages/api/kyc/token.js
+// Generates a Sumsub access token for the Web SDK
+// Called by the /kyc page to initialize the Sumsub widget
 
 import crypto from "crypto";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]";
-import { connectDB } from "../../../lib/mongodb";
-import User from "../../../lib/models/User";
+const { getSession } = require("../../../lib/session");
+import clientPromise from "../../../lib/mongodb";
+import { ObjectId } from "mongodb";
 
-function sumsubSign(secret, ts, method, path, body = "") {
-  const data = ts + method.toUpperCase() + path + body;
-  return crypto.createHmac("sha256", secret).update(data).digest("hex");
+const SUMSUB_APP_TOKEN  = process.env.SUMSUB_APP_TOKEN;
+const SUMSUB_SECRET_KEY = process.env.SUMSUB_SECRET_KEY;
+const SUMSUB_LEVEL_NAME = process.env.SUMSUB_LEVEL_NAME || "basic-kyc-level";
+const SUMSUB_BASE_URL   = "https://api.sumsub.com";
+
+// Generate HMAC-SHA256 signature required by Sumsub
+function createSignature(ts, method, url, body) {
+  const dataToSign = ts + method.toUpperCase() + url + (body ? JSON.stringify(body) : "");
+  return crypto
+    .createHmac("sha256", SUMSUB_SECRET_KEY)
+    .update(dataToSign)
+    .digest("hex");
+}
+
+async function sumsubRequest(method, url, body = null) {
+  const ts = Math.floor(Date.now() / 1000).toString();
+  const signature = createSignature(ts, method, url, body);
+
+  const headers = {
+    "Accept":           "application/json",
+    "Content-Type":     "application/json",
+    "X-App-Token":      SUMSUB_APP_TOKEN,
+    "X-App-Access-Sig": signature,
+    "X-App-Access-Ts":  ts,
+  };
+
+  const res = await fetch(SUMSUB_BASE_URL + url, {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.description || data.message || "Sumsub API error");
+  return data;
 }
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).end();
 
-  const session = await getServerSession(req, res, authOptions);
-  if (!session) return res.status(401).json({ error: "Not authenticated" });
-
-  const userId    = session.user.id;
-  const appToken  = process.env.SUMSUB_APP_TOKEN;
-  const secretKey = process.env.SUMSUB_SECRET_KEY;
-
-  if (!appToken || !secretKey) {
-    return res.status(500).json({ error: "Sumsub not configured" });
-  }
-
-  const ts   = Math.floor(Date.now() / 1000).toString();
-  const path = "/resources/accessTokens?userId=" + userId + "&levelName=basic-kyc-level";
-  const sig  = sumsubSign(secretKey, ts, "POST", path);
+  // Must be logged in
+  const session = getSession(req);
+  if (!session) return res.status(401).json({ error: "Not authenticated. Please log in first." });
 
   try {
-    const response = await fetch("https://api.sumsub.com" + path, {
-      method: "POST",
-      headers: {
-        "X-App-Token":    appToken,
-        "X-App-Access-Ts":sig,
-        "X-App-Access-Sig":sig,
-        "Content-Type":   "application/json",
-      },
-    });
-    const data = await response.json();
+    const userId = session.userId;
 
-    await connectDB();
-    await User.findByIdAndUpdate(userId, {
-      kycStatus:      "pending",
-      kycApplicantId: userId,
-    });
+    // Get user from DB to use their email as externalUserId
+    const client = await clientPromise;
+    const db = client.db("nextoken");
+    const user = await db.collection("users").findOne({ _id: new ObjectId(userId) });
+    if (!user) return res.status(404).json({ error: "User not found." });
 
-    return res.status(200).json({ token: data.token });
-  } catch (err) {
-    console.error("Sumsub token error:", err);
-    return res.status(500).json({ error: "Failed to get KYC token" });
+    // Use userId as the external user ID in Sumsub
+    const externalUserId = userId;
+
+    // Create applicant in Sumsub (idempotent — safe to call multiple times)
+    let applicantId = user.sumsubApplicantId;
+    if (!applicantId) {
+      const applicant = await sumsubRequest("POST", "/resources/applicants?levelName=" + SUMSUB_LEVEL_NAME, {
+        externalUserId,
+        email: user.email,
+        fixedInfo: {
+          firstName: user.firstName,
+          lastName:  user.lastName,
+          country:   user.country || undefined,
+          dob:       user.dob || undefined,
+        },
+      });
+      applicantId = applicant.id;
+
+      // Save applicant ID to user record
+      await db.collection("users").updateOne(
+        { _id: new ObjectId(userId) },
+        { $set: { sumsubApplicantId: applicantId, updatedAt: new Date() } }
+      );
+    }
+
+    // Generate access token for the Web SDK
+    const tokenData = await sumsubRequest(
+      "POST",
+      `/resources/accessTokens?userId=${externalUserId}&levelName=${SUMSUB_LEVEL_NAME}`
+    );
+
+    return res.status(200).json({
+      token:       tokenData.token,
+      userId:      externalUserId,
+      applicantId,
+      levelName:   SUMSUB_LEVEL_NAME,
+    });
+  } catch (e) {
+    console.error("Sumsub token error:", e.message);
+    return res.status(500).json({ error: "KYC service unavailable: " + e.message });
   }
 }
