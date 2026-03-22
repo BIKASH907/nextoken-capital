@@ -1,0 +1,10 @@
+
+IMPORTANT: Add SessionProvider to _app.js
+
+In pages/_app.js, add at the top:
+  import { SessionProvider } from "next-auth/react";
+
+Wrap your app:
+  <SessionProvider session={pageProps.session}>
+    ... existing providers ...
+  </SessionProvider>

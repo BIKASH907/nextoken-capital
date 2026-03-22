@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { SessionProvider } from "next-auth/react";
 import { RainbowKitProvider, darkTheme, getDefaultConfig } from "@rainbow-me/rainbowkit";
 import { WagmiProvider } from "wagmi";
 import { mainnet, polygon, arbitrum, optimism, base } from "wagmi/chains";
@@ -135,6 +136,7 @@ export default function App({ Component, pageProps, router }) {
   }, [router]);
 
   return (
+    <SessionProvider session={pageProps.session}>
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider
@@ -178,5 +180,6 @@ export default function App({ Component, pageProps, router }) {
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
+    </SessionProvider>
   );
 }
