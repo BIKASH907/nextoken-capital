@@ -15,7 +15,7 @@ const S = {
 
 const team = [
   {
-    initials:"BB", color:"#F0B90B", bg:"rgba(240,185,11,0.15)",
+    initials:"BB", color:"#F0B90B", bg:"rgba(240,185,11,0.15)", photo:"/bikash.jpg",
     name:"Bikash Bhat",
     role:"CEO & Founder",
     location:"Vilnius, Lithuania",
@@ -97,8 +97,12 @@ function TeamCard({ member }) {
     <div onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
       style={{ ...S.card, border:"1px solid "+(hov?"rgba(240,185,11,0.3)":"rgba(255,255,255,0.07)"), transform:hov?"translateY(-3px)":"none" }}>
       {/* Avatar */}
-      <div style={{ width:72, height:72, borderRadius:18, background:member.bg, border:"2px solid "+member.color+"44", display:"flex", alignItems:"center", justifyContent:"center", marginBottom:18 }}>
-        <span style={{ fontFamily:"Syne,sans-serif", fontSize:24, fontWeight:800, color:member.color }}>{member.initials}</span>
+      <div style={{ width:72, height:72, borderRadius:18, overflow:"hidden", border:"2px solid "+member.color+"44", marginBottom:18, background:member.bg, display:"flex", alignItems:"center", justifyContent:"center" }}>
+        {member.photo ? (
+          <img src={member.photo} alt={member.name} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
+        ) : (
+          <span style={{ fontFamily:"Syne,sans-serif", fontSize:24, fontWeight:800, color:member.color }}>{member.initials}</span>
+        )}
       </div>
       <h3 style={{ fontFamily:"Syne,sans-serif", fontSize:18, fontWeight:800, color:"#e8e8f0", margin:"0 0 4px" }}>{member.name}</h3>
       <p style={{ fontSize:13, fontWeight:700, color:member.color, margin:"0 0 6px" }}>{member.role}</p>
