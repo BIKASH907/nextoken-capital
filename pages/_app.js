@@ -3,6 +3,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { AppProvider } from "../lib/AppContext";
+import NxtChatbot from "../components/NxtChatbot";
 
 export default function App({ Component, pageProps }) {
   const router = useRouter();
@@ -48,8 +49,6 @@ export default function App({ Component, pageProps }) {
         ::-webkit-scrollbar-track{background:#0B0E11}
         ::-webkit-scrollbar-thumb{background:rgba(240,185,11,0.3);border-radius:3px}
         ::selection{background:rgba(240,185,11,0.22);color:#fff}
-
-        /* ── GLOBAL NAVBAR STYLES ── */
         .nb{position:fixed!important;top:0!important;left:0!important;right:0!important;z-index:9000!important;height:64px!important;display:flex!important;align-items:center!important;background:#0B0E11!important;border-bottom:1px solid rgba(240,185,11,0.15)!important}
         .nb.sc{background:#0B0E11!important;border-bottom:1px solid rgba(240,185,11,0.25)!important;box-shadow:0 2px 20px rgba(0,0,0,0.5)!important}
         .nb.tp{background:rgba(11,14,17,0.95)!important;border-bottom:1px solid rgba(255,255,255,0.08)!important}
@@ -83,6 +82,7 @@ export default function App({ Component, pageProps }) {
       `}</style>
 
       <Component {...pageProps} />
+      <NxtChatbot />
     </AppProvider>
   );
 }
