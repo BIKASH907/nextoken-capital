@@ -60,7 +60,7 @@ export default function Navbar() {
           {/* DESKTOP ACTIONS */}
           <div className="desk-actions" style={N.actions}>
             <Link href="/login" style={N.loginBtn}>Log In</Link>
-            <Link href="/register" style={N.registerBtn}>Get Started</Link>
+            
             <ConnectButton accountStatus="address" chainStatus="icon" showBalance={false} />
           </div>
 

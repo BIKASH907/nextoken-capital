@@ -1,4 +1,18 @@
-import { useState } from "react";
+const fs = require("fs");
+
+// ── 1. FIX NAVBAR — remove Get Started, update 30+ to 180+ ──
+let navbar = fs.readFileSync("components/Navbar.js", "utf8");
+navbar = navbar.replace(
+  `<Link href="/register" style={N.registerBtn}>Get Started</Link>`,
+  ``
+);
+navbar = navbar.replace(/30\+ Countries/g, "180+ Countries");
+navbar = navbar.replace(/30\+ countries/g, "180+ countries");
+fs.writeFileSync("components/Navbar.js", navbar, "utf8");
+console.log("Fixed: Navbar — removed Get Started, updated to 180+ countries");
+
+// ── 2. FIX REGISTER PAGE — full inline styles page ──
+const register = `import { useState } from "react";
 import Link from "next/link";
 
 const COUNTRIES = [
@@ -81,7 +95,7 @@ function PwStrength({ pw }) {
   const checks = [
     { l:"8+ chars", ok: pw.length >= 8 },
     { l:"Uppercase", ok: /[A-Z]/.test(pw) },
-    { l:"Number",    ok: /\d/.test(pw) },
+    { l:"Number",    ok: /\\d/.test(pw) },
     { l:"Special",   ok: /[^A-Za-z0-9]/.test(pw) },
   ];
   const score = checks.filter(c => c.ok).length;
@@ -189,7 +203,7 @@ export default function RegisterPage() {
     const e = {};
     if (!firstName.trim()) e.fn = "First name is required";
     if (!lastName.trim())  e.ln = "Last name is required";
-    if (!email.trim() || !/\S+@\S+\.\S+/.test(email)) e.email = "Valid email required";
+    if (!email.trim() || !/\\S+@\\S+\\.\\S+/.test(email)) e.email = "Valid email required";
     if (!country) e.country = "Please select your country";
     if (!dob)     e.dob = "Date of birth is required";
     setErrors(e); return Object.keys(e).length === 0;
@@ -228,7 +242,7 @@ export default function RegisterPage() {
 
   return (
     <div style={S.page}>
-      <style>{`
+      <style>{\`
         @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
         * { box-sizing:border-box; margin:0; padding:0; }
         body { margin:0; }
@@ -244,7 +258,7 @@ export default function RegisterPage() {
         ::-webkit-scrollbar { width:6px; }
         ::-webkit-scrollbar-track { background:#05060a; }
         ::-webkit-scrollbar-thumb { background:rgba(240,185,11,0.3); border-radius:3px; }
-      `}</style>
+      \`}</style>
 
       {/* NAVBAR */}
       <nav style={S.nav}>
@@ -586,3 +600,8 @@ export default function RegisterPage() {
     </div>
   );
 }
+`;
+
+fs.writeFileSync("pages/register.js", register, "utf8");
+console.log("Done! pages/register.js — " + register.length + " chars");
+console.log("All 3 fixes applied!");
