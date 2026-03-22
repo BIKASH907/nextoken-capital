@@ -1,66 +1,93 @@
-export default function Footer() {
-  return (
-    <footer style={styles.footer}>
-      <div style={styles.container}>
-        <div style={styles.brandCol}>
-          <div style={styles.logoGroup}>
-            <div style={styles.nxtBox}>NXT</div>
-            <div>
-               <div style={{fontWeight: 'bold', fontSize: '16px'}}>NEXTOKEN</div>
-               <div style={{fontSize: '10px', color: '#F0B90B'}}>CAPITAL</div>
-            </div>
-          </div>
-          <p style={styles.tagline}>The regulated infrastructure for tokenized real-world assets.</p>
-          <div style={styles.badge}>
-            <span style={{color: '#848e9c', fontSize: '10px'}}>MONITORED BY</span>
-            <div style={{fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '5px'}}>
-              <span style={{background: '#333', padding: '2px 4px', borderRadius: '2px'}}>LT</span> Bank of Lithuania
-            </div>
-          </div>
-        </div>
+import Link from "next/link";
 
-        <div style={styles.linkGrid}>
-          <div style={styles.col}>
-            <h4 style={styles.colTitle}>PRODUCTS</h4>
-            <a href="/markets" style={styles.link}>Markets</a>
-            <a href="/exchange" style={styles.link}>Exchange</a>
-            <a href="/bonds" style={styles.link}>Bonds</a>
+export default function Footer() {
+  const cols = [
+    { title: "PRODUCTS", links: [
+      { href: "/markets", label: "Markets" },
+      { href: "/exchange", label: "Exchange" },
+      { href: "/bonds", label: "Bonds" },
+      { href: "/equity-ipo", label: "Equity & IPO" },
+      { href: "/tokenize", label: "Tokenize" },
+    ]},
+    { title: "COMPANY", links: [
+      { href: "/about", label: "About Us" },
+      { href: "/careers", label: "Careers" },
+      { href: "/press", label: "Press" },
+      { href: "/blog", label: "Blog" },
+    ]},
+    { title: "LEGAL", links: [
+      { href: "/terms", label: "Terms of Service" },
+      { href: "/privacy", label: "Privacy Policy" },
+      { href: "/risk", label: "Risk Disclosure" },
+      { href: "/aml", label: "AML Policy" },
+    ]},
+    { title: "SUPPORT", links: [
+      { href: "/help", label: "Help Center" },
+      { href: "/contact", label: "Contact Us" },
+      { href: "/api", label: "API Docs" },
+      { href: "/status", label: "Status" },
+    ]},
+  ];
+
+  return (
+    <>
+      <style>{`
+        .footer { background:#05060a; border-top:1px solid rgba(255,255,255,0.07); padding:60px 20px 32px; }
+        .footer-inner { max-width:1280px; margin:0 auto; }
+        .footer-top { display:grid; grid-template-columns:1.6fr repeat(4,1fr); gap:48px; margin-bottom:48px; }
+        .footer-brand-logo { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+        .footer-nxt { font-size:20px; font-weight:900; color:#F0B90B; }
+        .footer-line { width:1px; height:28px; background:rgba(255,255,255,0.15); }
+        .footer-brand-text { display:flex; flex-direction:column; line-height:1.1; }
+        .footer-brand-text .bt1 { font-size:11px; font-weight:800; color:#fff; letter-spacing:2px; }
+        .footer-brand-text .bt2 { font-size:9px; color:rgba(255,255,255,0.4); letter-spacing:3px; }
+        .footer-tagline { font-size:13px; color:rgba(255,255,255,0.4); line-height:1.7; margin-bottom:20px; max-width:200px; }
+        .footer-badge { display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:8px; background:rgba(240,185,11,0.06); border:1px solid rgba(240,185,11,0.2); }
+        .footer-badge-label { font-size:10px; color:rgba(255,255,255,0.45); display:block; }
+        .footer-badge-value { font-size:11px; font-weight:700; color:#F0B90B; display:block; }
+        .footer-col-title { font-size:11px; font-weight:700; color:rgba(255,255,255,0.3); letter-spacing:2px; text-transform:uppercase; margin-bottom:16px; }
+        .footer-col a { display:block; font-size:13px; color:rgba(255,255,255,0.5); text-decoration:none; margin-bottom:10px; transition:color .15s; }
+        .footer-col a:hover { color:#fff; }
+        .footer-bottom { border-top:1px solid rgba(255,255,255,0.06); padding-top:28px; }
+        .footer-copy { font-size:12px; color:rgba(255,255,255,0.28); }
+        .footer-risk { font-size:11px; color:rgba(255,255,255,0.18); line-height:1.7; margin-top:18px; }
+        @media(max-width:1024px){ .footer-top{ grid-template-columns:1fr 1fr 1fr; gap:32px; } .footer-brand{ grid-column:1/-1; } }
+        @media(max-width:640px){ .footer-top{ grid-template-columns:1fr 1fr; gap:24px; } .footer-brand{ grid-column:1/-1; } }
+      `}</style>
+      <footer className="footer">
+        <div className="footer-inner">
+          <div className="footer-top">
+            <div className="footer-brand">
+              <div className="footer-brand-logo">
+                <span className="footer-nxt">NXT</span>
+                <div className="footer-line" />
+                <div className="footer-brand-text">
+                  <span className="bt1">NEXTOKEN</span>
+                  <span className="bt2">CAPITAL</span>
+                </div>
+              </div>
+              <p className="footer-tagline">The regulated infrastructure for tokenized real-world assets.</p>
+              <div className="footer-badge">
+                <span>🏛️</span>
+                <div>
+                  <span className="footer-badge-label">MONITORED BY</span>
+                  <span className="footer-badge-value">Bank of Lithuania</span>
+                </div>
+              </div>
+            </div>
+            {cols.map((col) => (
+              <div key={col.title} className="footer-col">
+                <div className="footer-col-title">{col.title}</div>
+                {col.links.map((l) => <Link key={l.href} href={l.href}>{l.label}</Link>)}
+              </div>
+            ))}
           </div>
-          <div style={styles.col}>
-            <h4 style={styles.colTitle}>COMPANY</h4>
-            <a href="/about" style={styles.link}>About Us</a>
-            <a href="/careers" style={styles.link}>Careers</a>
-          </div>
-          <div style={styles.col}>
-            <h4 style={styles.colTitle}>LEGAL</h4>
-            <a href="/terms" style={styles.link}>Terms of Service</a>
-            <a href="/privacy" style={styles.link}>Privacy Policy</a>
-          </div>
-          <div style={styles.col}>
-            <h4 style={styles.colTitle}>SUPPORT</h4>
-            <a href="/help" style={styles.link}>Help Center</a>
-            <a href="/contact" style={styles.link}>Contact Us</a>
+          <div className="footer-bottom">
+            <p className="footer-copy">© 2026 Nextoken Capital UAB. All rights reserved. Registered in Lithuania.</p>
+            <p className="footer-risk">Risk warning: Investing in tokenized assets involves risk. Past performance is not indicative of future results. Capital at risk.</p>
           </div>
         </div>
-      </div>
-      <div style={styles.bottomBar}>
-        <p>© 2026 Nextoken Capital UAB. All rights reserved. Registered in Lithuania.</p>
-        <p style={{marginTop: '5px', color: '#444'}}>Risk warning: Investing in tokenized assets involves risk.</p>
-      </div>
-    </footer>
+      </footer>
+    </>
   );
 }
-
-const styles = {
-  footer: { background: "#05060a", color: "white", padding: "80px 0 40px", borderTop: "1px solid #1a1b23" },
-  container: { maxWidth: "1400px", margin: "0 auto", display: "flex", justifyContent: "space-between", padding: "0 40px" },
-  brandCol: { maxWidth: "300px" },
-  logoGroup: { display: "flex", alignItems: "center", gap: "10px", marginBottom: "20px" },
-  nxtBox: { background: "#F0B90B", color: "black", padding: "2px 6px", fontWeight: "bold", borderRadius: "3px" },
-  tagline: { color: "#848e9c", fontSize: "14px", lineHeight: "1.6", marginBottom: "30px" },
-  badge: { border: "1px solid #333", padding: "15px", borderRadius: "12px", background: "rgba(255,255,255,0.02)" },
-  linkGrid: { display: "flex", gap: "80px" },
-  colTitle: { fontSize: "14px", fontWeight: "bold", marginBottom: "20px", color: "white" },
-  link: { display: "block", color: "#848e9c", textDecoration: "none", fontSize: "14px", marginBottom: "12px" },
-  bottomBar: { maxWidth: "1400px", margin: "60px auto 0", padding: "40px 40px 0", borderTop: "1px solid #1a1b23", color: "#444", fontSize: "12px" }
-};
