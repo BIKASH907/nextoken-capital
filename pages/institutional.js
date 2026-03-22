@@ -1,4 +1,3 @@
-import Navbar from "../components/Navbar";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -105,8 +104,7 @@ export default function InstitutionalPage() {
         ::-webkit-scrollbar-thumb { background:rgba(240,185,11,0.3); border-radius:3px; }
       `}</style>
 
-      <Navbar />
-
+      
       {/* HERO */}
       <div style={{ position:"relative", padding:"100px 32px 80px", textAlign:"center", overflow:"hidden" }}>
         <div style={{ position:"absolute", inset:0, background:"radial-gradient(ellipse 900px 500px at 50% -60px,rgba(240,185,11,0.12) 0%,transparent 70%),radial-gradient(ellipse 600px 400px at 80% 90%,rgba(99,102,241,0.06) 0%,transparent 60%)", pointerEvents:"none" }} />

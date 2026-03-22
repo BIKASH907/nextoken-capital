@@ -1,4 +1,3 @@
-import Navbar from "../components/Navbar";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -128,8 +127,7 @@ export default function EquityIPOPage() {
         th { text-align:left; }
       `}</style>
 
-      <Navbar />
-
+      
       {/* HERO */}
       <div style={{ position:"relative", padding:"90px 32px 70px", textAlign:"center", overflow:"hidden" }}>
         <div style={{ position:"absolute", inset:0, background:"radial-gradient(ellipse 800px 400px at 50% -40px,rgba(240,185,11,0.13) 0%,transparent 70%)", pointerEvents:"none" }} />
