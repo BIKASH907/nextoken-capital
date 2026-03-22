@@ -1,4 +1,6 @@
-import Navbar from "../components/Navbar";
+const fs = require("fs");
+
+const code = `import Navbar from "../components/Navbar";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -94,7 +96,7 @@ function FaqItem({ q, a }) {
 export default function InstitutionalPage() {
   return (
     <div style={S.page}>
-      <style>{`
+      <style>{\`
         @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
         * { box-sizing:border-box; margin:0; padding:0; }
         body { margin:0; }
@@ -103,7 +105,7 @@ export default function InstitutionalPage() {
         ::-webkit-scrollbar { width:6px; }
         ::-webkit-scrollbar-track { background:#05060a; }
         ::-webkit-scrollbar-thumb { background:rgba(240,185,11,0.3); border-radius:3px; }
-      `}</style>
+      \`}</style>
 
       <Navbar />
 
@@ -318,3 +320,7 @@ export default function InstitutionalPage() {
     </div>
   );
 }
+`;
+
+fs.writeFileSync("pages/institutional.js", code, "utf8");
+console.log("Done! pages/institutional.js — " + code.length + " chars");
