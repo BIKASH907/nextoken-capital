@@ -99,16 +99,16 @@ function TeamCard({ member }) {
       style={{ background:"#0d0d14", border:"1px solid "+(hov?"rgba(240,185,11,0.35)":"rgba(255,255,255,0.07)"), borderRadius:18, overflow:"hidden", transition:"all 0.25s", transform:hov?"translateY(-4px)":"none", boxShadow:hov?"0 20px 60px rgba(0,0,0,0.4)":"none" }}>
 
       {/* Photo / Gradient Header */}
-      <div style={{ position:"relative", height:200, background:member.photo && !imgErr ? "#111" : "linear-gradient(135deg,"+member.bg+" 0%,rgba(5,5,8,0.8) 100%)", overflow:"hidden", display:"flex", alignItems:"center", justifyContent:"center" }}>
+      <div style={{ position:"relative", height:280, background:member.photo && !imgErr ? "#111" : "linear-gradient(135deg,"+member.bg+" 0%,rgba(5,5,8,0.8) 100%)", overflow:"hidden", display:"flex", alignItems:"center", justifyContent:"center" }}>
         {member.photo && !imgErr ? (
           <img src={member.photo} alt={member.name}
             onError={() => setImgErr(true)}
-            style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"center top", display:"block" }} />
+            style={{ width:"100%", height:"100%", objectFit:"cover", objectPosition:"center center", display:"block" }} />
         ) : (
           <span style={{ fontFamily:"Syne,sans-serif", fontSize:64, fontWeight:900, color:member.color, opacity:0.6 }}>{member.initials}</span>
         )}
         {/* Bottom fade */}
-        <div style={{ position:"absolute", bottom:0, left:0, right:0, height:80, background:"linear-gradient(transparent,#0d0d14)" }} />
+        <div style={{ position:"absolute", bottom:0, left:0, right:0, height:100, background:"linear-gradient(transparent,#0d0d14)" }} />
         {/* Role badge */}
         <div style={{ position:"absolute", top:14, right:14, padding:"4px 12px", borderRadius:20, background:"rgba(5,5,8,0.75)", border:"1px solid "+member.color+"55", backdropFilter:"blur(8px)" }}>
           <span style={{ fontSize:11, fontWeight:700, color:member.color }}>{member.role}</span>
