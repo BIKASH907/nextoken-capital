@@ -1,4 +1,6 @@
-import { useState } from "react";
+const fs = require("fs");
+
+const code = `import { useState } from "react";
 import Link from "next/link";
 
 export default function LoginPage() {
@@ -19,7 +21,7 @@ export default function LoginPage() {
 
   return (
     <div style={{ minHeight:"100vh", background:"#05060a", color:"#e8e8f0", fontFamily:"'DM Sans',system-ui,sans-serif", display:"flex" }}>
-      <style>{`
+      <style>{\`
         @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
         * { box-sizing:border-box; margin:0; padding:0; }
         body { margin:0; }
@@ -30,7 +32,7 @@ export default function LoginPage() {
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
         .pulse { animation: pulse 2s infinite; }
         input:focus { border-color:#F0B90B !important; outline:none; }
-      `}</style>
+      \`}</style>
 
       {/* LEFT PANEL */}
       <div style={{ width:420, flexShrink:0, background:"#0a0a12", borderRight:"1px solid rgba(255,255,255,0.07)", padding:"48px 40px", display:"flex", flexDirection:"column", justifyContent:"space-between", position:"relative", overflow:"hidden" }}>
@@ -168,3 +170,7 @@ export default function LoginPage() {
     </div>
   );
 }
+`;
+
+fs.writeFileSync("pages/login.js", code, "utf8");
+console.log("Done! pages/login.js — " + code.length + " chars");
