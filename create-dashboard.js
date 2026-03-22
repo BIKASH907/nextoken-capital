@@ -1,4 +1,6 @@
-import Link from "next/link";
+const fs = require("fs");
+
+const code = `import Link from "next/link";
 import { useState } from "react";
 
 const user = {
@@ -87,7 +89,7 @@ export default function DashboardPage() {
 
   return (
     <div style={S.page}>
-      <style>{`
+      <style>{\`
         @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
         * { box-sizing:border-box; margin:0; padding:0; }
         body { margin:0; }
@@ -96,7 +98,7 @@ export default function DashboardPage() {
         ::-webkit-scrollbar-thumb { background:rgba(240,185,11,0.3); border-radius:3px; }
         table { border-collapse:collapse; width:100%; }
         th { text-align:left; }
-      `}</style>
+      \`}</style>
 
       <div style={S.wrap}>
 
@@ -404,3 +406,7 @@ export default function DashboardPage() {
     </div>
   );
 }
+`;
+
+fs.writeFileSync("pages/dashboard.js", code, "utf8");
+console.log("Done! pages/dashboard.js — " + code.length + " chars");
