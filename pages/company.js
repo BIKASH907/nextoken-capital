@@ -137,7 +137,7 @@ const S = `
 
 const STATS = [
   { num:'2022',    lbl:'Founded' },
-  { num:'12,400+', lbl:'Investors & Issuers' },
+  { num:'1,000+', lbl:'Investors & Issuers' },
   { num:'190+',    lbl:'Countries Served' },
   { num:'€420M+',  lbl:'Assets Tokenized' },
 ]

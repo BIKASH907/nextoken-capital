@@ -18,7 +18,7 @@ const FEATURES = [
 
 const STATS = [
   ["EUR 140M+","Assets tokenized"],
-  ["12,400+","Verified investors"],
+  ["1,000+","Verified investors"],
   ["180+","Countries supported"],
   ["EUR 100","Minimum investment"],
   ["0.2%","Trading fee"],

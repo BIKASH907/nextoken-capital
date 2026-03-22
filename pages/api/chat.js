@@ -60,7 +60,7 @@ The platform enables investors from 180+ countries to invest in:
 
 Key Statistics:
 - Assets Tokenized: EUR 140M+
-- Verified Investors: 12,400+
+- Verified Investors: 1,000+
 - Countries Supported: 180+
 - Minimum Investment: EUR 100
 - Trading Fee: 0.2% flat on all trades

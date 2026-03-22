@@ -98,7 +98,7 @@ NXT.router = {
 
 NXT.market = {
   assets: {
-    'BTC/EUR':   { price: 62054.31, open: 64400, vol: 1240000, high: 64900, low: 61200 },
+    'BTC/EUR':   { price: 62054.31, open: 64400, vol: 100000, high: 64900, low: 61200 },
     'ETH/EUR':   { price: 1913.01,  open: 2020,  vol: 580000,  high: 2025,  low: 1890 },
     'BNB/EUR':   { price: 568.90,   open: 581,   vol: 290000,  high: 588,   low: 562 },
     'SOL/EUR':   { price: 98.42,    open: 97.32, vol: 420000,  high: 102,   low: 96.1 },

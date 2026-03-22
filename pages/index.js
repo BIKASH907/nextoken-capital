@@ -5,7 +5,7 @@ import Footer from "../components/Footer";
 
 const STATS = [
   { value: "EUR 140M+", label: "Assets Tokenized" },
-  { value: "12,400+",   label: "Verified Investors" },
+  { value: "1,000+",   label: "Verified Investors" },
   { value: "180+",      label: "Countries" },
   { value: "EUR 100",   label: "Min. Investment" },
 ];
@@ -256,7 +256,7 @@ export default function HomePage() {
             Ready to tokenize the world?
           </h2>
           <p style={{ fontSize: 15, color: "rgba(0,0,0,0.58)", margin: "0 auto 36px", maxWidth: 440, lineHeight: 1.7 }}>
-            Join 12,400+ investors and issuers already on the platform.
+            Join 1,000+ investors and issuers already on the platform.
           </p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
             <Link href="/register" style={{

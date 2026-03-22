@@ -16,7 +16,7 @@ const FACTS = [
   { value:"2022",       label:"Founded" },
   { value:"Vilnius",    label:"Headquarters" },
   { value:"EUR 140M+",  label:"Assets Tokenized" },
-  { value:"12,400+",    label:"Verified Investors" },
+  { value:"1,000+",    label:"Verified Investors" },
   { value:"180+",       label:"Countries" },
   { value:"MiCA/EMI",   label:"Regulatory Status" },
 ];

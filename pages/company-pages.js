@@ -190,7 +190,7 @@ const globalCSS = `
 
 const STATS = [
   { num: '2022',    label: 'Founded'             },
-  { num: '12,400+', label: 'Investors & Issuers' },
+  { num: '1,000+', label: 'Investors & Issuers' },
   { num: '190+',    label: 'Countries Served'    },
   { num: '€420M+',  label: 'Assets Tokenized'   },
 ]

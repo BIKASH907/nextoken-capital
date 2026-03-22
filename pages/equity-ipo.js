@@ -314,7 +314,7 @@ export default function EquityIPOPage() {
           <div style={{position:"relative",zIndex:1}}>
             <span style={S.lbl}>Get Started</span>
             <h2 style={{...S.h2,marginBottom:12}}>Ready to Issue or Invest in Digital Equity?</h2>
-            <p style={{fontSize:15,color:"#b0b0c8",fontWeight:300,maxWidth:460,margin:"0 auto 32px",lineHeight:1.7}}>Join 12,400+ investors and issuers building the future of capital markets on Nextoken.</p>
+            <p style={{fontSize:15,color:"#b0b0c8",fontWeight:300,maxWidth:460,margin:"0 auto 32px",lineHeight:1.7}}>Join 1,000+ investors and issuers building the future of capital markets on Nextoken.</p>
             <div style={{display:"flex",gap:12,justifyContent:"center",flexWrap:"wrap"}}>
               <Link href="/tokenize" style={S.gold}>Issue Equity</Link>
               <Link href="/exchange" style={S.out}>Explore Exchange</Link>

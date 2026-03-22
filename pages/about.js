@@ -129,7 +129,7 @@ export default function AboutPage() {
 
         <div className="ab-stats">
           <div className="ab-stats-inner">
-            {[["2022","Year Founded"],["EUR 140M+","Assets Tokenized"],["12,400+","Verified Investors"],["180+","Countries Supported"]].map(([v,l]) => (
+            {[["2022","Year Founded"],["EUR 140M+","Assets Tokenized"],["1,000+","Verified Investors"],["180+","Countries Supported"]].map(([v,l]) => (
               <div key={l}><div className="ab-stat-v">{v}</div><div className="ab-stat-l">{l}</div></div>
             ))}
           </div>

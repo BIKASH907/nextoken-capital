@@ -272,7 +272,7 @@ export default function RegisterPage() {
             <div className="rg-reg-info-title">Platform Stats</div>
             {[
               ["EUR 140M+","Assets tokenized"],
-              ["12,400+","Verified investors"],
+              ["1,000+","Verified investors"],
               ["180+","Countries supported"],
               ["EUR 100","Minimum investment"],
               ["0.2%","Trading fee"],
@@ -308,7 +308,7 @@ export default function RegisterPage() {
             {/* STEP 0 — Account */}
             {step === 0 && <>
               <div className="rg-title">Create your account</div>
-              <p className="rg-sub">Join 12,400+ investors. Takes 3 minutes.</p>
+              <p className="rg-sub">Join 1,000+ investors. Takes 3 minutes.</p>
               <div className="rg-field">
                 <label className="rg-label">Email Address</label>
                 <input className="rg-input" name="email" type="email" value={form.email} onChange={handle} placeholder="you@example.com" autoComplete="email" />

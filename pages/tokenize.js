@@ -145,7 +145,7 @@ export default function TokenizePage() {
           <div className="tz-hero-glow" />
           <div className="tz-hero-tag">Asset Tokenization</div>
           <h1>Tokenize Your <em>Real-World Asset</em></h1>
-          <p>Turn illiquid real-world assets into digital securities and open them to 12,400+ verified investors across 180+ countries.</p>
+          <p>Turn illiquid real-world assets into digital securities and open them to 1,000+ verified investors across 180+ countries.</p>
           <div className="tz-hero-badges">
             {["🏛️ Bank of Lithuania Licensed","⚖️ MiCA Compliant","🔗 ERC-3643 Standard","🌍 180+ Countries","⏱️ 6–12 Week Process"].map(b => (
               <span key={b} className="tz-hero-badge">{b}</span>
@@ -268,7 +268,7 @@ export default function TokenizePage() {
               {[
                 { ico:"⚖️", title:"Fully Regulated",        desc:"EMI and MiCA CASP licenses from the Bank of Lithuania — not a grey-market platform." },
                 { ico:"🔗", title:"ERC-3643 Standard",      desc:"All tokens issued under ERC-3643 with full transfer controls and investor whitelisting." },
-                { ico:"🌍", title:"12,400+ Investors",       desc:"Instant access to a verified investor base in 180+ countries from day one." },
+                { ico:"🌍", title:"1,000+ Investors",       desc:"Instant access to a verified investor base in 180+ countries from day one." },
                 { ico:"🔐", title:"ISO 27001 Security",     desc:"Enterprise-grade infrastructure with full security certification." },
                 { ico:"📊", title:"On-chain Transparency",  desc:"Real-time cap tables, on-chain settlement, and full audit trail for every transaction." },
                 { ico:"💼", title:"End-to-end Service",     desc:"Legal structuring, token issuance, investor onboarding, and secondary market — all in one platform." },
