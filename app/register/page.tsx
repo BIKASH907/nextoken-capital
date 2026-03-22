@@ -51,7 +51,7 @@ function Field({ label, type="text", placeholder, value, onChange, required=fals
       <label style={{ fontSize:12, fontWeight:600, color:"#b0b0c8", textTransform:"uppercase", letterSpacing:"0.05em" }}>
         {label} {required && <span style={{ color:"#d4af37" }}>*</span>}
       </label>
-      <div style={{ position:"relative" }}>
+      <div style={{ position:"relative" as const }}>
         <input
           type={isPw ? (show ? "text" : "password") : type}
           placeholder={placeholder}
@@ -68,7 +68,7 @@ function Field({ label, type="text", placeholder, value, onChange, required=fals
         />
         {isPw && (
           <button type="button" onClick={() => setShow(!show)}
-            style={{ position:"absolute", right:14, top:"50%", transform:"translateY(-50%)", background:"none", border:"none", color:"#7a7a96", cursor:"pointer", display:"flex" }}>
+            style={{ position:"absolute" as const, right:14, top:"50%", transform:"translateY(-50%)", background:"none", border:"none", color:"#7a7a96", cursor:"pointer", display:"flex" }}>
             <Eye open={show} />
           </button>
         )}
@@ -441,8 +441,8 @@ export default function RegisterPage() {
 
         {/* LEFT PANEL */}
         <div style={{ ...S.left, display: typeof window !== "undefined" && window.innerWidth < 1024 ? "none" : "flex" }}>
-          <div style={{ position:"absolute", inset:0, background:"radial-gradient(ellipse 500px 600px at -80px 280px,rgba(212,175,55,0.10) 0%,transparent 70%)", pointerEvents:"none" }} />
-          <div style={{ position:"relative", zIndex:1 }}>
+          <div style={{ position:"absolute" as const, inset:0, background:"radial-gradient(ellipse 500px 600px at -80px 280px,rgba(212,175,55,0.10) 0%,transparent 70%)", pointerEvents:"none" }} />
+          <div style={{ position:"relative" as const, zIndex:1 }}>
             <div style={S.badge} className="pulse">
               <span className="pulse" style={{ width:7, height:7, borderRadius:"50%", background:"#d4af37", display:"inline-block" }} />
               Regulated Platform · EU Licensed
@@ -468,7 +468,7 @@ export default function RegisterPage() {
               </div>
             ))}
           </div>
-          <div style={{ position:"relative", zIndex:1, borderTop:"1px solid rgba(255,255,255,0.08)", paddingTop:20, display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:16 }}>
+          <div style={{ position:"relative" as const, zIndex:1, borderTop:"1px solid rgba(255,255,255,0.08)", paddingTop:20, display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:16 }}>
             {[{val:"12,400+",label:"Investors"},{val:"€140M+",label:"Deployed"},{val:"30+",label:"Countries"}].map((s) => (
               <div key={s.label}>
                 <div style={{ fontFamily:"Syne,sans-serif", fontSize:20, fontWeight:800, color:"#d4af37" }}>{s.val}</div>

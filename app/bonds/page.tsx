@@ -47,7 +47,7 @@ const faqs = [
 
 const navLinks: [string, string][] = [["Markets","/markets"],["Exchange","/exchange"],["Bonds","/bonds"],["Equity & IPO","/equity-ipo"],["Tokenize","/tokenize"]];
 
-const NAV: React.CSSProperties  = { display:"flex", alignItems:"center", justifyContent:"space-between", padding:"0 32px", height:64, background:"rgba(5,5,8,0.95)", borderBottom:"1px solid rgba(255,255,255,0.08)", position:"sticky", top:0, zIndex:100, backdropFilter:"blur(20px)" };
+const NAV: React.CSSProperties  = { display:"flex", alignItems:"center", justifyContent:"space-between", padding:"0 32px", height:64, background:"rgba(5,5,8,0.95)", borderBottom:"1px solid rgba(255,255,255,0.08)", position:"sticky" as const, top:0, zIndex:100, backdropFilter:"blur(20px)" };
 const PAGE: React.CSSProperties = { minHeight:"100vh", background:"#050508", color:"#e8e8f0", fontFamily:"'DM Sans',system-ui,sans-serif" };
 const SEC: React.CSSProperties  = { maxWidth:1200, margin:"0 auto", padding:"64px 32px" };
 const H2: React.CSSProperties   = { fontFamily:"Syne,sans-serif", fontSize:"clamp(26px,4vw,40px)", fontWeight:800, color:"#e8e8f0", margin:"0 0 12px", letterSpacing:"-0.5px" };
@@ -89,9 +89,9 @@ function BondCard({ bond }: { bond: typeof bonds[0] }) {
   const sc = statusStyle[bond.status] || statusStyle.Live;
   return (
     <div onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
-      style={{ background:"#0d0d14", borderRadius:16, padding:24, transition:"all 0.2s", position:"relative", overflow:"hidden", border:"1px solid "+(hov?"rgba(212,175,55,0.35)":"rgba(255,255,255,0.08)"), transform:hov?"translateY(-2px)":"none" }}>
-      {hov && <div style={{ position:"absolute", top:0, left:0, right:0, height:2, background:"linear-gradient(90deg,#d4af37,#f0d060)" }} />}
-      {bond.featured && <div style={{ position:"absolute", top:14, right:14 }}><span style={{ padding:"2px 8px", borderRadius:20, fontSize:10, fontWeight:700, background:"rgba(212,175,55,0.15)", color:"#d4af37", border:"1px solid rgba(212,175,55,0.3)" }}>Featured</span></div>}
+      style={{ background:"#0d0d14", borderRadius:16, padding:24, transition:"all 0.2s", position:"relative" as const, overflow:"hidden", border:"1px solid "+(hov?"rgba(212,175,55,0.35)":"rgba(255,255,255,0.08)"), transform:hov?"translateY(-2px)":"none" }}>
+      {hov && <div style={{ position:"absolute" as const, top:0, left:0, right:0, height:2, background:"linear-gradient(90deg,#d4af37,#f0d060)" }} />}
+      {bond.featured && <div style={{ position:"absolute" as const, top:14, right:14 }}><span style={{ padding:"2px 8px", borderRadius:20, fontSize:10, fontWeight:700, background:"rgba(212,175,55,0.15)", color:"#d4af37", border:"1px solid rgba(212,175,55,0.3)" }}>Featured</span></div>}
       <div style={{ fontSize:32, marginBottom:12 }}>{bond.emoji}</div>
       <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:12 }}>
         <StatusTag status={bond.status} />
@@ -182,8 +182,8 @@ export default function BondsPage() {
       </nav>
 
       {/* HERO */}
-      <div style={{ position:"relative", padding:"90px 32px 70px", textAlign:"center", overflow:"hidden" }}>
-        <div style={{ position:"absolute", inset:0, background:"radial-gradient(ellipse 800px 400px at 50% -40px,rgba(212,175,55,0.15) 0%,transparent 70%)", pointerEvents:"none" }} />
+      <div style={{ position:"relative" as const, padding:"90px 32px 70px", textAlign:"center", overflow:"hidden" }}>
+        <div style={{ position:"absolute" as const, inset:0, background:"radial-gradient(ellipse 800px 400px at 50% -40px,rgba(212,175,55,0.15) 0%,transparent 70%)", pointerEvents:"none" }} />
         <div style={{ ...BADGE, marginBottom:24 }}>
           <span className="pulse" style={{ width:7, height:7, borderRadius:"50%", background:"#d4af37", display:"inline-block" }} />
           Fixed Income Market
@@ -320,11 +320,11 @@ export default function BondsPage() {
         <span style={LBL}>Issuer Workflow</span>
         <h2 style={H2}>How Bond Issuance Works</h2>
         <p style={SUB}>From structure to on-chain settlement, Nextoken handles the full lifecycle of your bond raise.</p>
-        <div style={{ position:"relative", display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))", gap:32, marginTop:16 }}>
-          <div style={{ position:"absolute", top:24, left:60, right:60, height:1, background:"linear-gradient(90deg,transparent,rgba(212,175,55,0.3),transparent)" }} />
+        <div style={{ position:"relative" as const, display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))", gap:32, marginTop:16 }}>
+          <div style={{ position:"absolute" as const, top:24, left:60, right:60, height:1, background:"linear-gradient(90deg,transparent,rgba(212,175,55,0.3),transparent)" }} />
           {steps.map((step) => (
             <div key={step.n}>
-              <div style={{ width:48, height:48, borderRadius:"50%", border:"1px solid rgba(212,175,55,0.3)", background:"rgba(212,175,55,0.10)", display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"Syne,sans-serif", fontSize:15, fontWeight:700, color:"#d4af37", marginBottom:16, position:"relative", zIndex:1 }}>{step.n}</div>
+              <div style={{ width:48, height:48, borderRadius:"50%", border:"1px solid rgba(212,175,55,0.3)", background:"rgba(212,175,55,0.10)", display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"Syne,sans-serif", fontSize:15, fontWeight:700, color:"#d4af37", marginBottom:16, position:"relative" as const, zIndex:1 }}>{step.n}</div>
               <h4 style={{ fontFamily:"Syne,sans-serif", fontSize:14.5, fontWeight:700, color:"#e8e8f0", marginBottom:8 }}>{step.title}</h4>
               <p style={{ fontSize:13, color:"#7a7a96", lineHeight:1.65, margin:0 }}>{step.body}</p>
             </div>
@@ -340,9 +340,9 @@ export default function BondsPage() {
       </div>
 
       {/* CTA */}
-      <div style={{ margin:"0 32px 64px", borderRadius:18, padding:"64px 48px", textAlign:"center", position:"relative", overflow:"hidden", border:"1px solid rgba(212,175,55,0.3)", background:"linear-gradient(135deg,rgba(212,175,55,0.10) 0%,rgba(14,165,233,0.05) 100%)" }}>
-        <div style={{ position:"absolute", inset:0, background:"radial-gradient(ellipse 600px 300px at 50% 0%,rgba(212,175,55,0.10) 0%,transparent 70%)", pointerEvents:"none" }} />
-        <div style={{ position:"relative", zIndex:1 }}>
+      <div style={{ margin:"0 32px 64px", borderRadius:18, padding:"64px 48px", textAlign:"center", position:"relative" as const, overflow:"hidden", border:"1px solid rgba(212,175,55,0.3)", background:"linear-gradient(135deg,rgba(212,175,55,0.10) 0%,rgba(14,165,233,0.05) 100%)" }}>
+        <div style={{ position:"absolute" as const, inset:0, background:"radial-gradient(ellipse 600px 300px at 50% 0%,rgba(212,175,55,0.10) 0%,transparent 70%)", pointerEvents:"none" }} />
+        <div style={{ position:"relative" as const, zIndex:1 }}>
           <span style={LBL}>Ready to Launch?</span>
           <h2 style={{ ...H2, marginBottom:12 }}>Launch a Digital Bond Today</h2>
           <p style={{ fontSize:15, color:"#b0b0c8", fontWeight:300, maxWidth:460, margin:"0 auto 32px", lineHeight:1.7 }}>Build a modern fixed-income offering with digital fundraising, transparent progress, and exchange-ready visibility.</p>

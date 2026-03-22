@@ -78,8 +78,8 @@ function ListingCard({ item }) {
   const [hovered, setHovered] = useState(false);
   return (
     <div onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
-      style={{ ...S.card, border:`1px solid ${hovered?"rgba(212,175,55,0.35)":"rgba(255,255,255,0.08)"}`, transform: hovered?"translateY(-2px)":"none", position:"relative", overflow:"hidden" }}>
-      {hovered && <div style={{ position:"absolute", top:0, left:0, right:0, height:2, background:"linear-gradient(90deg,#d4af37,#f0d060)" }} />}
+      style={{ ...S.card, border:`1px solid ${hovered?"rgba(212,175,55,0.35)":"rgba(255,255,255,0.08)"}`, transform: hovered?"translateY(-2px)":"none", position:"relative" as const, overflow:"hidden" }}>
+      {hovered && <div style={{ position:"absolute" as const, top:0, left:0, right:0, height:2, background:"linear-gradient(90deg,#d4af37,#f0d060)" }} />}
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:12 }}>
         <span style={{ fontSize:32 }}>{item.emoji}</span>
         <div style={{ display:"flex", gap:6, flexWrap:"wrap", justifyContent:"flex-end" }}>
@@ -162,8 +162,8 @@ export default function EquityIPOPage() {
       </nav>
 
       {/* HERO */}
-      <div style={{ position:"relative", padding:"90px 32px 70px", textAlign:"center", overflow:"hidden" }}>
-        <div style={{ position:"absolute", inset:0, background:"radial-gradient(ellipse 800px 400px at 50% -40px,rgba(212,175,55,0.15) 0%,transparent 70%),radial-gradient(ellipse 500px 300px at 20% 80%,rgba(99,102,241,0.06) 0%,transparent 60%)", pointerEvents:"none" }} />
+      <div style={{ position:"relative" as const, padding:"90px 32px 70px", textAlign:"center", overflow:"hidden" }}>
+        <div style={{ position:"absolute" as const, inset:0, background:"radial-gradient(ellipse 800px 400px at 50% -40px,rgba(212,175,55,0.15) 0%,transparent 70%),radial-gradient(ellipse 500px 300px at 20% 80%,rgba(99,102,241,0.06) 0%,transparent 60%)", pointerEvents:"none" }} />
         <div style={{ ...S.badge, marginBottom:24 }}>
           <span className="pulse" style={{ width:7, height:7, borderRadius:"50%", background:"#d4af37", display:"inline-block" }} />
           Equity &amp; IPO
@@ -296,8 +296,8 @@ export default function EquityIPOPage() {
         <span style={S.label}>Issuer Workflow</span>
         <h2 style={S.h2}>How Equity Issuance Works</h2>
         <p style={S.sub}>From structure to on-chain settlement, Nextoken handles the full lifecycle of your equity raise.</p>
-        <div style={{ position:"relative", display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))", gap:32, marginTop:16 }}>
-          <div style={{ position:"absolute", top:24, left:60, right:60, height:1, background:"linear-gradient(90deg,transparent,rgba(212,175,55,0.3),transparent)" }} />
+        <div style={{ position:"relative" as const, display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))", gap:32, marginTop:16 }}>
+          <div style={{ position:"absolute" as const, top:24, left:60, right:60, height:1, background:"linear-gradient(90deg,transparent,rgba(212,175,55,0.3),transparent)" }} />
           {[
             { n:"01", title:"Define Structure",     body:"Set share class, total supply, valuation cap, investor rights, and preferred terms." },
             { n:"02", title:"Submit Legal Docs",     body:"Prepare cap table, pitch deck, audited financials, and disclosure documentation." },
@@ -306,7 +306,7 @@ export default function EquityIPOPage() {
             { n:"05", title:"Exchange Listing",      body:"Qualified tokens progress to Nextoken secondary exchange for liquidity." },
           ].map((step) => (
             <div key={step.n}>
-              <div style={{ width:48, height:48, borderRadius:"50%", border:"1px solid rgba(212,175,55,0.3)", background:"rgba(212,175,55,0.10)", display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"Syne,sans-serif", fontSize:15, fontWeight:700, color:"#d4af37", marginBottom:16, position:"relative", zIndex:1 }}>{step.n}</div>
+              <div style={{ width:48, height:48, borderRadius:"50%", border:"1px solid rgba(212,175,55,0.3)", background:"rgba(212,175,55,0.10)", display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"Syne,sans-serif", fontSize:15, fontWeight:700, color:"#d4af37", marginBottom:16, position:"relative" as const, zIndex:1 }}>{step.n}</div>
               <h4 style={{ fontFamily:"Syne,sans-serif", fontSize:14.5, fontWeight:700, color:"#e8e8f0", marginBottom:8 }}>{step.title}</h4>
               <p style={{ fontSize:13, color:"#7a7a96", lineHeight:1.65, margin:0 }}>{step.body}</p>
             </div>
@@ -322,9 +322,9 @@ export default function EquityIPOPage() {
       </div>
 
       {/* CTA */}
-      <div style={{ margin:"0 32px 64px", borderRadius:18, padding:"64px 48px", textAlign:"center", position:"relative", overflow:"hidden", border:"1px solid rgba(212,175,55,0.3)", background:"linear-gradient(135deg,rgba(212,175,55,0.10) 0%,rgba(99,102,241,0.07) 100%)" }}>
-        <div style={{ position:"absolute", inset:0, background:"radial-gradient(ellipse 600px 300px at 50% 0%,rgba(212,175,55,0.10) 0%,transparent 70%)", pointerEvents:"none" }} />
-        <div style={{ position:"relative", zIndex:1 }}>
+      <div style={{ margin:"0 32px 64px", borderRadius:18, padding:"64px 48px", textAlign:"center", position:"relative" as const, overflow:"hidden", border:"1px solid rgba(212,175,55,0.3)", background:"linear-gradient(135deg,rgba(212,175,55,0.10) 0%,rgba(99,102,241,0.07) 100%)" }}>
+        <div style={{ position:"absolute" as const, inset:0, background:"radial-gradient(ellipse 600px 300px at 50% 0%,rgba(212,175,55,0.10) 0%,transparent 70%)", pointerEvents:"none" }} />
+        <div style={{ position:"relative" as const, zIndex:1 }}>
           <span style={S.label}>Get Started</span>
           <h2 style={{ ...S.h2, marginBottom:12 }}>Ready to Issue or Invest<br />in Digital Equity?</h2>
           <p style={{ fontSize:15, color:"#b0b0c8", fontWeight:300, maxWidth:460, margin:"0 auto 32px", lineHeight:1.7 }}>Join 12,400+ investors and issuers building the future of capital markets on Nextoken.</p>
