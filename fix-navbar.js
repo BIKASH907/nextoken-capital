@@ -1,4 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+const fs = require("fs");
+
+const code = `import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
@@ -100,14 +102,14 @@ export default function Navbar() {
         )}
       </nav>
 
-      <style jsx>{`
+      <style jsx>{\`
         @media (max-width: 980px) {
           .desk-links, .desk-actions { display: none !important; }
           .hamburger { display: flex !important; }
           .mobile-menu { display: flex !important; }
         }
         :global([data-rk] button) { font-weight: 800 !important; }
-      `}</style>
+      \`}</style>
     </>
   );
 }
@@ -250,3 +252,7 @@ const N = {
     background: "#171b22",
   },
 };
+`;
+
+fs.writeFileSync("components/Navbar.js", code, "utf8");
+console.log("Done! Navbar rewritten — " + code.length + " chars");
