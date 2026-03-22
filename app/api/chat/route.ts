@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
     const { messages } = await req.json();
     const client = new Anthropic({ apiKey: key });
     const response = await client.messages.create({
-      model: "claude-3-5-haiku-20241022",
+      model: "claude-haiku-4-5-20251001",
       max_tokens: 400,
       system: "You are a helpful support assistant for Nextoken Capital, a regulated tokenized asset platform in Vilnius, Lithuania. CEO: Bikash Bhat. Be concise.",
       messages: messages,
