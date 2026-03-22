@@ -1,3 +1,4 @@
+// pages/login.js
 import { useState } from "react";
 import Head from "next/head";
 import Link from "next/link";
@@ -6,10 +7,10 @@ import Navbar from "../components/Navbar";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [form, setForm]     = useState({ email: "", password: "" });
+  const [form, setForm]       = useState({ email: "", password: "" });
   const [showPwd, setShowPwd] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError]   = useState("");
+  const [error, setError]     = useState("");
 
   const handle = e => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -17,48 +18,23 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
     if (!form.email || !form.password) { setError("Please fill in all fields."); return; }
-    if (form.password.length < 6) { setError("Password must be at least 6 characters."); return; }
     setLoading(true);
     try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
+      const res  = await fetch("/api/auth/login", {
+        method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: form.email, password: form.password }),
+        body:    JSON.stringify({ email: form.email, password: form.password }),
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        // Store user in localStorage for dashboard
-        localStorage.setItem("nxt_user", JSON.stringify({
-          email: form.email,
-          firstName: data.user?.name?.split(" ")[0] || form.email.split("@")[0],
-          lastName:  data.user?.name?.split(" ")[1] || "",
-        }));
-        router.push("/dashboard");
+        // Redirect to original page or dashboard
+        const redirect = router.query.redirect || "/dashboard";
+        router.push(redirect);
       } else {
-        // Demo mode — allow login for any valid format
-        if (form.email.includes("@") && form.password.length >= 6) {
-          localStorage.setItem("nxt_user", JSON.stringify({
-            email: form.email,
-            firstName: form.email.split("@")[0],
-            lastName: "",
-          }));
-          router.push("/dashboard");
-        } else {
-          setError(data.error || "Invalid email or password.");
-        }
+        setError(data.error || "Login failed.");
       }
     } catch {
-      // Offline/demo fallback
-      if (form.email.includes("@") && form.password.length >= 6) {
-        localStorage.setItem("nxt_user", JSON.stringify({
-          email: form.email,
-          firstName: form.email.split("@")[0],
-          lastName: "",
-        }));
-        router.push("/dashboard");
-      } else {
-        setError("Invalid email or password. Please try again.");
-      }
+      setError("Network error. Please check your connection and try again.");
     } finally {
       setLoading(false);
     }
@@ -85,26 +61,25 @@ export default function LoginPage() {
         .li-label{display:block;font-size:11px;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px}
         .li-input{width:100%;background:#161B22;color:#fff;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:12px 14px;font-size:14px;outline:none;font-family:inherit;transition:border-color .15s;box-sizing:border-box}
         .li-input:focus{border-color:rgba(240,185,11,0.5)}
-        .li-pwd{position:relative}
-        .li-pwd .li-input{padding-right:44px}
-        .li-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.35);font-size:16px;line-height:1;padding:4px}
+        .li-pwd-wrap{position:relative}
+        .li-pwd-wrap .li-input{padding-right:44px}
+        .li-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.35);font-size:16px;padding:4px}
         .li-eye:hover{color:#fff}
-        .li-forgot{display:block;text-align:right;font-size:12px;color:rgba(255,255,255,0.35);text-decoration:none;margin-top:-6px;margin-bottom:20px;transition:color .15s}
+        .li-forgot{display:block;text-align:right;font-size:12px;color:rgba(255,255,255,0.35);text-decoration:none;margin-top:-6px;margin-bottom:20px}
         .li-forgot:hover{color:#F0B90B}
         .li-error{background:rgba(255,77,77,0.08);border:1px solid rgba(255,77,77,0.25);border-radius:8px;padding:11px 14px;font-size:13px;color:#FF6B6B;margin-bottom:16px;line-height:1.5}
         .li-btn{width:100%;padding:13px;background:#F0B90B;color:#000;font-size:14px;font-weight:800;border:none;border-radius:8px;cursor:pointer;font-family:inherit;transition:background .15s;display:flex;align-items:center;justify-content:center;gap:8px}
         .li-btn:hover:not(:disabled){background:#FFD000}
-        .li-btn:disabled{background:rgba(240,185,11,0.25);color:rgba(0,0,0,0.4);cursor:not-allowed}
+        .li-btn:disabled{background:rgba(240,185,11,0.2);color:rgba(0,0,0,0.35);cursor:not-allowed}
         .li-spin{width:16px;height:16px;border:2px solid rgba(0,0,0,0.2);border-top-color:#000;border-radius:50%;animation:lispin .6s linear infinite}
         @keyframes lispin{to{transform:rotate(360deg)}}
         .li-sep{display:flex;align-items:center;gap:10px;margin:18px 0}
         .li-sep-line{flex:1;height:1px;background:rgba(255,255,255,0.07)}
         .li-sep span{font-size:12px;color:rgba(255,255,255,0.25)}
         .li-wallet-btn{width:100%;padding:12px;background:transparent;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:rgba(255,255,255,0.6);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px}
-        .li-wallet-btn:hover{border-color:rgba(240,185,11,0.3);color:#fff;background:rgba(255,255,255,0.04)}
+        .li-wallet-btn:hover{border-color:rgba(240,185,11,0.3);color:#fff}
         .li-footer{text-align:center;font-size:13px;color:rgba(255,255,255,0.35);margin-top:18px}
         .li-footer a{color:#F0B90B;text-decoration:none}
-        .li-footer a:hover{text-decoration:underline}
         .li-trust{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin-top:20px}
         .li-trust span{font-size:11px;color:rgba(255,255,255,0.2)}
       `}</style>
@@ -116,7 +91,6 @@ export default function LoginPage() {
             <div className="li-logo-nxt">NXT</div>
             <div className="li-logo-sub">Nextoken Capital</div>
           </div>
-
           <div className="li-card">
             <div className="li-title">Welcome back</div>
             <p className="li-sub">Log in to manage your tokenized asset portfolio.</p>
@@ -128,26 +102,20 @@ export default function LoginPage() {
                 <label className="li-label">Email Address</label>
                 <input className="li-input" name="email" type="email" value={form.email} onChange={handle} placeholder="you@example.com" required autoComplete="email" />
               </div>
-
               <div className="li-field">
                 <label className="li-label">Password</label>
-                <div className="li-pwd">
+                <div className="li-pwd-wrap">
                   <input className="li-input" name="password" type={showPwd ? "text" : "password"} value={form.password} onChange={handle} placeholder="Your password" required autoComplete="current-password" />
                   <button type="button" className="li-eye" onClick={() => setShowPwd(!showPwd)}>{showPwd ? "🙈" : "👁️"}</button>
                 </div>
               </div>
-
               <Link href="/forgot-password" className="li-forgot">Forgot password?</Link>
-
               <button type="submit" className="li-btn" disabled={loading || !form.email || !form.password}>
                 {loading ? <><div className="li-spin" /> Signing in...</> : "Sign In →"}
               </button>
             </form>
 
-            <div className="li-sep">
-              <div className="li-sep-line" /><span>or</span><div className="li-sep-line" />
-            </div>
-
+            <div className="li-sep"><div className="li-sep-line" /><span>or</span><div className="li-sep-line" /></div>
             <button className="li-wallet-btn" onClick={() => router.push("/dashboard")}>
               🔗 Continue with Wallet
             </button>
@@ -156,9 +124,8 @@ export default function LoginPage() {
           <p className="li-footer">
             Don&apos;t have an account? <Link href="/register">Create one free →</Link>
           </p>
-
           <div className="li-trust">
-            {["🏛️ Bank of Lithuania", "⚖️ MiCA Compliant", "🔐 SSL Encrypted"].map(t => (
+            {["🏛️ Bank of Lithuania","⚖️ MiCA Compliant","🔐 SSL Encrypted"].map(t => (
               <span key={t}>{t}</span>
             ))}
           </div>

@@ -1,36 +1,82 @@
-// pages/privacy.js
-import Head from 'next/head'
-import Link from 'next/link'
+import Head from "next/head";
+import Link from "next/link";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
-export default function Privacy() {
+const SECTIONS = [
+  { id:"1", title:"Who We Are", content:"Nextoken Capital UAB ('we', 'us', 'our') is a company registered in Lithuania (company number 306XXXXXX), authorized as an Electronic Money Institution by the Bank of Lithuania. Our registered address is Gynėjų g. 14, Vilnius 01109, Lithuania. We are the data controller for personal data processed through the Nextoken Capital platform." },
+  { id:"2", title:"What Data We Collect", content:"We collect: (a) Identity data — full name, date of birth, nationality, government ID documents; (b) Contact data — email address, phone number, postal address; (c) Financial data — investment history, transaction records, wallet addresses; (d) KYC/AML data — identity verification results, source of funds information; (e) Technical data — IP address, browser type, device information, cookies; (f) Usage data — pages visited, features used, time spent on platform." },
+  { id:"3", title:"How We Use Your Data", content:"We process your data to: provide and manage your account; verify your identity under AML/KYC regulations; process investments and transactions; comply with legal and regulatory obligations including Bank of Lithuania reporting; detect and prevent fraud; improve our platform and services; and communicate with you about your account, investments, and platform updates." },
+  { id:"4", title:"Legal Basis for Processing", content:"We process your personal data on the following legal bases: (a) Contract performance — to provide the services you have requested; (b) Legal obligation — to comply with AML, KYC, MiCA, and other EU financial regulations; (c) Legitimate interests — to improve our platform, prevent fraud, and maintain security; (d) Consent — for marketing communications, which you may withdraw at any time." },
+  { id:"5", title:"Data Sharing", content:"We share your data with: KYC/identity verification providers (Sumsub); payment processors; our legal and compliance advisors; the Bank of Lithuania and other regulatory authorities when required by law; and cloud infrastructure providers. We do not sell your personal data to third parties. All data processors are bound by data processing agreements." },
+  { id:"6", title:"International Transfers", content:"Some of our service providers are located outside the European Economic Area. Where we transfer data internationally, we ensure appropriate safeguards are in place, including Standard Contractual Clauses approved by the European Commission." },
+  { id:"7", title:"Data Retention", content:"We retain your personal data for as long as your account is active and for a minimum of 5 years after account closure to comply with AML and financial regulatory obligations. KYC documents are retained for 5 years after the end of the business relationship as required by EU AML directives." },
+  { id:"8", title:"Your Rights", content:"Under GDPR, you have the right to: access your personal data; correct inaccurate data; request deletion (subject to legal retention obligations); restrict processing; data portability; and object to processing based on legitimate interests. To exercise your rights, contact privacy@nextokencapital.com. You also have the right to lodge a complaint with the State Data Protection Inspectorate of Lithuania." },
+  { id:"9", title:"Cookies", content:"We use essential cookies to operate the platform, analytical cookies to understand usage, and preference cookies to remember your settings. You can control non-essential cookies through your browser settings. Our cookie policy is available in full on our website." },
+  { id:"10", title:"Contact", content:"For privacy questions or to exercise your rights, contact our Data Protection Officer at privacy@nextokencapital.com or by post at: Nextoken Capital UAB, Gynėjų g. 14, Vilnius 01109, Lithuania." },
+];
+
+export default function PrivacyPage() {
   return (
     <>
-      <Head><title>Privacy Policy — Nextoken Capital</title></Head>
-      <main style={{background:'#060810',color:'#e8edf5',minHeight:'100vh',fontFamily:"'DM Sans',sans-serif",paddingTop:'80px'}}>
-        <div style={{maxWidth:'780px',margin:'0 auto',padding:'0 32px 80px'}}>
-          <Link href="/" style={{fontFamily:'monospace',fontSize:'.75rem',color:'#38bd82',textDecoration:'none',letterSpacing:'.1em',display:'inline-block',marginBottom:'40px'}}>← BACK TO HOME</Link>
-          <div style={{fontFamily:'monospace',fontSize:'.7rem',letterSpacing:'.18em',color:'#38bd82',textTransform:'uppercase',marginBottom:'14px'}}>Legal</div>
-          <h1 style={{fontFamily:"'Syne',sans-serif",fontSize:'clamp(2rem,4vw,2.8rem)',fontWeight:800,lineHeight:1.1,marginBottom:'12px'}}>Privacy Policy</h1>
-          <p style={{color:'#4a5568',fontFamily:'monospace',fontSize:'.8rem',marginBottom:'48px'}}>Last updated: March 1, 2026 · Effective: March 1, 2026</p>
-
-          {[
-            { t:'1. Data Controller', b:`Nextoken Capital UAB (company number 306XXXXXX), registered at Gynėjų g. 14, Vilnius 01109, Lithuania, is the data controller responsible for your personal data. We are subject to the EU General Data Protection Regulation (GDPR) and the Law on Legal Protection of Personal Data of the Republic of Lithuania.` },
-            { t:'2. Data We Collect', b:`We collect the following categories of personal data: Identity data (full name, date of birth, nationality, government-issued ID); Contact data (email address, phone number, residential address); Financial data (bank account details, transaction history, portfolio holdings); Technical data (IP address, browser type, device identifiers, cookies); KYC/AML data (identity verification documents, source of funds declarations, PEP screening results).` },
-            { t:'3. How We Use Your Data', b:`We process your personal data for the following purposes: To provide and maintain the Platform services; To comply with our legal and regulatory obligations under MiCA, AML/CFT laws, and the EU DLT Pilot Regime; To verify your identity and conduct KYC/AML screening; To process transactions and maintain account records; To communicate important service updates and legal notices; To detect and prevent fraud, market manipulation, and other prohibited activities.` },
-            { t:'4. Legal Basis for Processing', b:`We process your personal data on the following legal bases: Performance of a contract (Art. 6(1)(b) GDPR) — processing necessary to provide Platform services; Legal obligation (Art. 6(1)(c) GDPR) — processing required by AML, financial, and tax regulations; Legitimate interests (Art. 6(1)(f) GDPR) — fraud prevention and platform security; Consent (Art. 6(1)(a) GDPR) — for marketing communications, which you may withdraw at any time.` },
-            { t:'5. Data Retention', b:`We retain personal data for as long as necessary to fulfill the purposes for which it was collected. KYC/AML records are retained for a minimum of 5 years after the end of the business relationship, as required by EU Anti-Money Laundering Directive. Transaction records are retained for 7 years for tax and regulatory compliance purposes.` },
-            { t:'6. Data Sharing', b:`We do not sell your personal data. We may share your data with: Regulatory authorities and law enforcement when required by law; Identity verification providers (KYC/AML service providers); Payment processors and banking partners; IT infrastructure and cloud service providers operating under GDPR-compliant data processing agreements; Legal and compliance advisors under strict confidentiality obligations.` },
-            { t:'7. Your Rights', b:`Under GDPR, you have the following rights: Right of access to your personal data; Right to rectification of inaccurate data; Right to erasure ("right to be forgotten") where legally permissible; Right to restriction of processing; Right to data portability; Right to object to processing based on legitimate interests; Right to withdraw consent at any time. To exercise these rights, contact privacy@nextokencapital.com.` },
-            { t:'8. Cookies', b:`We use essential cookies necessary for Platform operation, and analytical cookies to improve user experience. You may manage cookie preferences through your browser settings. Declining non-essential cookies will not affect your ability to use the Platform.` },
-            { t:'9. Contact', b:`For privacy-related inquiries, contact our Data Protection Officer at privacy@nextokencapital.com. You also have the right to lodge a complaint with the State Data Protection Inspectorate of Lithuania (www.vdai.lrv.lt) or your local supervisory authority.` },
-          ].map(s => (
-            <div key={s.t} style={{marginBottom:'36px'}}>
-              <h2 style={{fontFamily:"'Syne',sans-serif",fontSize:'1.15rem',fontWeight:700,marginBottom:'12px',color:'#e8edf5'}}>{s.t}</h2>
-              <p style={{color:'#7a8599',lineHeight:1.8,fontSize:'.92rem',margin:0}}>{s.b}</p>
-            </div>
-          ))}
+      <Head>
+        <title>Privacy Policy — Nextoken Capital</title>
+        <meta name="description" content="Privacy Policy for Nextoken Capital UAB — how we collect, use, and protect your personal data." />
+      </Head>
+      <Navbar />
+      <style>{`
+        .lp{min-height:100vh;background:#0B0E11;padding-top:64px}
+        .lp-hero{padding:52px 20px 36px;border-bottom:1px solid rgba(255,255,255,0.07)}
+        .lp-hero-inner{max-width:860px;margin:0 auto}
+        .lp-tag{font-size:11px;font-weight:700;color:#F0B90B;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+        .lp-h1{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:900;color:#fff;letter-spacing:-1px;margin-bottom:10px}
+        .lp-meta{font-size:13px;color:rgba(255,255,255,0.35)}
+        .lp-body{max-width:860px;margin:0 auto;padding:40px 20px 72px;display:grid;grid-template-columns:200px 1fr;gap:40px;align-items:start}
+        .lp-toc{position:sticky;top:84px}
+        .lp-toc-title{font-size:11px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px}
+        .lp-toc a{display:block;font-size:12px;color:rgba(255,255,255,0.45);text-decoration:none;padding:5px 0;border-left:2px solid rgba(255,255,255,0.08);padding-left:10px;transition:all .15s;margin-bottom:2px}
+        .lp-toc a:hover{color:#F0B90B;border-color:#F0B90B}
+        .lp-section{margin-bottom:36px;padding-bottom:36px;border-bottom:1px solid rgba(255,255,255,0.07)}
+        .lp-section:last-child{border-bottom:none}
+        .lp-section-num{font-size:11px;font-weight:700;color:#F0B90B;margin-bottom:6px}
+        .lp-section-title{font-size:16px;font-weight:800;color:#fff;margin-bottom:12px}
+        .lp-section-text{font-size:14px;color:rgba(255,255,255,0.55);line-height:1.85}
+        .lp-footer-links{display:flex;gap:16px;flex-wrap:wrap;margin-top:40px;padding-top:32px;border-top:1px solid rgba(255,255,255,0.07)}
+        .lp-footer-links a{font-size:13px;color:#F0B90B;text-decoration:none}
+        .lp-footer-links a:hover{text-decoration:underline}
+        @media(max-width:768px){.lp-body{grid-template-columns:1fr}.lp-toc{display:none}}
+      `}</style>
+      <div className="lp">
+        <div className="lp-hero">
+          <div className="lp-hero-inner">
+            <div className="lp-tag">Legal</div>
+            <h1 className="lp-h1">Privacy Policy</h1>
+            <p className="lp-meta">Last updated: March 1, 2026 · Nextoken Capital UAB, Lithuania · GDPR Compliant</p>
+          </div>
         </div>
-      </main>
+        <div className="lp-body">
+          <div className="lp-toc">
+            <div className="lp-toc-title">Contents</div>
+            {SECTIONS.map(s => <a key={s.id} href={`#s${s.id}`}>{s.id}. {s.title}</a>)}
+          </div>
+          <div>
+            {SECTIONS.map(s => (
+              <div key={s.id} id={`s${s.id}`} className="lp-section">
+                <div className="lp-section-num">Section {s.id}</div>
+                <div className="lp-section-title">{s.title}</div>
+                <p className="lp-section-text">{s.content}</p>
+              </div>
+            ))}
+            <div className="lp-footer-links">
+              <Link href="/terms">Terms of Service</Link>
+              <Link href="/risk">Risk Disclosure</Link>
+              <Link href="/aml">AML Policy</Link>
+              <Link href="/contact">Contact Us</Link>
+            </div>
+          </div>
+        </div>
+      </div>
+      <Footer />
     </>
-  )
+  );
 }

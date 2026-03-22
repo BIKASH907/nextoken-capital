@@ -1,41 +1,90 @@
-// pages/risk.js
-import Head from 'next/head'
-import Link from 'next/link'
+import Head from "next/head";
+import Link from "next/link";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
-export default function Risk() {
+const RISKS = [
+  { icon:"📉", title:"Market Risk",         color:"#FF4D4D", desc:"The value of tokenized assets may go down as well as up. You may receive back less than you invested. Past performance is not a reliable indicator of future results. Real estate values, bond prices, and equity valuations are affected by economic conditions, interest rates, and market sentiment." },
+  { icon:"💧", title:"Liquidity Risk",       color:"#F0B90B", desc:"Tokenized assets may be difficult to sell quickly at a fair price. Secondary market trading depends on the availability of buyers and sellers. There is no guarantee that a secondary market will exist for any particular token, and you may be unable to exit your investment before the stated maturity date." },
+  { icon:"⚖️", title:"Regulatory Risk",      color:"#3B82F6", desc:"The regulatory environment for crypto-assets and tokenized securities is evolving. Changes in law, regulation, or regulatory interpretation may affect the value of your investments, your ability to trade, or the platform's ability to operate. MiCA and other EU regulations may impose new requirements." },
+  { icon:"🔐", title:"Technology Risk",      color:"#0ECB81", desc:"Blockchain technology is subject to software bugs, cyber attacks, and infrastructure failures. Smart contract vulnerabilities could result in loss of funds. While we implement security best practices and hold ISO 27001 certification, no system is entirely free from technical risk." },
+  { icon:"🏗️", title:"Issuer Risk",          color:"#F0B90B", desc:"The financial performance of the underlying asset depends on the issuer's ability to manage and operate it. Issuers may default, become insolvent, or fail to deliver projected returns. Our compliance review does not constitute a recommendation or guarantee of performance." },
+  { icon:"💱", title:"Currency Risk",        color:"#3B82F6", desc:"If you invest in assets denominated in a currency other than your home currency, exchange rate fluctuations may affect the value of your investment when converted back. Euro-denominated investments carry currency risk for non-Eurozone investors." },
+  { icon:"🌐", title:"Concentration Risk",   color:"#FF4D4D", desc:"Investing a large proportion of your portfolio in a single asset, sector, or geography increases your exposure to specific risks. We recommend diversifying your investments across multiple asset classes, sectors, and geographies to reduce concentration risk." },
+  { icon:"📋", title:"Operational Risk",     color:"#0ECB81", desc:"Platform downtime, settlement failures, or administrative errors could affect your ability to invest or trade. While we maintain business continuity plans, operational disruptions may delay or prevent transactions from being executed at the desired time or price." },
+];
+
+export default function RiskPage() {
   return (
     <>
-      <Head><title>Risk Disclosure — Nextoken Capital</title></Head>
-      <main style={{background:'#060810',color:'#e8edf5',minHeight:'100vh',fontFamily:"'DM Sans',sans-serif",paddingTop:'80px'}}>
-        <div style={{maxWidth:'780px',margin:'0 auto',padding:'0 32px 80px'}}>
-          <Link href="/" style={{fontFamily:'monospace',fontSize:'.75rem',color:'#38bd82',textDecoration:'none',letterSpacing:'.1em',display:'inline-block',marginBottom:'40px'}}>← BACK TO HOME</Link>
-          <div style={{fontFamily:'monospace',fontSize:'.7rem',letterSpacing:'.18em',color:'#38bd82',textTransform:'uppercase',marginBottom:'14px'}}>Legal</div>
-          <h1 style={{fontFamily:"'Syne',sans-serif",fontSize:'clamp(2rem,4vw,2.8rem)',fontWeight:800,lineHeight:1.1,marginBottom:'12px'}}>Risk Disclosure</h1>
-          <p style={{color:'#4a5568',fontFamily:'monospace',fontSize:'.8rem',marginBottom:'24px'}}>Last updated: March 1, 2026</p>
-
-          <div style={{background:'rgba(224,80,80,0.08)',border:'1px solid rgba(224,80,80,0.25)',borderRadius:'12px',padding:'20px 24px',marginBottom:'48px'}}>
-            <p style={{color:'#e8edf5',fontWeight:500,margin:0,fontSize:'.92rem'}}>⚠️ Important Warning: Investing in tokenized assets involves significant risk. You may lose some or all of your invested capital. Past performance is not indicative of future results. Please read this entire document before investing.</p>
+      <Head>
+        <title>Risk Disclosure — Nextoken Capital</title>
+        <meta name="description" content="Important risk disclosure for investors using the Nextoken Capital tokenized asset platform." />
+      </Head>
+      <Navbar />
+      <style>{`
+        .rk{min-height:100vh;background:#0B0E11;padding-top:64px}
+        .rk-hero{padding:52px 20px 40px;border-bottom:1px solid rgba(255,255,255,0.07);text-align:center}
+        .rk-tag{font-size:11px;font-weight:700;color:#FF4D4D;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+        .rk-h1{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:900;color:#fff;letter-spacing:-1px;margin-bottom:14px}
+        .rk-warning{max-width:680px;margin:0 auto;padding:16px 20px;background:rgba(255,77,77,0.08);border:1px solid rgba(255,77,77,0.25);border-radius:10px;font-size:13px;color:rgba(255,255,255,0.7);line-height:1.7;text-align:left}
+        .rk-body{max-width:1100px;margin:0 auto;padding:48px 20px 72px}
+        .rk-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-bottom:48px}
+        .rk-card{background:#0F1318;border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:26px}
+        .rk-card-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+        .rk-card-icon{font-size:24px}
+        .rk-card-title{font-size:15px;font-weight:800;color:#fff}
+        .rk-card-text{font-size:13px;color:rgba(255,255,255,0.5);line-height:1.8}
+        .rk-summary{background:#0F1318;border:1px solid rgba(255,77,77,0.2);border-radius:14px;padding:28px;margin-bottom:32px}
+        .rk-summary-title{font-size:15px;font-weight:800;color:#FF4D4D;margin-bottom:16px}
+        .rk-summary-item{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:rgba(255,255,255,0.55);line-height:1.7;margin-bottom:10px}
+        .rk-summary-item::before{content:"•";color:#FF4D4D;flex-shrink:0;margin-top:1px}
+        .rk-footer-links{display:flex;gap:16px;flex-wrap:wrap;padding-top:32px;border-top:1px solid rgba(255,255,255,0.07)}
+        .rk-footer-links a{font-size:13px;color:#F0B90B;text-decoration:none}
+        @media(max-width:768px){.rk-grid{grid-template-columns:1fr}}
+      `}</style>
+      <div className="rk">
+        <div className="rk-hero">
+          <div className="rk-tag">Risk Disclosure</div>
+          <h1 className="rk-h1">Important Risk Information</h1>
+          <div className="rk-warning">
+            <strong>Capital at Risk.</strong> Investing in tokenized assets involves significant risk and is not suitable for all investors. The value of your investments can go down as well as up, and you may lose all of the money you invest. Please read this risk disclosure carefully before investing and consider seeking independent financial advice.
           </div>
-
-          {[
-            { t:'1. Market Risk', b:`The value of tokenized assets can fluctuate significantly due to market conditions, economic factors, and investor sentiment. Crypto-asset markets can be highly volatile and may experience rapid and substantial price movements. There is no guarantee that you will be able to sell your tokenized assets at a price equal to or greater than your purchase price.` },
-            { t:'2. Liquidity Risk', b:`Tokenized assets may have limited liquidity, meaning you may not be able to sell your holdings quickly or at your desired price. Secondary market trading volumes for tokenized real-world assets may be low, particularly for smaller issuances. You should only invest funds that you can afford to have locked up for an extended period.` },
-            { t:'3. Regulatory Risk', b:`The regulatory framework for tokenized assets and crypto-assets is evolving. Changes in laws, regulations, or regulatory guidance — including changes to MiCA, the EU DLT Pilot Regime, or national legislation — may adversely affect the value, transferability, or legality of tokenized assets. Nextoken Capital UAB cannot guarantee the continued regulatory compliance of any tokenized asset.` },
-            { t:'4. Technology Risk', b:`The Platform relies on distributed ledger technology, which carries inherent technical risks including smart contract vulnerabilities, blockchain network failures, cybersecurity attacks, and protocol changes. Although we implement industry-standard security measures, no technology system is completely immune to failure or attack.` },
-            { t:'5. Issuer Risk', b:`Tokenized assets represent claims on underlying real-world assets or issuers. The value of your investment is dependent on the financial health and performance of the underlying asset or issuer. Issuers may default on their obligations, and the value of underlying real assets may decline. Nextoken Capital UAB does not guarantee the performance of any issuer or underlying asset.` },
-            { t:'6. Custody Risk', b:`Digital assets held on the Platform are subject to custody risk. While we implement robust security measures, including cold storage for digital assets, there is a risk of loss due to theft, hacking, or operational failure. Assets held on the Platform are not covered by the EU Deposit Guarantee Scheme or the Investor Compensation Scheme.` },
-            { t:'7. Foreign Exchange Risk', b:`If you invest in tokenized assets denominated in a currency other than your home currency, you are exposed to foreign exchange risk. Currency fluctuations may increase or decrease the value of your investment when converted back to your home currency.` },
-            { t:'8. Concentration Risk', b:`Investing a significant proportion of your portfolio in tokenized assets, or in a single tokenized asset, increases your exposure to the specific risks of that asset class or issuer. We recommend diversification across asset classes and issuers.` },
-            { t:'9. Who Should Invest', b:`Tokenized assets are generally suitable for investors who: understand the risks described in this document; can afford to lose their entire investment; have a medium to long-term investment horizon; and have experience with digital assets or alternative investments. If you are uncertain whether tokenized assets are appropriate for you, please consult an independent financial advisor.` },
-            { t:'10. No Investment Advice', b:`Nothing on the Platform constitutes investment advice, financial advice, or a recommendation to buy or sell any tokenized asset. All investment decisions are your own. Nextoken Capital UAB is not responsible for any investment losses you may incur.` },
-          ].map(s => (
-            <div key={s.t} style={{marginBottom:'36px'}}>
-              <h2 style={{fontFamily:"'Syne',sans-serif",fontSize:'1.15rem',fontWeight:700,marginBottom:'12px',color:'#e8edf5'}}>{s.t}</h2>
-              <p style={{color:'#7a8599',lineHeight:1.8,fontSize:'.92rem',margin:0}}>{s.b}</p>
-            </div>
-          ))}
         </div>
-      </main>
+        <div className="rk-body">
+          <div className="rk-grid">
+            {RISKS.map(r => (
+              <div key={r.title} className="rk-card">
+                <div className="rk-card-head">
+                  <span className="rk-card-icon">{r.icon}</span>
+                  <span className="rk-card-title" style={{ color: r.color }}>{r.title}</span>
+                </div>
+                <p className="rk-card-text">{r.desc}</p>
+              </div>
+            ))}
+          </div>
+          <div className="rk-summary">
+            <div className="rk-summary-title">⚠️ Key Points to Remember</div>
+            {[
+              "Only invest money you can afford to lose entirely.",
+              "Tokenized assets are not covered by the EU Deposit Guarantee Scheme.",
+              "Past performance of an asset does not guarantee future returns.",
+              "You should diversify your investments to reduce risk.",
+              "Ensure you understand the specific risks of each asset before investing.",
+              "Consider your investment horizon — some assets have lock-up periods.",
+              "Regulatory changes may affect your ability to trade or withdraw funds.",
+              "Seek independent financial, legal, and tax advice if in doubt.",
+            ].map(t => <div key={t} className="rk-summary-item">{t}</div>)}
+          </div>
+          <div className="rk-footer-links">
+            <Link href="/terms">Terms of Service</Link>
+            <Link href="/privacy">Privacy Policy</Link>
+            <Link href="/aml">AML Policy</Link>
+            <Link href="/contact">Contact Us</Link>
+          </div>
+        </div>
+      </div>
+      <Footer />
     </>
-  )
+  );
 }
