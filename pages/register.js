@@ -444,6 +444,36 @@ export default function RegisterPage() {
                         {["Google Authenticator","Authy","SMS OTP"].map(a => <span key={a} style={{ padding:"3px 8px", borderRadius:6, background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.07)", fontSize:10.5, color:"#8a9bb8" }}>{a}</span>)}
                       </div>
                     </div>
+
+                    {/* WALLET BACKUP GUIDE */}
+                    <div style={{ padding:16, borderRadius:14, border:"1px solid rgba(240,185,11,0.3)", background:"rgba(240,185,11,0.05)", marginBottom:16 }}>
+                      <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:10 }}>
+                        <span style={{ fontSize:20 }}>🔐</span>
+                        <p style={{ fontSize:13.5, fontWeight:700, color:"#F0B90B", margin:0 }}>Wallet Backup Guide</p>
+                      </div>
+                      <p style={{ fontSize:12, color:"#8a9bb8", margin:"0 0 10px", lineHeight:1.65 }}>
+                        If you connect a Web3 wallet, protect your assets by following these steps:
+                      </p>
+                      {[
+                        { icon:"📝", t:"Write it down", d:"Write your 12 or 24-word recovery phrase on physical paper. Never store it digitally or take a screenshot." },
+                        { icon:"🔒", t:"Store securely", d:"Keep backups in a secure, fireproof location. Consider a safety deposit box for large holdings." },
+                        { icon:"⚠️", t:"Never share it", d:"Your recovery phrase gives full access to your wallet. Nextoken will NEVER ask for it." },
+                        { icon:"🚨", t:"Lost phrase = lost assets", d:"If you lose your recovery phrase, your crypto assets cannot be recovered by anyone — including us." },
+                      ].map(item => (
+                        <div key={item.t} style={{ display:"flex", gap:10, marginBottom:8, alignItems:"flex-start" }}>
+                          <span style={{ fontSize:16, flexShrink:0, marginTop:1 }}>{item.icon}</span>
+                          <div>
+                            <p style={{ fontSize:12.5, fontWeight:700, color:"#e8e8f0", margin:"0 0 2px" }}>{item.t}</p>
+                            <p style={{ fontSize:11.5, color:"#8a9bb8", margin:0, lineHeight:1.55 }}>{item.d}</p>
+                          </div>
+                        </div>
+                      ))}
+                      <div style={{ marginTop:10, padding:"8px 12px", borderRadius:8, background:"rgba(239,68,68,0.08)", border:"1px solid rgba(239,68,68,0.2)" }}>
+                        <p style={{ fontSize:12, color:"#f87171", fontWeight:600, margin:0 }}>
+                          🛡 Nextoken will NEVER ask for your seed phrase, private key, or wallet password.
+                        </p>
+                      </div>
+                    </div>
                     <Checkbox checked={agree} onChange={() => setAgree(!agree)}>
                       I accept the <Link href="/terms" style={{ color:"#F0B90B" }}>Terms of Service</Link>, <Link href="/privacy" style={{ color:"#F0B90B" }}>Privacy Policy</Link>, and <Link href="/risk" style={{ color:"#F0B90B" }}>Risk Disclosure</Link>. <span style={{ color:"#F0B90B" }}>*</span>
                     </Checkbox>
