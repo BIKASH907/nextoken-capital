@@ -1,4 +1,6 @@
-import { useState } from "react";
+const fs = require("fs");
+
+const code = `import { useState } from "react";
 import Link from "next/link";
 
 export default function ForgotPasswordPage() {
@@ -9,7 +11,7 @@ export default function ForgotPasswordPage() {
 
   async function handle(e) {
     e.preventDefault();
-    if (!email.trim() || !/\S+@\S+\.\S+/.test(email)) {
+    if (!email.trim() || !/\\S+@\\S+\\.\\S+/.test(email)) {
       setError("Please enter a valid email address.");
       return;
     }
@@ -22,7 +24,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <div style={{ minHeight:"100vh", background:"#05060a", color:"#e8e8f0", fontFamily:"'DM Sans',system-ui,sans-serif", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:"40px 24px" }}>
-      <style>{`
+      <style>{\`
         @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap');
         * { box-sizing:border-box; margin:0; padding:0; }
         body { margin:0; }
@@ -31,7 +33,7 @@ export default function ForgotPasswordPage() {
         input:focus { border-color:#F0B90B !important; outline:none; }
         @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
         .fu { animation: fadeUp 0.35s ease both; }
-      `}</style>
+      \`}</style>
 
       {/* Logo */}
       <Link href="/" style={{ display:"flex", alignItems:"center", gap:12, textDecoration:"none", marginBottom:32 }}>
@@ -125,3 +127,7 @@ export default function ForgotPasswordPage() {
     </div>
   );
 }
+`;
+
+fs.writeFileSync("pages/forgot-password.js", code, "utf8");
+console.log("Done! pages/forgot-password.js — " + code.length + " chars");
