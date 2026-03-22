@@ -4,7 +4,7 @@ import Link from "next/link";
 
 const S = {
   page:    { minHeight:"100vh", background:"#050508", color:"#e8e8f0", fontFamily:"'DM Sans',system-ui,sans-serif" },
-  nav:     { display:"flex", alignItems:"center", justifyContent:"space-between", padding:"0 32px", height:64, background:"rgba(5,5,8,0.95)", borderBottom:"1px solid rgba(255,255,255,0.08)", position:"sticky", top:0, zIndex:100, backdropFilter:"blur(20px)" },
+  nav:     { display:"flex", alignItems:"center", justifyContent:"space-between", padding:"0 32px", height:64, background:"rgba(5,5,8,0.95)", borderBottom:"1px solid rgba(255,255,255,0.08)", position:"sticky" as const, top:0, zIndex:100, backdropFilter:"blur(20px)" },
   section: { maxWidth:1200, margin:"0 auto", padding:"64px 32px" },
   h2:      { fontFamily:"Syne,sans-serif", fontSize:"clamp(26px,4vw,40px)", fontWeight:800, color:"#e8e8f0", margin:"0 0 12px", letterSpacing:"-0.5px" },
   label:   { fontSize:11, fontWeight:700, letterSpacing:"0.2em", textTransform:"uppercase", color:"#d4af37", marginBottom:10, display:"block" },
