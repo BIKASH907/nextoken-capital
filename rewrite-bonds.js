@@ -1,4 +1,7 @@
-"use client";
+const fs = require("fs");
+fs.mkdirSync("app/bonds", { recursive: true });
+
+const code = `"use client";
 import { useState } from "react";
 
 const typeColor: Record<string, { bg: string; color: string; border: string }> = {
@@ -147,7 +150,7 @@ export default function BondsPage() {
 
   return (
     <div style={PAGE}>
-      <style>{`
+      <style>{\`
         @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
         * { box-sizing:border-box; margin:0; padding:0; }
         body { margin:0; }
@@ -158,7 +161,7 @@ export default function BondsPage() {
         ::-webkit-scrollbar-thumb { background:rgba(212,175,55,0.3); border-radius:3px; }
         table { border-collapse:collapse; width:100%; }
         th { text-align:left; }
-      `}</style>
+      \`}</style>
 
       {/* NAVBAR */}
       <nav style={NAV}>
@@ -386,3 +389,7 @@ export default function BondsPage() {
     </div>
   );
 }
+`;
+
+fs.writeFileSync("app/bonds/page.tsx", code, "utf8");
+console.log("Done! " + code.length + " chars — clean TypeScript JSX, no React.createElement");
