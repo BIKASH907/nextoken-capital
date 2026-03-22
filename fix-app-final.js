@@ -1,4 +1,6 @@
-import { useState, useEffect } from "react";
+const fs = require("fs");
+
+const code = `import { useState, useEffect } from "react";
 import { RainbowKitProvider, getDefaultWallets, darkTheme } from "@rainbow-me/rainbowkit";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { mainnet, polygon, arbitrum, optimism, base } from "wagmi/chains";
@@ -27,7 +29,7 @@ const wagmiConfig = createConfig({
   publicClient,
 });
 
-const globalStyles = `
+const globalStyles = \`
   @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800;900&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@300;400;500&display=swap');
   *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
   html { scroll-behavior:smooth; }
@@ -53,7 +55,7 @@ const globalStyles = `
   .pulse      { animation:pulse     2s    infinite;  }
   .spin       { animation:spin      1s    linear infinite; }
   .page-enter { animation:fadeUp    0.3s  ease both; }
-`;
+\`;
 
 function WalletBackupReminder() {
   const [show, setShow] = useState(false);
@@ -188,3 +190,7 @@ export default function App({ Component, pageProps, router }) {
     </WagmiConfig>
   );
 }
+`;
+
+fs.writeFileSync("pages/_app.js", code, "utf8");
+console.log("Done! pages/_app.js fixed — " + code.length + " chars");
