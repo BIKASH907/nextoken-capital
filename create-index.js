@@ -1,4 +1,6 @@
-import Link from "next/link";
+const fs = require("fs");
+
+const code = `import Link from "next/link";
 import { useState, useEffect } from "react";
 
 const stats = [
@@ -85,7 +87,7 @@ export default function HomePage() {
 
   return (
     <div style={S.page}>
-      <style>{`
+      <style>{\`
         @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800;900&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
         * { box-sizing:border-box; margin:0; padding:0; }
         body { margin:0; }
@@ -101,7 +103,7 @@ export default function HomePage() {
         ::-webkit-scrollbar-thumb { background:rgba(240,185,11,0.3); border-radius:3px; }
         .feature-card:hover { border-color:rgba(240,185,11,0.35) !important; transform:translateY(-4px) !important; }
         .step-card:hover { border-color:rgba(240,185,11,0.25) !important; }
-      `}</style>
+      \`}</style>
 
       {/* ── HERO ─────────────────────────────────────────────── */}
       <div style={{ position:"relative", minHeight:"92vh", display:"flex", alignItems:"center", justifyContent:"center", textAlign:"center", padding:"120px 32px 80px", overflow:"hidden" }}>
@@ -485,3 +487,7 @@ export default function HomePage() {
     </div>
   );
 }
+`;
+
+fs.writeFileSync("pages/index.js", code, "utf8");
+console.log("Done! pages/index.js — " + code.length + " chars");
