@@ -1,12 +1,10 @@
 import { useState } from "react";
-import Navbar from "../components/Navbar";
 
 export default function KYC() {
   const [status, setStatus] = useState("not_started");
 
   return (
     <div style={{ background: "#0B0E11", minHeight: "100vh", color: "white" }}>
-      <Navbar />
 
       <div style={{ maxWidth: "900px", margin: "0 auto", padding: "3rem 1rem" }}>
         <h1 style={{ fontSize: "2rem", fontWeight: 800, marginBottom: "0.5rem" }}>

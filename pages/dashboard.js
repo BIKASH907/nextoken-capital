@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../lib/AuthContext';
-import Navbar from '../components/Navbar';
 import AuthModal from '../components/AuthModal';
 
 export default function Dashboard() {
@@ -90,7 +89,6 @@ export default function Dashboard() {
 
   return (
     <div style={{ background: dark, minHeight: '100vh', color: '#fff', fontFamily: "'Inter', sans-serif" }}>
-      <Navbar />
       
       <div style={{ display: 'flex', paddingTop: '70px' }}>
         {/* Sidebar */}
