@@ -1,37 +1,78 @@
-// pages/dashboard.js
-// All data comes from AppContext — portfolio, wallet, markets, bonds, IPOs.
-// Any change to AppContext.js auto-reflects here.
-
 import Head from "next/head";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { useApp } from "../lib/AppContext";
+
+// All platform data — edit here to update dashboard
+const MARKETS = [
+  { id:1, emoji:"☀️", title:"Solar Farm Portfolio",      location:"Alicante, Spain",        roi:18.2, min:250,  raised:4600000, target:5000000 },
+  { id:2, emoji:"🏢", title:"Tokenized Office Building", location:"Berlin, Germany",        roi:16.4, min:500,  raised:1872000, target:2400000 },
+  { id:3, emoji:"💨", title:"Wind Energy Project",       location:"Gdansk, Poland",         roi:17.6, min:250,  raised:2145000, target:6500000 },
+  { id:4, emoji:"🏭", title:"Logistics Hub",             location:"Warsaw, Poland",         roi:15.1, min:1000, raised:3600000, target:8000000 },
+];
+const BONDS = [
+  { id:1, name:"Baltic Infrastructure Bond", issuer:"NXT Infrastructure UAB", coupon:"7.5%", term:"36 mo", rating:"BBB+", status:"Live" },
+  { id:2, name:"European Solar Bond I",       issuer:"SolarBridge Capital",    coupon:"8.2%", term:"60 mo", rating:"BB+",  status:"Live" },
+  { id:3, name:"Warsaw Logistics Bond",       issuer:"LogiPark Holdings",      coupon:"6.9%", term:"24 mo", rating:"BBB",  status:"Live" },
+];
+const IPOS = [
+  { id:1, name:"BalticPay Technologies", sector:"Fintech",    price:"€5.00",  date:"Apr 2026", status:"Open" },
+  { id:2, name:"GreenVolt Energy",        sector:"Renewables", price:"€10.00", date:"May 2026", status:"Open" },
+];
+const TOKENS = [
+  { symbol:"SOLAR-01", name:"Solar Farm Portfolio",      price:10.42, change:+2.4,  yield:"18.2%" },
+  { symbol:"WIND-07",  name:"Wind Energy Project",       price:12.15, change:+5.1,  yield:"17.6%" },
+  { symbol:"TECH-08",  name:"Tech Business Park",        price:15.30, change:+3.7,  yield:"15.9%" },
+  { symbol:"OFFIC-03", name:"Tokenized Office Building", price:8.91,  change:-0.8,  yield:"16.4%" },
+  { symbol:"LOGX-06",  name:"Logistics Hub",             price:11.20, change:+1.9,  yield:"15.1%" },
+];
+
+const DEFAULT_PORTFOLIO = {
+  totalValue: 12450, totalInvested: 10000, totalReturn: 2450,
+  holdings: [
+    { symbol:"SOLAR-01", name:"Solar Farm Portfolio",      qty:120, price:10.42, value:1250.40, change:2.4  },
+    { symbol:"WIND-07",  name:"Wind Energy Project",       qty:80,  price:12.15, value:972.00,  change:5.1  },
+    { symbol:"TECH-08",  name:"Tech Business Park",        qty:50,  price:15.30, value:765.00,  change:3.7  },
+    { symbol:"OFFIC-03", name:"Tokenized Office Building", qty:200, price:8.91,  value:1782.00, change:-0.8 },
+  ],
+};
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { user, wallet, portfolio, markets, bonds, ipos, tokens, stats, connectWallet, addNotification } = useApp();
-  const [tab, setTab] = useState("overview");
+  const [user, setUser]           = useState(null);
+  const [portfolio, setPortfolio] = useState(DEFAULT_PORTFOLIO);
+  const [tab, setTab]             = useState("overview");
+  const [mounted, setMounted]     = useState(false);
 
-  // Redirect to login if not logged in
   useEffect(() => {
-    if (typeof window !== "undefined" && !user) {
+    setMounted(true);
+    try {
+      const u = localStorage.getItem("nxt_user");
+      const p = localStorage.getItem("nxt_portfolio");
+      if (!u) { router.push("/login"); return; }
+      setUser(JSON.parse(u));
+      if (p) setPortfolio(JSON.parse(p));
+    } catch {
       router.push("/login");
     }
-  }, [user, router]);
+  }, [router]);
 
-  if (!user) return null;
+  const logout = () => {
+    localStorage.removeItem("nxt_user");
+    router.push("/login");
+  };
+
+  if (!mounted || !user) return (
+    <div style={{ minHeight:"100vh", background:"#0B0E11", display:"flex", alignItems:"center", justifyContent:"center" }}>
+      <div style={{ color:"rgba(255,255,255,0.3)", fontSize:13 }}>Loading...</div>
+    </div>
+  );
 
   const returnPct = portfolio.totalInvested > 0
-    ? ((portfolio.totalReturn / portfolio.totalInvested) * 100).toFixed(2)
-    : "0.00";
-
-  const liveMarkets  = markets.filter(m => m.badge === "Live").slice(0, 3);
-  const liveBonds    = bonds.filter(b => b.status === "Live").slice(0, 3);
-  const openIPOs     = ipos.filter(i => i.status === "Open").slice(0, 2);
-  const topTokens    = tokens.slice(0, 4);
+    ? ((portfolio.totalReturn / portfolio.totalInvested) * 100).toFixed(1)
+    : "0.0";
 
   return (
     <>
@@ -40,122 +81,61 @@ export default function DashboardPage() {
         <meta name="description" content="Your Nextoken Capital investment dashboard." />
       </Head>
       <Navbar />
-
       <style>{`
-        .db-page{min-height:100vh;background:#0B0E11;padding-top:64px}
-        .db-header{background:#0F1318;border-bottom:1px solid rgba(255,255,255,0.07);padding:28px 20px}
-        .db-header-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
-        .db-welcome{font-size:clamp(1.2rem,2.5vw,1.6rem);font-weight:900;color:#fff}
-        .db-sub{font-size:13px;color:rgba(255,255,255,0.4);margin-top:3px}
+        .db{min-height:100vh;background:#0B0E11;padding-top:64px}
+        .db-header{background:#0F1318;border-bottom:1px solid rgba(255,255,255,0.07);padding:24px 20px}
+        .db-header-in{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px}
+        .db-welcome{font-size:clamp(1.1rem,2.5vw,1.5rem);font-weight:900;color:#fff}
+        .db-welcome-sub{font-size:13px;color:rgba(255,255,255,0.38);margin-top:3px}
         .db-header-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-        .db-wallet-chip{display:flex;align-items:center;gap:7px;padding:8px 14px;background:rgba(14,203,129,0.08);border:1px solid rgba(14,203,129,0.2);border-radius:8px;font-size:12px;color:#0ECB81;font-weight:700;cursor:pointer;transition:all .15s}
-        .db-wallet-chip:hover{background:rgba(14,203,129,0.15)}
-        .db-body{max-width:1280px;margin:0 auto;padding:28px 20px 60px}
-        .db-tabs{display:flex;gap:4px;margin-bottom:28px;border-bottom:1px solid rgba(255,255,255,0.07);padding-bottom:0}
-        .db-tab{padding:10px 20px;font-size:13px;font-weight:600;color:rgba(255,255,255,0.45);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;font-family:inherit;transition:all .15s;margin-bottom:-1px}
+        .db-invest-btn{padding:9px 20px;background:#F0B90B;color:#000;border:none;border-radius:7px;font-size:13px;font-weight:800;cursor:pointer;text-decoration:none;font-family:inherit}
+        .db-logout-btn{padding:9px 16px;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6);border:1px solid rgba(255,255,255,0.12);border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s}
+        .db-logout-btn:hover{color:#FF6B6B;border-color:rgba(255,77,77,0.3)}
+        .db-body{max-width:1280px;margin:0 auto;padding:24px 20px 60px}
+        .db-tabs{display:flex;gap:0;border-bottom:1px solid rgba(255,255,255,0.07);margin-bottom:24px;overflow-x:auto}
+        .db-tab{padding:10px 20px;font-size:13px;font-weight:600;color:rgba(255,255,255,0.4);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap;margin-bottom:-1px}
         .db-tab:hover{color:#fff}
         .db-tab.on{color:#F0B90B;border-bottom-color:#F0B90B}
-
-        /* STATS ROW */
-        .db-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
-        .db-stat{background:#0F1318;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:20px}
-        .db-stat-v{font-size:1.7rem;font-weight:900;line-height:1;margin-bottom:5px}
-        .db-stat-l{font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:.5px}
-        .db-stat-ch{font-size:12px;font-weight:700;margin-top:4px}
-        .pos{color:#0ECB81} .neg{color:#FF4D4D} .gold{color:#F0B90B}
-
-        /* SECTIONS */
-        .db-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:20px;margin-bottom:20px}
-        .db-card{background:#0F1318;border:1px solid rgba(255,255,255,0.07);border-radius:14px;overflow:hidden}
-        .db-card-head{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;justify-content:space-between}
-        .db-card-title{font-size:14px;font-weight:700;color:#fff}
-        .db-card-link{font-size:12px;color:#F0B90B;text-decoration:none}
-        .db-card-link:hover{text-decoration:underline}
-        .db-card-body{padding:4px 0}
-
-        /* HOLDINGS */
-        .db-holding{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid rgba(255,255,255,0.05);gap:12px}
-        .db-holding:last-child{border-bottom:none}
-        .db-h-sym{font-size:12px;font-weight:800;color:#fff}
-        .db-h-name{font-size:11px;color:rgba(255,255,255,0.35);margin-top:1px}
-        .db-h-val{font-size:13px;font-weight:700;color:#fff;text-align:right}
-        .db-h-chg{font-size:11px;font-weight:700;text-align:right;margin-top:1px}
-        .db-empty{padding:24px 20px;font-size:13px;color:rgba(255,255,255,0.35);text-align:center}
-
-        /* MARKET ROWS */
-        .db-mkt-row{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid rgba(255,255,255,0.05);gap:12px}
-        .db-mkt-row:last-child{border-bottom:none}
-        .db-mkt-icon{font-size:20px;flex-shrink:0}
-        .db-mkt-name{font-size:13px;font-weight:700;color:#fff;flex:1}
-        .db-mkt-loc{font-size:11px;color:rgba(255,255,255,0.35)}
-        .db-mkt-roi{font-size:13px;font-weight:800;color:#F0B90B;text-align:right}
-        .db-mkt-min{font-size:11px;color:rgba(255,255,255,0.35);text-align:right}
-
-        /* BOND ROWS */
-        .db-bond-row{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid rgba(255,255,255,0.05);gap:12px}
-        .db-bond-row:last-child{border-bottom:none}
-        .db-bond-name{font-size:13px;font-weight:700;color:#fff;flex:1}
-        .db-bond-issuer{font-size:11px;color:rgba(255,255,255,0.35)}
-        .db-bond-coupon{font-size:14px;font-weight:900;color:#0ECB81;text-align:right}
-        .db-bond-term{font-size:11px;color:rgba(255,255,255,0.35);text-align:right}
-
-        /* IPO ROWS */
-        .db-ipo-row{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid rgba(255,255,255,0.05);gap:12px}
-        .db-ipo-row:last-child{border-bottom:none}
-        .db-ipo-name{font-size:13px;font-weight:700;color:#fff}
-        .db-ipo-sector{font-size:11px;color:rgba(255,255,255,0.35)}
-        .db-ipo-price{font-size:14px;font-weight:900;color:#3B82F6;text-align:right}
-        .db-ipo-date{font-size:11px;color:rgba(255,255,255,0.35);text-align:right}
-        .db-ipo-badge{padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;background:rgba(59,130,246,0.12);color:#3B82F6;border:1px solid rgba(59,130,246,0.25)}
-
-        /* EXCHANGE MINI */
-        .db-tok-row{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid rgba(255,255,255,0.05);gap:12px}
-        .db-tok-row:last-child{border-bottom:none}
-        .db-tok-sym{font-size:12px;font-weight:800;color:#fff}
-        .db-tok-name{font-size:11px;color:rgba(255,255,255,0.35)}
-        .db-tok-price{font-size:13px;font-weight:700;color:#fff;text-align:right}
-        .db-tok-chg{font-size:12px;font-weight:700;text-align:right}
-
-        /* QUICK ACTIONS */
-        .db-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
-        .db-action{background:#0F1318;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:18px 16px;text-align:center;text-decoration:none;transition:all .2s;cursor:pointer}
-        .db-action:hover{border-color:rgba(240,185,11,0.3);background:rgba(240,185,11,0.04);transform:translateY(-1px)}
-        .db-action-icon{font-size:24px;margin-bottom:8px}
-        .db-action-label{font-size:12px;font-weight:700;color:rgba(255,255,255,0.7)}
-
-        /* PROGRESS BAR */
-        .db-prog-bar{height:3px;background:rgba(255,255,255,0.07);border-radius:2px;margin-top:6px;overflow:hidden}
+        .db-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+        .db-stat{background:#0F1318;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:18px 20px}
+        .db-stat-v{font-size:1.6rem;font-weight:900;line-height:1;margin-bottom:5px}
+        .db-stat-l{font-size:11px;color:rgba(255,255,255,0.38);text-transform:uppercase;letter-spacing:.5px}
+        .db-stat-c{font-size:12px;font-weight:700;margin-top:4px}
+        .gold{color:#F0B90B} .green{color:#0ECB81} .red{color:#FF4D4D}
+        .db-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:18px;margin-bottom:18px}
+        .db-card{background:#0F1318;border:1px solid rgba(255,255,255,0.07);border-radius:13px;overflow:hidden}
+        .db-card-head{padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-between}
+        .db-card-title{font-size:13px;font-weight:700;color:#fff}
+        .db-card-link{font-size:12px;color:#F0B90B;text-decoration:none;background:none;border:none;cursor:pointer;font-family:inherit}
+        .db-row{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid rgba(255,255,255,0.05);gap:12px}
+        .db-row:last-child{border-bottom:none}
+        .db-row-l{flex:1}
+        .db-row-name{font-size:13px;font-weight:700;color:#fff}
+        .db-row-sub{font-size:11px;color:rgba(255,255,255,0.32);margin-top:1px}
+        .db-row-val{font-size:13px;font-weight:700;color:#fff;text-align:right}
+        .db-row-chg{font-size:11px;font-weight:700;text-align:right;margin-top:1px}
+        .db-empty{padding:24px 18px;font-size:13px;color:rgba(255,255,255,0.3);text-align:center}
+        .db-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+        .db-action{background:#0F1318;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:16px;text-align:center;text-decoration:none;transition:all .2s}
+        .db-action:hover{border-color:rgba(240,185,11,0.3);transform:translateY(-1px)}
+        .db-action-icon{font-size:22px;margin-bottom:6px}
+        .db-action-label{font-size:12px;font-weight:700;color:rgba(255,255,255,0.6)}
+        .db-prog{height:3px;background:rgba(255,255,255,0.06);border-radius:2px;margin-top:5px;overflow:hidden}
         .db-prog-fill{height:100%;background:#F0B90B;border-radius:2px}
-
         @media(max-width:1000px){.db-stats{grid-template-columns:repeat(2,1fr)}.db-grid{grid-template-columns:1fr}.db-actions{grid-template-columns:repeat(2,1fr)}}
-        @media(max-width:480px){.db-stats{grid-template-columns:1fr 1fr}.db-actions{grid-template-columns:1fr 1fr}}
+        @media(max-width:480px){.db-stats{grid-template-columns:1fr 1fr}}
       `}</style>
 
-      <div className="db-page">
-
-        {/* HEADER */}
+      <div className="db">
         <div className="db-header">
-          <div className="db-header-inner">
+          <div className="db-header-in">
             <div>
-              <div className="db-welcome">
-                Welcome back, {user.firstName || user.email?.split("@")[0]} 👋
-              </div>
-              <div className="db-sub">Here is your portfolio overview</div>
+              <div className="db-welcome">Welcome back, {user.firstName || user.email?.split("@")[0]} 👋</div>
+              <div className="db-welcome-sub">Here is your portfolio overview</div>
             </div>
             <div className="db-header-right">
-              <div
-                className="db-wallet-chip"
-                onClick={() => !wallet.connected && connectWallet()}
-              >
-                {wallet.connected ? (
-                  <>💳 {wallet.address.slice(0,6)}...{wallet.address.slice(-4)} · €{wallet.balance.toFixed(2)}</>
-                ) : (
-                  <>🔗 Connect Wallet</>
-                )}
-              </div>
-              <Link href="/markets" style={{ padding:"8px 16px", background:"#F0B90B", color:"#000", borderRadius:7, fontSize:13, fontWeight:800, textDecoration:"none" }}>
-                + Invest
-              </Link>
+              <Link href="/markets" className="db-invest-btn">+ Invest Now</Link>
+              <button className="db-logout-btn" onClick={logout}>Log Out</button>
             </div>
           </div>
         </div>
@@ -165,27 +145,27 @@ export default function DashboardPage() {
           {/* TABS */}
           <div className="db-tabs">
             {[["overview","Overview"],["portfolio","Portfolio"],["markets","Markets"],["bonds","Bonds"],["ipos","IPOs"],["exchange","Exchange"]].map(([id,label]) => (
-              <button key={id} className={`db-tab ${tab===id?"on":""}`} onClick={()=>setTab(id)}>{label}</button>
+              <button key={id} className={`db-tab ${tab===id?"on":""}`} onClick={() => setTab(id)}>{label}</button>
             ))}
           </div>
 
           {/* STATS */}
           <div className="db-stats">
             <div className="db-stat">
-              <div className="db-stat-v gold">€{portfolio.totalValue.toLocaleString("en-EU",{minimumFractionDigits:2})}</div>
+              <div className="db-stat-v gold">€{portfolio.totalValue.toLocaleString("de-DE",{minimumFractionDigits:2})}</div>
               <div className="db-stat-l">Portfolio Value</div>
             </div>
             <div className="db-stat">
-              <div className={`db-stat-v ${portfolio.totalReturn >= 0 ? "pos" : "neg"}`}>
+              <div className={`db-stat-v ${portfolio.totalReturn >= 0 ? "green" : "red"}`}>
                 {portfolio.totalReturn >= 0 ? "+" : ""}€{portfolio.totalReturn.toFixed(2)}
               </div>
               <div className="db-stat-l">Total Return</div>
-              <div className={`db-stat-ch ${portfolio.totalReturn >= 0 ? "pos" : "neg"}`}>
+              <div className={`db-stat-c ${portfolio.totalReturn >= 0 ? "green" : "red"}`}>
                 {portfolio.totalReturn >= 0 ? "+" : ""}{returnPct}%
               </div>
             </div>
             <div className="db-stat">
-              <div className="db-stat-v" style={{color:"#fff"}}>€{portfolio.totalInvested.toLocaleString("en-EU",{minimumFractionDigits:2})}</div>
+              <div className="db-stat-v" style={{color:"#fff"}}>€{portfolio.totalInvested.toLocaleString("de-DE",{minimumFractionDigits:2})}</div>
               <div className="db-stat-l">Total Invested</div>
             </div>
             <div className="db-stat">
@@ -196,237 +176,193 @@ export default function DashboardPage() {
 
           {/* QUICK ACTIONS */}
           <div className="db-actions">
-            {[
-              { icon:"🏪", label:"Browse Markets", href:"/markets" },
-              { icon:"🔄", label:"Trade Tokens",   href:"/exchange" },
-              { icon:"📄", label:"View Bonds",      href:"/bonds" },
-              { icon:"📈", label:"Equity & IPOs",   href:"/equity-ipo" },
-            ].map(a => (
-              <Link key={a.label} href={a.href} className="db-action">
-                <div className="db-action-icon">{a.icon}</div>
-                <div className="db-action-label">{a.label}</div>
+            {[["🏪","Browse Markets","/markets"],["🔄","Trade Tokens","/exchange"],["📄","View Bonds","/bonds"],["📈","IPOs","/equity-ipo"]].map(([icon,label,href]) => (
+              <Link key={label} href={href} className="db-action">
+                <div className="db-action-icon">{icon}</div>
+                <div className="db-action-label">{label}</div>
               </Link>
             ))}
           </div>
 
-          {/* OVERVIEW TAB */}
+          {/* OVERVIEW */}
           {tab === "overview" && (
             <div className="db-grid">
-              {/* Holdings */}
               <div className="db-card">
                 <div className="db-card-head">
                   <div className="db-card-title">My Holdings</div>
-                  <button className="db-card-link" onClick={()=>setTab("portfolio")}>View all →</button>
+                  <button className="db-card-link" onClick={() => setTab("portfolio")}>View all →</button>
                 </div>
-                <div className="db-card-body">
-                  {portfolio.holdings.length === 0 ? (
-                    <div className="db-empty">No holdings yet. <Link href="/markets" style={{color:"#F0B90B"}}>Start investing →</Link></div>
-                  ) : (
-                    portfolio.holdings.map(h => (
-                      <div key={h.symbol} className="db-holding">
-                        <div>
-                          <div className="db-h-sym">{h.symbol}</div>
-                          <div className="db-h-name">{h.name}</div>
-                        </div>
-                        <div>
-                          <div className="db-h-val">€{h.value.toFixed(2)}</div>
-                          <div className={`db-h-chg ${h.change >= 0 ? "pos" : "neg"}`}>
-                            {h.change >= 0 ? "+" : ""}{h.change}% · {h.qty} tokens
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
+                {portfolio.holdings.length === 0 ? (
+                  <div className="db-empty">No holdings yet. <Link href="/markets" style={{color:"#F0B90B"}}>Start investing →</Link></div>
+                ) : portfolio.holdings.map(h => (
+                  <div key={h.symbol} className="db-row">
+                    <div className="db-row-l">
+                      <div className="db-row-name">{h.symbol}</div>
+                      <div className="db-row-sub">{h.name} · {h.qty} tokens</div>
+                    </div>
+                    <div>
+                      <div className="db-row-val">€{h.value.toFixed(2)}</div>
+                      <div className={`db-row-chg ${h.change >= 0 ? "green" : "red"}`}>{h.change >= 0 ? "+" : ""}{h.change}%</div>
+                    </div>
+                  </div>
+                ))}
               </div>
-
-              {/* Live Markets */}
-              <div>
-                <div className="db-card" style={{marginBottom:16}}>
+              <div style={{display:"flex",flexDirection:"column",gap:14}}>
+                <div className="db-card">
                   <div className="db-card-head">
                     <div className="db-card-title">Live Markets</div>
                     <Link href="/markets" className="db-card-link">See all →</Link>
                   </div>
-                  <div className="db-card-body">
-                    {liveMarkets.map(m => (
-                      <div key={m.id} className="db-mkt-row">
-                        <span className="db-mkt-icon">{m.emoji}</span>
-                        <div style={{flex:1}}>
-                          <div className="db-mkt-name">{m.title}</div>
-                          <div className="db-mkt-loc">📍 {m.location}</div>
-                        </div>
-                        <div>
-                          <div className="db-mkt-roi">{m.roi}% ROI</div>
-                          <div className="db-mkt-min">From €{m.min}</div>
-                        </div>
+                  {MARKETS.slice(0,3).map(m => (
+                    <div key={m.id} className="db-row">
+                      <span style={{fontSize:18,flexShrink:0}}>{m.emoji}</span>
+                      <div className="db-row-l">
+                        <div className="db-row-name">{m.title}</div>
+                        <div className="db-row-sub">{m.location}</div>
                       </div>
-                    ))}
-                  </div>
+                      <div className="db-row-val gold">{m.roi}%</div>
+                    </div>
+                  ))}
                 </div>
-
                 <div className="db-card">
                   <div className="db-card-head">
                     <div className="db-card-title">Open IPOs</div>
                     <Link href="/equity-ipo" className="db-card-link">See all →</Link>
                   </div>
-                  <div className="db-card-body">
-                    {openIPOs.map(ipo => (
-                      <div key={ipo.id} className="db-ipo-row">
-                        <div style={{flex:1}}>
-                          <div className="db-ipo-name">{ipo.name}</div>
-                          <div className="db-ipo-sector">{ipo.sector}</div>
-                        </div>
-                        <div>
-                          <div className="db-ipo-price">{ipo.price}</div>
-                          <div className="db-ipo-date">{ipo.date}</div>
-                        </div>
+                  {IPOS.map(i => (
+                    <div key={i.id} className="db-row">
+                      <div className="db-row-l">
+                        <div className="db-row-name">{i.name}</div>
+                        <div className="db-row-sub">{i.sector} · {i.date}</div>
                       </div>
-                    ))}
-                  </div>
+                      <div className="db-row-val" style={{color:"#3B82F6"}}>{i.price}</div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
           )}
 
-          {/* PORTFOLIO TAB */}
+          {/* PORTFOLIO */}
           {tab === "portfolio" && (
             <div className="db-card">
               <div className="db-card-head">
                 <div className="db-card-title">All Holdings ({portfolio.holdings.length})</div>
                 <Link href="/markets" className="db-card-link">+ Add Investment</Link>
               </div>
-              <div className="db-card-body">
-                {portfolio.holdings.length === 0 ? (
-                  <div className="db-empty">No holdings yet. <Link href="/markets" style={{color:"#F0B90B"}}>Browse markets →</Link></div>
-                ) : portfolio.holdings.map(h => {
-                  const pct = portfolio.totalValue > 0 ? (h.value / portfolio.totalValue) * 100 : 0;
-                  return (
-                    <div key={h.symbol} className="db-holding" style={{flexDirection:"column",alignItems:"flex-start",gap:6}}>
-                      <div style={{display:"flex",justifyContent:"space-between",width:"100%"}}>
-                        <div>
-                          <div className="db-h-sym">{h.symbol}</div>
-                          <div className="db-h-name">{h.name} · {h.qty} tokens @ €{h.price.toFixed(2)}</div>
-                        </div>
-                        <div>
-                          <div className="db-h-val">€{h.value.toFixed(2)}</div>
-                          <div className={`db-h-chg ${h.change >= 0 ? "pos" : "neg"}`}>{h.change >= 0 ? "+" : ""}{h.change}%</div>
-                        </div>
+              {portfolio.holdings.length === 0 ? (
+                <div className="db-empty">No holdings. <Link href="/markets" style={{color:"#F0B90B"}}>Browse markets →</Link></div>
+              ) : portfolio.holdings.map(h => {
+                const pct = portfolio.totalValue > 0 ? (h.value/portfolio.totalValue*100) : 0;
+                return (
+                  <div key={h.symbol} className="db-row" style={{flexDirection:"column",alignItems:"flex-start",gap:6}}>
+                    <div style={{display:"flex",justifyContent:"space-between",width:"100%"}}>
+                      <div>
+                        <div className="db-row-name">{h.symbol} — {h.name}</div>
+                        <div className="db-row-sub">{h.qty} tokens @ €{h.price.toFixed(2)}</div>
                       </div>
-                      <div style={{width:"100%"}}>
-                        <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",marginBottom:3}}>{pct.toFixed(1)}% of portfolio</div>
-                        <div className="db-prog-bar"><div className="db-prog-fill" style={{width:pct+"%"}} /></div>
+                      <div>
+                        <div className="db-row-val">€{h.value.toFixed(2)}</div>
+                        <div className={`db-row-chg ${h.change >= 0 ? "green" : "red"}`}>{h.change >= 0?"+":""}{h.change}%</div>
                       </div>
                     </div>
-                  );
-                })}
-              </div>
+                    <div style={{width:"100%"}}>
+                      <div style={{fontSize:10,color:"rgba(255,255,255,0.25)",marginBottom:3}}>{pct.toFixed(1)}% of portfolio</div>
+                      <div className="db-prog"><div className="db-prog-fill" style={{width:pct+"%"}} /></div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
 
-          {/* MARKETS TAB */}
+          {/* MARKETS */}
           {tab === "markets" && (
             <div className="db-card">
               <div className="db-card-head">
-                <div className="db-card-title">All Markets ({markets.length})</div>
+                <div className="db-card-title">All Markets</div>
                 <Link href="/markets" className="db-card-link">Full page →</Link>
               </div>
-              <div className="db-card-body">
-                {markets.map(m => (
-                  <div key={m.id} className="db-mkt-row">
-                    <span className="db-mkt-icon">{m.emoji}</span>
-                    <div style={{flex:1}}>
-                      <div className="db-mkt-name">{m.title}</div>
-                      <div className="db-mkt-loc">📍 {m.location} · {m.risk} Risk · {m.term}mo</div>
-                      <div className="db-prog-bar" style={{marginTop:4,width:"60%"}}>
-                        <div className="db-prog-fill" style={{width:Math.round((m.raised/m.target)*100)+"%"}} />
-                      </div>
-                    </div>
-                    <div>
-                      <div className="db-mkt-roi">{m.roi}%</div>
-                      <div className="db-mkt-min">From €{m.min}</div>
+              {MARKETS.map(m => (
+                <div key={m.id} className="db-row">
+                  <span style={{fontSize:20,flexShrink:0}}>{m.emoji}</span>
+                  <div className="db-row-l">
+                    <div className="db-row-name">{m.title}</div>
+                    <div className="db-row-sub">📍 {m.location} · From €{m.min}</div>
+                    <div className="db-prog" style={{width:"50%"}}>
+                      <div className="db-prog-fill" style={{width:Math.round(m.raised/m.target*100)+"%"}} />
                     </div>
                   </div>
-                ))}
-              </div>
+                  <div className="db-row-val gold">{m.roi}% ROI</div>
+                </div>
+              ))}
             </div>
           )}
 
-          {/* BONDS TAB */}
+          {/* BONDS */}
           {tab === "bonds" && (
             <div className="db-card">
               <div className="db-card-head">
-                <div className="db-card-title">Bonds ({bonds.length})</div>
+                <div className="db-card-title">Bonds</div>
                 <Link href="/bonds" className="db-card-link">Full page →</Link>
               </div>
-              <div className="db-card-body">
-                {bonds.map(b => (
-                  <div key={b.id} className="db-bond-row">
-                    <div style={{flex:1}}>
-                      <div className="db-bond-name">{b.name}</div>
-                      <div className="db-bond-issuer">{b.issuer} · {b.rating} · {b.status}</div>
-                    </div>
-                    <div>
-                      <div className="db-bond-coupon">{b.coupon}</div>
-                      <div className="db-bond-term">{b.term} · {b.min}</div>
-                    </div>
+              {BONDS.map(b => (
+                <div key={b.id} className="db-row">
+                  <div className="db-row-l">
+                    <div className="db-row-name">{b.name}</div>
+                    <div className="db-row-sub">{b.issuer} · {b.rating} · {b.term}</div>
                   </div>
-                ))}
-              </div>
+                  <div className="db-row-val green">{b.coupon}</div>
+                </div>
+              ))}
             </div>
           )}
 
-          {/* IPOS TAB */}
+          {/* IPOS */}
           {tab === "ipos" && (
             <div className="db-card">
               <div className="db-card-head">
-                <div className="db-card-title">IPOs ({ipos.length})</div>
+                <div className="db-card-title">IPOs</div>
                 <Link href="/equity-ipo" className="db-card-link">Full page →</Link>
               </div>
-              <div className="db-card-body">
-                {ipos.map(ipo => (
-                  <div key={ipo.id} className="db-ipo-row">
-                    <div style={{flex:1}}>
-                      <div className="db-ipo-name">{ipo.name}</div>
-                      <div className="db-ipo-sector">{ipo.sector} · Raise: {ipo.raise}</div>
-                    </div>
-                    <div style={{textAlign:"right"}}>
-                      <div className="db-ipo-price">{ipo.price}</div>
-                      <div className="db-ipo-date">{ipo.date}</div>
-                      <div style={{marginTop:4}}><span className="db-ipo-badge">{ipo.status}</span></div>
-                    </div>
+              {IPOS.map(i => (
+                <div key={i.id} className="db-row">
+                  <div className="db-row-l">
+                    <div className="db-row-name">{i.name}</div>
+                    <div className="db-row-sub">{i.sector} · {i.date}</div>
                   </div>
-                ))}
-              </div>
+                  <div>
+                    <div className="db-row-val" style={{color:"#3B82F6"}}>{i.price}</div>
+                    <div className="db-row-chg green">{i.status}</div>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
 
-          {/* EXCHANGE TAB */}
+          {/* EXCHANGE */}
           {tab === "exchange" && (
             <div className="db-card">
               <div className="db-card-head">
-                <div className="db-card-title">Exchange Markets ({tokens.length})</div>
+                <div className="db-card-title">Exchange</div>
                 <Link href="/exchange" className="db-card-link">Trade →</Link>
               </div>
-              <div className="db-card-body">
-                {tokens.map(t => (
-                  <div key={t.symbol} className="db-tok-row">
-                    <div style={{flex:1}}>
-                      <div className="db-tok-sym">{t.symbol}</div>
-                      <div className="db-tok-name">{t.name}</div>
-                    </div>
-                    <div style={{textAlign:"right",minWidth:80}}>
-                      <div className="db-tok-price">€{t.price.toFixed(2)}</div>
-                      <div className={`db-tok-chg ${t.change >= 0 ? "pos" : "neg"}`}>
-                        {t.change >= 0 ? "+" : ""}{t.change}%
-                      </div>
-                    </div>
-                    <div style={{textAlign:"right",minWidth:60}}>
-                      <div style={{fontSize:12,color:"#F0B90B",fontWeight:700}}>{t.yield}</div>
-                      <div style={{fontSize:10,color:"rgba(255,255,255,0.3)"}}>yield</div>
-                    </div>
+              {TOKENS.map(t => (
+                <div key={t.symbol} className="db-row">
+                  <div className="db-row-l">
+                    <div className="db-row-name">{t.symbol}</div>
+                    <div className="db-row-sub">{t.name}</div>
                   </div>
-                ))}
-              </div>
+                  <div style={{textAlign:"right",minWidth:80}}>
+                    <div className="db-row-val">€{t.price.toFixed(2)}</div>
+                    <div className={`db-row-chg ${t.change >= 0 ? "green" : "red"}`}>{t.change >= 0?"+":""}{t.change}%</div>
+                  </div>
+                  <div style={{textAlign:"right",minWidth:60}}>
+                    <div className="db-row-val gold">{t.yield}</div>
+                    <div style={{fontSize:10,color:"rgba(255,255,255,0.25)"}}>yield</div>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
 
