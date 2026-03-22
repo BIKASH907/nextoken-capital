@@ -1,406 +1,438 @@
+// pages/dashboard.js
+// All data comes from AppContext — portfolio, wallet, markets, bonds, IPOs.
+// Any change to AppContext.js auto-reflects here.
+
+import Head from "next/head";
 import Link from "next/link";
-import { useState } from "react";
-
-const user = {
-  name: "Bikash Bhat",
-  email: "bikash@nextokencapital.com",
-  kycStatus: "pending",
-  joined: "March 2026",
-  country: "Lithuania",
-  accountType: "Investor",
-};
-
-const holdings = [
-  { id:1, emoji:"🌱", name:"Baltic Green Bond 2027",    ticker:"BALT-GREEN-27", type:"Green Bond",    value:4920,  cost:4800,  gain:120,   gainPct:2.5,  tokens:50,    yield:"6.4%", status:"active"  },
-  { id:2, emoji:"⚡", name:"VoltGrid Energy",           ticker:"VGE",           type:"Equity Token",  value:2310,  cost:2100,  gain:210,   gainPct:10.0, tokens:1100,  yield:"28.4%",status:"active"  },
-  { id:3, emoji:"🤖", name:"NeuroLogic AI Series A",   ticker:"NLA",           type:"Early Stage",   value:1420,  cost:1500,  gain:-80,   gainPct:-5.3, tokens:1000,  yield:"34.2%",status:"locked"  },
-  { id:4, emoji:"🏢", name:"Berlin Office Token",       ticker:"BOT-1",         type:"Real Estate",   value:980,   cost:1000,  gain:-20,   gainPct:-2.0, tokens:2,     yield:"16.4%",status:"active"  },
-];
-
-const activity = [
-  { date:"21 Mar 2026", type:"invest",   icon:"💰", action:"Invested",         asset:"VoltGrid Energy",         amount:"+EUR 500",  color:"#22c55e" },
-  { date:"18 Mar 2026", type:"invest",   icon:"💰", action:"Invested",         asset:"Baltic Green Bond 2027",  amount:"+EUR 1,000",color:"#22c55e" },
-  { date:"15 Mar 2026", type:"kyc",      icon:"🪪", action:"KYC Submitted",    asset:"Identity Documents",      amount:"—",         color:"#f59e0b" },
-  { date:"12 Mar 2026", type:"register", icon:"✅", action:"Account Created",  asset:"Nextoken Capital",        amount:"—",         color:"#818cf8" },
-];
-
-const kycSteps = [
-  { label:"Account Created",           done:true,  active:false },
-  { label:"Documents Submitted",       done:true,  active:false },
-  { label:"Sumsub Review in Progress", done:false, active:true  },
-  { label:"Compliance Approval",       done:false, active:false },
-  { label:"Full Access Unlocked",      done:false, active:false },
-];
-
-const lockedActions = [
-  "Invest in new assets",
-  "Purchase bonds",
-  "Participate in IPOs",
-  "Register assets for tokenization",
-  "Secondary market trading",
-  "Withdraw funds",
-];
-
-const allowedActions = [
-  "Browse all markets",
-  "View all listings",
-  "Explore bond offerings",
-  "View investment details",
-  "Use AI support chatbot",
-  "View your portfolio",
-];
-
-const watchlist = [
-  { emoji:"☀️", name:"Solar Farm Portfolio",  type:"Real Estate", irr:"18.2%", min:"EUR 250",   status:"Closing" },
-  { emoji:"💨", name:"Wind Energy Project",   type:"Energy",      irr:"17.6%", min:"EUR 250",   status:"Live"    },
-  { emoji:"💼", name:"Tech Business Park",    type:"Commercial",  irr:"15.9%", min:"EUR 500",   status:"Live"    },
-];
-
-const totalValue    = holdings.reduce((s,h) => s + h.value, 0);
-const totalCost     = holdings.reduce((s,h) => s + h.cost,  0);
-const totalGain     = totalValue - totalCost;
-const totalGainPct  = ((totalGain / totalCost) * 100).toFixed(1);
-
-const S = {
-  page:    { minHeight:"100vh", background:"#05060a", color:"#e8e8f0", fontFamily:"'DM Sans',system-ui,sans-serif" },
-  wrap:    { maxWidth:1300, margin:"0 auto", padding:"32px 24px" },
-  card:    { background:"#0d0d14", border:"1px solid rgba(255,255,255,0.07)", borderRadius:16, padding:24 },
-  lbl:     { fontSize:11, fontWeight:700, letterSpacing:"0.15em", textTransform:"uppercase", color:"#8a9bb8" },
-  gold:    { padding:"10px 22px", borderRadius:9, background:"#F0B90B", color:"#000", fontSize:13.5, fontWeight:800, border:"none", cursor:"pointer", textDecoration:"none", display:"inline-block", fontFamily:"inherit" },
-  tab:     (a) => ({ padding:"9px 18px", borderRadius:8, border:"none", cursor:"pointer", fontFamily:"inherit", fontSize:13.5, fontWeight:600, transition:"all 0.15s", background:a?"rgba(240,185,11,0.12)":"transparent", color:a?"#F0B90B":"#8a9bb8" }),
-};
-
-function StatCard({ icon, label, value, sub, color, locked }) {
-  return (
-    <div style={{ ...S.card, position:"relative", overflow:"hidden" }}>
-      {locked && <div style={{ position:"absolute", top:10, right:10, fontSize:14 }}>🔒</div>}
-      <div style={{ fontSize:28, marginBottom:10 }}>{icon}</div>
-      <div style={{ fontSize:11, color:"#8a9bb8", textTransform:"uppercase", letterSpacing:"0.1em", marginBottom:5 }}>{label}</div>
-      <div style={{ fontFamily:"Syne,sans-serif", fontSize:26, fontWeight:800, color:color||"#F0B90B" }}>{value}</div>
-      {sub && <div style={{ fontSize:12, color:"#8a9bb8", marginTop:3 }}>{sub}</div>}
-    </div>
-  );
-}
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import { useApp } from "../lib/AppContext";
 
 export default function DashboardPage() {
+  const router = useRouter();
+  const { user, wallet, portfolio, markets, bonds, ipos, tokens, stats, connectWallet, addNotification } = useApp();
   const [tab, setTab] = useState("overview");
 
+  // Redirect to login if not logged in
+  useEffect(() => {
+    if (typeof window !== "undefined" && !user) {
+      router.push("/login");
+    }
+  }, [user, router]);
+
+  if (!user) return null;
+
+  const returnPct = portfolio.totalInvested > 0
+    ? ((portfolio.totalReturn / portfolio.totalInvested) * 100).toFixed(2)
+    : "0.00";
+
+  const liveMarkets  = markets.filter(m => m.badge === "Live").slice(0, 3);
+  const liveBonds    = bonds.filter(b => b.status === "Live").slice(0, 3);
+  const openIPOs     = ipos.filter(i => i.status === "Open").slice(0, 2);
+  const topTokens    = tokens.slice(0, 4);
+
   return (
-    <div style={S.page}>
+    <>
+      <Head>
+        <title>Dashboard — Nextoken Capital</title>
+        <meta name="description" content="Your Nextoken Capital investment dashboard." />
+      </Head>
+      <Navbar />
+
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
-        * { box-sizing:border-box; margin:0; padding:0; }
-        body { margin:0; }
-        ::-webkit-scrollbar { width:5px; }
-        ::-webkit-scrollbar-track { background:#05060a; }
-        ::-webkit-scrollbar-thumb { background:rgba(240,185,11,0.3); border-radius:3px; }
-        table { border-collapse:collapse; width:100%; }
-        th { text-align:left; }
+        .db-page{min-height:100vh;background:#0B0E11;padding-top:64px}
+        .db-header{background:#0F1318;border-bottom:1px solid rgba(255,255,255,0.07);padding:28px 20px}
+        .db-header-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
+        .db-welcome{font-size:clamp(1.2rem,2.5vw,1.6rem);font-weight:900;color:#fff}
+        .db-sub{font-size:13px;color:rgba(255,255,255,0.4);margin-top:3px}
+        .db-header-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+        .db-wallet-chip{display:flex;align-items:center;gap:7px;padding:8px 14px;background:rgba(14,203,129,0.08);border:1px solid rgba(14,203,129,0.2);border-radius:8px;font-size:12px;color:#0ECB81;font-weight:700;cursor:pointer;transition:all .15s}
+        .db-wallet-chip:hover{background:rgba(14,203,129,0.15)}
+        .db-body{max-width:1280px;margin:0 auto;padding:28px 20px 60px}
+        .db-tabs{display:flex;gap:4px;margin-bottom:28px;border-bottom:1px solid rgba(255,255,255,0.07);padding-bottom:0}
+        .db-tab{padding:10px 20px;font-size:13px;font-weight:600;color:rgba(255,255,255,0.45);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;font-family:inherit;transition:all .15s;margin-bottom:-1px}
+        .db-tab:hover{color:#fff}
+        .db-tab.on{color:#F0B90B;border-bottom-color:#F0B90B}
+
+        /* STATS ROW */
+        .db-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+        .db-stat{background:#0F1318;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:20px}
+        .db-stat-v{font-size:1.7rem;font-weight:900;line-height:1;margin-bottom:5px}
+        .db-stat-l{font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:.5px}
+        .db-stat-ch{font-size:12px;font-weight:700;margin-top:4px}
+        .pos{color:#0ECB81} .neg{color:#FF4D4D} .gold{color:#F0B90B}
+
+        /* SECTIONS */
+        .db-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:20px;margin-bottom:20px}
+        .db-card{background:#0F1318;border:1px solid rgba(255,255,255,0.07);border-radius:14px;overflow:hidden}
+        .db-card-head{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;justify-content:space-between}
+        .db-card-title{font-size:14px;font-weight:700;color:#fff}
+        .db-card-link{font-size:12px;color:#F0B90B;text-decoration:none}
+        .db-card-link:hover{text-decoration:underline}
+        .db-card-body{padding:4px 0}
+
+        /* HOLDINGS */
+        .db-holding{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid rgba(255,255,255,0.05);gap:12px}
+        .db-holding:last-child{border-bottom:none}
+        .db-h-sym{font-size:12px;font-weight:800;color:#fff}
+        .db-h-name{font-size:11px;color:rgba(255,255,255,0.35);margin-top:1px}
+        .db-h-val{font-size:13px;font-weight:700;color:#fff;text-align:right}
+        .db-h-chg{font-size:11px;font-weight:700;text-align:right;margin-top:1px}
+        .db-empty{padding:24px 20px;font-size:13px;color:rgba(255,255,255,0.35);text-align:center}
+
+        /* MARKET ROWS */
+        .db-mkt-row{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid rgba(255,255,255,0.05);gap:12px}
+        .db-mkt-row:last-child{border-bottom:none}
+        .db-mkt-icon{font-size:20px;flex-shrink:0}
+        .db-mkt-name{font-size:13px;font-weight:700;color:#fff;flex:1}
+        .db-mkt-loc{font-size:11px;color:rgba(255,255,255,0.35)}
+        .db-mkt-roi{font-size:13px;font-weight:800;color:#F0B90B;text-align:right}
+        .db-mkt-min{font-size:11px;color:rgba(255,255,255,0.35);text-align:right}
+
+        /* BOND ROWS */
+        .db-bond-row{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid rgba(255,255,255,0.05);gap:12px}
+        .db-bond-row:last-child{border-bottom:none}
+        .db-bond-name{font-size:13px;font-weight:700;color:#fff;flex:1}
+        .db-bond-issuer{font-size:11px;color:rgba(255,255,255,0.35)}
+        .db-bond-coupon{font-size:14px;font-weight:900;color:#0ECB81;text-align:right}
+        .db-bond-term{font-size:11px;color:rgba(255,255,255,0.35);text-align:right}
+
+        /* IPO ROWS */
+        .db-ipo-row{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid rgba(255,255,255,0.05);gap:12px}
+        .db-ipo-row:last-child{border-bottom:none}
+        .db-ipo-name{font-size:13px;font-weight:700;color:#fff}
+        .db-ipo-sector{font-size:11px;color:rgba(255,255,255,0.35)}
+        .db-ipo-price{font-size:14px;font-weight:900;color:#3B82F6;text-align:right}
+        .db-ipo-date{font-size:11px;color:rgba(255,255,255,0.35);text-align:right}
+        .db-ipo-badge{padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;background:rgba(59,130,246,0.12);color:#3B82F6;border:1px solid rgba(59,130,246,0.25)}
+
+        /* EXCHANGE MINI */
+        .db-tok-row{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid rgba(255,255,255,0.05);gap:12px}
+        .db-tok-row:last-child{border-bottom:none}
+        .db-tok-sym{font-size:12px;font-weight:800;color:#fff}
+        .db-tok-name{font-size:11px;color:rgba(255,255,255,0.35)}
+        .db-tok-price{font-size:13px;font-weight:700;color:#fff;text-align:right}
+        .db-tok-chg{font-size:12px;font-weight:700;text-align:right}
+
+        /* QUICK ACTIONS */
+        .db-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+        .db-action{background:#0F1318;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:18px 16px;text-align:center;text-decoration:none;transition:all .2s;cursor:pointer}
+        .db-action:hover{border-color:rgba(240,185,11,0.3);background:rgba(240,185,11,0.04);transform:translateY(-1px)}
+        .db-action-icon{font-size:24px;margin-bottom:8px}
+        .db-action-label{font-size:12px;font-weight:700;color:rgba(255,255,255,0.7)}
+
+        /* PROGRESS BAR */
+        .db-prog-bar{height:3px;background:rgba(255,255,255,0.07);border-radius:2px;margin-top:6px;overflow:hidden}
+        .db-prog-fill{height:100%;background:#F0B90B;border-radius:2px}
+
+        @media(max-width:1000px){.db-stats{grid-template-columns:repeat(2,1fr)}.db-grid{grid-template-columns:1fr}.db-actions{grid-template-columns:repeat(2,1fr)}}
+        @media(max-width:480px){.db-stats{grid-template-columns:1fr 1fr}.db-actions{grid-template-columns:1fr 1fr}}
       `}</style>
 
-      <div style={S.wrap}>
+      <div className="db-page">
 
         {/* HEADER */}
-        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", flexWrap:"wrap", gap:16, marginBottom:28 }}>
-          <div>
-            <p style={{ fontSize:11, fontWeight:700, letterSpacing:"0.15em", textTransform:"uppercase", color:"#F0B90B", marginBottom:6 }}>Investor Dashboard</p>
-            <h1 style={{ fontFamily:"Syne,sans-serif", fontSize:"clamp(22px,3.5vw,34px)", fontWeight:800, margin:"0 0 4px", color:"#e8e8f0" }}>
-              Welcome back, {user.name.split(" ")[0]} 👋
-            </h1>
-            <p style={{ fontSize:13.5, color:"#8a9bb8", margin:0 }}>{user.email} · Joined {user.joined} · {user.accountType}</p>
-          </div>
-          <div style={{ display:"flex", gap:10, flexWrap:"wrap" }}>
-            <div style={{ padding:"10px 18px", borderRadius:12, background:"rgba(245,158,11,0.08)", border:"1px solid rgba(245,158,11,0.25)", display:"flex", alignItems:"center", gap:8 }}>
-              <span style={{ fontSize:18 }}>⏳</span>
-              <div>
-                <p style={{ fontSize:12, fontWeight:700, color:"#f59e0b", margin:0 }}>KYC Pending</p>
-                <p style={{ fontSize:11, color:"#8a9bb8", margin:0 }}>Sumsub review in progress</p>
+        <div className="db-header">
+          <div className="db-header-inner">
+            <div>
+              <div className="db-welcome">
+                Welcome back, {user.firstName || user.email?.split("@")[0]} 👋
               </div>
+              <div className="db-sub">Here is your portfolio overview</div>
             </div>
-            <Link href="/markets" style={S.gold}>Explore Markets</Link>
+            <div className="db-header-right">
+              <div
+                className="db-wallet-chip"
+                onClick={() => !wallet.connected && connectWallet()}
+              >
+                {wallet.connected ? (
+                  <>💳 {wallet.address.slice(0,6)}...{wallet.address.slice(-4)} · €{wallet.balance.toFixed(2)}</>
+                ) : (
+                  <>🔗 Connect Wallet</>
+                )}
+              </div>
+              <Link href="/markets" style={{ padding:"8px 16px", background:"#F0B90B", color:"#000", borderRadius:7, fontSize:13, fontWeight:800, textDecoration:"none" }}>
+                + Invest
+              </Link>
+            </div>
           </div>
         </div>
 
-        {/* KYC BANNER */}
-        <div style={{ padding:"18px 22px", borderRadius:16, border:"1px solid rgba(245,158,11,0.3)", background:"rgba(245,158,11,0.05)", display:"flex", gap:16, alignItems:"flex-start", marginBottom:28, flexWrap:"wrap" }}>
-          <span style={{ fontSize:24, flexShrink:0 }}>⚠️</span>
-          <div style={{ flex:1, minWidth:240 }}>
-            <p style={{ fontSize:14, fontWeight:700, color:"#f59e0b", margin:"0 0 5px" }}>Complete KYC to unlock full platform access</p>
-            <p style={{ fontSize:13, color:"#8a9bb8", margin:"0 0 12px", lineHeight:1.6 }}>
-              Your identity verification is in progress via Sumsub. Until approved, you <strong style={{ color:"#f59e0b" }}>cannot invest in new assets</strong> or register assets for issuance.
-            </p>
-            <Link href="/register" style={S.gold}>🪪 Complete Verification</Link>
-          </div>
-          {/* KYC Progress */}
-          <div style={{ display:"flex", flexDirection:"column", gap:8, minWidth:200 }}>
-            {kycSteps.map(s => (
-              <div key={s.label} style={{ display:"flex", alignItems:"center", gap:8 }}>
-                <div style={{ width:22, height:22, borderRadius:"50%", flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:700, border:"1px solid", borderColor:s.done?"rgba(34,197,94,0.4)":s.active?"rgba(245,158,11,0.4)":"rgba(255,255,255,0.1)", background:s.done?"rgba(34,197,94,0.1)":s.active?"rgba(245,158,11,0.1)":"rgba(255,255,255,0.03)", color:s.done?"#22c55e":s.active?"#f59e0b":"#8a9bb8" }}>
-                  {s.done ? "✓" : s.active ? "…" : "○"}
-                </div>
-                <p style={{ fontSize:11.5, margin:0, fontWeight:s.active?700:400, color:s.done?"#22c55e":s.active?"#f59e0b":"#8a9bb8" }}>{s.label}</p>
-              </div>
+        <div className="db-body">
+
+          {/* TABS */}
+          <div className="db-tabs">
+            {[["overview","Overview"],["portfolio","Portfolio"],["markets","Markets"],["bonds","Bonds"],["ipos","IPOs"],["exchange","Exchange"]].map(([id,label]) => (
+              <button key={id} className={`db-tab ${tab===id?"on":""}`} onClick={()=>setTab(id)}>{label}</button>
             ))}
           </div>
-        </div>
 
-        {/* STAT CARDS */}
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))", gap:14, marginBottom:28 }}>
-          <StatCard icon="💼" label="Portfolio Value"  value={"EUR "+totalValue.toLocaleString()} sub={holdings.length+" holdings"} color="#F0B90B" />
-          <StatCard icon="📈" label="Total Gain"       value={(totalGain>=0?"+":"")+totalGain+" EUR"} sub={"All time · "+totalGainPct+"%"} color={totalGain>=0?"#22c55e":"#ef4444"} />
-          <StatCard icon="🔒" label="Locked (KYC)"     value="EUR 1,420" sub="Unlocks after KYC" color="#f59e0b" locked />
-          <StatCard icon="📊" label="Active Holdings"  value={holdings.filter(h=>h.status==="active").length+""} sub={holdings.length+" total"} color="#818cf8" />
-          <StatCard icon="🌍" label="Country"          value={user.country} sub="EU Regulated" color="#38bdf8" />
-        </div>
-
-        {/* TABS */}
-        <div style={{ display:"flex", gap:4, marginBottom:20, borderBottom:"1px solid rgba(255,255,255,0.07)", paddingBottom:12, flexWrap:"wrap" }}>
-          {[["overview","Overview"],["holdings","Holdings"],["activity","Activity"],["watchlist","Watchlist"],["access","Access Level"]].map(([v,l]) => (
-            <button key={v} onClick={() => setTab(v)} style={S.tab(tab===v)}>{l}</button>
-          ))}
-        </div>
-
-        {/* ── OVERVIEW TAB ── */}
-        {tab==="overview" && (
-          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:20 }}>
-
-            {/* Portfolio Breakdown */}
-            <div style={S.card}>
-              <p style={{ ...S.lbl, marginBottom:16 }}>Portfolio Breakdown</p>
-              {holdings.map(h => (
-                <div key={h.id} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"12px 0", borderBottom:"1px solid rgba(255,255,255,0.05)" }}>
-                  <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-                    <span style={{ fontSize:24 }}>{h.emoji}</span>
-                    <div>
-                      <p style={{ fontSize:13.5, fontWeight:600, color:"#e8e8f0", margin:0 }}>{h.name}</p>
-                      <p style={{ fontSize:11, color:"#8a9bb8", margin:0 }}>{h.type} · {h.tokens} tokens</p>
-                    </div>
-                  </div>
-                  <div style={{ textAlign:"right" }}>
-                    <p style={{ fontSize:14, fontWeight:700, color:"#e8e8f0", margin:0 }}>EUR {h.value.toLocaleString()}</p>
-                    <p style={{ fontSize:12, fontWeight:600, color:h.gain>=0?"#22c55e":"#ef4444", margin:0 }}>{h.gain>=0?"+":""}{h.gain} EUR ({h.gainPct}%)</p>
-                  </div>
-                </div>
-              ))}
-              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"14px 0 0" }}>
-                <span style={{ fontSize:14, fontWeight:700, color:"#e8e8f0" }}>Total</span>
-                <span style={{ fontFamily:"Syne,sans-serif", fontSize:18, fontWeight:800, color:"#F0B90B" }}>EUR {totalValue.toLocaleString()}</span>
+          {/* STATS */}
+          <div className="db-stats">
+            <div className="db-stat">
+              <div className="db-stat-v gold">€{portfolio.totalValue.toLocaleString("en-EU",{minimumFractionDigits:2})}</div>
+              <div className="db-stat-l">Portfolio Value</div>
+            </div>
+            <div className="db-stat">
+              <div className={`db-stat-v ${portfolio.totalReturn >= 0 ? "pos" : "neg"}`}>
+                {portfolio.totalReturn >= 0 ? "+" : ""}€{portfolio.totalReturn.toFixed(2)}
+              </div>
+              <div className="db-stat-l">Total Return</div>
+              <div className={`db-stat-ch ${portfolio.totalReturn >= 0 ? "pos" : "neg"}`}>
+                {portfolio.totalReturn >= 0 ? "+" : ""}{returnPct}%
               </div>
             </div>
-
-            {/* Recent Activity */}
-            <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
-              <div style={S.card}>
-                <p style={{ ...S.lbl, marginBottom:16 }}>Recent Activity</p>
-                {activity.map((a,i) => (
-                  <div key={i} style={{ display:"flex", gap:12, alignItems:"center", padding:"10px 0", borderBottom:"1px solid rgba(255,255,255,0.05)" }}>
-                    <div style={{ width:36, height:36, borderRadius:"50%", flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", fontSize:16, background:"rgba(255,255,255,0.05)" }}>{a.icon}</div>
-                    <div style={{ flex:1 }}>
-                      <p style={{ fontSize:13, fontWeight:600, color:"#e8e8f0", margin:0 }}>{a.action}</p>
-                      <p style={{ fontSize:11.5, color:"#8a9bb8", margin:0 }}>{a.asset} · {a.date}</p>
-                    </div>
-                    <p style={{ fontSize:13, fontWeight:700, color:a.color, margin:0, flexShrink:0 }}>{a.amount}</p>
-                  </div>
-                ))}
-              </div>
-
-              {/* Quick Links */}
-              <div style={S.card}>
-                <p style={{ ...S.lbl, marginBottom:14 }}>Quick Actions</p>
-                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8 }}>
-                  {[
-                    { icon:"🔍", label:"Browse Markets",   href:"/markets"    },
-                    { icon:"📈", label:"Equity & IPO",     href:"/equity-ipo" },
-                    { icon:"💰", label:"Bond Listings",    href:"/bonds"      },
-                    { icon:"🔄", label:"Exchange",         href:"/exchange"   },
-                    { icon:"🏢", label:"Tokenize Asset",   href:"/tokenize"   },
-                    { icon:"🪪", label:"Complete KYC",     href:"/register"   },
-                  ].map(q => (
-                    <Link key={q.label} href={q.href}
-                      style={{ display:"flex", alignItems:"center", gap:8, padding:"10px 12px", borderRadius:10, border:"1px solid rgba(255,255,255,0.07)", background:"rgba(255,255,255,0.02)", textDecoration:"none", transition:"all 0.15s" }}
-                      onMouseEnter={e => e.currentTarget.style.borderColor="rgba(240,185,11,0.3)"}
-                      onMouseLeave={e => e.currentTarget.style.borderColor="rgba(255,255,255,0.07)"}>
-                      <span style={{ fontSize:16 }}>{q.icon}</span>
-                      <span style={{ fontSize:12.5, color:"#b0b7c3", fontWeight:500 }}>{q.label}</span>
-                    </Link>
-                  ))}
-                </div>
-              </div>
+            <div className="db-stat">
+              <div className="db-stat-v" style={{color:"#fff"}}>€{portfolio.totalInvested.toLocaleString("en-EU",{minimumFractionDigits:2})}</div>
+              <div className="db-stat-l">Total Invested</div>
+            </div>
+            <div className="db-stat">
+              <div className="db-stat-v" style={{color:"#fff"}}>{portfolio.holdings.length}</div>
+              <div className="db-stat-l">Holdings</div>
             </div>
           </div>
-        )}
 
-        {/* ── HOLDINGS TAB ── */}
-        {tab==="holdings" && (
-          <div style={S.card}>
-            <p style={{ ...S.lbl, marginBottom:20 }}>All Holdings</p>
-            <div style={{ overflowX:"auto" }}>
-              <table>
-                <thead>
-                  <tr style={{ background:"#12121c" }}>
-                    {["Asset","Type","Tokens","Current Value","Cost Basis","Gain / Loss","Yield","Status"].map(h => (
-                      <th key={h} style={{ padding:"12px 16px", fontSize:11, fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", color:"#8a9bb8", borderBottom:"1px solid rgba(255,255,255,0.07)", whiteSpace:"nowrap" }}>{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {holdings.map(h => (
-                    <tr key={h.id} style={{ borderBottom:"1px solid rgba(255,255,255,0.05)" }}
-                      onMouseEnter={e => e.currentTarget.style.background="rgba(255,255,255,0.02)"}
-                      onMouseLeave={e => e.currentTarget.style.background="transparent"}>
-                      <td style={{ padding:"14px 16px" }}>
-                        <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-                          <span style={{ fontSize:22 }}>{h.emoji}</span>
-                          <div>
-                            <div style={{ fontWeight:600, fontSize:13.5, color:"#e8e8f0" }}>{h.name}</div>
-                            <div style={{ fontFamily:"monospace", fontSize:10.5, color:"#8a9bb8" }}>{h.ticker}</div>
+          {/* QUICK ACTIONS */}
+          <div className="db-actions">
+            {[
+              { icon:"🏪", label:"Browse Markets", href:"/markets" },
+              { icon:"🔄", label:"Trade Tokens",   href:"/exchange" },
+              { icon:"📄", label:"View Bonds",      href:"/bonds" },
+              { icon:"📈", label:"Equity & IPOs",   href:"/equity-ipo" },
+            ].map(a => (
+              <Link key={a.label} href={a.href} className="db-action">
+                <div className="db-action-icon">{a.icon}</div>
+                <div className="db-action-label">{a.label}</div>
+              </Link>
+            ))}
+          </div>
+
+          {/* OVERVIEW TAB */}
+          {tab === "overview" && (
+            <div className="db-grid">
+              {/* Holdings */}
+              <div className="db-card">
+                <div className="db-card-head">
+                  <div className="db-card-title">My Holdings</div>
+                  <button className="db-card-link" onClick={()=>setTab("portfolio")}>View all →</button>
+                </div>
+                <div className="db-card-body">
+                  {portfolio.holdings.length === 0 ? (
+                    <div className="db-empty">No holdings yet. <Link href="/markets" style={{color:"#F0B90B"}}>Start investing →</Link></div>
+                  ) : (
+                    portfolio.holdings.map(h => (
+                      <div key={h.symbol} className="db-holding">
+                        <div>
+                          <div className="db-h-sym">{h.symbol}</div>
+                          <div className="db-h-name">{h.name}</div>
+                        </div>
+                        <div>
+                          <div className="db-h-val">€{h.value.toFixed(2)}</div>
+                          <div className={`db-h-chg ${h.change >= 0 ? "pos" : "neg"}`}>
+                            {h.change >= 0 ? "+" : ""}{h.change}% · {h.qty} tokens
                           </div>
                         </div>
-                      </td>
-                      <td style={{ padding:"14px 16px" }}>
-                        <span style={{ padding:"3px 9px", borderRadius:20, fontSize:11, background:"rgba(255,255,255,0.05)", color:"#8a9bb8", border:"1px solid rgba(255,255,255,0.08)" }}>{h.type}</span>
-                      </td>
-                      <td style={{ padding:"14px 16px", fontFamily:"monospace", fontSize:13, color:"#b0b7c3" }}>{h.tokens.toLocaleString()}</td>
-                      <td style={{ padding:"14px 16px", fontWeight:700, fontSize:14, color:"#e8e8f0" }}>EUR {h.value.toLocaleString()}</td>
-                      <td style={{ padding:"14px 16px", fontSize:13, color:"#8a9bb8" }}>EUR {h.cost.toLocaleString()}</td>
-                      <td style={{ padding:"14px 16px", fontWeight:700, fontSize:13, color:h.gain>=0?"#22c55e":"#ef4444" }}>
-                        {h.gain>=0?"+":""}{h.gain} ({h.gainPct}%)
-                      </td>
-                      <td style={{ padding:"14px 16px", fontFamily:"Syne,sans-serif", fontWeight:700, fontSize:14, color:"#F0B90B" }}>{h.yield}</td>
-                      <td style={{ padding:"14px 16px" }}>
-                        <span style={{ padding:"3px 10px", borderRadius:20, fontSize:11, fontWeight:600, background:h.status==="active"?"rgba(34,197,94,0.1)":"rgba(245,158,11,0.1)", color:h.status==="active"?"#22c55e":"#f59e0b", border:"1px solid "+(h.status==="active"?"rgba(34,197,94,0.25)":"rgba(245,158,11,0.25)") }}>
-                          {h.status==="locked" ? "🔒 KYC Required" : "● Active"}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <div style={{ marginTop:16, padding:"14px 16px", borderRadius:12, background:"rgba(240,185,11,0.04)", border:"1px solid rgba(240,185,11,0.15)", display:"flex", justifyContent:"space-between", flexWrap:"wrap", gap:12 }}>
-              {[{l:"Total Value",v:"EUR "+totalValue.toLocaleString()},{l:"Total Cost",v:"EUR "+totalCost.toLocaleString()},{l:"Total Gain",v:(totalGain>=0?"+":"")+totalGain+" EUR"},{l:"Return",v:totalGainPct+"%"}].map(s => (
-                <div key={s.l} style={{ textAlign:"center" }}>
-                  <div style={{ fontSize:11, color:"#8a9bb8", marginBottom:3 }}>{s.l}</div>
-                  <div style={{ fontFamily:"Syne,sans-serif", fontSize:16, fontWeight:800, color:"#F0B90B" }}>{s.v}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* ── ACTIVITY TAB ── */}
-        {tab==="activity" && (
-          <div style={S.card}>
-            <p style={{ ...S.lbl, marginBottom:20 }}>Transaction History</p>
-            {activity.map((a,i) => (
-              <div key={i} style={{ display:"flex", gap:16, alignItems:"center", padding:"16px 0", borderBottom:"1px solid rgba(255,255,255,0.05)" }}>
-                <div style={{ width:44, height:44, borderRadius:"50%", flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.07)" }}>{a.icon}</div>
-                <div style={{ flex:1 }}>
-                  <p style={{ fontSize:14, fontWeight:600, color:"#e8e8f0", margin:0 }}>{a.action}</p>
-                  <p style={{ fontSize:12.5, color:"#8a9bb8", margin:0 }}>{a.asset}</p>
-                </div>
-                <div style={{ textAlign:"right" }}>
-                  <p style={{ fontSize:15, fontWeight:700, color:a.color, margin:0 }}>{a.amount}</p>
-                  <p style={{ fontSize:11.5, color:"#8a9bb8", margin:0 }}>{a.date}</p>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
-            ))}
-            <div style={{ marginTop:16, padding:14, borderRadius:12, background:"rgba(99,102,241,0.05)", border:"1px solid rgba(99,102,241,0.2)" }}>
-              <p style={{ fontSize:12.5, color:"#818cf8", margin:0 }}>📋 Full transaction history will be available once KYC is approved and trading is enabled.</p>
-            </div>
-          </div>
-        )}
 
-        {/* ── WATCHLIST TAB ── */}
-        {tab==="watchlist" && (
-          <div>
-            <div style={{ marginBottom:16, padding:"14px 18px", borderRadius:12, border:"1px solid rgba(245,158,11,0.25)", background:"rgba(245,158,11,0.05)", display:"flex", gap:10 }}>
-              <span style={{ fontSize:18 }}>🔒</span>
-              <p style={{ fontSize:13, color:"#f59e0b", margin:0, lineHeight:1.6 }}>
-                <strong>KYC required to invest.</strong> You can browse and save opportunities but cannot invest until identity verification is complete.{" "}
-                <Link href="/register" style={{ color:"#F0B90B", fontWeight:700 }}>Complete KYC →</Link>
-              </p>
-            </div>
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))", gap:16 }}>
-              {watchlist.map(w => (
-                <div key={w.name}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor="rgba(240,185,11,0.3)"; e.currentTarget.style.transform="translateY(-2px)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor="rgba(255,255,255,0.07)"; e.currentTarget.style.transform="none"; }}
-                  style={{ ...S.card, transition:"all 0.2s", cursor:"pointer" }}>
-                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:12 }}>
-                    <span style={{ fontSize:32 }}>{w.emoji}</span>
-                    <span style={{ padding:"3px 10px", borderRadius:20, fontSize:11, fontWeight:600, background:w.status==="Live"?"rgba(34,197,94,0.1)":"rgba(240,185,11,0.1)", color:w.status==="Live"?"#22c55e":"#F0B90B", border:"1px solid "+(w.status==="Live"?"rgba(34,197,94,0.25)":"rgba(240,185,11,0.3)") }}>{w.status}</span>
+              {/* Live Markets */}
+              <div>
+                <div className="db-card" style={{marginBottom:16}}>
+                  <div className="db-card-head">
+                    <div className="db-card-title">Live Markets</div>
+                    <Link href="/markets" className="db-card-link">See all →</Link>
                   </div>
-                  <div style={{ fontFamily:"Syne,sans-serif", fontSize:16, fontWeight:700, color:"#e8e8f0", marginBottom:3 }}>{w.name}</div>
-                  <div style={{ fontSize:12, color:"#8a9bb8", marginBottom:14 }}>{w.type}</div>
-                  <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10, padding:12, background:"rgba(255,255,255,0.025)", borderRadius:10, marginBottom:14 }}>
-                    <div><div style={{ fontFamily:"Syne,sans-serif", fontSize:16, fontWeight:700, color:"#F0B90B" }}>{w.irr}</div><div style={{ fontSize:10.5, color:"#8a9bb8" }}>Target ROI</div></div>
-                    <div><div style={{ fontFamily:"Syne,sans-serif", fontSize:14, fontWeight:700, color:"#e8e8f0" }}>{w.min}</div><div style={{ fontSize:10.5, color:"#8a9bb8" }}>Min. Invest</div></div>
+                  <div className="db-card-body">
+                    {liveMarkets.map(m => (
+                      <div key={m.id} className="db-mkt-row">
+                        <span className="db-mkt-icon">{m.emoji}</span>
+                        <div style={{flex:1}}>
+                          <div className="db-mkt-name">{m.title}</div>
+                          <div className="db-mkt-loc">📍 {m.location}</div>
+                        </div>
+                        <div>
+                          <div className="db-mkt-roi">{m.roi}% ROI</div>
+                          <div className="db-mkt-min">From €{m.min}</div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                  <Link href="/register" style={{ display:"block", textAlign:"center", padding:"10px 0", borderRadius:9, border:"1px solid rgba(240,185,11,0.3)", background:"rgba(240,185,11,0.08)", color:"#F0B90B", fontSize:13, fontWeight:600, textDecoration:"none" }}>
-                    🔒 KYC to Invest
-                  </Link>
                 </div>
-              ))}
-              <Link href="/markets"
-                style={{ ...S.card, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:10, textDecoration:"none", border:"2px dashed rgba(255,255,255,0.1)", cursor:"pointer", minHeight:200 }}
-                onMouseEnter={e => e.currentTarget.style.borderColor="rgba(240,185,11,0.3)"}
-                onMouseLeave={e => e.currentTarget.style.borderColor="rgba(255,255,255,0.1)"}>
-                <span style={{ fontSize:32 }}>🔍</span>
-                <span style={{ fontSize:14, fontWeight:600, color:"#8a9bb8" }}>Browse More Opportunities</span>
-              </Link>
-            </div>
-          </div>
-        )}
 
-        {/* ── ACCESS LEVEL TAB ── */}
-        {tab==="access" && (
-          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:20 }}>
-            <div style={{ ...S.card, border:"1px solid rgba(34,197,94,0.2)" }}>
-              <p style={{ fontSize:11, fontWeight:700, color:"#22c55e", textTransform:"uppercase", letterSpacing:"0.1em", marginBottom:16 }}>✓ What You Can Do Now</p>
-              {allowedActions.map(item => (
-                <div key={item} style={{ display:"flex", alignItems:"center", gap:10, padding:"9px 0", borderBottom:"1px solid rgba(255,255,255,0.04)" }}>
-                  <span style={{ color:"#22c55e", fontSize:14, flexShrink:0 }}>✓</span>
-                  <span style={{ fontSize:13.5, color:"#b0b7c3" }}>{item}</span>
+                <div className="db-card">
+                  <div className="db-card-head">
+                    <div className="db-card-title">Open IPOs</div>
+                    <Link href="/equity-ipo" className="db-card-link">See all →</Link>
+                  </div>
+                  <div className="db-card-body">
+                    {openIPOs.map(ipo => (
+                      <div key={ipo.id} className="db-ipo-row">
+                        <div style={{flex:1}}>
+                          <div className="db-ipo-name">{ipo.name}</div>
+                          <div className="db-ipo-sector">{ipo.sector}</div>
+                        </div>
+                        <div>
+                          <div className="db-ipo-price">{ipo.price}</div>
+                          <div className="db-ipo-date">{ipo.date}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              ))}
+              </div>
             </div>
-            <div style={{ ...S.card, border:"1px solid rgba(239,68,68,0.2)" }}>
-              <p style={{ fontSize:11, fontWeight:700, color:"#ef4444", textTransform:"uppercase", letterSpacing:"0.1em", marginBottom:16 }}>✗ Locked Until KYC Approved</p>
-              {lockedActions.map(item => (
-                <div key={item} style={{ display:"flex", alignItems:"center", gap:10, padding:"9px 0", borderBottom:"1px solid rgba(255,255,255,0.04)" }}>
-                  <span style={{ color:"#ef4444", fontSize:14, flexShrink:0 }}>✗</span>
-                  <span style={{ fontSize:13.5, color:"#b0b7c3" }}>{item}</span>
-                </div>
-              ))}
-              <Link href="/register" style={{ display:"block", textAlign:"center", padding:"12px 0", borderRadius:10, background:"#F0B90B", color:"#000", fontSize:13.5, fontWeight:800, textDecoration:"none", marginTop:16 }}>
-                🪪 Complete KYC Now
-              </Link>
-            </div>
+          )}
 
-            {/* Account Info */}
-            <div style={{ ...S.card, gridColumn:"1 / -1" }}>
-              <p style={{ ...S.lbl, marginBottom:16 }}>Account Information</p>
-              <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))", gap:16 }}>
-                {[
-                  { l:"Full Name",     v:user.name         },
-                  { l:"Email",         v:user.email        },
-                  { l:"Account Type",  v:user.accountType  },
-                  { l:"Country",       v:user.country      },
-                  { l:"Member Since",  v:user.joined       },
-                  { l:"KYC Status",    v:"Pending — Sumsub review" },
-                ].map(s => (
-                  <div key={s.l} style={{ padding:"12px 14px", borderRadius:10, background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.06)" }}>
-                    <div style={{ fontSize:11, color:"#8a9bb8", textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:4 }}>{s.l}</div>
-                    <div style={{ fontSize:13.5, fontWeight:600, color:"#e8e8f0" }}>{s.v}</div>
+          {/* PORTFOLIO TAB */}
+          {tab === "portfolio" && (
+            <div className="db-card">
+              <div className="db-card-head">
+                <div className="db-card-title">All Holdings ({portfolio.holdings.length})</div>
+                <Link href="/markets" className="db-card-link">+ Add Investment</Link>
+              </div>
+              <div className="db-card-body">
+                {portfolio.holdings.length === 0 ? (
+                  <div className="db-empty">No holdings yet. <Link href="/markets" style={{color:"#F0B90B"}}>Browse markets →</Link></div>
+                ) : portfolio.holdings.map(h => {
+                  const pct = portfolio.totalValue > 0 ? (h.value / portfolio.totalValue) * 100 : 0;
+                  return (
+                    <div key={h.symbol} className="db-holding" style={{flexDirection:"column",alignItems:"flex-start",gap:6}}>
+                      <div style={{display:"flex",justifyContent:"space-between",width:"100%"}}>
+                        <div>
+                          <div className="db-h-sym">{h.symbol}</div>
+                          <div className="db-h-name">{h.name} · {h.qty} tokens @ €{h.price.toFixed(2)}</div>
+                        </div>
+                        <div>
+                          <div className="db-h-val">€{h.value.toFixed(2)}</div>
+                          <div className={`db-h-chg ${h.change >= 0 ? "pos" : "neg"}`}>{h.change >= 0 ? "+" : ""}{h.change}%</div>
+                        </div>
+                      </div>
+                      <div style={{width:"100%"}}>
+                        <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",marginBottom:3}}>{pct.toFixed(1)}% of portfolio</div>
+                        <div className="db-prog-bar"><div className="db-prog-fill" style={{width:pct+"%"}} /></div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* MARKETS TAB */}
+          {tab === "markets" && (
+            <div className="db-card">
+              <div className="db-card-head">
+                <div className="db-card-title">All Markets ({markets.length})</div>
+                <Link href="/markets" className="db-card-link">Full page →</Link>
+              </div>
+              <div className="db-card-body">
+                {markets.map(m => (
+                  <div key={m.id} className="db-mkt-row">
+                    <span className="db-mkt-icon">{m.emoji}</span>
+                    <div style={{flex:1}}>
+                      <div className="db-mkt-name">{m.title}</div>
+                      <div className="db-mkt-loc">📍 {m.location} · {m.risk} Risk · {m.term}mo</div>
+                      <div className="db-prog-bar" style={{marginTop:4,width:"60%"}}>
+                        <div className="db-prog-fill" style={{width:Math.round((m.raised/m.target)*100)+"%"}} />
+                      </div>
+                    </div>
+                    <div>
+                      <div className="db-mkt-roi">{m.roi}%</div>
+                      <div className="db-mkt-min">From €{m.min}</div>
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
-          </div>
-        )}
+          )}
 
+          {/* BONDS TAB */}
+          {tab === "bonds" && (
+            <div className="db-card">
+              <div className="db-card-head">
+                <div className="db-card-title">Bonds ({bonds.length})</div>
+                <Link href="/bonds" className="db-card-link">Full page →</Link>
+              </div>
+              <div className="db-card-body">
+                {bonds.map(b => (
+                  <div key={b.id} className="db-bond-row">
+                    <div style={{flex:1}}>
+                      <div className="db-bond-name">{b.name}</div>
+                      <div className="db-bond-issuer">{b.issuer} · {b.rating} · {b.status}</div>
+                    </div>
+                    <div>
+                      <div className="db-bond-coupon">{b.coupon}</div>
+                      <div className="db-bond-term">{b.term} · {b.min}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* IPOS TAB */}
+          {tab === "ipos" && (
+            <div className="db-card">
+              <div className="db-card-head">
+                <div className="db-card-title">IPOs ({ipos.length})</div>
+                <Link href="/equity-ipo" className="db-card-link">Full page →</Link>
+              </div>
+              <div className="db-card-body">
+                {ipos.map(ipo => (
+                  <div key={ipo.id} className="db-ipo-row">
+                    <div style={{flex:1}}>
+                      <div className="db-ipo-name">{ipo.name}</div>
+                      <div className="db-ipo-sector">{ipo.sector} · Raise: {ipo.raise}</div>
+                    </div>
+                    <div style={{textAlign:"right"}}>
+                      <div className="db-ipo-price">{ipo.price}</div>
+                      <div className="db-ipo-date">{ipo.date}</div>
+                      <div style={{marginTop:4}}><span className="db-ipo-badge">{ipo.status}</span></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* EXCHANGE TAB */}
+          {tab === "exchange" && (
+            <div className="db-card">
+              <div className="db-card-head">
+                <div className="db-card-title">Exchange Markets ({tokens.length})</div>
+                <Link href="/exchange" className="db-card-link">Trade →</Link>
+              </div>
+              <div className="db-card-body">
+                {tokens.map(t => (
+                  <div key={t.symbol} className="db-tok-row">
+                    <div style={{flex:1}}>
+                      <div className="db-tok-sym">{t.symbol}</div>
+                      <div className="db-tok-name">{t.name}</div>
+                    </div>
+                    <div style={{textAlign:"right",minWidth:80}}>
+                      <div className="db-tok-price">€{t.price.toFixed(2)}</div>
+                      <div className={`db-tok-chg ${t.change >= 0 ? "pos" : "neg"}`}>
+                        {t.change >= 0 ? "+" : ""}{t.change}%
+                      </div>
+                    </div>
+                    <div style={{textAlign:"right",minWidth:60}}>
+                      <div style={{fontSize:12,color:"#F0B90B",fontWeight:700}}>{t.yield}</div>
+                      <div style={{fontSize:10,color:"rgba(255,255,255,0.3)"}}>yield</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+        </div>
       </div>
-    </div>
+      <Footer />
+    </>
   );
 }

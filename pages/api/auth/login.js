@@ -12,7 +12,5 @@ export default async function handler(req, res) {
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) return res.status(401).json({ error: "Invalid credentials" });
     res.status(200).json({ success: true, user: { email: user.email, name: user.name } });
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
+  } catch (e) { res.status(500).json({ error: e.message }); }
 }

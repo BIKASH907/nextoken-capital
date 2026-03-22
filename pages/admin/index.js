@@ -5,10 +5,7 @@ import { useEffect, useState } from "react";
 export default function AdminPage() {
   const [stats, setStats] = useState({ users: 0, investments: 0, assets: 0 });
   useEffect(() => {
-    fetch("/api/admin/stats")
-      .then(r => r.json())
-      .then(setStats)
-      .catch(() => {});
+    fetch("/api/admin/stats").then(r => r.json()).then(setStats).catch(() => {});
   }, []);
   return (
     <>
