@@ -1,4 +1,7 @@
-"use client";
+const fs = require("fs");
+fs.mkdirSync("app/equity-ipo", { recursive: true });
+
+const code = `"use client";
 import { useState } from "react";
 import Link from "next/link";
 
@@ -13,8 +16,8 @@ const S = {
   btnGold: { padding:"12px 28px", borderRadius:10, background:"#d4af37", color:"#000", fontSize:14, fontWeight:700, border:"none", cursor:"pointer", textDecoration:"none", display:"inline-block" },
   btnOut:  { padding:"12px 28px", borderRadius:10, background:"transparent", color:"#d4af37", fontSize:14, fontWeight:500, border:"1px solid rgba(212,175,55,0.35)", cursor:"pointer", textDecoration:"none", display:"inline-block" },
   badge:   { display:"inline-flex", alignItems:"center", gap:8, padding:"5px 14px", borderRadius:20, border:"1px solid rgba(212,175,55,0.3)", background:"rgba(212,175,55,0.08)", color:"#d4af37", fontSize:11, fontWeight:600, letterSpacing:"0.15em", textTransform:"uppercase" },
-  filterBtn: (active) => ({ padding:"6px 14px", borderRadius:20, border:`1px solid ${active?"rgba(212,175,55,0.5)":"rgba(255,255,255,0.08)"}`, background: active?"rgba(212,175,55,0.12)":"transparent", color: active?"#d4af37":"#b0b0c8", fontSize:12.5, fontWeight:500, cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s" }),
-  sortBtn:   (active) => ({ padding:"6px 12px", borderRadius:8, border:`1px solid ${active?"rgba(212,175,55,0.5)":"rgba(255,255,255,0.08)"}`, background: active?"rgba(212,175,55,0.12)":"transparent", color: active?"#d4af37":"#7a7a96", fontSize:12, fontWeight:500, cursor:"pointer", fontFamily:"inherit" }),
+  filterBtn: (active) => ({ padding:"6px 14px", borderRadius:20, border:\`1px solid \${active?"rgba(212,175,55,0.5)":"rgba(255,255,255,0.08)"}\`, background: active?"rgba(212,175,55,0.12)":"transparent", color: active?"#d4af37":"#b0b0c8", fontSize:12.5, fontWeight:500, cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s" }),
+  sortBtn:   (active) => ({ padding:"6px 12px", borderRadius:8, border:\`1px solid \${active?"rgba(212,175,55,0.5)":"rgba(255,255,255,0.08)"}\`, background: active?"rgba(212,175,55,0.12)":"transparent", color: active?"#d4af37":"#7a7a96", fontSize:12, fontWeight:500, cursor:"pointer", fontFamily:"inherit" }),
 };
 
 const statusStyle = {
@@ -78,7 +81,7 @@ function ListingCard({ item }) {
   const [hovered, setHovered] = useState(false);
   return (
     <div onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
-      style={{ ...S.card, border:`1px solid ${hovered?"rgba(212,175,55,0.35)":"rgba(255,255,255,0.08)"}`, transform: hovered?"translateY(-2px)":"none", position:"relative", overflow:"hidden" }}>
+      style={{ ...S.card, border:\`1px solid \${hovered?"rgba(212,175,55,0.35)":"rgba(255,255,255,0.08)"}\`, transform: hovered?"translateY(-2px)":"none", position:"relative", overflow:"hidden" }}>
       {hovered && <div style={{ position:"absolute", top:0, left:0, right:0, height:2, background:"linear-gradient(90deg,#d4af37,#f0d060)" }} />}
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:12 }}>
         <span style={{ fontSize:32 }}>{item.emoji}</span>
@@ -127,7 +130,7 @@ export default function EquityIPOPage() {
 
   return (
     <div style={S.page}>
-      <style>{`
+      <style>{\`
         @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { margin: 0; }
@@ -138,7 +141,7 @@ export default function EquityIPOPage() {
         ::-webkit-scrollbar-thumb { background: rgba(212,175,55,0.3); border-radius:3px; }
         table { border-collapse: collapse; width: 100%; }
         th { text-align: left; }
-      `}</style>
+      \`}</style>
 
       {/* NAVBAR */}
       <nav style={S.nav}>
@@ -370,3 +373,9 @@ export default function EquityIPOPage() {
     </div>
   );
 }
+`;
+
+fs.writeFileSync("app/equity-ipo/page.tsx", code, "utf8");
+console.log("✅ app/equity-ipo/page.tsx rewritten with inline styles!");
+console.log("📏 Size: " + code.length + " characters");
+console.log("🎨 100% inline styles — no Tailwind dependency");
