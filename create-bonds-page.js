@@ -1,4 +1,6 @@
-import Link from "next/link";
+const fs = require("fs");
+
+const code = `import Link from "next/link";
 import { useState } from "react";
 
 const typeColor = {
@@ -137,7 +139,7 @@ export default function BondsPage() {
 
   return (
     <div style={S.page}>
-      <style>{`
+      <style>{\`
         @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
         * { box-sizing:border-box; margin:0; padding:0; }
         body { margin:0; }
@@ -148,7 +150,7 @@ export default function BondsPage() {
         ::-webkit-scrollbar-thumb { background:rgba(240,185,11,0.3); border-radius:3px; }
         table { border-collapse:collapse; width:100%; }
         th { text-align:left; }
-      `}</style>
+      \`}</style>
 
       {/* HERO */}
       <div style={{ position:"relative", padding:"90px 32px 70px", textAlign:"center", overflow:"hidden" }}>
@@ -365,3 +367,7 @@ export default function BondsPage() {
     </div>
   );
 }
+`;
+
+fs.writeFileSync("pages/bonds.js", code, "utf8");
+console.log("Done! pages/bonds.js — " + code.length + " chars");
