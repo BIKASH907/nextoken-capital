@@ -5,6 +5,7 @@ import { mainnet, polygon, arbitrum, optimism, base } from "wagmi/chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Head from "next/head";
 import "@rainbow-me/rainbowkit/styles.css";
+import Navbar from "../components/Navbar";
 
 // ─── Wagmi v2 + RainbowKit v2 Config ─────────────────────────
 const config = getDefaultConfig({
@@ -166,6 +167,7 @@ export default function App({ Component, pageProps, router }) {
           <style dangerouslySetInnerHTML={{ __html: globalStyles }} />
           <ProgressBar loading={pageLoading} />
 
+          <Navbar />
           <div className="page-enter" key={router.pathname}>
             <Component {...pageProps} />
           </div>
