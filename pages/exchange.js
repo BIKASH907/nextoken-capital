@@ -1,342 +1,165 @@
-import Link from "next/link";
 import { useState } from "react";
+import Head from "next/head";
+import Link from "next/link";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
-const tokens = [
-  { id:1,  symbol:"VGE",  name:"VoltGrid Energy",        type:"Equity",     price:2.10,  change:+5.2,  vol:"EUR 142K", mcap:"EUR 80M",  low:1.98, high:2.18, liquidity:"High",   status:"live"   },
-  { id:2,  symbol:"NLA",  name:"NeuroLogic AI",           type:"Equity",     price:1.42,  change:-1.8,  vol:"EUR 89K",  mcap:"EUR 52M",  low:1.38, high:1.51, liquidity:"Med",    status:"live"   },
-  { id:3,  symbol:"MCP",  name:"MedCore Pharma",          type:"Equity",     price:3.20,  change:+2.4,  vol:"EUR 67K",  mcap:"EUR 190M", low:3.10, high:3.28, liquidity:"High",   status:"live"   },
-  { id:4,  symbol:"BLR",  name:"Baltic Logistics REIT",   type:"Real Estate",price:1.08,  change:+0.9,  vol:"EUR 34K",  mcap:"EUR 28M",  low:1.05, high:1.11, liquidity:"Low",    status:"live"   },
-  { id:5,  symbol:"BALT", name:"Baltic Green Bond 2027",  type:"Bond",       price:98.40, change:+0.2,  vol:"EUR 210K", mcap:"EUR 5M",   low:98.1, high:98.7, liquidity:"High",   status:"live"   },
-  { id:6,  symbol:"LOGI", name:"Logistics Income Bond",   type:"Bond",       price:97.90, change:-0.1,  vol:"EUR 156K", mcap:"EUR 4M",   low:97.7, high:98.1, liquidity:"Med",    status:"live"   },
-  { id:7,  symbol:"SFP",  name:"Solar Farm Portfolio",    type:"Real Estate",price:1.24,  change:+3.1,  vol:"EUR 98K",  mcap:"EUR 62M",  low:1.20, high:1.27, liquidity:"Med",    status:"live"   },
-  { id:8,  symbol:"ATS",  name:"AquaTech Solutions",      type:"Equity",     price:1.55,  change:-0.6,  vol:"EUR 45K",  mcap:"EUR 35M",  low:1.51, high:1.60, liquidity:"Low",    status:"live"   },
-  { id:9,  symbol:"WEP",  name:"Wind Energy Project",     type:"Real Estate",price:0.88,  change:+1.4,  vol:"EUR 76K",  mcap:"EUR 44M",  low:0.85, high:0.91, liquidity:"Med",    status:"live"   },
-  { id:10, symbol:"RYN",  name:"Renewable Yield Note",    type:"Bond",       price:100.4, change:+0.05, vol:"EUR 88K",  mcap:"EUR 8M",   low:100.2,high:100.6,liquidity:"Med",   status:"live"   },
+const TOKENS = [
+  { symbol:"SOLAR-01", name:"Solar Farm Portfolio",      price:10.42, change:+2.4,  vol:"€142K", cap:"€5.2M",  yield:"18.2%", risk:"Low" },
+  { symbol:"OFFIC-03", name:"Tokenized Office Building", price:8.91,  change:-0.8,  vol:"€89K",  cap:"€2.4M",  yield:"16.4%", risk:"Low" },
+  { symbol:"WIND-07",  name:"Wind Energy Project",       price:12.15, change:+5.1,  vol:"€201K", cap:"€6.5M",  yield:"17.6%", risk:"Medium" },
+  { symbol:"RETL-02",  name:"Retail Shopping Centre",    price:9.78,  change:+0.3,  vol:"€67K",  cap:"€4.0M",  yield:"13.9%", risk:"Low" },
+  { symbol:"LOGX-06",  name:"Logistics Hub",             price:11.20, change:+1.9,  vol:"€310K", cap:"€8.0M",  yield:"15.1%", risk:"Medium" },
+  { symbol:"STUD-04",  name:"Student Housing Block",     price:7.65,  change:-1.2,  vol:"€44K",  cap:"€1.8M",  yield:"14.2%", risk:"Low" },
+  { symbol:"TECH-08",  name:"Tech Business Park",        price:15.30, change:+3.7,  vol:"€520K", cap:"€10.0M", yield:"15.9%", risk:"Medium" },
+  { symbol:"H2-09",    name:"Green Hydrogen Plant",      price:22.10, change:+8.2,  vol:"€890K", cap:"€12.0M", yield:"18.8%", risk:"High" },
 ];
-
-const orderBook = {
-  bids: [
-    { price:2.09, size:4500, total:9405 },
-    { price:2.08, size:8200, total:17056 },
-    { price:2.07, size:3100, total:6417 },
-    { price:2.06, size:12000,total:24720 },
-    { price:2.05, size:6700, total:13735 },
-  ],
-  asks: [
-    { price:2.11, size:3200, total:6752 },
-    { price:2.12, size:7500, total:15900 },
-    { price:2.13, size:4100, total:8733 },
-    { price:2.14, size:9800, total:20972 },
-    { price:2.15, size:5600, total:12040 },
-  ],
-};
-
-const trades = [
-  { time:"14:32:18", price:2.10, size:1200, side:"buy"  },
-  { time:"14:31:55", price:2.09, size:800,  side:"sell" },
-  { time:"14:31:40", price:2.10, size:2400, side:"buy"  },
-  { time:"14:31:22", price:2.11, size:600,  side:"buy"  },
-  { time:"14:30:58", price:2.09, size:1800, side:"sell" },
-  { time:"14:30:45", price:2.08, size:3200, side:"sell" },
-];
-
-const typeColor = { Equity:"#818cf8", Bond:"#22c55e", "Real Estate":"#F0B90B" };
-
-const S = {
-  page:  { minHeight:"100vh", background:"#05060a", color:"#e8e8f0", fontFamily:"'DM Sans',system-ui,sans-serif" },
-  badge: { display:"inline-flex", alignItems:"center", gap:8, padding:"5px 14px", borderRadius:20, border:"1px solid rgba(240,185,11,0.3)", background:"rgba(240,185,11,0.08)", color:"#F0B90B", fontSize:11, fontWeight:600, letterSpacing:"0.15em", textTransform:"uppercase" },
-  gold:  { padding:"11px 24px", borderRadius:9, background:"#F0B90B", color:"#000", fontSize:13.5, fontWeight:800, border:"none", cursor:"pointer", textDecoration:"none", display:"inline-block", fontFamily:"inherit" },
-  out:   { padding:"11px 24px", borderRadius:9, background:"transparent", color:"#F0B90B", fontSize:13.5, fontWeight:600, border:"1px solid rgba(240,185,11,0.35)", cursor:"pointer", textDecoration:"none", display:"inline-block", fontFamily:"inherit" },
-  FB:    (a) => ({ padding:"6px 14px", borderRadius:20, border:"1px solid "+(a?"rgba(240,185,11,0.5)":"rgba(255,255,255,0.08)"), background:a?"rgba(240,185,11,0.12)":"transparent", color:a?"#F0B90B":"#b0b0c8", fontSize:12.5, fontWeight:500, cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s" }),
-  panel: { background:"#0d0d14", border:"1px solid rgba(255,255,255,0.07)", borderRadius:14 },
-  th:    { padding:"11px 14px", fontSize:11, fontWeight:600, letterSpacing:"0.08em", textTransform:"uppercase", color:"#8a9bb8", borderBottom:"1px solid rgba(255,255,255,0.07)", whiteSpace:"nowrap", textAlign:"left" },
-  td:    { padding:"13px 14px", fontSize:13, borderBottom:"1px solid rgba(255,255,255,0.05)" },
-};
 
 export default function ExchangePage() {
-  const [selected, setSelected] = useState(tokens[0]);
-  const [typeFilter, setTypeFilter] = useState("All");
   const [search, setSearch] = useState("");
-  const [orderType, setOrderType] = useState("buy");
-  const [orderQty, setOrderQty] = useState("");
-  const [orderPrice, setOrderPrice] = useState("");
-  const [orderMode, setOrderMode] = useState("market");
+  const [selected, setSelected] = useState(TOKENS[0]);
+  const [qty, setQty] = useState("");
+  const [side, setSide] = useState("buy");
 
-  const filtered = tokens.filter(t => {
-    const tm = typeFilter === "All" || t.type === typeFilter;
-    const sm = search === "" || t.name.toLowerCase().includes(search.toLowerCase()) || t.symbol.toLowerCase().includes(search.toLowerCase());
-    return tm && sm;
-  });
+  const filtered = TOKENS.filter(t =>
+    t.symbol.toLowerCase().includes(search.toLowerCase()) ||
+    t.name.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const total = qty ? (parseFloat(qty) * selected.price).toFixed(2) : "0.00";
 
   return (
-    <div style={S.page}>
+    <>
+      <Head><title>Exchange — Nextoken Capital</title></Head>
+      <Navbar />
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
-        * { box-sizing:border-box; margin:0; padding:0; }
-        body { margin:0; }
-        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
-        .pulse { animation: pulse 2s infinite; }
-        ::-webkit-scrollbar { width:5px; }
-        ::-webkit-scrollbar-track { background:#05060a; }
-        ::-webkit-scrollbar-thumb { background:rgba(240,185,11,0.3); border-radius:3px; }
-        input::placeholder { color:#8a9bb8; }
-        input:focus { border-color:#F0B90B !important; outline:none; }
+        .ex-page { min-height:100vh; background:#0B0E11; padding-top:64px; }
+        .ex-hero { padding:48px 20px 32px; border-bottom:1px solid rgba(255,255,255,0.07); }
+        .ex-hero-inner { max-width:1280px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px; }
+        .ex-hero-left .tag { font-size:11px; font-weight:700; color:#F0B90B; letter-spacing:2px; text-transform:uppercase; margin-bottom:8px; }
+        .ex-hero-left h1 { font-size:clamp(1.6rem,3vw,2.4rem); font-weight:900; color:#fff; letter-spacing:-1px; margin-bottom:6px; }
+        .ex-hero-left p { font-size:13px; color:rgba(255,255,255,0.45); }
+        .ex-stats { display:flex; gap:28px; flex-wrap:wrap; }
+        .ex-stat-v { font-size:18px; font-weight:900; color:#F0B90B; }
+        .ex-stat-l { font-size:11px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:1px; }
+        .ex-body { max-width:1280px; margin:0 auto; padding:24px 20px 60px; display:grid; grid-template-columns:1fr 360px; gap:20px; align-items:start; }
+        .ex-table-wrap { background:#0F1318; border:1px solid rgba(255,255,255,0.07); border-radius:14px; overflow:hidden; }
+        .ex-table-head { padding:16px 20px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.07); }
+        .ex-table-head h3 { font-size:14px; font-weight:700; color:#fff; }
+        .ex-search { padding:7px 14px; background:#161B22; border:1px solid rgba(255,255,255,0.1); border-radius:7px; color:#fff; font-size:13px; outline:none; font-family:inherit; width:200px; }
+        .ex-table { width:100%; border-collapse:collapse; }
+        .ex-table th { padding:10px 16px; font-size:11px; font-weight:700; color:rgba(255,255,255,0.3); text-transform:uppercase; letter-spacing:1px; text-align:left; border-bottom:1px solid rgba(255,255,255,0.06); }
+        .ex-table td { padding:14px 16px; font-size:13px; color:rgba(255,255,255,0.75); border-bottom:1px solid rgba(255,255,255,0.04); }
+        .ex-table tr { cursor:pointer; transition:background .15s; }
+        .ex-table tr:hover td, .ex-table tr.sel td { background:rgba(240,185,11,0.05); }
+        .ex-table tr.sel td { border-left:2px solid #F0B90B; }
+        .ex-sym { font-weight:800; color:#fff; font-size:12px; }
+        .ex-name { font-size:11px; color:rgba(255,255,255,0.4); }
+        .ex-price { font-weight:700; color:#fff; }
+        .pos { color:#0ECB81; } .neg { color:#FF4D4D; }
+        .trade-panel { background:#0F1318; border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:22px; position:sticky; top:80px; }
+        .trade-title { font-size:15px; font-weight:800; color:#fff; margin-bottom:4px; }
+        .trade-price-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid rgba(255,255,255,0.07); }
+        .trade-price { font-size:22px; font-weight:900; color:#F0B90B; }
+        .side-tabs { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:18px; }
+        .side-btn { padding:10px; border-radius:8px; font-size:13px; font-weight:700; border:none; cursor:pointer; font-family:inherit; transition:all .15s; }
+        .side-btn.buy-on  { background:#0ECB81; color:#000; }
+        .side-btn.sell-on { background:#FF4D4D; color:#fff; }
+        .side-btn.off     { background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.5); }
+        .trade-field { margin-bottom:14px; }
+        .trade-field label { display:block; font-size:11px; font-weight:700; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px; }
+        .trade-field input { width:100%; padding:11px 14px; background:#161B22; border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#fff; font-size:14px; outline:none; font-family:inherit; transition:border-color .15s; }
+        .trade-field input:focus { border-color:rgba(240,185,11,0.5); }
+        .trade-total { display:flex; justify-content:space-between; padding:12px 14px; background:rgba(240,185,11,0.06); border-radius:8px; margin-bottom:16px; font-size:13px; }
+        .trade-total span:last-child { font-weight:800; color:#F0B90B; }
+        .trade-btn { width:100%; padding:13px; border:none; border-radius:8px; font-size:14px; font-weight:800; cursor:pointer; font-family:inherit; transition:background .15s; }
+        .trade-btn.buy  { background:#0ECB81; color:#000; }
+        .trade-btn.sell { background:#FF4D4D; color:#fff; }
+        .trade-note { font-size:11px; color:rgba(255,255,255,0.3); text-align:center; margin-top:10px; line-height:1.5; }
+        @media(max-width:900px){ .ex-body{ grid-template-columns:1fr; } .trade-panel{ position:static; } }
+        @media(max-width:540px){ .ex-search{ width:100%; } .ex-stats{ gap:16px; } }
       `}</style>
 
-      {/* HEADER */}
-      <div style={{ borderBottom:"1px solid rgba(255,255,255,0.07)", padding:"20px 32px" }}>
-        <div style={{ maxWidth:1400, margin:"0 auto", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:16 }}>
-          <div>
-            <div style={{ ...S.badge, marginBottom:10 }}>
-              <span className="pulse" style={{ width:7, height:7, borderRadius:"50%", background:"#F0B90B", display:"inline-block" }} />
-              Secondary Market
+      <div className="ex-page">
+        <div className="ex-hero">
+          <div className="ex-hero-inner">
+            <div className="ex-hero-left">
+              <div className="tag">Secondary Market</div>
+              <h1>Trade Tokenized Assets</h1>
+              <p>Buy and sell security tokens on the regulated secondary market.</p>
             </div>
-            <h1 style={{ fontFamily:"Syne,sans-serif", fontSize:"clamp(24px,4vw,40px)", fontWeight:800, color:"#e8e8f0", margin:0, letterSpacing:"-0.5px" }}>
-              Nextoken <span style={{ color:"#F0B90B" }}>Exchange</span>
-            </h1>
-            <p style={{ fontSize:14, color:"#8a9bb8", margin:"6px 0 0" }}>Trade tokenized real-world assets on the regulated secondary market.</p>
-          </div>
-          <div style={{ display:"flex", gap:20, flexWrap:"wrap" }}>
-            {[{v:"10",l:"Listed Tokens"},{v:"EUR 1.2M",l:"24h Volume"},{v:"ERC-3643",l:"Standard"},{v:"T+0",l:"Settlement"}].map(s => (
-              <div key={s.l} style={{ textAlign:"center" }}>
-                <div style={{ fontFamily:"Syne,sans-serif", fontSize:18, fontWeight:800, color:"#F0B90B" }}>{s.v}</div>
-                <div style={{ fontSize:11, color:"#8a9bb8" }}>{s.l}</div>
-              </div>
-            ))}
+            <div className="ex-stats">
+              {[["€2.3M","24h Volume"],["8","Listed Tokens"],["0.2%","Trading Fee"],["T+0","Settlement"]].map(([v,l])=>(
+                <div key={l}><div className="ex-stat-v">{v}</div><div className="ex-stat-l">{l}</div></div>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* KYC WARNING */}
-      <div style={{ background:"rgba(245,158,11,0.05)", borderBottom:"1px solid rgba(245,158,11,0.15)", padding:"10px 32px" }}>
-        <div style={{ maxWidth:1400, margin:"0 auto", display:"flex", alignItems:"center", gap:10, flexWrap:"wrap" }}>
-          <span style={{ fontSize:14 }}>⚠️</span>
-          <p style={{ fontSize:12.5, color:"#f59e0b", margin:0 }}>
-            <strong>KYC Required to Trade:</strong> You must complete identity verification before placing orders.{" "}
-            <Link href="/register" style={{ color:"#F0B90B", fontWeight:700 }}>Complete KYC →</Link>
-          </p>
-        </div>
-      </div>
-
-      <div style={{ maxWidth:1400, margin:"0 auto", padding:"24px 32px", display:"grid", gridTemplateColumns:"380px 1fr", gap:20 }}>
-
-        {/* LEFT — Token List */}
-        <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
-
-          {/* Search + Filter */}
-          <div style={{ position:"relative" }}>
-            <span style={{ position:"absolute", left:14, top:"50%", transform:"translateY(-50%)", fontSize:14, color:"#8a9bb8" }}>🔍</span>
-            <input placeholder="Search tokens..." value={search} onChange={e => setSearch(e.target.value)}
-              style={{ width:"100%", padding:"10px 14px 10px 38px", borderRadius:10, background:"#0d0d14", border:"1px solid rgba(255,255,255,0.08)", color:"#e8e8f0", fontSize:13, fontFamily:"inherit" }} />
-          </div>
-          <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
-            {["All","Equity","Bond","Real Estate"].map(t => <button key={t} onClick={() => setTypeFilter(t)} style={S.FB(typeFilter===t)}>{t}</button>)}
-          </div>
-
-          {/* Token Table */}
-          <div style={{ ...S.panel, overflow:"hidden" }}>
-            <div style={{ overflowY:"auto", maxHeight:520 }}>
-              <table style={{ width:"100%", borderCollapse:"collapse" }}>
-                <thead>
-                  <tr style={{ background:"#12121c" }}>
-                    <th style={S.th}>Token</th>
-                    <th style={{ ...S.th, textAlign:"right" }}>Price</th>
-                    <th style={{ ...S.th, textAlign:"right" }}>24h</th>
-                    <th style={{ ...S.th, textAlign:"right" }}>Volume</th>
+        <div className="ex-body">
+          <div className="ex-table-wrap">
+            <div className="ex-table-head">
+              <h3>All Markets</h3>
+              <input className="ex-search" placeholder="Search tokens..." value={search} onChange={e=>setSearch(e.target.value)} />
+            </div>
+            <table className="ex-table">
+              <thead>
+                <tr>
+                  <th>Token</th>
+                  <th>Price</th>
+                  <th>24h Change</th>
+                  <th>Volume</th>
+                  <th>Market Cap</th>
+                  <th>Yield</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map(t => (
+                  <tr key={t.symbol} className={selected.symbol===t.symbol?"sel":""} onClick={()=>setSelected(t)}>
+                    <td><div className="ex-sym">{t.symbol}</div><div className="ex-name">{t.name}</div></td>
+                    <td className="ex-price">€{t.price.toFixed(2)}</td>
+                    <td className={t.change>=0?"pos":"neg"}>{t.change>=0?"+":""}{t.change}%</td>
+                    <td>{t.vol}</td>
+                    <td>{t.cap}</td>
+                    <td style={{color:"#F0B90B",fontWeight:700}}>{t.yield}</td>
                   </tr>
-                </thead>
-                <tbody>
-                  {filtered.map(t => (
-                    <tr key={t.id} onClick={() => setSelected(t)}
-                      style={{ cursor:"pointer", background:selected.id===t.id?"rgba(240,185,11,0.06)":"transparent", transition:"background 0.15s" }}
-                      onMouseEnter={e => { if(selected.id!==t.id) e.currentTarget.style.background="rgba(255,255,255,0.02)"; }}
-                      onMouseLeave={e => { if(selected.id!==t.id) e.currentTarget.style.background="transparent"; }}>
-                      <td style={S.td}>
-                        <div style={{ fontFamily:"Syne,sans-serif", fontWeight:700, fontSize:13.5, color:selected.id===t.id?"#F0B90B":"#e8e8f0" }}>{t.symbol}</div>
-                        <div style={{ fontSize:11, color:"#8a9bb8", marginTop:1 }}>{t.name.length > 20 ? t.name.slice(0,20)+"..." : t.name}</div>
-                      </td>
-                      <td style={{ ...S.td, textAlign:"right", fontFamily:"monospace", fontWeight:600, color:"#e8e8f0" }}>EUR {t.price.toFixed(2)}</td>
-                      <td style={{ ...S.td, textAlign:"right", fontSize:12.5, fontWeight:600, color:t.change>=0?"#22c55e":"#ef4444" }}>
-                        {t.change>=0?"+":""}{t.change.toFixed(1)}%
-                      </td>
-                      <td style={{ ...S.td, textAlign:"right", fontSize:12, color:"#8a9bb8" }}>{t.vol}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        {/* RIGHT — Trading Panel */}
-        <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
-
-          {/* Selected Token Info */}
-          <div style={{ ...S.panel, padding:20, display:"flex", flexWrap:"wrap", gap:20, alignItems:"center", justifyContent:"space-between" }}>
-            <div>
-              <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:4 }}>
-                <span style={{ fontFamily:"Syne,sans-serif", fontSize:24, fontWeight:800, color:"#F0B90B" }}>{selected.symbol}</span>
-                <span style={{ padding:"2px 8px", borderRadius:6, fontSize:11, fontWeight:600, background:"rgba(255,255,255,0.05)", color:typeColor[selected.type]||"#8a9bb8", border:"1px solid rgba(255,255,255,0.08)" }}>{selected.type}</span>
-                <span style={{ width:8, height:8, borderRadius:"50%", background:"#22c55e", display:"inline-block" }} />
-              </div>
-              <div style={{ fontSize:13, color:"#8a9bb8" }}>{selected.name}</div>
-            </div>
-            <div>
-              <div style={{ fontFamily:"Syne,sans-serif", fontSize:32, fontWeight:800, color:"#e8e8f0" }}>EUR {selected.price.toFixed(2)}</div>
-              <div style={{ fontSize:14, fontWeight:600, color:selected.change>=0?"#22c55e":"#ef4444" }}>
-                {selected.change>=0?"+":""}{selected.change.toFixed(1)}% today
-              </div>
-            </div>
-            <div style={{ display:"flex", gap:24 }}>
-              {[{l:"24h High",v:"EUR "+selected.high.toFixed(2)},{l:"24h Low",v:"EUR "+selected.low.toFixed(2)},{l:"Volume",v:selected.vol},{l:"Mkt Cap",v:selected.mcap},{l:"Liquidity",v:selected.liquidity}].map(s => (
-                <div key={s.l}>
-                  <div style={{ fontSize:11, color:"#8a9bb8", marginBottom:2 }}>{s.l}</div>
-                  <div style={{ fontSize:13.5, fontWeight:600, color:"#e8e8f0" }}>{s.v}</div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </tbody>
+            </table>
           </div>
 
-          {/* Chart Placeholder + Order Book + Trade Form */}
-          <div style={{ display:"grid", gridTemplateColumns:"1fr 200px 240px", gap:14 }}>
-
-            {/* Chart */}
-            <div style={{ ...S.panel, padding:20 }}>
-              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:14 }}>
-                <div style={{ fontFamily:"Syne,sans-serif", fontSize:14, fontWeight:700, color:"#e8e8f0" }}>Price Chart</div>
-                <div style={{ display:"flex", gap:4 }}>
-                  {["1H","1D","1W","1M","ALL"].map(p => (
-                    <button key={p} style={{ padding:"3px 8px", borderRadius:6, border:"1px solid rgba(255,255,255,0.08)", background:"transparent", color:"#8a9bb8", fontSize:11, cursor:"pointer", fontFamily:"inherit" }}>{p}</button>
-                  ))}
-                </div>
-              </div>
-              {/* Fake sparkline chart */}
-              <div style={{ height:160, position:"relative", background:"rgba(240,185,11,0.02)", borderRadius:8, overflow:"hidden" }}>
-                <svg width="100%" height="160" viewBox="0 0 400 160" preserveAspectRatio="none">
-                  <defs>
-                    <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#F0B90B" stopOpacity="0.3" />
-                      <stop offset="100%" stopColor="#F0B90B" stopOpacity="0" />
-                    </linearGradient>
-                  </defs>
-                  <path d="M0,120 C20,115 40,105 60,98 S100,80 120,75 S160,60 180,65 S220,55 240,50 S280,40 300,42 S340,38 360,35 S380,30 400,28" stroke="#F0B90B" strokeWidth="2" fill="none" />
-                  <path d="M0,120 C20,115 40,105 60,98 S100,80 120,75 S160,60 180,65 S220,55 240,50 S280,40 300,42 S340,38 360,35 S380,30 400,28 L400,160 L0,160 Z" fill="url(#chartGrad)" />
-                </svg>
-                <div style={{ position:"absolute", bottom:8, right:12, fontSize:11, color:"#8a9bb8" }}>Live price simulation</div>
-              </div>
-              {/* Recent Trades */}
-              <div style={{ marginTop:16 }}>
-                <p style={{ fontSize:11, fontWeight:600, letterSpacing:"0.1em", textTransform:"uppercase", color:"#8a9bb8", margin:"0 0 10px" }}>Recent Trades</p>
-                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr 1fr", gap:4 }}>
-                  <span style={{ fontSize:10.5, color:"#8a9bb8", fontWeight:600 }}>TIME</span>
-                  <span style={{ fontSize:10.5, color:"#8a9bb8", fontWeight:600, textAlign:"right" }}>PRICE</span>
-                  <span style={{ fontSize:10.5, color:"#8a9bb8", fontWeight:600, textAlign:"right" }}>SIZE</span>
-                  <span style={{ fontSize:10.5, color:"#8a9bb8", fontWeight:600, textAlign:"right" }}>SIDE</span>
-                  {trades.map((t,i) => (
-                    <>
-                      <span key={"t"+i} style={{ fontSize:11.5, color:"#8a9bb8", fontFamily:"monospace" }}>{t.time}</span>
-                      <span key={"p"+i} style={{ fontSize:11.5, fontFamily:"monospace", color:t.side==="buy"?"#22c55e":"#ef4444", textAlign:"right" }}>EUR {t.price.toFixed(2)}</span>
-                      <span key={"s"+i} style={{ fontSize:11.5, fontFamily:"monospace", color:"#e8e8f0", textAlign:"right" }}>{t.size}</span>
-                      <span key={"sd"+i} style={{ fontSize:11.5, fontWeight:600, color:t.side==="buy"?"#22c55e":"#ef4444", textAlign:"right", textTransform:"uppercase" }}>{t.side}</span>
-                    </>
-                  ))}
-                </div>
-              </div>
+          <div className="trade-panel">
+            <div className="trade-title">{selected.symbol}</div>
+            <div className="trade-price-row">
+              <div className="trade-price">€{selected.price.toFixed(2)}</div>
+              <span className={selected.change>=0?"pos":"neg"} style={{fontWeight:700}}>
+                {selected.change>=0?"+":""}{selected.change}%
+              </span>
             </div>
-
-            {/* Order Book */}
-            <div style={{ ...S.panel, padding:16 }}>
-              <p style={{ fontSize:11, fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase", color:"#8a9bb8", margin:"0 0 12px" }}>Order Book</p>
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:4, marginBottom:6 }}>
-                <span style={{ fontSize:10, color:"#8a9bb8", fontWeight:600 }}>PRICE</span>
-                <span style={{ fontSize:10, color:"#8a9bb8", fontWeight:600, textAlign:"right" }}>SIZE</span>
-              </div>
-              {orderBook.asks.slice().reverse().map((o,i) => (
-                <div key={"a"+i} style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:4, padding:"3px 0", position:"relative" }}>
-                  <div style={{ position:"absolute", right:0, top:0, bottom:0, background:"rgba(239,68,68,0.08)", width:(o.size/15000*100)+"%", borderRadius:2 }} />
-                  <span style={{ fontSize:12, fontFamily:"monospace", color:"#ef4444", position:"relative" }}>EUR {o.price.toFixed(2)}</span>
-                  <span style={{ fontSize:12, fontFamily:"monospace", color:"#8a9bb8", textAlign:"right", position:"relative" }}>{o.size.toLocaleString()}</span>
-                </div>
-              ))}
-              <div style={{ textAlign:"center", padding:"6px 0", borderTop:"1px solid rgba(255,255,255,0.06)", borderBottom:"1px solid rgba(255,255,255,0.06)", margin:"4px 0" }}>
-                <span style={{ fontFamily:"Syne,sans-serif", fontSize:15, fontWeight:700, color:"#F0B90B" }}>EUR {selected.price.toFixed(2)}</span>
-              </div>
-              {orderBook.bids.map((o,i) => (
-                <div key={"b"+i} style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:4, padding:"3px 0", position:"relative" }}>
-                  <div style={{ position:"absolute", right:0, top:0, bottom:0, background:"rgba(34,197,94,0.08)", width:(o.size/15000*100)+"%", borderRadius:2 }} />
-                  <span style={{ fontSize:12, fontFamily:"monospace", color:"#22c55e", position:"relative" }}>EUR {o.price.toFixed(2)}</span>
-                  <span style={{ fontSize:12, fontFamily:"monospace", color:"#8a9bb8", textAlign:"right", position:"relative" }}>{o.size.toLocaleString()}</span>
-                </div>
-              ))}
+            <div className="side-tabs">
+              <button className={"side-btn "+(side==="buy"?"buy-on":"off")} onClick={()=>setSide("buy")}>Buy</button>
+              <button className={"side-btn "+(side==="sell"?"sell-on":"off")} onClick={()=>setSide("sell")}>Sell</button>
             </div>
-
-            {/* Order Form */}
-            <div style={{ ...S.panel, padding:18, display:"flex", flexDirection:"column", gap:12 }}>
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:4 }}>
-                {["buy","sell"].map(side => (
-                  <button key={side} onClick={() => setOrderType(side)}
-                    style={{ padding:"9px 0", borderRadius:8, border:"none", cursor:"pointer", fontFamily:"inherit", fontSize:13, fontWeight:700, textTransform:"uppercase", background:orderType===side?(side==="buy"?"#22c55e":"#ef4444"):"rgba(255,255,255,0.05)", color:orderType===side?"#000":"#8a9bb8", transition:"all 0.15s" }}>
-                    {side}
-                  </button>
-                ))}
-              </div>
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:4 }}>
-                {["market","limit"].map(m => (
-                  <button key={m} onClick={() => setOrderMode(m)}
-                    style={{ padding:"6px 0", borderRadius:8, border:"1px solid rgba(255,255,255,0.08)", cursor:"pointer", fontFamily:"inherit", fontSize:12, background:orderMode===m?"rgba(240,185,11,0.12)":"transparent", color:orderMode===m?"#F0B90B":"#8a9bb8", transition:"all 0.15s" }}>
-                    {m.charAt(0).toUpperCase()+m.slice(1)}
-                  </button>
-                ))}
-              </div>
-              {orderMode==="limit" && (
-                <div>
-                  <label style={{ fontSize:11, color:"#8a9bb8", textTransform:"uppercase", letterSpacing:"0.05em", display:"block", marginBottom:5 }}>Limit Price (EUR)</label>
-                  <input placeholder={"EUR "+selected.price.toFixed(2)} value={orderPrice} onChange={e => setOrderPrice(e.target.value)}
-                    style={{ width:"100%", padding:"9px 12px", borderRadius:8, background:"#12121c", border:"1px solid rgba(255,255,255,0.08)", color:"#e8e8f0", fontSize:13, fontFamily:"inherit" }} />
-                </div>
-              )}
-              <div>
-                <label style={{ fontSize:11, color:"#8a9bb8", textTransform:"uppercase", letterSpacing:"0.05em", display:"block", marginBottom:5 }}>Quantity (tokens)</label>
-                <input type="number" placeholder="0" value={orderQty} onChange={e => setOrderQty(e.target.value)}
-                  style={{ width:"100%", padding:"9px 12px", borderRadius:8, background:"#12121c", border:"1px solid rgba(255,255,255,0.08)", color:"#e8e8f0", fontSize:13, fontFamily:"inherit" }} />
-              </div>
-              {orderQty && (
-                <div style={{ padding:10, borderRadius:8, background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.06)" }}>
-                  <div style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}>
-                    <span style={{ fontSize:11.5, color:"#8a9bb8" }}>Est. Total</span>
-                    <span style={{ fontSize:12, fontWeight:600, color:"#e8e8f0" }}>EUR {(parseFloat(orderQty)||0 * selected.price).toFixed(2)}</span>
-                  </div>
-                  <div style={{ display:"flex", justifyContent:"space-between" }}>
-                    <span style={{ fontSize:11.5, color:"#8a9bb8" }}>Fee (0.25%)</span>
-                    <span style={{ fontSize:12, color:"#8a9bb8" }}>EUR {((parseFloat(orderQty)||0) * selected.price * 0.0025).toFixed(2)}</span>
-                  </div>
-                </div>
-              )}
-              <div style={{ padding:10, borderRadius:8, background:"rgba(245,158,11,0.06)", border:"1px solid rgba(245,158,11,0.2)" }}>
-                <p style={{ fontSize:11.5, color:"#f59e0b", margin:"0 0 6px", fontWeight:600 }}>KYC Required</p>
-                <p style={{ fontSize:11, color:"#8a9bb8", margin:0, lineHeight:1.5 }}>Complete identity verification to trade.</p>
-              </div>
-              <Link href="/register"
-                style={{ display:"block", textAlign:"center", padding:"11px 0", borderRadius:9, background: orderType==="buy"?"#22c55e":"#ef4444", color:"#000", fontSize:13.5, fontWeight:800, textDecoration:"none" }}>
-                {orderType==="buy" ? "Buy "+selected.symbol : "Sell "+selected.symbol} →
-              </Link>
-              <p style={{ fontSize:11, color:"#8a9bb8", textAlign:"center", margin:0 }}>ERC-3643 · KYC verified only · T+0 settlement</p>
+            <div className="trade-field">
+              <label>Quantity (tokens)</label>
+              <input type="number" placeholder="0" min="1" value={qty} onChange={e=>setQty(e.target.value)} />
             </div>
+            <div className="trade-field">
+              <label>Price per token</label>
+              <input value={"€" + selected.price.toFixed(2)} readOnly style={{opacity:.6}} />
+            </div>
+            <div className="trade-total">
+              <span>Total</span>
+              <span>€{total}</span>
+            </div>
+            <Link href="/register">
+              <button className={"trade-btn "+side}>{side==="buy"?"Buy "+selected.symbol:"Sell "+selected.symbol}</button>
+            </Link>
+            <p className="trade-note">You must be KYC verified to trade. All trades are final.</p>
           </div>
         </div>
       </div>
-
-      {/* FOOTER */}
-      <footer style={{ borderTop:"1px solid rgba(255,255,255,0.07)", padding:"32px 32px 20px", marginTop:20 }}>
-        <div style={{ maxWidth:1400, margin:"0 auto", display:"flex", flexWrap:"wrap", justifyContent:"space-between", gap:14, alignItems:"center" }}>
-          <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-            <span style={{ fontFamily:"Syne,sans-serif", fontSize:18, fontWeight:900, color:"#F0B90B", letterSpacing:2 }}>NXT</span>
-            <div style={{ width:1, height:18, background:"rgba(240,185,11,0.25)" }} />
-            <span style={{ fontFamily:"Syne,sans-serif", fontSize:12, fontWeight:800, letterSpacing:"0.15em", color:"#F0B90B" }}>NEXTOKEN EXCHANGE</span>
-          </div>
-          <p style={{ fontSize:12, color:"#8a9bb8", margin:0 }}>Trading in tokenized securities involves risk. KYC verification required for all trades. Regulated by Bank of Lithuania.</p>
-        </div>
-      </footer>
-    </div>
+      <Footer />
+    </>
   );
 }
