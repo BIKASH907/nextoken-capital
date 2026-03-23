@@ -3,6 +3,7 @@ import { useState } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { signIn } from "next-auth/react";
 import Navbar from "../components/Navbar";
 
 const FEATURES = [
@@ -214,6 +215,8 @@ export default function LoginPage() {
                 {loading ? <><div className="li-spin" /> Signing in...</> : "Sign In →"}
               </button>
             </form>
+            <div style={{display:"flex",alignItems:"center",gap:12,margin:"16px 0"}}><div style={{flex:1,height:1,background:"rgba(255,255,255,0.08)"}}></div><span style={{fontSize:12,color:"rgba(255,255,255,0.3)"}}>or</span><div style={{flex:1,height:1,background:"rgba(255,255,255,0.08)"}}></div></div>
+            <button onClick={() => signIn("google", {callbackUrl:"/dashboard"})} style={{width:"100%",padding:"12px",background:"#fff",color:"#000",border:"none",borderRadius:8,fontSize:14,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:10}}><img src="https://www.google.com/favicon.ico" width={18} height={18} alt="" />Continue with Google</button>
 
             <div className="li-sep">
               <div className="li-sep-line" /><span>or</span><div className="li-sep-line" />
