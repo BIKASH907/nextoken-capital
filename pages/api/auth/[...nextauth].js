@@ -10,7 +10,7 @@ export const authOptions = {
     CredentialsProvider({
       name: 'credentials',
       credentials: {
-        email:    { label: 'Email',    type: 'email'    },
+        email:    { label: 'Email',    type: 'email' },
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
@@ -20,28 +20,21 @@ export const authOptions = {
         if (!user.password) throw new Error('Please sign in with Google.');
         const valid = await bcrypt.compare(credentials.password, user.password);
         if (!valid) throw new Error('Invalid password.');
-        return {
-          id: user._id.toString(),
-          email: user.email,
-          name: user.firstName + ' ' + user.lastName,
-          firstName: user.firstName,
-          kycStatus: user.kycStatus,
-          role: user.role,
-        };
+        return { id: user._id.toString(), email: user.email, name: user.firstName + ' ' + user.lastName, firstName: user.firstName, kycStatus: user.kycStatus, role: user.role };
       },
     }),
     GoogleProvider({
-      clientId:     process.env.GOOGLE_CLIENT_ID     || '',
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
   ],
   callbacks: {
     async jwt({ token, user, account, profile }) {
       if (user) {
-        token.id        = user.id;
+        token.id = user.id;
         token.firstName = user.firstName;
         token.kycStatus = user.kycStatus;
-        token.role      = user.role;
+        token.role = user.role;
       }
       if (account?.provider === 'google' && profile) {
         try {
@@ -59,28 +52,25 @@ export const authOptions = {
               role: 'user',
             });
           }
-          token.id        = dbUser._id.toString();
+          token.id = dbUser._id.toString();
           token.firstName = dbUser.firstName;
           token.kycStatus = dbUser.kycStatus;
-          token.role      = dbUser.role;
-        } catch(e) { console.error('JWT Google error:', e.message); }
+          token.role = dbUser.role;
+        } catch(e) { console.error('JWT error:', e.message); }
       }
       return token;
     },
     async session({ session, token }) {
-      session.user.id        = token.id;
+      session.user.id = token.id;
       session.user.firstName = token.firstName;
       session.user.kycStatus = token.kycStatus;
-      session.user.role      = token.role;
+      session.user.role = token.role;
       return session;
     },
   },
-  pages: {
-    signIn: '/login',
-    error:  '/login',
-  },
+  pages: { signIn: '/login', error: '/login' },
   session: { strategy: 'jwt', maxAge: 30 * 24 * 60 * 60 },
-  secret:  process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET,
 };
 
 export default NextAuth(authOptions);
