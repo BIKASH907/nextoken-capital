@@ -3,6 +3,7 @@ import { useState } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { signIn } from "next-auth/react";
 import Navbar from "../components/Navbar";
 
 // All 180+ countries with dial codes
@@ -306,7 +307,9 @@ export default function RegisterPage() {
             {error && <div className="rg-err">⚠️ {error}</div>}
 
             {/* STEP 0 — Account */}
-            {step === 0 && <>
+            {step === 0             {step === 0 && <>            {step === 0 && <> <>
+              <button onClick={() => signIn("google", {callbackUrl:"/dashboard"})} style={{width:"100%",padding:"12px",background:"#fff",color:"#000",border:"none",borderRadius:8,fontSize:14,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:10,marginBottom:20}}><img src="https://www.google.com/favicon.ico" width={18} height={18} alt="" />Continue with Google</button>
+              <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:20}}><div style={{flex:1,height:1,background:"rgba(255,255,255,0.08)"}}></div><span style={{fontSize:12,color:"rgba(255,255,255,0.3)"}}>or register with email</span><div style={{flex:1,height:1,background:"rgba(255,255,255,0.08)"}}></div></div>
               <div className="rg-title">Create your account</div>
               <p className="rg-sub">Join 1,000+ investors. Takes 3 minutes.</p>
               <div className="rg-field">
