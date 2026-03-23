@@ -4,7 +4,9 @@ import Head from "next/head";
 export default function AdminDashboard() {
   const router = useRouter();
   const [employee, setEmployee] = useState(null);
+  const [mounted, setMounted] = useState(false);
   useEffect(() => {
+    setMounted(true);
     const token = localStorage.getItem("adminToken");
     const emp = localStorage.getItem("adminEmployee");
     if (!token) { router.push("/admin/login"); return; }
@@ -15,7 +17,8 @@ export default function AdminDashboard() {
     localStorage.removeItem("adminEmployee");
     router.push("/admin/login");
   };
-  if (!employee) return null;
+  if (!mounted) return <div style={{background:"#0B0E11",minHeight:"100vh"}}></div>;
+  if (!employee) return <div style={{background:"#0B0E11",minHeight:"100vh"}}></div>;
   return (
     <>
       <Head><title>Admin</title></Head>
