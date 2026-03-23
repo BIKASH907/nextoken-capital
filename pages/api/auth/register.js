@@ -1,38 +1,35 @@
-// pages/api/auth/register.js
-import clientPromise from "../../../lib/mongodb";
-import bcrypt from "bcryptjs";
-const { createToken, setSessionCookie } = require("../../../lib/session");
-
+import { connectDB } from '../../../lib/mongodb';
+import User from '../../../lib/models/User';
+import bcrypt from 'bcryptjs';
+const { createToken, setSessionCookie } = require('../../../lib/session');
 export default async function handler(req, res) {
-  if (req.method !== "POST") return res.status(405).end();
+  if (req.method !== 'POST') return res.status(405).end();
   const { email, password, firstName, lastName, country, countryCode, phone, dob } = req.body;
   if (!email || !password || !firstName || !lastName) {
-    return res.status(400).json({ error: "Missing required fields." });
-  }
-  if (password.length < 8) {
-    return res.status(400).json({ error: "Password must be at least 8 characters." });
+    return res.status(400).json({ error: 'Missing required fields.' });
   }
   try {
-    const client = await clientPromise;
-    if (!client) return res.status(500).json({ error: "Database connection failed. Please try again." });
-    const db = client.db("nextoken");
-    const existing = await db.collection("users").findOne({ email: email.toLowerCase() });
-    if (existing) return res.status(409).json({ error: "An account with this email already exists." });
-    const hashedPassword = await bcrypt.hash(password, 12);
-    const result = await db.collection("users").insertOne({
-      email: email.toLowerCase(), password: hashedPassword,
-      firstName, lastName, country: country || "", countryCode: countryCode || "",
-      phone: phone || "", dob: dob || "",
-      kycStatus: "pending", kycProvider: "sumsub",
-      role: "investor", createdAt: new Date(), updatedAt: new Date(),
-      portfolio: { totalInvested: 0, totalValue: 0, totalReturn: 0 },
+    await connectDB();
+    const existing = await User.findOne({ email: email.toLowerCase() });
+    if (existing) return res.status(409).json({ error: 'An account with this email already exists.' });
+    const hashed = await bcrypt.hash(password, 12);
+    const user = await User.create({
+      email: email.toLowerCase(),
+      password: hashed,
+      firstName,
+      lastName,
+      country: country || '',
+      countryCode: countryCode || '',
+      phone: phone || '',
+      dateOfBirth: dob || null,
+      kycStatus: 'none',
+      role: 'investor',
+      isActive: true,
     });
-    const userId = result.insertedId.toString();
-    const token = createToken({ userId, email: email.toLowerCase(), firstName, lastName, kycStatus: "pending", role: "investor" });
+    const token = createToken({ userId: user._id.toString(), email: user.email, firstName: user.firstName, lastName: user.lastName, kycStatus: user.kycStatus, role: user.role });
     setSessionCookie(res, token);
-    return res.status(201).json({ success: true, user: { userId, email: email.toLowerCase(), firstName, lastName, kycStatus: "pending" } });
-  } catch (e) {
-    console.error("Register error:", e);
-    return res.status(500).json({ error: "Registration failed: " + e.message });
+    return res.status(201).json({ success: true, user: { userId: user._id.toString(), email: user.email, firstName: user.firstName, lastName: user.lastName } });
+  } catch(e) {
+    return res.status(500).json({ error: 'Registration failed: ' + e.message });
   }
 }
