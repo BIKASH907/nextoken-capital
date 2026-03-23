@@ -22,6 +22,7 @@ export default function AdminLogin() {
     setLoading(false);
     if (res.ok) {
       localStorage.setItem("adminToken", data.token);
+      localStorage.setItem("adminEmployee", JSON.stringify(data.employee));
       router.push("/admin");
     } else {
       setError(data.error || "Login failed");
