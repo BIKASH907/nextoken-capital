@@ -96,7 +96,7 @@ const emptyForm = { name:"", ticker:"", assetType:"real_estate", description:"",
     localStorage.removeItem("adminEmployee");
     router.push("/admin/login");
   };
-  const F = ({ label, children }) => <div className="field"><label>{label}</label>{children}</div>;
+function F({ label, children }) { return (<div className="field"><label>{label}</label>{children}</div>); }
   if (!mounted) return <div style={{background:"#0B0E11",minHeight:"100vh"}} />;
   if (!employee) return <div style={{background:"#0B0E11",minHeight:"100vh"}} />;
   const tabs = [{ id:"dashboard", label:"Dashboard" },{ id:"assets", label:"Assets" },{ id:"users", label:"Users" },{ id:"add-asset", label:"+ Add Asset" }];
