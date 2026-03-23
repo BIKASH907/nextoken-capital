@@ -89,6 +89,11 @@ const FEATURES = [
 export default function RegisterPage() {
   const router = useRouter();
   const [step, setStep]       = useState(0);
+  const [otpSent, setOtpSent]   = useState(false);
+  const [otp, setOtp]           = useState("");
+  const [otpVerified, setOtpVerified] = useState(false);
+  const [otpLoading, setOtpLoading] = useState(false);
+  const [otpError, setOtpError] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState("");
   const [form, setForm] = useState({
@@ -124,9 +129,30 @@ export default function RegisterPage() {
     if (step === 2) {
       if (!form.agreeTerms || !form.agreeRisk) { setError("You must agree to both the Terms of Service and Risk Disclosure."); return; }
     }
+    if (step === 0 && !otpVerified) { sendOtp(); return; }
     setStep(s => s + 1);
   };
 
+  const sendOtp = async () => {
+    setOtpLoading(true); setOtpError("");
+    try {
+      const r = await fetch("/api/auth/send-otp", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({email: form.email}) });
+      const d = await r.json();
+      if (r.ok) setOtpSent(true);
+      else setOtpError(d.error || "Failed to send code");
+    } catch(e) { setOtpError("Network error"); }
+    setOtpLoading(false);
+  };
+  const verifyOtp = async () => {
+    setOtpLoading(true); setOtpError("");
+    try {
+      const r = await fetch("/api/auth/verify-otp", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({email: form.email, otp}) });
+      const d = await r.json();
+      if (r.ok && d.verified) { setOtpVerified(true); setStep(1); setOtpSent(false); setOtp(""); }
+      else setOtpError(d.error || "Invalid code");
+    } catch(e) { setOtpError("Network error"); }
+    setOtpLoading(false);
+  };
   const submitRegistration = async () => {
     setLoading(true);
     setError("");
@@ -334,6 +360,19 @@ export default function RegisterPage() {
               <button className="rg-btn" onClick={nextStep}>Continue →</button>
             </>}
 
+            {/* OTP VERIFICATION */}
+            {step === 0 && otpSent && !otpVerified && <>
+              <div className="rg-title">Verify your email</div>
+              <p className="rg-sub">We sent a 6-digit code to <strong>{form.email}</strong></p>
+              <div className="rg-field" style={{marginTop:24}}>
+                <label className="rg-label">Verification Code</label>
+                <input className="rg-input" type="text" maxLength={6} value={otp} onChange={e=>setOtp(e.target.value.replace(/[^0-9]/g,''))} placeholder="000000" style={{fontSize:24,letterSpacing:8,textAlign:'center'}} autoFocus />
+              </div>
+              {otpError && <div className="rg-err">⚠️ {otpError}</div>}
+              <button className="rg-btn" onClick={verifyOtp} disabled={otpLoading || otp.length !== 6} style={{marginTop:16}}>{otpLoading ? 'Verifying...' : 'Verify Email →'}</button>
+              <button className="rg-btn" style={{background:'none',border:'none',color:'rgba(255,255,255,0.4)',fontSize:13,marginTop:8,cursor:'pointer'}} onClick={sendOtp} disabled={otpLoading}>Resend code</button>
+              <button className="rg-btn rg-btn-ghost" style={{marginTop:8}} onClick={() => setOtpSent(false)}>← Back</button>
+            </>}
             {/* STEP 1 — Personal */}
             {step === 1 && <>
               <div className="rg-title">Personal details</div>
