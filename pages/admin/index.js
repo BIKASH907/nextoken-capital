@@ -5,40 +5,209 @@ export default function AdminDashboard() {
   const router = useRouter();
   const [employee, setEmployee] = useState(null);
   const [mounted, setMounted] = useState(false);
+  const [tab, setTab] = useState("dashboard");
+  const [token, setToken] = useState("");
+  const [users, setUsers] = useState([]);
+  const [assets, setAssets] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [assetForm, setAssetForm] = useState({ name:"", type:"real_estate", description:"", minInvestment:"", targetReturn:"", totalTokens:"", tokenPrice:"", currency:"EUR", status:"draft" });
+  const [assetMsg, setAssetMsg] = useState("");
   useEffect(() => {
     setMounted(true);
-    const token = localStorage.getItem("adminToken");
+    const t = localStorage.getItem("adminToken");
     const emp = localStorage.getItem("adminEmployee");
-    if (!token) { router.push("/admin/login"); return; }
+    if (!t) { router.push("/admin/login"); return; }
+    setToken(t);
     try { setEmployee(JSON.parse(emp)); } catch(e) { router.push("/admin/login"); }
   }, []);
+  useEffect(() => {
+    if (!token) return;
+    if (tab === "dashboard" || tab === "users") fetchUsers();
+    if (tab === "dashboard" || tab === "assets") fetchAssets();
+  }, [tab, token]);
+  const fetchUsers = async () => {
+    try {
+      const r = await fetch("/api/admin/users", { headers: { Authorization: `Bearer ${token}` } });
+      const d = await r.json();
+      if (d.users) setUsers(d.users);
+    } catch(e) {}
+  };
+  const fetchAssets = async () => {
+    try {
+      const r = await fetch("/api/admin/assets", { headers: { Authorization: `Bearer ${token}` } });
+      const d = await r.json();
+      if (d.assets) setAssets(d.assets);
+    } catch(e) {}
+  };
+  const createAsset = async (e) => {
+    e.preventDefault();
+    setLoading(true); setAssetMsg("");
+    try {
+      const r = await fetch("/api/admin/assets", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify(assetForm),
+      });
+      const d = await r.json();
+      if (r.ok) { setAssetMsg("Asset created successfully!"); setAssetForm({ name:"", type:"real_estate", description:"", minInvestment:"", targetReturn:"", totalTokens:"", tokenPrice:"", currency:"EUR", status:"draft" }); fetchAssets(); }
+      else setAssetMsg(d.error || "Failed to create asset");
+    } catch(e) { setAssetMsg("Network error"); }
+    setLoading(false);
+  };
+  const deleteAsset = async (id) => {
+    if (!confirm("Delete this asset?")) return;
+    await fetch(`/api/admin/assets/${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
+    fetchAssets();
+  };
   const logout = () => {
     localStorage.removeItem("adminToken");
     localStorage.removeItem("adminEmployee");
     router.push("/admin/login");
   };
-  if (!mounted) return <div style={{background:"#0B0E11",minHeight:"100vh"}}></div>;
-  if (!employee) return <div style={{background:"#0B0E11",minHeight:"100vh"}}></div>;
+  if (!mounted) return <div style={{background:"#0B0E11",minHeight:"100vh"}} />;
+  if (!employee) return <div style={{background:"#0B0E11",minHeight:"100vh"}} />;
+  const tabs = [
+    { id:"dashboard", label:"Dashboard" },
+    { id:"assets", label:"Assets" },
+    { id:"users", label:"Users" },
+    { id:"add-asset", label:"+ Add Asset" },
+  ];
   return (
     <>
-      <Head><title>Admin</title></Head>
-      <style>{`body{background:#0B0E11;color:#fff;font-family:sans-serif;margin:0}.wrap{max-width:1100px;margin:0 auto;padding:40px 20px}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}.card{background:#0F1318;border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:24px}.cv{font-size:2rem;font-weight:900;color:#F0B90B}.cl{font-size:12px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-top:4px}.info{background:#0F1318;border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:24px}.row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:14px}.lbl{color:rgba(255,255,255,0.4)}.val{color:#fff;font-weight:600}`}</style>
-      <div className="wrap">
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:32}}>
-          <div style={{fontSize:24,fontWeight:900}}>Admin Dashboard</div>
-          <button onClick={logout} style={{padding:"8px 20px",background:"rgba(255,255,255,0.07)",border:"1px solid rgba(255,255,255,0.15)",borderRadius:8,color:"#fff",cursor:"pointer",fontSize:13}}>Logout</button>
+      <Head><title>Admin — Nextoken Capital</title></Head>
+      <style>{`*{box-sizing:border-box;margin:0;padding:0}body{background:#0B0E11;color:#fff;font-family:'DM Sans',system-ui,sans-serif}.sidebar{position:fixed;top:0;left:0;width:220px;height:100vh;background:#0F1318;border-right:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;padding:24px 16px;z-index:100}.logo{font-size:20px;font-weight:900;color:#F0B90B;margin-bottom:4px}.logo-sub{font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:2px;margin-bottom:32px}.nav-item{display:flex;align-items:center;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600;color:rgba(255,255,255,0.5);cursor:pointer;margin-bottom:4px;transition:all .15s;border:none;background:none;width:100%;text-align:left}.nav-item:hover{color:#fff;background:rgba(255,255,255,0.05)}.nav-item.active{color:#F0B90B;background:rgba(240,185,11,0.1)}.nav-bottom{margin-top:auto}.user-info{padding:12px 14px;border-radius:8px;background:rgba(255,255,255,0.04);margin-bottom:8px}.user-name{font-size:13px;font-weight:700;color:#fff}.user-role{font-size:11px;color:#F0B90B;margin-top:2px}.logout-btn{width:100%;padding:10px 14px;border-radius:8px;background:rgba(255,77,77,0.08);border:1px solid rgba(255,77,77,0.15);color:#ff6b6b;font-size:13px;font-weight:600;cursor:pointer;text-align:left}.logout-btn:hover{background:rgba(255,77,77,0.15)}.main{margin-left:220px;padding:32px;min-height:100vh}.page-title{font-size:22px;font-weight:900;margin-bottom:4px}.page-sub{font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:28px}.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px}.stat-card{background:#0F1318;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:24px}.stat-val{font-size:2.2rem;font-weight:900;color:#F0B90B}.stat-lbl{font-size:12px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:.5px;margin-top:4px}.card{background:#0F1318;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:24px;margin-bottom:20px}.card-title{font-size:15px;font-weight:700;margin-bottom:16px}table{width:100%;border-collapse:collapse}th{text-align:left;font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:.5px;padding:0 0 12px;font-weight:700}td{padding:12px 0;font-size:13px;border-bottom:1px solid rgba(255,255,255,0.05);vertical-align:middle}tr:last-child td{border:none}.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}.badge-green{background:rgba(14,203,129,0.12);color:#0ECB81}.badge-yellow{background:rgba(240,185,11,0.12);color:#F0B90B}.badge-red{background:rgba(255,77,77,0.12);color:#ff6b6b}.badge-gray{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5)}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.field{display:flex;flex-direction:column;gap:6px}.field label{font-size:11px;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:.5px}.field input,.field select,.field textarea{background:#161B22;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:10px 12px;font-size:13px;color:#fff;outline:none;font-family:inherit;transition:border-color .15s}.field input:focus,.field select:focus,.field textarea:focus{border-color:rgba(240,185,11,0.4)}.field textarea{resize:vertical;min-height:80px}.field select option{background:#161B22}.submit-btn{padding:12px 28px;background:#F0B90B;color:#000;border:none;border-radius:8px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;margin-top:8px;transition:background .15s}.submit-btn:hover:not(:disabled){background:#FFD000}.submit-btn:disabled{opacity:.5;cursor:not-allowed}.success-msg{background:rgba(14,203,129,0.1);border:1px solid rgba(14,203,129,0.2);border-radius:8px;padding:10px 14px;font-size:13px;color:#0ECB81;margin-top:12px}.error-msg{background:rgba(255,77,77,0.1);border:1px solid rgba(255,77,77,0.2);border-radius:8px;padding:10px 14px;font-size:13px;color:#ff6b6b;margin-top:12px}.del-btn{padding:4px 12px;background:rgba(255,77,77,0.08);border:1px solid rgba(255,77,77,0.15);border-radius:6px;color:#ff6b6b;font-size:12px;cursor:pointer;font-family:inherit}.del-btn:hover{background:rgba(255,77,77,0.2)}.empty{text-align:center;padding:40px;color:rgba(255,255,255,0.3);font-size:13px}`}</style>
+      <div className="sidebar">
+        <div className="logo">NXT</div>
+        <div className="logo-sub">ADMIN PORTAL</div>
+        {tabs.map(t => (
+          <button key={t.id} className={`nav-item${tab===t.id?" active":""}`} onClick={() => setTab(t.id)}>{t.label}</button>
+        ))}
+        <div className="nav-bottom">
+          <div className="user-info">
+            <div className="user-name">{employee.firstName} {employee.lastName}</div>
+            <div className="user-role">{employee.role}</div>
+          </div>
+          <button className="logout-btn" onClick={logout}>Sign Out</button>
         </div>
-        <div className="cards">
-          <div className="card"><div className="cv">OK</div><div className="cl">Auth Working</div></div>
-          <div className="card"><div className="cv">OK</div><div className="cl">DB Connected</div></div>
-          <div className="card"><div className="cv">OK</div><div className="cl">{employee.role}</div></div>
-        </div>
-        <div className="info">
-          <div style={{fontSize:16,fontWeight:700,marginBottom:16}}>Account Info</div>
-          <div className="row"><span className="lbl">Name</span><span className="val">{employee.firstName} {employee.lastName}</span></div>
-          <div className="row"><span className="lbl">Email</span><span className="val">{employee.email}</span></div>
-          <div className="row"><span className="lbl">Role</span><span className="val">{employee.role}</span></div>
-        </div>
+      </div>
+      <div className="main">
+        {tab === "dashboard" && (
+          <>
+            <div className="page-title">Dashboard</div>
+            <div className="page-sub">Welcome back, {employee.firstName}</div>
+            <div className="stat-grid">
+              <div className="stat-card"><div className="stat-val">{users.length}</div><div className="stat-lbl">Total Users</div></div>
+              <div className="stat-card"><div className="stat-val">{assets.length}</div><div className="stat-lbl">Assets Listed</div></div>
+              <div className="stat-card"><div className="stat-val">EUR 0</div><div className="stat-lbl">Total Volume</div></div>
+            </div>
+            <div className="card">
+              <div className="card-title">Recent Users</div>
+              {users.length === 0 ? <div className="empty">No users yet</div> : (
+                <table>
+                  <thead><tr><th>Name</th><th>Email</th><th>KYC</th><th>Joined</th></tr></thead>
+                  <tbody>{users.slice(0,5).map(u => (
+                    <tr key={u._id}>
+                      <td>{u.firstName} {u.lastName}</td>
+                      <td style={{color:"rgba(255,255,255,0.6)"}}>{u.email}</td>
+                      <td><span className={`badge badge-${u.kycStatus==="approved"?"green":u.kycStatus==="pending"?"yellow":"gray"}`}>{u.kycStatus}</span></td>
+                      <td style={{color:"rgba(255,255,255,0.4)"}}>{new Date(u.createdAt).toLocaleDateString()}</td>
+                    </tr>
+                  ))}</tbody>
+                </table>
+              )}
+            </div>
+          </>
+        )}
+        {tab === "users" && (
+          <>
+            <div className="page-title">Users</div>
+            <div className="page-sub">{users.length} registered investors</div>
+            <div className="card">
+              {users.length === 0 ? <div className="empty">No users registered yet</div> : (
+                <table>
+                  <thead><tr><th>Name</th><th>Email</th><th>Country</th><th>KYC</th><th>Role</th><th>Joined</th></tr></thead>
+                  <tbody>{users.map(u => (
+                    <tr key={u._id}>
+                      <td style={{fontWeight:600}}>{u.firstName} {u.lastName}</td>
+                      <td style={{color:"rgba(255,255,255,0.6)"}}>{u.email}</td>
+                      <td style={{color:"rgba(255,255,255,0.5)"}}>{u.country || "N/A"}</td>
+                      <td><span className={`badge badge-${u.kycStatus==="approved"?"green":u.kycStatus==="pending"?"yellow":u.kycStatus==="rejected"?"red":"gray"}`}>{u.kycStatus}</span></td>
+                      <td><span className="badge badge-gray">{u.role}</span></td>
+                      <td style={{color:"rgba(255,255,255,0.4)"}}>{new Date(u.createdAt).toLocaleDateString()}</td>
+                    </tr>
+                  ))}</tbody>
+                </table>
+              )}
+            </div>
+          </>
+        )}
+        {tab === "assets" && (
+          <>
+            <div className="page-title">Assets</div>
+            <div className="page-sub">{assets.length} investment assets</div>
+            <div className="card">
+              {assets.length === 0 ? <div className="empty">No assets yet — add one from the + Add Asset tab</div> : (
+                <table>
+                  <thead><tr><th>Name</th><th>Type</th><th>Min. Investment</th><th>Return</th><th>Status</th><th></th></tr></thead>
+                  <tbody>{assets.map(a => (
+                    <tr key={a._id}>
+                      <td style={{fontWeight:600}}>{a.name}</td>
+                      <td style={{color:"rgba(255,255,255,0.5)"}}>{a.type}</td>
+                      <td>EUR {a.minInvestment?.toLocaleString() || "N/A"}</td>
+                      <td style={{color:"#0ECB81"}}>{a.targetReturn ? `${a.targetReturn}%` : "N/A"}</td>
+                      <td><span className={`badge badge-${a.status==="published"?"green":a.status==="draft"?"yellow":"gray"}`}>{a.status}</span></td>
+                      <td><button className="del-btn" onClick={() => deleteAsset(a._id)}>Delete</button></td>
+                    </tr>
+                  ))}</tbody>
+                </table>
+              )}
+            </div>
+          </>
+        )}
+        {tab === "add-asset" && (
+          <>
+            <div className="page-title">Add New Asset</div>
+            <div className="page-sub">Create a new investment listing</div>
+            <div className="card">
+              <form onSubmit={createAsset}>
+                <div className="form-grid">
+                  <div className="field"><label>Asset Name *</label><input value={assetForm.name} onChange={e=>setAssetForm(f=>({...f,name:e.target.value}))} placeholder="e.g. Vilnius Office Tower" required /></div>
+                  <div className="field"><label>Asset Type *</label>
+                    <select value={assetForm.type} onChange={e=>setAssetForm(f=>({...f,type:e.target.value}))}>
+                      <option value="real_estate">Real Estate</option>
+                      <option value="bond">Bond</option>
+                      <option value="equity">Equity</option>
+                      <option value="energy">Energy</option>
+                      <option value="fund">Fund</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  <div className="field"><label>Min. Investment (EUR)</label><input type="number" value={assetForm.minInvestment} onChange={e=>setAssetForm(f=>({...f,minInvestment:e.target.value}))} placeholder="500" /></div>
+                  <div className="field"><label>Target Return (%)</label><input type="number" step="0.1" value={assetForm.targetReturn} onChange={e=>setAssetForm(f=>({...f,targetReturn:e.target.value}))} placeholder="8.5" /></div>
+                  <div className="field"><label>Total Tokens</label><input type="number" value={assetForm.totalTokens} onChange={e=>setAssetForm(f=>({...f,totalTokens:e.target.value}))} placeholder="10000" /></div>
+                  <div className="field"><label>Token Price (EUR)</label><input type="number" step="0.01" value={assetForm.tokenPrice} onChange={e=>setAssetForm(f=>({...f,tokenPrice:e.target.value}))} placeholder="100" /></div>
+                  <div className="field"><label>Status</label>
+                    <select value={assetForm.status} onChange={e=>setAssetForm(f=>({...f,status:e.target.value}))}>
+                      <option value="draft">Draft</option>
+                      <option value="published">Published</option>
+                      <option value="closed">Closed</option>
+                    </select>
+                  </div>
+                  <div className="field"><label>Currency</label>
+                    <select value={assetForm.currency} onChange={e=>setAssetForm(f=>({...f,currency:e.target.value}))}>
+                      <option value="EUR">EUR</option>
+                      <option value="USD">USD</option>
+                      <option value="GBP">GBP</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="field" style={{marginTop:16}}><label>Description</label><textarea value={assetForm.description} onChange={e=>setAssetForm(f=>({...f,description:e.target.value}))} placeholder="Describe the investment opportunity..." /></div>
+                <button className="submit-btn" type="submit" disabled={loading}>{loading ? "Creating..." : "Create Asset"}</button>
+                {assetMsg && <div className={assetMsg.includes("successfully") ? "success-msg" : "error-msg"}>{assetMsg}</div>}
+              </form>
+            </div>
+          </>
+        )}
       </div>
     </>
   );
