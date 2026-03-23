@@ -3,6 +3,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { AppProvider } from "../lib/AppContext";
+import { SessionProvider } from "next-auth/react";
 import NxtChatbot from "../components/NxtChatbot";
 
 export default function App({ Component, pageProps }) {
@@ -23,6 +24,7 @@ export default function App({ Component, pageProps }) {
   }, [router]);
 
   return (
+    <SessionProvider session={pageProps.session}>
     <AppProvider>
       <Head>
         <meta charSet="utf-8" />
@@ -85,5 +87,6 @@ export default function App({ Component, pageProps }) {
       <Component {...pageProps} />
       <NxtChatbot />
     </AppProvider>
+    </SessionProvider>
   );
 }
