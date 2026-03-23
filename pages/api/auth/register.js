@@ -23,7 +23,7 @@ export default async function handler(req, res) {
       phone: phone || '',
       dateOfBirth: dob || null,
       kycStatus: 'none',
-      role: 'investor',
+      role: 'user',
       isActive: true,
     });
     const token = createToken({ userId: user._id.toString(), email: user.email, firstName: user.firstName, lastName: user.lastName, kycStatus: user.kycStatus, role: user.role });
