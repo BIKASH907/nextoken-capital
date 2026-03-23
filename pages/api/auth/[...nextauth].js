@@ -20,65 +20,58 @@ export const authOptions = {
         if (!user.password) throw new Error('Please sign in with Google.');
         const valid = await bcrypt.compare(credentials.password, user.password);
         if (!valid) throw new Error('Invalid password.');
-        if (!user.isActive) throw new Error('Account suspended. Contact support.');
-        await User.findByIdAndUpdate(user._id, { lastLogin: new Date() });
         return {
-          id:          user._id.toString(),
-          email:       user.email,
-          name:        user.firstName + ' ' + user.lastName,
-          firstName:   user.firstName,
-          accountType: user.accountType,
-          kycStatus:   user.kycStatus,
-          role:        user.role,
+          id: user._id.toString(),
+          email: user.email,
+          name: user.firstName + ' ' + user.lastName,
+          firstName: user.firstName,
+          kycStatus: user.kycStatus,
+          role: user.role,
         };
       },
     }),
     GoogleProvider({
       clientId:     process.env.GOOGLE_CLIENT_ID     || '',
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
-      authorization: { params: { prompt: 'consent', access_type: 'offline', response_type: 'code' } },
-      checks: ['state'],
     }),
   ],
   callbacks: {
-    async signIn({ user, account }) {
-      if (account?.provider === 'google') {
+    async jwt({ token, user, account, profile }) {
+      if (user) {
+        token.id        = user.id;
+        token.firstName = user.firstName;
+        token.kycStatus = user.kycStatus;
+        token.role      = user.role;
+      }
+      if (account?.provider === 'google' && profile) {
         try {
           await connectDB();
-          const existing = await User.findOne({ email: user.email });
-          if (!existing) {
-            const nameParts = (user.name || '').split(' ');
-            await User.create({
-              email: user.email,
+          let dbUser = await User.findOne({ email: token.email });
+          if (!dbUser) {
+            const nameParts = (profile.name || '').split(' ');
+            dbUser = await User.create({
+              email: token.email,
               firstName: nameParts[0] || 'User',
               lastName: nameParts.slice(1).join(' ') || '',
               password: null,
-              provider: 'google',
               isActive: true,
               kycStatus: 'none',
-              role: 'investor',
+              role: 'user',
             });
           }
-        } catch(e) { console.error('Google signIn error:', e); }
-      }
-      return true;
-    },
-    async jwt({ token, user }) {
-      if (user) {
-        token.id          = user.id;
-        token.firstName   = user.firstName;
-        token.accountType = user.accountType;
-        token.kycStatus   = user.kycStatus;
-        token.role        = user.role;
+          token.id        = dbUser._id.toString();
+          token.firstName = dbUser.firstName;
+          token.kycStatus = dbUser.kycStatus;
+          token.role      = dbUser.role;
+        } catch(e) { console.error('JWT Google error:', e.message); }
       }
       return token;
     },
     async session({ session, token }) {
-      session.user.id          = token.id;
-      session.user.firstName   = token.firstName;
-      session.user.accountType = token.accountType;
-      session.user.kycStatus   = token.kycStatus;
-      session.user.role        = token.role;
+      session.user.id        = token.id;
+      session.user.firstName = token.firstName;
+      session.user.kycStatus = token.kycStatus;
+      session.user.role      = token.role;
       return session;
     },
   },
