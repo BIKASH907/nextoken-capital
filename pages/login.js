@@ -216,7 +216,7 @@ export default function LoginPage() {
               </button>
             </form>
             <div style={{display:"flex",alignItems:"center",gap:12,margin:"16px 0"}}><div style={{flex:1,height:1,background:"rgba(255,255,255,0.08)"}}></div><span style={{fontSize:12,color:"rgba(255,255,255,0.3)"}}>or</span><div style={{flex:1,height:1,background:"rgba(255,255,255,0.08)"}}></div></div>
-            <button onClick={() => signIn("google", {callbackUrl:"/dashboard"})} style={{width:"100%",padding:"12px",background:"#fff",color:"#000",border:"none",borderRadius:8,fontSize:14,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:10}}><img src="https://www.google.com/favicon.ico" width={18} height={18} alt="" />Continue with Google</button>
+            <button onClick={() => window.location.href = "/api/auth/signin/google?callbackUrl=%2Fdashboard"} style={{width:"100%",padding:"12px",background:"#fff",color:"#000",border:"none",borderRadius:8,fontSize:14,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:10}}><img src="https://www.google.com/favicon.ico" width={18} height={18} alt="" />Continue with Google</button>
 
             <div className="li-sep">
               <div className="li-sep-line" /><span>or</span><div className="li-sep-line" />
