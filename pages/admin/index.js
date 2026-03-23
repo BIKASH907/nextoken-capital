@@ -1,5 +1,4 @@
 import { useEffect, useState, useRef } from "react";
-import AdminSidebar from "../components/AdminSidebar";
 import { useRouter } from "next/router";
 import Head from "next/head";
 export default function AdminDashboard() {
