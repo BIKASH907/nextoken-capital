@@ -64,6 +64,30 @@ export const authOptions = {
       }
       return true;
     },
+    async signIn({ user, account }) {
+      if (account?.provider === 'google') {
+        try {
+          const { connectDB } = await import('../../../lib/mongodb');
+          const User = (await import('../../../lib/models/User')).default;
+          await connectDB();
+          const existing = await User.findOne({ email: user.email });
+          if (!existing) {
+            const nameParts = (user.name || '').split(' ');
+            await User.create({
+              email: user.email,
+              firstName: nameParts[0] || 'User',
+              lastName: nameParts.slice(1).join(' ') || '',
+              password: null,
+              provider: 'google',
+              isActive: true,
+              kycStatus: 'none',
+              role: 'investor',
+            });
+          }
+        } catch(e) { console.error('Google signIn error:', e); }
+      }
+      return true;
+    },
     async jwt({ token, user }) {
       if (user) {
         token.id          = user.id;
