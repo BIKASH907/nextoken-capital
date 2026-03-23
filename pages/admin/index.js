@@ -10,7 +10,7 @@ export default function AdminDashboard() {
   const [users, setUsers] = useState([]);
   const [assets, setAssets] = useState([]);
   const [loading, setLoading] = useState(false);
-  const emptyForm = { name:"", ticker:"", assetType:"real_estate", description:"", targetRaise:"", minInvestment:"", targetROI:"", term:"", tokenSupply:"", tokenPrice:"", currency:"EUR", status:"draft", riskLevel:"medium", location:"", country:"", issuerName:"", yieldFrequency:"quarterly" };
+const emptyForm = { name:"", ticker:"", assetType:"real_estate", description:"", targetRaise:"", minInvestment:"", targetROI:"", term:"", tokenSupply:"", tokenPrice:"", currency:"EUR", status:"draft", riskLevel:"medium", location:"", country:"", issuerName:"", yieldFrequency:"quarterly" };
   const [assetForm, setAssetForm] = useState(emptyForm);
   const [assetMsg, setAssetMsg] = useState("");
   const [images, setImages] = useState([]);
