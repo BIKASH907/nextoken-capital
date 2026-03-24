@@ -10,3 +10,4 @@ node_modules
 *.tar.gz
 update-content.sh
 polish-content.sh
+build-admin.sh
