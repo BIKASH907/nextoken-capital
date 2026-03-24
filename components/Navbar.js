@@ -160,6 +160,7 @@ export default function Navbar() {
     { href: "/equity-ipo", label: "Equity & IPO" },
     { href: "/tokenize",   label: "Tokenize" },
     { href: "/owner-dashboard", label: "My Assets" },
+    { href: "/owner-dashboard", label: "My Assets" },
     { href: "/owner-dashboard", label: "List Asset" },
   ];
 
