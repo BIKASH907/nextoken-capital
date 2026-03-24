@@ -159,6 +159,7 @@ export default function Navbar() {
     { href: "/bonds",      label: "Bonds" },
     { href: "/equity-ipo", label: "Equity & IPO" },
     { href: "/tokenize",   label: "Tokenize" },
+    { href: "/owner-dashboard", label: "List Asset" },
   ];
 
   return (
