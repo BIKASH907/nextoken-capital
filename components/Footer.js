@@ -20,6 +20,7 @@ export default function Footer() {
       { href: "/privacy", label: "Privacy Policy" },
       { href: "/risk", label: "Risk Disclosure" },
       { href: "/aml", label: "AML Policy" },
+      { href: "/fees", label: "Fees & Pricing" },
     ]},
     { title: "SUPPORT", links: [
       { href: "/help", label: "Help Center" },
