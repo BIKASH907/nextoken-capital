@@ -121,14 +121,14 @@ export default function TransactionsPage() {
           <div className="tx-stat"><div className="tx-stat-v" style={{color:"#FF4D4D"}}>{flaggedCount}</div><div className="tx-stat-l">Flagged</div></div>
           <div className="tx-stat"><div className="tx-stat-v" style={{color:"#A855F7"}}>{escalatedCount}</div><div className="tx-stat-l">Escalated (SAR)</div></div>
           <div className="tx-stat"><div className="tx-stat-v" style={{color:"#F0B90B"}}>{tfrMissing}</div><div className="tx-stat-l">TFR Missing</div></div>
-          <div className="tx-stat"><div className="tx-stat-v" style={{color:"#fff"}}>{highValue}</div><div className="tx-stat-l">High Value (>€10K)</div></div>
+          <div className="tx-stat"><div className="tx-stat-v" style={{color:"#fff"}}>{highValue}</div><div className="tx-stat-l">High Value (&gt;€10K)</div></div>
         </div>
 
         {/* Saved Views */}
         <div className="tx-views">
           <span style={{fontSize:10,color:"rgba(255,255,255,0.2)",alignSelf:"center"}}>Smart Folders:</span>
           <button className="tx-view" onClick={()=>{clearFilters();setFStatus("flagged");}}>🚨 Flagged Only</button>
-          <button className="tx-view" onClick={()=>{clearFilters();setFAmount("50k");}}>💰 Audit Ready (>€50K)</button>
+          <button className="tx-view" onClick={()=>{clearFilters();setFAmount("50k");}}>💰 Audit Ready (&gt;€50K)</button>
           <button className="tx-view" onClick={()=>{clearFilters();setFTfr("missing");}}>⚠️ TFR Missing</button>
           <button className="tx-view" onClick={()=>{clearFilters();setFFee("issuance");}}>📊 Issuance Fees</button>
           <button className="tx-view" onClick={()=>{clearFilters();setFFee("trading");}}>🔄 Trading Fees</button>
@@ -190,7 +190,7 @@ export default function TransactionsPage() {
               <div className="tx-fgroup">
                 <div className="tx-flabel">Amount Threshold</div>
                 <div className="tx-chips">
-                  {[["all","All"],["10k","> €10K"],["50k","> €50K"]].map(([v,l]) => (
+                  {[["all","All"],["10k","&gt; €10K"],["50k","&gt; €50K"]].map(([v,l]) => (
                     <button key={v} className={`tx-chip ${fAmount===v?"on":""}`} onClick={()=>setFAmount(v)}>{l}</button>
                   ))}
                 </div>
