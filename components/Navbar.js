@@ -158,10 +158,7 @@ export default function Navbar() {
     { href: "/exchange",   label: "Exchange" },
     { href: "/bonds",      label: "Bonds" },
     { href: "/equity-ipo", label: "Equity & IPO" },
-    { href: "/tokenize",   label: "Tokenize" },
-    { href: "/owner-dashboard", label: "My Assets" },
-    { href: "/owner-dashboard", label: "My Assets" },
-    { href: "/owner-dashboard", label: "List Asset" },
+    { href: "/tokenize",   label: "Tokenize Assets" },
   ];
 
   return (
