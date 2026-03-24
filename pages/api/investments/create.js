@@ -42,7 +42,7 @@ export default async function handler(req, res) {
       currentValue: parseFloat(amount),
     };
 
-    const result = await db.collection("investments").insertOne(investment);
+    const result = await Investment.create(investment);
 
     // Update user portfolio totals
     await db.collection("users").updateOne(
@@ -58,7 +58,7 @@ export default async function handler(req, res) {
 
     return res.status(201).json({
       success: true,
-      investmentId: result.insertedId.toString(),
+      investmentId: result._id.toString(),
       message: `Successfully invested €${amount} in ${assetName}.`,
     });
   } catch (e) {

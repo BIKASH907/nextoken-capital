@@ -55,9 +55,8 @@ export default async function handler(req, res) {
     const userId = session.userId;
 
     // Get user from DB to use their email as externalUserId
-    const client = await clientPromise;
-    const db = client.db("nextoken");
-    const user = await db.collection("users").findOne({ _id: new ObjectId(userId) });
+    await connectDB();
+  const user = await User.findById(session.userId);
     if (!user) return res.status(404).json({ error: "User not found." });
 
     // Use userId as the external user ID in Sumsub

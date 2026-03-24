@@ -9,8 +9,7 @@ export default async function handler(req, res) {
   if (!session) return res.status(401).json({ error: "Not authenticated." });
 
   try {
-    const client = await clientPromise;
-    const db = client.db("nextoken");
+    await connectDB();
 
     const investments = await db.collection("investments")
       .find({ userId: session.userId })
