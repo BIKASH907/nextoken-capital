@@ -4,8 +4,9 @@
 
 import crypto from "crypto";
 const { getSession } = require("../../../lib/session");
-import clientPromise from "../../../lib/mongodb";
-import { ObjectId } from "mongodb";
+import { connectDB } from "../../../lib/mongodb";
+import User from "../../../lib/models/User";
+
 
 const SUMSUB_APP_TOKEN  = process.env.SUMSUB_APP_TOKEN;
 const SUMSUB_SECRET_KEY = process.env.SUMSUB_SECRET_KEY;
