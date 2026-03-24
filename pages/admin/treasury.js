@@ -46,6 +46,9 @@ export default function TreasuryPage() {
         <div className="ft-tabs">{tabs.map(t => <button key={t.id} className={`ft-tab ${tab===t.id?"on":""}`} onClick={()=>setTab(t.id)}>{t.label}</button>)}</div>
 
         {tab === "fees" && <>
+        <div style={{display:"flex",gap:6,marginBottom:14,flexWrap:"wrap"}}>
+          {["All Fees","0.80% Issuance","0.25% Trading"].map(f => <button key={f} style={{padding:"5px 12px",borderRadius:20,fontSize:11,fontWeight:600,cursor:"pointer",border:"1px solid rgba(240,185,11,0.25)",background:"rgba(240,185,11,0.06)",color:"#F0B90B",fontFamily:"inherit"}}>{f}</button>)}
+        </div>
           <div className="ft-stat-grid">
             <div className="ft-stat"><div className="ft-stat-v" style={{color:"#F0B90B"}}>€{(totalRaised*0.008).toFixed(0)}</div><div className="ft-stat-l">Issuance Fees (0.80%)</div></div>
             <div className="ft-stat"><div className="ft-stat-v" style={{color:"#F0B90B"}}>€{(totalRaised*0.0025).toFixed(0)}</div><div className="ft-stat-l">Trading Fees (0.25%)</div></div>

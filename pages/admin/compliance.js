@@ -6,6 +6,11 @@ const RISK_FLAGS = ["🟢 Clear","🟡 Review","🔴 High Risk","⛔ Blocked"];
 
 export default function CompliancePage() {
   const [tab, setTab] = useState("kyc");
+  const COMPLIANCE_VIEWS = [
+    { name:"Morning Queue", apply:()=>{setFilter("pending");setTab("kyc");} },
+    { name:"High Risk", apply:()=>{setTab("sanctions");} },
+    { name:"Suitability Check", apply:()=>{setTab("suitability");} },
+  ];
   const [users, setUsers] = useState([]);
   const [selected, setSelected] = useState(null);
   const [filter, setFilter] = useState("pending");
