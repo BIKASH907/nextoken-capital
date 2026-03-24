@@ -15,20 +15,20 @@ const ASSET_TYPES = [
 ];
 
 const STEPS_INFO = [
-  { n:"01", title:"Submit Application",  desc:"Complete the form with asset details, financials, and upload documents." },
-  { n:"02", title:"Compliance Review",   desc:"Our team reviews your asset for MiCA, AML, and regulatory compliance." },
-  { n:"03", title:"Legal Structuring",   desc:"We structure the token as an ERC-3643 security token with full transfer controls." },
-  { n:"04", title:"Token Issuance",      desc:"Tokens are minted and listed on the Nextoken marketplace for traders." },
+  { n:"01", title:"Submit Details",  desc:"Complete the form with asset details, financials, and upload documents." },
+  { n:"02", title:"Structure Review",   desc:"Our team reviews your submission for clarity, completeness, and regulatory alignment." },
+  { n:"03", title:"Define Representation",   desc:"Define how participation is represented using standardized digital structures." },
+  { n:"04", title:"Publish Listing",      desc:"Tokens are minted and listed on the Nextoken marketplace for traders." },
   { n:"05", title:"Live on Marketplace", desc:"Your asset is live. Traders can browse, invest, and trade on the exchange." },
 ];
 
 const FAQS = [
-  { q:"What types of assets can be tokenized?", a:"We support real estate, corporate bonds, company equity, renewable energy projects, funds, and other real-world assets with a clear legal ownership structure." },
-  { q:"What is the minimum asset value?", a:"We accept assets with a minimum valuation of EUR 500,000. For smaller assets, we recommend our pooled fund structure." },
-  { q:"How long does the process take?", a:"6–12 weeks from application to going live, depending on asset complexity and jurisdiction." },
+  { q:"What types of assets can be listed?", a:"We support real estate, corporate bonds, company equity, renewable energy projects, funds, and other real-world assets with a clear legal ownership structure." },
+  { q:"What is the minimum listing value?", a:"We accept assets with a minimum valuation of EUR 500,000. For smaller assets, we recommend our pooled fund structure." },
+  { q:"How long does the listing process take?", a:"6–12 weeks from application to going live, depending on asset complexity and jurisdiction." },
   { q:"What documents do I need?", a:"Financial statements, legal ownership proof, property valuation (for real estate), business registration, and any relevant regulatory licenses." },
   { q:"What are the fees?", a:"One-time structuring fee of 1.5–3% of asset value plus annual platform fees of 0.5%." },
-  { q:"What happens after tokenization?", a:"Your asset appears on the Nextoken marketplace. You can track investments, investor count, and raised amount from your Owner Dashboard." },
+  { q:"What happens after listing?", a:"Your asset appears on the Nextoken marketplace. You can track investments, investor count, and raised amount from your Owner Dashboard." },
 ];
 
 export default function TokenizePage() {
@@ -174,7 +174,7 @@ export default function TokenizePage() {
       <div className="tz">
         <div className="tz-hero">
           <div className="tz-hero-tag">List Your Asset</div>
-          <h1>Tokenize Your <em>Real-World Asset</em></h1>
+          <h1>Represent Your <em>Real-World Asset</em> Digitally</h1>
           <p>Submit your asset details and documents. Our compliance team reviews within 2-3 business days.</p>
         </div>
 
@@ -395,7 +395,7 @@ export default function TokenizePage() {
           {/* PROCESS INFO */}
           {step < 4 && (
             <div style={{marginTop:24,padding:20,background:"#0F1318",border:"1px solid rgba(255,255,255,0.07)",borderRadius:12}}>
-              <div style={{fontSize:11,fontWeight:700,color:"#F0B90B",letterSpacing:2,textTransform:"uppercase",marginBottom:14}}>Tokenization Process</div>
+              <div style={{fontSize:11,fontWeight:700,color:"#F0B90B",letterSpacing:2,textTransform:"uppercase",marginBottom:14}}>Representation Process</div>
               <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:12}}>
                 {STEPS_INFO.map(s => (
                   <div key={s.n} style={{textAlign:"center"}}>
