@@ -2,12 +2,12 @@ import Link from "next/link";
 
 export default function Footer() {
   const cols = [
-    { title: "PRODUCTS", links: [
-      { href: "/markets", label: "Markets" },
+    { title: "MARKETPLACE", links: [
+      { href: "/markets", label: "All Markets" },
       { href: "/exchange", label: "Exchange" },
       { href: "/bonds", label: "Bonds" },
       { href: "/equity-ipo", label: "Equity & IPO" },
-      { href: "/tokenize", label: "Tokenize" },
+      { href: "/tokenize", label: "Tokenize Asset" },
     ]},
     { title: "COMPANY", links: [
       { href: "/about", label: "About Us" },
@@ -26,7 +26,7 @@ export default function Footer() {
       { href: "/help", label: "Help Center" },
       { href: "/contact", label: "Contact Us" },
       { href: "/api", label: "API Docs" },
-      { href: "/status", label: "Status" },
+      { href: "/status", label: "System Status" },
     ]},
   ];
 
@@ -67,7 +67,7 @@ export default function Footer() {
                   <span className="bt2">CAPITAL</span>
                 </div>
               </div>
-              <p className="footer-tagline">The regulated infrastructure for tokenized real-world assets.</p>
+              <p className="footer-tagline">The regulated marketplace for tokenized real-world assets.</p>
               <div className="footer-badge">
                 <span>🏛️</span>
                 <div>
@@ -85,7 +85,7 @@ export default function Footer() {
           </div>
           <div className="footer-bottom">
             <p className="footer-copy">© 2026 Nextoken Capital UAB. All rights reserved. Registered in Lithuania.</p>
-            <p className="footer-risk">Risk warning: Investing in tokenized assets involves risk. Past performance is not indicative of future results. Capital at risk.</p>
+            <p className="footer-risk">Risk warning: Trading tokenized assets involves risk including potential loss of capital. Past performance is not indicative of future results. Nextoken Capital is a marketplace platform — we do not provide financial advice or manage funds.</p>
           </div>
         </div>
       </footer>

@@ -2,10 +2,10 @@ import styles from "../styles/StatsSection.module.css";
 
 export default function StatsSection() {
   const stats = [
-    { number: "24/7", text: "Platform Access" },
-    { number: "Global", text: "Investor Reach" },
-    { number: "Secure", text: "Infrastructure" },
-    { number: "Fast", text: "Client Onboarding" },
+    { number: "0.25%", text: "Trading Fee" },
+    { number: "24/7", text: "Market Access" },
+    { number: "T+0", text: "Settlement Time" },
+    { number: "MiCA", text: "EU Compliant" },
   ];
 
   return (

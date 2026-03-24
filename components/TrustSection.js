@@ -7,11 +7,12 @@ export default function TrustSection() {
         <div className={styles.trustBox}>
           <p className={styles.sectionLabel}>Why Nextoken Capital</p>
           <h2 className={styles.sectionTitleLight}>
-            Professional Design. Clear Structure. Trusted Experience.
+            Security First. Compliance Built-In. Trust Automated.
           </h2>
           <p className={styles.sectionTextLight}>
-            From onboarding to account access, every touchpoint is designed to feel
-            consistent, secure, and easy to use across desktop and mobile.
+            MiCA-compliant infrastructure with institutional custody, AI-powered KYC/AML,
+            and audited smart contracts. Your assets are protected by multi-signature vaults
+            and regulated custodians — not promises.
           </p>
         </div>
       </div>
