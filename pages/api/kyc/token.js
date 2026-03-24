@@ -79,10 +79,7 @@ export default async function handler(req, res) {
       applicantId = applicant.id;
 
       // Save applicant ID to user record
-      await db.collection("users").updateOne(
-        { _id: new ObjectId(userId) },
-        { $set: { sumsubApplicantId: applicantId, updatedAt: new Date() } }
-      );
+      await User.findByIdAndUpdate(userId, { $set: { sumsubApplicantId: applicantId, updatedAt: new Date() } });
     }
 
     // Generate access token for the Web SDK
