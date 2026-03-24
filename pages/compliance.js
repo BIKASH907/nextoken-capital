@@ -130,7 +130,7 @@ export default function CompliancePage() {
           Compliance at Every<br /><span style={{ color:"#F0B90B" }}>Layer of the Stack</span>
         </h1>
         <p style={{ fontSize:18, fontWeight:300, color:"#8a9bb8", maxWidth:660, margin:"0 auto 40px", lineHeight:1.75 }}>
-          Nextoken Capital is regulated by the Bank of Lithuania, MiCA compliant, FATF aligned, and ISO 27001 certified — with on-chain enforcement via ERC-3643. Compliance is not a checkbox. It is our infrastructure.
+          Nextoken Capital is regulated by the Bank of Lithuania, MiCA compliant, FATF aligned, and ISO 27001 certified — with on-chain enforcement via ERC-3643. Compliance is not a checkbox. It is our marketplace infrastructure.
         </p>
         <div style={{ display:"flex", gap:14, justifyContent:"center", flexWrap:"wrap", marginBottom:48 }}>
           <Link href="/register"      style={S.gold}>Start Investing</Link>

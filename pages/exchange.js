@@ -86,7 +86,7 @@ export default function ExchangePage() {
             <div className="ex-hero-left">
               <div className="tag">Secondary Market</div>
               <h1>Trade Tokenized Assets</h1>
-              <p>Buy and sell security tokens on the regulated secondary market.</p>
+              <p>Buy and sell tokenized assets on the regulated Nextoken marketplace.</p>
             </div>
             <div className="ex-stats">
               {[["€2.3M","24h Volume"],["8","Listed Tokens"],["0.2%","Trading Fee"],["T+0","Settlement"]].map(([v,l])=>(

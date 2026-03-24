@@ -199,7 +199,7 @@ export default function EquityIPOPage() {
 
   return (
     <>
-      <Head><title>Equity & IPO — Nextoken Capital</title><meta name="description" content="Invest in tokenized equity and blockchain IPOs on Nextoken Capital."/></Head>
+      <Head><title>Equity & IPO — Nextoken Capital</title><meta name="description" content="Trade tokenized equity and blockchain IPOs on the Nextoken marketplace."/></Head>
       <Navbar />
       <div style={{...S.page,paddingTop:64}}>
         <style>{`@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');*{box-sizing:border-box;margin:0;padding:0}body{margin:0}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}.pulse{animation:pulse 2s infinite}::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#05060a}::-webkit-scrollbar-thumb{background:rgba(240,185,11,0.3);border-radius:3px}table{border-collapse:collapse;width:100%}th{text-align:left}`}</style>
@@ -314,7 +314,7 @@ export default function EquityIPOPage() {
           <div style={{position:"relative",zIndex:1}}>
             <span style={S.lbl}>Get Started</span>
             <h2 style={{...S.h2,marginBottom:12}}>Ready to Issue or Invest in Digital Equity?</h2>
-            <p style={{fontSize:15,color:"#b0b0c8",fontWeight:300,maxWidth:460,margin:"0 auto 32px",lineHeight:1.7}}>Join 1,000+ investors and issuers building the future of capital markets on Nextoken.</p>
+            <p style={{fontSize:15,color:"#b0b0c8",fontWeight:300,maxWidth:460,margin:"0 auto 32px",lineHeight:1.7}}>Join 1,000+ traders and issuers on the Nextoken marketplace.</p>
             <div style={{display:"flex",gap:12,justifyContent:"center",flexWrap:"wrap"}}>
               <Link href="/tokenize" style={S.gold}>Issue Equity</Link>
               <Link href="/exchange" style={S.out}>Explore Exchange</Link>

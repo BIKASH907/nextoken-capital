@@ -92,9 +92,9 @@ export default function MarketsPage() {
 
       <div className="mk-page">
         <div className="mk-hero">
-          <div className="mk-hero-tag">Investment Opportunities</div>
-          <h1>Explore Premium Tokenized Markets</h1>
-          <p>Access curated real-world asset opportunities across property, energy, infrastructure, and commercial sectors.</p>
+          <div className="mk-hero-tag">Marketplace Listings</div>
+          <h1>Explore the Tokenized Asset Marketplace</h1>
+          <p>Browse curated tokenized listings across property, energy, infrastructure, and commercial sectors.</p>
         </div>
 
         <div className="mk-filters">
@@ -151,7 +151,7 @@ export default function MarketsPage() {
                   <div className="mk-progress-bar"><div className="mk-progress-fill" style={{width:pct+"%"}} /></div>
                 </div>
                 <div className="mk-card-action">
-                  <Link href="/register" className="mk-btn">View Opportunity</Link>
+                  <Link href="/register" className="mk-btn">View Listing</Link>
                 </div>
               </div>
             );
@@ -159,8 +159,8 @@ export default function MarketsPage() {
         </div>
 
         <div className="mk-cta">
-          <h2>Start building your portfolio today</h2>
-          <p>Create your account to access tokenized investment opportunities.</p>
+          <h2>Start trading on the marketplace today</h2>
+          <p>Create your account to trade tokenized assets on our marketplace.</p>
           <Link href="/register" className="mk-cta-btn">Register Now</Link>
         </div>
       </div>

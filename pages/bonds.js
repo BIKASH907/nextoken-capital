@@ -216,7 +216,7 @@ export default function BondsPage() {
     <>
       <Head>
         <title>Bonds — Nextoken Capital</title>
-        <meta name="description" content="Invest in tokenized bond securities on Nextoken Capital." />
+        <meta name="description" content="Trade tokenized bond securities on the Nextoken marketplace." />
       </Head>
 
       <Navbar />
@@ -282,7 +282,7 @@ export default function BondsPage() {
         <div id="listings" style={S.sec}>
           <span style={S.lbl}>Live Now</span>
           <h2 style={S.h2}>Bond Directory</h2>
-          <p style={S.sub}>High-yield digital bond listings open for subscription right now.</p>
+          <p style={S.sub}>Digital bond listings live on the marketplace right now.</p>
           <div style={{ display:"flex",flexWrap:"wrap",gap:10,alignItems:"center",marginBottom:28 }}>
             <span style={{ fontSize:11.5,color:"#7a7a96",fontWeight:600 }}>TYPE</span>
             <div style={{ display:"flex",gap:6,flexWrap:"wrap" }}>

@@ -20,7 +20,7 @@ const STEPS = [
   { n:"02", title:"Compliance Review",   desc:"Our team reviews your asset for MiCA, AML, and regulatory compliance." },
   { n:"03", title:"Legal Structuring",   desc:"We structure the token as an ERC-3643 security token with full transfer controls." },
   { n:"04", title:"Token Issuance",      desc:"Tokens are minted and listed on the Nextoken Capital platform for investors." },
-  { n:"05", title:"Live on Platform",    desc:"Your asset is live. Investors can browse, invest, and trade in secondary market." },
+  { n:"05", title:"Live on Platform",    desc:"Your asset is live on the marketplace. Traders can browse, invest, and trade on the exchange." },
 ];
 
 const FAQS = [
@@ -145,7 +145,7 @@ export default function TokenizePage() {
           <div className="tz-hero-glow" />
           <div className="tz-hero-tag">Asset Tokenization</div>
           <h1>Tokenize Your <em>Real-World Asset</em></h1>
-          <p>Turn illiquid real-world assets into digital securities and open them to 1,000+ verified investors across 180+ countries.</p>
+          <p>Turn illiquid real-world assets into tradable digital tokens and list them on our marketplace for 1,000+ verified traders across 180+ countries.</p>
           <div className="tz-hero-badges">
             {["🏛️ Bank of Lithuania Licensed","⚖️ MiCA Compliant","🔗 ERC-3643 Standard","🌍 180+ Countries","⏱️ 6–12 Week Process"].map(b => (
               <span key={b} className="tz-hero-badge">{b}</span>

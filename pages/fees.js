@@ -24,7 +24,7 @@ const EXAMPLES = [
 export default function FeesPage() {
   return (
     <>
-      <Head><title>Fees and Pricing — Nextoken Capital</title><meta name="description" content="Transparent fee schedule for Nextoken Capital. See all charges for investing, trading, withdrawals and more." /></Head>
+      <Head><title>Fees and Pricing — Nextoken Capital</title><meta name="description" content="Transparent marketplace fee schedule. See all charges for trading, withdrawals and more." /></Head>
       <Navbar />
       <div style={{minHeight:'100vh',background:'#0B0E11',color:'#fff',fontFamily:"'DM Sans',system-ui,sans-serif",paddingTop:100,paddingBottom:80}}>
         <div style={{maxWidth:960,margin:'0 auto',padding:'0 20px'}}>

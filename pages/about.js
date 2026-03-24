@@ -117,8 +117,8 @@ export default function AboutPage() {
           <div className="ab-hero-glow" />
           <div className="ab-hero-inner">
             <div className="ab-hero-tag">About Us</div>
-            <h1>The Regulated Infrastructure for <em>Tokenized Capital</em></h1>
-            <p>Nextoken Capital is building the foundation for the next generation of capital markets — compliant, accessible, and on-chain.</p>
+            <h1>The Regulated Marketplace for <em>Tokenized Assets</em></h1>
+            <p>Nextoken Capital is the regulated marketplace for the next generation of tokenized assets — compliant, accessible, and on-chain.</p>
             <div className="ab-hero-badges">
               {["🏛️ Bank of Lithuania","📍 Vilnius, Lithuania","⚖️ MiCA Compliant","🔗 Founded 2022"].map(b => (
                 <div key={b} className="ab-hero-badge">{b}</div>
@@ -231,8 +231,8 @@ export default function AboutPage() {
         </section>
 
         <section className="ab-cta">
-          <h2>Join the future of capital markets</h2>
-          <p>Create your free account and start investing in tokenized real-world assets today.</p>
+          <h2>Join the marketplace</h2>
+          <p>Create your free account and start trading tokenized real-world assets on our marketplace today.</p>
           <div className="ab-cta-btns">
             <Link href="/register" className="ab-cta-dark">Create Free Account</Link>
             <Link href="/contact"  className="ab-cta-ghost">Contact the Team</Link>
