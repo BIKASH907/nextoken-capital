@@ -11,6 +11,12 @@ export default function SecurityPage() {
     { addr:"0xAbC1...D23F", name:"Institutional Fund A", added:"2025-01-15", status:"active" },
     { addr:"0xDeF4...G56H", name:"Market Maker B", added:"2025-02-01", status:"active" },
   ]);
+  const [adminLogins] = useState([
+    { time:"2025-03-25 01:15:00", admin:"Bikash Bhat", ip:"185.x.x.x", device:"Chrome / Windows", status:"success" },
+    { time:"2025-03-24 22:30:00", admin:"Bikash Bhat", ip:"185.x.x.x", device:"Chrome / Windows", status:"success" },
+    { time:"2025-03-24 14:00:00", admin:"Bikash Bhat", ip:"185.x.x.x", device:"Mobile Safari", status:"success" },
+    { time:"2025-03-23 09:00:00", admin:"Unknown", ip:"92.x.x.x", device:"Firefox / Linux", status:"failed" },
+  ]);
   const [logs] = useState([
     { time:"2025-03-24 14:32:10", admin:"Bikash Bhat", action:"KYC Approved", target:"User: john@example.com", ip:"185.x.x.x" },
     { time:"2025-03-24 12:15:00", admin:"Bikash Bhat", action:"Asset Status → Live", target:"SOLAR-01", ip:"185.x.x.x" },
@@ -113,6 +119,25 @@ export default function SecurityPage() {
           </div>
         )}
 
+        {tab === "logins" && (
+          <div className="se-card">
+            <div style={{fontSize:15,fontWeight:700,marginBottom:16}}>Recent Admin Logins</div>
+            <table className="se-table">
+              <thead><tr><th>Timestamp</th><th>Admin</th><th>IP Address</th><th>Device</th><th>Status</th></tr></thead>
+              <tbody>
+                {adminLogins.map((l,i) => (
+                  <tr key={i}>
+                    <td style={{fontFamily:"monospace",fontSize:11,color:"rgba(255,255,255,0.4)"}}>{l.time}</td>
+                    <td style={{fontWeight:600}}>{l.admin}</td>
+                    <td style={{fontFamily:"monospace",fontSize:11,color:"rgba(255,255,255,0.3)"}}>{l.ip}</td>
+                    <td style={{color:"rgba(255,255,255,0.5)"}}>{l.device}</td>
+                    <td><span style={{padding:"2px 8px",borderRadius:20,fontSize:10,fontWeight:700,background:l.status==="success"?"rgba(14,203,129,0.12)":"rgba(255,77,77,0.12)",color:l.status==="success"?"#0ECB81":"#FF4D4D"}}>{l.status}</span></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
         {tab === "logs" && (
           <div className="se-card">
             <div style={{fontSize:15,fontWeight:700,marginBottom:16}}>Activity Logs</div>

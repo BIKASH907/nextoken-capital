@@ -4,6 +4,7 @@ import AdminShell from "../../components/admin/AdminShell";
 
 export default function TreasuryPage() {
   const [tab, setTab] = useState("fees");
+  const [feeView, setFeeView] = useState("collected");
   const [assets, setAssets] = useState([]);
 
   useEffect(() => {

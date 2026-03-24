@@ -11,3 +11,6 @@ node_modules
 update-content.sh
 polish-content.sh
 build-admin.sh
+unify-admin.sh
+add-filters.sh
+patch-features.sh
