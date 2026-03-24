@@ -60,7 +60,7 @@ export default async function handler(req, res) {
 
     // Get user from DB to use their email as externalUserId
     await connectDB();
-  const user = await User.findById(session.userId);
+    const user = await User.findById(session.userId);
     if (!user) return res.status(404).json({ error: "User not found." });
 
     // Use userId as the external user ID in Sumsub
@@ -75,7 +75,7 @@ export default async function handler(req, res) {
         fixedInfo: {
           firstName: user.firstName,
           lastName:  user.lastName,
-        country:   alpha2to3[user.country] || nameToAlpha3[(user.country||"").trim()] || user.country || undefined
+          country:   alpha2to3[user.country] || nameToAlpha3[(user.country||"").trim()] || user.country || undefined,
           dob:       user.dob || undefined,
         },
       });
