@@ -14,3 +14,5 @@ build-admin.sh
 unify-admin.sh
 add-filters.sh
 patch-features.sh
+update-tokenize.sh
+patch-features.sh
