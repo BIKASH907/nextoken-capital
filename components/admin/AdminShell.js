@@ -19,14 +19,12 @@ const NAV = [
   { href: "/admin/vault", icon: "🗄️", label: "Document Vault" },
   { sep: true, label: "FINANCIAL" },
   { href: "/admin/treasury", icon: "💰", label: "Treasury & Revenue" },
+  { href: "/admin/market", icon: "📈", label: "Market Data" },
   { sep: true, label: "RISK & SECURITY" },
   { href: "/admin/security", icon: "🛡️", label: "Security Center" },
   { sep: true, label: "REPORTING" },
   { href: "/admin/reports", icon: "📄", label: "Regulatory Reports" },
-  { sep: true, label: "LEGACY" },
-  { href: "/admin/kyc", icon: "🪪", label: "KYC (Legacy)" },
-  { href: "/admin/market", icon: "📈", label: "Market" },
-  { href: "/admin/support", icon: "💬", label: "Support" },
+  { href: "/admin/support", icon: "💬", label: "Support Tickets" },
 ];
 
 export default function AdminShell({ children, title, subtitle }) {
