@@ -1,58 +1,55 @@
-// GET /api/assets/my-listings — Get all assets owned by current user
-import dbConnect from "../../../lib/db";
+// pages/api/assets/my-listings.js
+import connectDB from "../../../lib/db";
 import Asset from "../../../lib/models/Asset";
+import Investment from "../../../lib/models/Investment";
 import { getUserFromRequest } from "../../../lib/auth";
 
 export default async function handler(req, res) {
   if (req.method !== "GET") return res.status(405).json({ error: "Method not allowed" });
 
+  await connectDB();
   const session = await getUserFromRequest(req);
   if (!session) return res.status(401).json({ error: "Not authenticated" });
 
-  await dbConnect();
-
   try {
-    const assets = await Asset.find({ issuerId: session.userId || session.id })
+    const assets = await Asset.find({ issuerId: session.sub || session.id })
       .sort({ createdAt: -1 })
       .lean();
 
-    const listings = assets.map(a => ({
-      id:            a._id,
-      name:          a.name,
-      ticker:        a.ticker,
-      assetType:     a.assetType,
-      status:        a.status,
-      targetRaise:   a.targetRaise,
-      raisedAmount:  a.raisedAmount,
-      investorCount: a.investorCount,
-      targetROI:     a.targetROI,
-      minInvestment: a.minInvestment,
-      tokenPrice:    a.tokenPrice,
-      location:      a.location,
-      riskLevel:     a.riskLevel,
-      imageUrl:      a.imageUrl,
-      documents:     a.documents,
-      createdAt:     a.createdAt,
-      launchDate:    a.launchDate,
-      closingDate:   a.closingDate,
+    // Get investment stats per asset
+    const assetIds = assets.map(a => a._id);
+    const investments = await Investment.aggregate([
+      { $match: { assetId: { $in: assetIds.map(id => id.toString()) } } },
+      { $group: {
+        _id: "$assetId",
+        totalInvested: { $sum: "$amount" },
+        investorCount: { $sum: 1 },
+      }},
+    ]);
+
+    const investMap = {};
+    investments.forEach(i => { investMap[i._id] = i; });
+
+    const enriched = assets.map(a => ({
+      ...a,
+      totalInvested: investMap[a._id.toString()]?.totalInvested || a.raisedAmount || 0,
+      investorCount: investMap[a._id.toString()]?.investorCount || a.investorCount || 0,
+      fundingPct: Math.round(((investMap[a._id.toString()]?.totalInvested || a.raisedAmount || 0) / a.targetRaise) * 100),
     }));
 
-    const totalRaised    = assets.reduce((s, a) => s + (a.raisedAmount || 0), 0);
-    const totalInvestors = assets.reduce((s, a) => s + (a.investorCount || 0), 0);
-    const liveCount      = assets.filter(a => a.status === "live" || a.status === "closing").length;
+    // Summary stats
+    const totalAssets     = assets.length;
+    const totalRaised     = enriched.reduce((s, a) => s + a.totalInvested, 0);
+    const totalInvestors  = enriched.reduce((s, a) => s + a.investorCount, 0);
+    const liveAssets      = assets.filter(a => ["live","closing"].includes(a.status)).length;
+    const totalViews      = 0; // placeholder for analytics
 
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
-      listings,
-      stats: {
-        totalListings:  assets.length,
-        liveListings:   liveCount,
-        totalRaised,
-        totalInvestors,
-      },
+      assets: enriched,
+      stats: { totalAssets, totalRaised, totalInvestors, liveAssets, totalViews },
     });
-  } catch (err) {
-    console.error("My listings error:", err);
-    return res.status(500).json({ error: "Failed to load listings." });
+  } catch (e) {
+    res.status(500).json({ error: "Failed to fetch listings: " + e.message });
   }
 }
