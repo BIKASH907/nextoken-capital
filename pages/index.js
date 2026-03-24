@@ -145,7 +145,7 @@ export default function Home() {
                   <div className="heroBadges">
                     <span className="badge">🔒 EU Regulated</span>
                     <span className="badge">⚡ Blockchain-Powered</span>
-                    <span className="badge">📊 15–18% Target ROI</span>
+                    <span className="badge">📊 0.25% Trading Fee</span>
                   </div>
 
                   <div className="heroActions">
@@ -159,7 +159,7 @@ export default function Home() {
                       className="btnSecondary"
                       onClick={scrollToHowItWorks}
                     >
-                      How it Works ↓
+                      List an Asset ↓
                     </button>
                   </div>
                 </div>
@@ -189,18 +189,18 @@ export default function Home() {
             {/* ── STATS BAR ── */}
             <div className="statsBar">
               <div className="statItem">
-                <span className="statNum">€50M+</span>
-                <span className="statLbl">Assets Tokenized</span>
+                <span className="statNum">EUR 140M+</span>
+                <span className="statLbl">Assets Listed</span>
               </div>
               <div className="statDivider" />
               <div className="statItem">
-                <span className="statNum">12,400+</span>
-                <span className="statLbl">Registered Investors</span>
+                <span className="statNum">1,000+</span>
+                <span className="statLbl">Active Traders</span>
               </div>
               <div className="statDivider" />
               <div className="statItem">
-                <span className="statNum">15–18%</span>
-                <span className="statLbl">Target Annual ROI</span>
+                <span className="statNum">T+0</span>
+                <span className="statLbl">Settlement Time</span>
               </div>
               <div className="statDivider" />
               <div className="statItem">
@@ -215,7 +215,7 @@ export default function Home() {
               <article className="vmCard">
                 <div className="vmHead">
                   <div className="vmIcon">👁️</div>
-                  <h3>Our Vision</h3>
+                  <h3>Marketplace Vision</h3>
                 </div>
                 <p>
                   To empower global access to tokenized real-world assets by
@@ -226,7 +226,7 @@ export default function Home() {
               <article className="vmCard">
                 <div className="vmHead">
                   <div className="vmIcon">🎯</div>
-                  <h3>Our Mission</h3>
+                  <h3>Marketplace Mission</h3>
                 </div>
                 <p>
                   To build a secure and decentralized investment ecosystem using
@@ -354,7 +354,7 @@ export default function Home() {
               <div className="ctaContent">
                 <h2>Ready to Start Investing?</h2>
                 <p>
-                  Join 12,400+ investors already on the Nextoken platform.
+                  Join 1,000+ investors already on the Nextoken platform.
                   Register free, complete KYC, and access tokenized assets today.
                 </p>
                 <button
