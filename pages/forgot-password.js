@@ -107,7 +107,7 @@ export default function ForgotPasswordPage() {
 
             <p style={{ textAlign:"center", fontSize:13, color:"#8a9bb8", marginTop:20 }}>
               Remember your password?{" "}
-              <Link href="/register" style={{ color:"#F0B90B", fontWeight:600, textDecoration:"none" }}>Sign In →</Link>
+              <Link href="/login" style={{ color:"#F0B90B", fontWeight:600, textDecoration:"none" }}>Sign In →</Link>
             </p>
           </>
         )}
