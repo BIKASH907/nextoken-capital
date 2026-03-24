@@ -19,6 +19,7 @@ const NAV = [
   { href: "/admin/vault", icon: "🗄️", label: "Document Vault" },
   { sep: true, label: "FINANCIAL" },
   { href: "/admin/treasury", icon: "💰", label: "Treasury & Revenue" },
+  { href: "/admin/transactions", icon: "🔍", label: "Transactions" },
   { href: "/admin/market", icon: "📈", label: "Market Data" },
   { sep: true, label: "RISK & SECURITY" },
   { href: "/admin/security", icon: "🛡️", label: "Security Center" },

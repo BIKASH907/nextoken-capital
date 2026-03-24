@@ -89,7 +89,16 @@ export default function SecurityPage() {
               <div style={{background:"#161B22",border:"1px solid rgba(255,255,255,0.07)",borderRadius:10,padding:16,textAlign:"center"}}><div style={{fontSize:"1.3rem",fontWeight:900,color:"#0ECB81"}}>0</div><div style={{fontSize:10,color:"rgba(255,255,255,0.3)",textTransform:"uppercase",marginTop:3}}>Price Manipulation</div></div>
               <div style={{background:"#161B22",border:"1px solid rgba(255,255,255,0.07)",borderRadius:10,padding:16,textAlign:"center"}}><div style={{fontSize:"1.3rem",fontWeight:900,color:"#0ECB81"}}>0</div><div style={{fontSize:10,color:"rgba(255,255,255,0.3)",textTransform:"uppercase",marginTop:3}}>Insider Flags</div></div>
             </div>
-            <p style={{fontSize:13,color:"rgba(255,255,255,0.35)",textAlign:"center"}}>AI-driven surveillance is active. No alerts detected.</p>
+            <p style={{fontSize:13,color:"rgba(255,255,255,0.35)",textAlign:"center",marginBottom:16}}>AI-driven surveillance is active.</p>
+            <div style={{fontSize:13,fontWeight:700,marginBottom:10}}>Recent Alerts</div>
+            <div style={{display:"flex",flexDirection:"column",gap:8}}>
+              {[{id:"TX-001",reason:"High value first transaction (€25,000)",risk:"high",time:"01:12"},{id:"TX-004",reason:"Cross-border corporate transfer (€50,000)",risk:"high",time:"18:15"},{id:"TX-005",reason:"TFR data missing on cross-border trade",risk:"high",time:"16:00"},{id:"TX-010",reason:"Sanctions proximity + unverified wallet (€75,000)",risk:"critical",time:"15:30"}].map(a => (
+                <div key={a.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 14px",background:"rgba(255,77,77,0.04)",border:"1px solid rgba(255,77,77,0.12)",borderRadius:8}}>
+                  <div><div style={{fontSize:12,fontWeight:700,color:"#fff"}}>{a.id} — {a.reason}</div><div style={{fontSize:10,color:"rgba(255,255,255,0.3)",marginTop:2}}>Today {a.time}</div></div>
+                  <a href="/admin/transactions" style={{fontSize:11,color:"#F0B90B",textDecoration:"none",fontWeight:700}}>View →</a>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
