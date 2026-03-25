@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "node -r ./dns-fix.js node_modules/next/dist/bin/next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "node -r ./dns-fix.js node_modules/next/dist/bin/next start",
     "lint": "next lint",
     "compile": "npx hardhat compile",
     "deploy:amoy": "npx hardhat run scripts/deploy.js --network amoy",

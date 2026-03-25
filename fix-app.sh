@@ -1,11 +1,15 @@
+#!/bin/bash
+# Run from nextoken-capital root:
+#   chmod +x fix-app.sh && ./fix-app.sh
+
+cat > pages/_app.js << 'APPEOF'
 import "../styles/globals.css";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { AppProvider } from "../lib/AppContext";
 import { SessionProvider } from "next-auth/react";
-import dynamic from "next/dynamic";
-const NxtChatbot = dynamic(() => import("../components/NxtChatbot"), { ssr: false });
+import NxtChatbot from "../components/NxtChatbot";
 
 export default function App({ Component, pageProps }) {
   const router = useRouter();
@@ -91,3 +95,6 @@ export default function App({ Component, pageProps }) {
     </SessionProvider>
   );
 }
+APPEOF
+
+echo "✅ _app.js restored"
