@@ -16,3 +16,5 @@ add-filters.sh
 patch-features.sh
 update-tokenize.sh
 patch-features.sh
+.env
+.env.local
