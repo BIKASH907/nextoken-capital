@@ -181,7 +181,7 @@ export default function LoginPage() {
 
           <div className="li-card">
             <div className="li-title">Welcome back</div>
-            <p className="li-sub">Log in to manage your tokenized asset portfolio.</p>
+            <p className="li-sub">Log in to your Nextoken Capital account.</p>
 
             {error && <div className="li-error">⚠️ {error}</div>}
 
@@ -222,7 +222,7 @@ export default function LoginPage() {
               <div className="li-sep-line" /><span>or</span><div className="li-sep-line" />
             </div>
 
-            <button className="li-wallet-btn" onClick={() => router.push("/dashboard")}>
+            <button className="li-wallet-btn" onClick={() => router.push("/register")}>
               🔗 Continue with Wallet
             </button>
           </div>

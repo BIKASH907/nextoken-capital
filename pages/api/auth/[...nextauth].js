@@ -40,11 +40,11 @@ export const authOptions = {
       if (account?.provider === 'google' && profile) {
         try {
           await connectDB();
-          let dbUser = await User.findOne({ email: token.email });
+          let dbUser = await User.findOne({ email: token.email.toLowerCase() });
           if (!dbUser) {
             const nameParts = (profile.name || '').split(' ');
             dbUser = await User.create({
-              email: token.email,
+              email: token.email.toLowerCase(),
               firstName: nameParts[0] || 'User',
               lastName: nameParts.slice(1).join(' ') || '',
               password: null,
