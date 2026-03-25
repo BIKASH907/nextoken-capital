@@ -4,7 +4,8 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { AppProvider } from "../lib/AppContext";
 import { SessionProvider } from "next-auth/react";
-import NxtChatbot from "../components/NxtChatbot";
+import dynamic from "next/dynamic";
+const NxtChatbot = dynamic(() => import("../components/NxtChatbot"), { ssr: false });
 
 export default function App({ Component, pageProps }) {
   const router = useRouter();
@@ -84,7 +85,7 @@ export default function App({ Component, pageProps }) {
         @media(max-width:640px){.nb-login,.nb-register{display:none!important}.nb-burger{display:flex!important}}
       `}</style>
 
-      <Component {...pageProps} />
+      <div suppressHydrationWarning><div suppressHydrationWarning><div suppressHydrationWarning><Component {...pageProps} /></div></div></div>
       <NxtChatbot />
     </AppProvider>
     </SessionProvider>

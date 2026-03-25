@@ -1,3 +1,4 @@
+import dynamic from "next/dynamic";
 // pages/admin/login.js
 import Head from "next/head";
 import { useState } from "react";
@@ -33,7 +34,7 @@ export default function AdminLogin() {
     <>
       <Head><title>Admin Login — Nextoken Capital</title></Head>
       <style>{`
-        body{background:#0B0E11;color:#fff;font-family:'DM Sans',system-ui,sans-serif;margin:0}
+        body{background:#0B0E11;color:#fff;font-family:"DM Sans",system-ui,sans-serif;margin:0}
         .al{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
         .al-box{width:100%;max-width:380px;background:#0F1318;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:32px}
         .al-logo{text-align:center;margin-bottom:28px}
