@@ -215,9 +215,6 @@ export default function LoginPage() {
             <Link href="/register" className="li-create">📝 Create New Account</Link>
           </div>
 
-          <p className="li-footer">
-            Don&apos;t have an account? <Link href="/register">Create one free →</Link>
-          </p>
 
           <div className="li-trust">
             <span>🏛️ Bank of Lithuania</span>
