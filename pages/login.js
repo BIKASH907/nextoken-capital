@@ -212,11 +212,11 @@ export default function LoginPage() {
               <Link href="/forgot-password" className="li-forgot">Forgot password?</Link>
 
               <button type="submit" className="li-btn" disabled={loading || !form.email || !form.password}>
-                {loading ? <><div className="li-spin" /> Signing in...</> : "Sign In →"}
+                {loading ? <><div className="li-spin" /> Logging in...</> : "Login →"}
               </button>
             </form>
             <div style={{display:"flex",alignItems:"center",gap:12,margin:"16px 0"}}><div style={{flex:1,height:1,background:"rgba(255,255,255,0.08)"}}></div><span style={{fontSize:12,color:"rgba(255,255,255,0.3)"}}>or</span><div style={{flex:1,height:1,background:"rgba(255,255,255,0.08)"}}></div></div>
-            <button onClick={async () => { const res = await fetch("/api/auth/csrf"); const {csrfToken} = await res.json(); const form = document.createElement("form"); form.method = "POST"; form.action = "/api/auth/signin/google"; const cb = document.createElement("input"); cb.type = "hidden"; cb.name = "callbackUrl"; cb.value = "/dashboard"; const csrf = document.createElement("input"); csrf.type = "hidden"; csrf.name = "csrfToken"; csrf.value = csrfToken; form.appendChild(cb); form.appendChild(csrf); document.body.appendChild(form); form.submit(); }} style={{width:"100%",padding:"12px",background:"#fff",color:"#000",border:"none",borderRadius:8,fontSize:14,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:10}}><img src="https://www.google.com/favicon.ico" width={18} height={18} alt="" />Continue with Google</button>
+            <button onClick={async () => { const res = await fetch("/api/auth/csrf"); const {csrfToken} = await res.json(); const form = document.createElement("form"); form.method = "POST"; form.action = "/api/auth/signin/google"; const cb = document.createElement("input"); cb.type = "hidden"; cb.name = "callbackUrl"; cb.value = "/dashboard"; const csrf = document.createElement("input"); csrf.type = "hidden"; csrf.name = "csrfToken"; csrf.value = csrfToken; form.appendChild(cb); form.appendChild(csrf); document.body.appendChild(form); form.submit(); }} style={{width:"100%",padding:"12px",background:"transparent",color:"rgba(255,255,255,0.6)",border:"1px solid rgba(255,255,255,0.1)",border:"none",borderRadius:8,fontSize:14,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:10}}><img src="https://www.google.com/favicon.ico" width={18} height={18} alt="" />Continue with Google</button>
 
             <div className="li-sep">
               <div className="li-sep-line" /><span>or</span><div className="li-sep-line" />
