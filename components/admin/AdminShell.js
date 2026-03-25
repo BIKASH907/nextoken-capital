@@ -1,104 +1,68 @@
-// Shared admin shell with extended navigation
-// Wraps content with sidebar — does NOT replace existing AdminLayout
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import Link from "next/link";
+import { ROLES, ROLE_NAV } from "../../lib/rbac";
 
-const NAV = [
-  { sep: true, label: "OVERVIEW" },
-  { href: "/admin", icon: "📊", label: "Dashboard" },
-  { href: "/admin/users", icon: "👥", label: "Users" },
-  { href: "/admin/assets", icon: "🏢", label: "Assets" },
-  { sep: true, label: "COMPLIANCE" },
-  { href: "/admin/compliance", icon: "🪪", label: "KYC/KYB Queue" },
-  { href: "/admin/travel-rule", icon: "✈️", label: "Travel Rule" },
-  { sep: true, label: "ASSET MANAGEMENT" },
-  { href: "/admin/listings-mod", icon: "✅", label: "Listing Moderation" },
-  { href: "/admin/registry", icon: "📋", label: "Shareholder Registry" },
-  { href: "/admin/contracts", icon: "🔗", label: "Smart Contracts" },
-  { href: "/admin/vault", icon: "🗄️", label: "Document Vault" },
-  { sep: true, label: "FINANCIAL" },
-  { href: "/admin/treasury", icon: "💰", label: "Treasury & Revenue" },
-  { href: "/admin/transactions", icon: "🔍", label: "Transactions" },
-  { href: "/admin/market", icon: "📈", label: "Market Data" },
-  { sep: true, label: "RISK & SECURITY" },
-  { href: "/admin/security", icon: "🛡️", label: "Security Center" },
-  { sep: true, label: "REPORTING" },
-  { href: "/admin/reports", icon: "📄", label: "Regulatory Reports" },
-  { href: "/admin/support", icon: "💬", label: "Support Tickets" },
-];
-
-export default function AdminShell({ children, title, subtitle }) {
+export default function AdminShell({ title, subtitle, children }) {
   const router = useRouter();
   const [employee, setEmployee] = useState(null);
-  const [mounted, setMounted] = useState(false);
-  const [token, setToken] = useState("");
+  const [collapsed, setCollapsed] = useState({});
 
   useEffect(() => {
-    setMounted(true);
     const t = localStorage.getItem("adminToken");
-    const emp = localStorage.getItem("adminEmployee");
     if (!t) { router.push("/admin/login"); return; }
-    setToken(t);
-    try { setEmployee(JSON.parse(emp)); } catch { router.push("/admin/login"); }
-  }, [router]);
+    try { setEmployee(JSON.parse(localStorage.getItem("adminEmployee"))); } catch(e) {}
+  }, []);
 
-  const logout = () => {
-    localStorage.removeItem("adminToken");
-    localStorage.removeItem("adminEmployee");
-    router.push("/admin/login");
-  };
-
-  if (!mounted || !employee) return <div style={{background:"#0B0E11",minHeight:"100vh"}} />;
+  const logout = () => { localStorage.removeItem("adminToken"); localStorage.removeItem("adminEmployee"); router.push("/admin/login"); };
+  const role = employee?.role || "super_admin";
+  const ri = ROLES[role] || ROLES.super_admin;
+  const nav = ROLE_NAV[role] || ROLE_NAV.super_admin;
+  const isActive = (h) => h === "/admin" ? router.asPath === "/admin" : router.asPath.startsWith(h);
+  const toggle = (s) => setCollapsed(p => ({...p, [s]: !p[s]}));
 
   return (
-    <>
-      <style>{`
-        .as-sb{position:fixed;top:0;left:0;width:240px;height:100vh;background:#0F1318;border-right:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;padding:20px 12px;z-index:100;overflow-y:auto}
-        .as-sb::-webkit-scrollbar{width:4px}
-        .as-sb::-webkit-scrollbar-thumb{background:rgba(240,185,11,0.2);border-radius:2px}
-        .as-logo{font-size:20px;font-weight:900;color:#F0B90B;margin-bottom:2px;padding:0 8px}
-        .as-logo-sub{font-size:9px;color:rgba(255,255,255,0.25);letter-spacing:2px;margin-bottom:20px;padding:0 8px}
-        .as-sep{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.15);padding:14px 8px 6px}
-        .as-link{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:7px;font-size:12.5px;font-weight:500;color:rgba(255,255,255,0.45);text-decoration:none;transition:all .15s;margin-bottom:1px}
-        .as-link:hover{color:#fff;background:rgba(255,255,255,0.04)}
-        .as-link.on{color:#F0B90B;background:rgba(240,185,11,0.08);font-weight:700}
-        .as-link-ico{font-size:13px;width:18px;text-align:center;flex-shrink:0}
-        .as-bottom{margin-top:auto;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06)}
-        .as-user{padding:10px;border-radius:8px;background:rgba(255,255,255,0.03);margin-bottom:8px}
-        .as-user-name{font-size:12px;font-weight:700;color:#fff}
-        .as-user-role{font-size:10px;color:#F0B90B;margin-top:1px}
-        .as-logout{width:100%;padding:8px 10px;border-radius:7px;background:rgba(255,77,77,0.06);border:1px solid rgba(255,77,77,0.12);color:#ff6b6b;font-size:12px;font-weight:600;cursor:pointer;text-align:left;font-family:inherit}
-        .as-main{margin-left:240px;padding:28px;min-height:100vh;background:#0B0E11}
-        .as-page-title{font-size:22px;font-weight:900;color:#fff;margin-bottom:4px}
-        .as-page-sub{font-size:13px;color:rgba(255,255,255,0.35);margin-bottom:24px}
-      `}</style>
-
-      <div className="as-sb">
-        <div className="as-logo">NXT</div>
-        <div className="as-logo-sub">ADMIN PORTAL v2</div>
-        {NAV.map((item, i) => item.sep ? (
-          <div key={i} className="as-sep">{item.label}</div>
-        ) : (
-          <Link key={item.href} href={item.href} className={`as-link ${router.pathname === item.href ? "on" : ""}`}>
-            <span className="as-link-ico">{item.icon}</span>
-            {item.label}
-          </Link>
-        ))}
-        <div className="as-bottom">
-          <div className="as-user">
-            <div className="as-user-name">{employee.firstName} {employee.lastName}</div>
-            <div className="as-user-role">{employee.role}</div>
-          </div>
-          <button className="as-logout" onClick={logout}>Sign Out</button>
+    <div style={{ display:"flex", minHeight:"100vh", background:"#0B0E11" }}>
+      <div style={{ position:"fixed", top:0, left:0, width:220, height:"100vh", background:"#0F1318", borderRight:"1px solid rgba(255,255,255,0.07)", display:"flex", flexDirection:"column", zIndex:100, overflowY:"auto" }}>
+        <div style={{ padding:"16px 14px 10px" }}>
+          <div style={{ fontSize:20, fontWeight:900, color:"#F0B90B" }}>NXT</div>
+          <div style={{ fontSize:9, color:"rgba(255,255,255,0.25)", letterSpacing:2 }}>ADMIN PORTAL v3</div>
+        </div>
+        <div style={{ margin:"0 10px 10px", padding:"7px 10px", borderRadius:7, background:ri.color+"12", border:"1px solid "+ri.color+"20" }}>
+          <div style={{ fontSize:11, fontWeight:700, color:ri.color }}>{ri.icon} {ri.label}</div>
+        </div>
+        <div style={{ flex:1, padding:"0 6px" }}>
+          {nav.map(sec => (
+            <div key={sec.section} style={{ marginBottom:10 }}>
+              <div onClick={() => toggle(sec.section)} style={{ fontSize:9, fontWeight:700, color:"rgba(255,255,255,0.2)", letterSpacing:1.2, padding:"6px 8px 3px", cursor:"pointer", display:"flex", justifyContent:"space-between", userSelect:"none" }}>
+                <span>{sec.section}</span>
+                <span style={{ fontSize:8 }}>{collapsed[sec.section] ? "▸" : "▾"}</span>
+              </div>
+              {!collapsed[sec.section] && sec.items.map(n => (
+                <button key={n.href} onClick={() => router.push(n.href)} style={{
+                  display:"flex", alignItems:"center", gap:7, padding:"6px 10px", borderRadius:6, fontSize:12,
+                  fontWeight: isActive(n.href) ? 700 : 400, width:"100%", textAlign:"left", cursor:"pointer", marginBottom:1, border:"none",
+                  color: isActive(n.href) ? "#F0B90B" : "rgba(255,255,255,0.4)",
+                  background: isActive(n.href) ? "rgba(240,185,11,0.1)" : "transparent",
+                  borderLeft: isActive(n.href) ? "2px solid #F0B90B" : "2px solid transparent",
+                  fontFamily:"inherit", transition:"all .1s",
+                }}><span style={{ fontSize:12 }}>{n.icon}</span>{n.label}</button>
+              ))}
+            </div>
+          ))}
+        </div>
+        <div style={{ padding:"8px 10px", borderTop:"1px solid rgba(255,255,255,0.07)" }}>
+          {employee && <div style={{ padding:"6px 8px", borderRadius:6, background:"rgba(255,255,255,0.04)", marginBottom:6 }}>
+            <div style={{ fontSize:11, fontWeight:700, color:"#fff" }}>{employee.firstName} {employee.lastName}</div>
+            <div style={{ fontSize:9, color:ri.color }}>{ri.label}</div>
+          </div>}
+          <button onClick={logout} style={{ width:"100%", padding:"6px 8px", borderRadius:6, background:"rgba(255,77,77,0.08)", border:"1px solid rgba(255,77,77,0.15)", color:"#ff6b6b", fontSize:10, fontWeight:600, cursor:"pointer", textAlign:"left", fontFamily:"inherit" }}>Sign Out</button>
         </div>
       </div>
-
-      <div className="as-main">
-        {title && <div className="as-page-title">{title}</div>}
-        {subtitle && <div className="as-page-sub">{subtitle}</div>}
+      <div style={{ marginLeft:220, flex:1, padding:"28px 36px", color:"#fff" }}>
+        {title && <h1 style={{ fontSize:22, fontWeight:800, marginBottom:4 }}>{title}</h1>}
+        {subtitle && <p style={{ fontSize:13, color:"rgba(255,255,255,0.4)", marginBottom:24 }}>{subtitle}</p>}
         {children}
       </div>
-    </>
+    </div>
   );
 }
