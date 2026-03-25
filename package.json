@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "node -r ./dns-fix.js node_modules/next/dist/bin/next dev",
-    "build": "next build",
+    "build": "node -r ./dns-fix.js node_modules/next/dist/bin/next build",
     "start": "node -r ./dns-fix.js node_modules/next/dist/bin/next start",
     "lint": "next lint",
     "compile": "npx hardhat compile",
