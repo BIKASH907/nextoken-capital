@@ -110,10 +110,10 @@ export default function LoginPage() {
         .li-divider{display:flex;align-items:center;gap:12px;margin:20px 0}
         .li-divider-line{flex:1;height:1px;background:rgba(255,255,255,0.1)}
         .li-divider span{font-size:13px;color:rgba(255,255,255,0.4)}
-        .li-google{width:100%;padding:13px;background:#fff;color:#000;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:10px;transition:background .15s}
-        .li-google:hover{background:#f0f0f0}
-        .li-create{width:100%;padding:13px;background:rgba(240,185,11,0.08);border:1px solid rgba(240,185,11,0.3);border-radius:8px;color:#F0B90B;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .15s;text-decoration:none}
-        .li-create:hover{background:rgba(240,185,11,0.15);border-color:rgba(240,185,11,0.5)}
+        .li-google{width:100%;padding:13px;background:#161B22;color:rgba(255,255,255,0.8);border:1px solid rgba(255,255,255,0.15);border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:10px;transition:background .15s}
+        .li-google:hover{background:#1c2129;border-color:rgba(255,255,255,0.3)}
+        .li-create{width:100%;padding:14px;background:#F0B90B;border:1px solid rgba(240,185,11,0.3);border-radius:8px;color:#000;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .15s;text-decoration:none}
+        .li-create:hover{background:#FFD000;border-color:#FFD000}
         .li-footer{text-align:center;font-size:14px;color:rgba(255,255,255,0.7);margin-top:20px}
         .li-footer a{color:#F0B90B;text-decoration:none;font-weight:700}
         .li-footer a:hover{text-decoration:underline}
