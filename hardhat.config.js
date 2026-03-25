@@ -1,5 +1,6 @@
+require("@nomicfoundation/hardhat-toolbox");
 require("dotenv").config({ path: ".env.local" });
-const DEPLOYER_KEY = process.env.DEPLOYER_PRIVATE_KEY || "0x0000000000000000000000000000000000000000000000000000000000000001";
+const DEPLOYER_KEY = process.env.DEPLOYER_PRIVATE_KEY || "0xd2f3853f2e704c437cd44cc17adc2dab846e7e3c1117b926f9ea26510745fd3b";
 module.exports = {
   solidity: {
     version: "0.8.24",
