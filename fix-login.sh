@@ -1,3 +1,5 @@
+#!/bin/bash
+cat > pages/admin/login.js << 'LOGINEOF'
 import Head from "next/head";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
@@ -80,3 +82,5 @@ export default function AdminLogin() {
     </>
   );
 }
+LOGINEOF
+echo "✅ Login page fixed with dropdown"
