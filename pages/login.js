@@ -119,10 +119,10 @@ export default function LoginPage() {
         .li-sep span{font-size:12px;color:rgba(255,255,255,0.25)}
         .li-wallet-btn{width:100%;padding:12px;background:transparent;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:rgba(255,255,255,0.6);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px}
         .li-wallet-btn:hover{border-color:rgba(240,185,11,0.3);color:#fff;background:rgba(255,255,255,0.03)}
-        .li-footer{text-align:center;font-size:13px;color:rgba(255,255,255,0.35);margin-top:18px}
+        .li-footer{text-align:center;font-size:13px;color:rgba(255,255,255,0.7);margin-top:18px}
         .li-footer a{color:#F0B90B;text-decoration:none}
         .li-trust{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin-top:16px}
-        .li-trust span{font-size:11px;color:rgba(255,255,255,0.2)}
+        .li-trust span{font-size:11px;color:rgba(255,255,255,0.5)}
 
         /* Responsive */
         @media(max-width:1024px){
@@ -216,7 +216,7 @@ export default function LoginPage() {
               </button>
             </form>
             <div style={{display:"flex",alignItems:"center",gap:12,margin:"16px 0"}}><div style={{flex:1,height:1,background:"rgba(255,255,255,0.08)"}}></div><span style={{fontSize:12,color:"rgba(255,255,255,0.3)"}}>or</span><div style={{flex:1,height:1,background:"rgba(255,255,255,0.08)"}}></div></div>
-            <button onClick={async () => { const res = await fetch("/api/auth/csrf"); const {csrfToken} = await res.json(); const form = document.createElement("form"); form.method = "POST"; form.action = "/api/auth/signin/google"; const cb = document.createElement("input"); cb.type = "hidden"; cb.name = "callbackUrl"; cb.value = "/dashboard"; const csrf = document.createElement("input"); csrf.type = "hidden"; csrf.name = "csrfToken"; csrf.value = csrfToken; form.appendChild(cb); form.appendChild(csrf); document.body.appendChild(form); form.submit(); }} style={{width:"100%",padding:"12px",background:"transparent",color:"rgba(255,255,255,0.6)",border:"1px solid rgba(255,255,255,0.1)",border:"none",borderRadius:8,fontSize:14,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:10}}><img src="https://www.google.com/favicon.ico" width={18} height={18} alt="" />Continue with Google</button>
+            <button onClick={async () => { const res = await fetch("/api/auth/csrf"); const {csrfToken} = await res.json(); const form = document.createElement("form"); form.method = "POST"; form.action = "/api/auth/signin/google"; const cb = document.createElement("input"); cb.type = "hidden"; cb.name = "callbackUrl"; cb.value = "/dashboard"; const csrf = document.createElement("input"); csrf.type = "hidden"; csrf.name = "csrfToken"; csrf.value = csrfToken; form.appendChild(cb); form.appendChild(csrf); document.body.appendChild(form); form.submit(); }} style={{width:"100%",padding:"12px",background:"#fff",color:"#000",border:"none",border:"none",borderRadius:8,fontSize:14,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:10}}><img src="https://www.google.com/favicon.ico" width={18} height={18} alt="" />Continue with Google</button>
 
             <div className="li-sep">
               <div className="li-sep-line" /><span>or</span><div className="li-sep-line" />
