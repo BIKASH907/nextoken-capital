@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import AdminShell from "../../components/admin/AdminShell";
+import AdminShell from "../../../components/admin/AdminShell";
 
 export default function KYBQueue() {
   const router = useRouter();
