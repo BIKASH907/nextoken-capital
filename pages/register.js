@@ -96,7 +96,7 @@ export default function RegisterPage() {
   const [otpError, setOtpError] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState("");
-  const [form, setForm] = useState({
+  const [form, setForm] = useState({ role: "investor",
     email:"", password:"", confirm:"",
     firstName:"", lastName:"", country:"", dialCode:"+370", phone:"", dob:"",
     agreeTerms: false, agreeRisk: false,
@@ -146,7 +146,7 @@ export default function RegisterPage() {
   const verifyOtp = async () => {
     setOtpLoading(true); setOtpError("");
     try {
-      const r = await fetch("/api/auth/verify-otp", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({email: form.email, otp}) });
+      const r = await fetch("/api/auth/verify-otp", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({role: form.role, email: form.email, otp}) });
       const d = await r.json();
       if (r.ok && d.verified) { setOtpVerified(true); setStep(1); setOtpSent(false); setOtp(""); }
       else setOtpError(d.error || "Invalid code");
@@ -378,7 +378,24 @@ export default function RegisterPage() {
               <div className="rg-title">Personal details</div>
               <p className="rg-sub">Required under EU AML/KYC regulation (AMLD6).</p>
               <div className="rg-row">
-                <div className="rg-field">
+                
+            {/* ROLE SELECTOR */}
+            <div style={{marginBottom:16}}>
+              <label style={{display:"block",fontSize:12,fontWeight:700,color:"rgba(255,255,255,0.4)",marginBottom:8,textTransform:"uppercase",letterSpacing:1}}>I want to</label>
+              <div style={{display:"flex",gap:10}}>
+                <button type="button" onClick={()=>setForm({...form,role:"investor"})} style={{flex:1,padding:"14px 12px",borderRadius:10,cursor:"pointer",fontFamily:"inherit",fontSize:14,fontWeight:700,textAlign:"center",background:form.role==="investor"?"rgba(240,185,11,0.12)":"#161B22",color:form.role==="investor"?"#F0B90B":"rgba(255,255,255,0.4)",border:form.role==="investor"?"2px solid #F0B90B":"2px solid rgba(255,255,255,0.08)",transition:"all .15s"}}>
+                  <div style={{fontSize:24,marginBottom:4}}>💰</div>
+                  Invest in Assets
+                  <div style={{fontSize:10,fontWeight:400,color:"rgba(255,255,255,0.3)",marginTop:4}}>Buy tokenized bonds, equity, real estate</div>
+                </button>
+                <button type="button" onClick={()=>setForm({...form,role:"issuer"})} style={{flex:1,padding:"14px 12px",borderRadius:10,cursor:"pointer",fontFamily:"inherit",fontSize:14,fontWeight:700,textAlign:"center",background:form.role==="issuer"?"rgba(139,92,246,0.12)":"#161B22",color:form.role==="issuer"?"#8b5cf6":"rgba(255,255,255,0.4)",border:form.role==="issuer"?"2px solid #8b5cf6":"2px solid rgba(255,255,255,0.08)",transition:"all .15s"}}>
+                  <div style={{fontSize:24,marginBottom:4}}>🏗️</div>
+                  Tokenize My Assets
+                  <div style={{fontSize:10,fontWeight:400,color:"rgba(255,255,255,0.3)",marginTop:4}}>List bonds, real estate, equity for investors</div>
+                </button>
+              </div>
+            </div>
+            <div className="rg-field">
                   <label className="rg-label">First Name</label>
                   <input className="rg-input" name="firstName" value={form.firstName} onChange={handle} placeholder="First name" autoComplete="given-name" />
                 </div>
@@ -464,7 +481,7 @@ export default function RegisterPage() {
                 <button className="rg-btn" style={{marginBottom:10}} onClick={() => router.push("/kyc")}>
                   Start KYC Verification →
                 </button>
-                <button className="rg-btn" style={{background:"rgba(255,255,255,0.06)",color:"rgba(255,255,255,0.6)",border:"1px solid rgba(255,255,255,0.1)"}} onClick={() => router.push("/dashboard")}>
+                <button className="rg-btn" style={{background:"rgba(255,255,255,0.06)",color:"rgba(255,255,255,0.6)",border:"1px solid rgba(255,255,255,0.1)"}} onClick={() => router.push(form.role === "issuer" ? "/issuer-dashboard" : "/dashboard")}>
                   Skip for now — Go to Dashboard
                 </button>
               </div>
