@@ -202,7 +202,7 @@ export default function LoginPage() {
               const f = document.createElement("form");
               f.method = "POST";
               f.action = "/api/auth/signin/google";
-              const cb = document.createElement("input"); cb.type = "hidden"; cb.name = "callbackUrl"; cb.value = "/dashboard";
+              const cb = document.createElement("input"); cb.type = "hidden"; cb.name = "callbackUrl"; cb.value = "/dashboard"; fetch("/api/user/me").then(r=>r.json()).then(d=>{if(d?.user?.accountType==="issuer")cb.value="/issuer-dashboard"});
               const csrf = document.createElement("input"); csrf.type = "hidden"; csrf.name = "csrfToken"; csrf.value = csrfToken;
               f.appendChild(cb); f.appendChild(csrf); document.body.appendChild(f); f.submit();
             }}>
