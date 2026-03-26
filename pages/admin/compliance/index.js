@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useRouter } from "next/router";
-import AdminSidebar from "../../../../components/AdminSidebar";
+import AdminSidebar from "../../../components/AdminSidebar";
 
 export default function ComplianceDashboard() {
   const router = useRouter();
