@@ -1,3 +1,4 @@
+import AutoLogout from "../AutoLogout";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { ROLES, ROLE_NAV } from "../../lib/rbac";
@@ -20,7 +21,8 @@ export default function AdminShell({ title, subtitle, children }) {
   const isActive = (h) => h === "/admin" ? router.asPath === "/admin" : router.asPath.startsWith(h);
   const toggle = (s) => setCollapsed(p => ({...p, [s]: !p[s]}));
 
-  return (
+  return (<>
+<AutoLogout timeoutMs={600000} isAdmin={true} />
     <div style={{ display:"flex", minHeight:"100vh", background:"#0B0E11" }}>
       <div style={{ position:"fixed", top:0, left:0, width:220, height:"100vh", background:"#0F1318", borderRight:"1px solid rgba(255,255,255,0.07)", display:"flex", flexDirection:"column", zIndex:100, overflowY:"auto" }}>
         <div style={{ padding:"16px 14px 10px" }}>
@@ -64,5 +66,6 @@ export default function AdminShell({ title, subtitle, children }) {
         {children}
       </div>
     </div>
-  );
+</>)
+  ;
 }

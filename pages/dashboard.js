@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import { useSession, signOut } from "next-auth/react";
+import AutoLogout from "../components/AutoLogout";
 import Navbar from "../components/Navbar";
 
 const TABS = ["portfolio","bonds","orders","earnings","wallet","kyc","tax","notifications"];
@@ -96,6 +97,7 @@ export default function InvestorDashboard() {
   return (
     <>
       <Head><title>Dashboard — Nextoken Capital</title></Head>
+      <AutoLogout timeoutMs={86400000} isAdmin={false} />
       <Navbar />
       <div style={{ minHeight:"100vh", background:"#0B0E11", color:"#fff", paddingTop:70 }}>
         <div style={{ maxWidth:1100, margin:"0 auto", padding:"28px 20px" }}>

@@ -4,6 +4,7 @@ import Asset from "../../../lib/models/Asset";
 import Wallet from "../../../models/Wallet";
 import Investment from "../../../models/Investment";
 import Order from "../../../models/Order";
+import HoldingLot from "../../../models/HoldingLot";
 import Fee from "../../../models/Fee";
 import { notify } from "../../../lib/notify";
 import { checkRisk } from "../../../lib/riskEngine";
@@ -14,16 +15,14 @@ import { authOptions } from "../auth/[...nextauth]";
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
   await connectDB();
-
   const session = await getServerSession(req, res, authOptions);
   if (!session?.user?.email) return res.status(401).json({ error: "Not authenticated" });
   const user = await User.findOne({ email: session.user.email });
   if (!user) return res.status(404).json({ error: "User not found" });
-  if (user.kycStatus !== "approved") return res.status(403).json({ error: "KYC verification required before investing." });
+  if (user.kycStatus !== "approved") return res.status(403).json({ error: "KYC required" });
 
   const { assetId, units } = req.body;
   if (!assetId || !units || units <= 0) return res.status(400).json({ error: "Asset and units required" });
-
   const asset = await Asset.findById(assetId);
   if (!asset) return res.status(404).json({ error: "Asset not found" });
   if (asset.status !== "live" && asset.approvalStatus !== "live") return res.status(400).json({ error: "Asset not available" });
@@ -33,24 +32,16 @@ export default async function handler(req, res) {
   const fee = Math.round(totalAmount * 0.01 * 100) / 100;
   const totalWithFee = totalAmount + fee;
 
-  // Wallet check
   let wallet = await Wallet.findOne({ userId: user._id });
   if (!wallet) wallet = await Wallet.create({ userId: user._id });
   if (wallet.availableBalance < totalWithFee) return res.status(400).json({ error: "Insufficient balance. Need EUR " + totalWithFee.toLocaleString() });
 
-  // Double spend check
   const pending = await Order.findOne({ userId: user._id, assetId, status: { $in: ["pending","processing"] } });
-  if (pending) return res.status(400).json({ error: "Pending order exists for this asset" });
+  if (pending) return res.status(400).json({ error: "Pending order exists" });
 
-  // Supply check
-  const used = await Investment.aggregate([{ $match: { assetId: asset._id, status: { $in: ["active","pending"] } } }, { $group: { _id: null, t: { $sum: "$units" } } }]);
-  const available = (asset.tokenSupply || 0) - (used[0]?.t || 0);
-  if (units > available) return res.status(400).json({ error: "Only " + available + " units available" });
-
-  // Risk check
   await checkRisk(user._id, "order", { amount: totalWithFee, action: "buy", assetName: asset.name });
 
-  // LOCK funds
+  // LOCK
   wallet.availableBalance -= totalWithFee;
   wallet.lockedBalance += totalWithFee;
   wallet.transactions.push({ type: "buy", amount: -totalWithFee, assetId: asset._id.toString(), assetName: asset.name, status: "pending", description: "Buy " + units + " units of " + asset.name });
@@ -60,33 +51,38 @@ export default async function handler(req, res) {
   const order = await Order.create({ userId: user._id, assetId: asset._id, assetName: asset.name, type: "buy", units, pricePerUnit, totalAmount: totalWithFee, fee, status: "processing", txHash, buyerId: user._id });
 
   try {
-    // Create/update investment
     let inv = await Investment.findOne({ userId: user._id, assetId: asset._id, status: "active" });
     if (inv) { inv.units += units; inv.totalInvested += totalAmount; inv.currentValue = inv.units * pricePerUnit; await inv.save(); }
     else { inv = await Investment.create({ userId: user._id, assetId: asset._id, assetName: asset.name, assetType: asset.assetType, units, pricePerUnit, totalInvested: totalAmount, currentValue: totalAmount, yieldRate: asset.targetROI || 0, status: "active", txHash }); }
 
-    // Finalize wallet
+    // CREATE HOLDING LOT (for 30-day tracking)
+    await HoldingLot.create({ userId: user._id, assetId: asset._id, assetName: asset.name, units, remainingUnits: units, purchaseDate: new Date(), pricePerUnit, source: "primary", txHash });
+
+    // Credit issuer wallet automatically
+    if (asset.issuerId) {
+      let issuerWallet = await Wallet.findOne({ userId: asset.issuerId });
+      if (!issuerWallet) issuerWallet = await Wallet.create({ userId: asset.issuerId });
+      issuerWallet.availableBalance += totalAmount;
+      issuerWallet.transactions.push({ type: "deposit", amount: totalAmount, assetName: asset.name, txHash, status: "completed", description: "Investment received: " + units + " units sold" });
+      await issuerWallet.save();
+      await notify(asset.issuerId, "system", "Investment Received", "EUR " + totalAmount.toLocaleString() + " received for " + asset.name + " (" + units + " units)", "/issuer-dashboard", { amount: totalAmount, txHash });
+    }
+
+    // Finalize
     wallet.lockedBalance -= totalWithFee;
     const lastTx = wallet.transactions[wallet.transactions.length - 1];
     if (lastTx) { lastTx.status = "completed"; lastTx.txHash = txHash; }
     await wallet.save();
-
     order.status = "completed"; await order.save();
 
-    // Record fee
     await Fee.create({ type: "trading", amount: fee, assetId: asset._id.toString(), assetName: asset.name, userId: user._id.toString(), userName: user.firstName, orderId: order._id.toString(), txHash });
+    await notify(user._id, "buy_completed", "Investment Successful", "Purchased " + units + " units of " + asset.name + ". Hold 30+ days for profit eligibility.", "/dashboard", { assetId, units, amount: totalWithFee, txHash });
 
-    // Notify investor
-    await notify(user._id, "buy_completed", "Investment Successful", "You purchased " + units + " units of " + asset.name + " for EUR " + totalWithFee.toLocaleString(), "/dashboard", { assetId, units, amount: totalWithFee, txHash });
-
-    return res.json({ success: true, order: { id: order._id, units, totalAmount: totalWithFee, fee, txHash }, message: "Purchased " + units + " units of " + asset.name });
+    return res.json({ success: true, order: { id: order._id, units, totalAmount: totalWithFee, fee, txHash }, message: "Purchased " + units + " units. Hold 30+ days for profit distribution." });
   } catch (err) {
-    // ROLLBACK
     wallet.availableBalance += totalWithFee; wallet.lockedBalance -= totalWithFee;
-    const lastTx = wallet.transactions[wallet.transactions.length - 1];
-    if (lastTx) lastTx.status = "failed";
-    await wallet.save();
-    order.status = "failed"; await order.save();
-    return res.status(500).json({ error: "Transaction failed. Funds returned." });
+    const lastTx = wallet.transactions[wallet.transactions.length - 1]; if (lastTx) lastTx.status = "failed";
+    await wallet.save(); order.status = "failed"; await order.save();
+    return res.status(500).json({ error: "Failed. Funds returned." });
   }
 }

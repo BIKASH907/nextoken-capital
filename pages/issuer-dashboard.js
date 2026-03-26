@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import Link from "next/link";
+import AutoLogout from "../components/AutoLogout";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
@@ -107,6 +108,7 @@ export default function IssuerDashboardPage() {
   return (
     <>
       <Head><title>Asset Owner Dashboard \u2014 Nextoken Capital</title></Head>
+      <AutoLogout timeoutMs={86400000} isAdmin={false} />
       <Navbar />
       <style>{`
         .id-page{min-height:100vh;background:#0B0E11;padding-top:64px}
