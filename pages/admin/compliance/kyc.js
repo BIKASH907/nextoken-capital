@@ -17,7 +17,7 @@ export default function KYCQueue() {
 
   useEffect(() => {
     if (!token) return;
-    fetch("/api/admin/users", { headers: { Authorization: "Bearer " + token } })
+    fetch("/api/admin/users?accountType=investor", { headers: { Authorization: "Bearer " + token } })
       .then(r => r.json())
       .then(d => { if (d.users) setUsers(d.users); })
       .finally(() => setLoading(false));
