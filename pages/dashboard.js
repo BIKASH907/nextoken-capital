@@ -1,479 +1,305 @@
-// pages/dashboard.js
-// Real session via JWT cookie — no localStorage
-// Real investments from MongoDB
-// KYC status gate — shows what is/isn't available based on verification status
-
-import Head from "next/head";
-import Link from "next/link";
-import { useEffect, useState, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import Head from "next/head";
+import { useSession, signOut } from "next-auth/react";
 import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 
-const MARKET_DATA = [
-  { id:"solar-01",  emoji:"☀️", symbol:"SOLAR-01", title:"Solar Farm Portfolio",      location:"Alicante, Spain",    roi:18.2, min:250,  price:10.42, raised:4600000, target:5000000 },
-  { id:"wind-07",   emoji:"💨", symbol:"WIND-07",  title:"Wind Energy Project",       location:"Gdansk, Poland",     roi:17.6, min:250,  price:12.15, raised:2145000, target:6500000 },
-  { id:"office-03", emoji:"🏢", symbol:"OFFIC-03", title:"Tokenized Office Building", location:"Berlin, Germany",    roi:16.4, min:500,  price:8.91,  raised:1872000, target:2400000 },
-  { id:"logx-06",   emoji:"🏭", symbol:"LOGX-06",  title:"Logistics Hub",             location:"Warsaw, Poland",     roi:15.1, min:1000, price:11.20, raised:3600000, target:8000000 },
-  { id:"tech-08",   emoji:"💼", symbol:"TECH-08",  title:"Tech Business Park",        location:"Dublin, Ireland",    roi:15.9, min:500,  price:15.30, raised:2000000, target:10000000 },
-];
+const TABS = ["portfolio","bonds","orders","earnings","wallet","kyc","tax","notifications"];
+const TAB_LABELS = { portfolio:"Portfolio", bonds:"Investments", orders:"Buy/Sell", earnings:"Earnings", wallet:"Wallet", kyc:"KYC", tax:"Tax Report", notifications:"Notifications" };
 
-export default function DashboardPage() {
+export default function InvestorDashboard() {
   const router = useRouter();
-  const [user, setUser]               = useState(null);
-  const [investments, setInvestments] = useState([]);
-  const [loading, setLoading]         = useState(true);
-  const [tab, setTab]                 = useState("overview");
-  const [investModal, setInvestModal] = useState(null);
-  const [investAmount, setInvestAmount] = useState("");
-  const [investLoading, setInvestLoading] = useState(false);
-  const [investMsg, setInvestMsg]     = useState("");
-  const [mounted, setMounted]         = useState(false);
-
-  const loadData = useCallback(async () => {
-    try {
-      // Load user from real API (JWT cookie)
-      const userRes = await fetch("/api/user/me");
-      if (!userRes.ok) {
-        router.push("/login?redirect=/dashboard");
-        return;
-      }
-      const userData = await userRes.json();
-      setUser(userData);
-
-      // Load real investments
-      const invRes = await fetch("/api/investments/list");
-      if (invRes.ok) {
-        const invData = await invRes.json();
-        setInvestments(invData.investments || []);
-      }
-    } catch {
-      router.push("/login?redirect=/dashboard");
-    } finally {
-      setLoading(false);
-    }
-  }, [router]);
+  const { data: session, status } = useSession();
+  const [tab, setTab] = useState("portfolio");
+  const [wallet, setWallet] = useState(null);
+  const [investments, setInvestments] = useState({ investments: [], stats: {} });
+  const [orders, setOrders] = useState([]);
+  const [notifications, setNotifications] = useState({ notifications: [], unread: 0 });
+  const [taxData, setTaxData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
+  const [depositAmt, setDepositAmt] = useState("");
+  const [withdrawAmt, setWithdrawAmt] = useState("");
+  const [msg, setMsg] = useState("");
 
   useEffect(() => {
-    setMounted(true);
-    loadData();
-  }, [loadData]);
+    if (status === "unauthenticated") router.push("/login");
+    if (status === "authenticated") loadAll();
+  }, [status]);
 
-  const logout = async () => {
-    await fetch("/api/user/me", { method: "DELETE" });
-    router.push("/");
-  };
-
-  const handleInvest = async () => {
-    if (!investModal || !investAmount) return;
-    setInvestLoading(true);
-    setInvestMsg("");
+  const loadAll = async () => {
+    setLoading(true);
     try {
-      const qty = Math.floor(parseFloat(investAmount) / investModal.price);
-      const res = await fetch("/api/investments/create", {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          assetId:     investModal.id,
-          assetName:   investModal.title,
-          assetSymbol: investModal.symbol,
-          amount:      parseFloat(investAmount),
-          tokenPrice:  investModal.price,
-          quantity:    qty,
-        }),
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
-        setInvestMsg(`✅ ${data.message}`);
-        setTimeout(() => {
-          setInvestModal(null);
-          setInvestAmount("");
-          setInvestMsg("");
-          loadData(); // Refresh real data — no redirect
-        }, 2000);
-      } else if (data.kycRequired) {
-        setInvestMsg("⚠️ KYC verification required. Please complete your identity verification first.");
-      } else {
-        setInvestMsg(`❌ ${data.error}`);
-      }
-    } catch {
-      setInvestMsg("❌ Network error. Please try again.");
-    } finally {
-      setInvestLoading(false);
-    }
+      const [w, inv, ord, me, notif] = await Promise.all([
+        fetch("/api/wallet").then(r => r.json()).catch(() => ({})),
+        fetch("/api/investments/my").then(r => r.json()).catch(() => ({ investments: [], stats: {} })),
+        fetch("/api/investments/orders").then(r => r.json()).catch(() => ({ orders: [] })),
+        fetch("/api/user/me").then(r => r.json()).catch(() => ({})),
+        fetch("/api/notifications").then(r => r.json()).catch(() => ({ notifications: [], unread: 0 })),
+      ]);
+      if (w.wallet) setWallet(w.wallet);
+      setInvestments(inv);
+      setOrders(ord.orders || []);
+      if (me.user) setUser(me.user);
+      setNotifications(notif);
+    } catch(e) {} finally { setLoading(false); }
   };
 
-  if (!mounted || loading) return (
-    <div style={{minHeight:"100vh",background:"#0B0E11",display:"flex",alignItems:"center",justifyContent:"center"}}>
-      <div style={{textAlign:"center"}}>
-        <div style={{width:32,height:32,border:"3px solid rgba(240,185,11,0.2)",borderTopColor:"#F0B90B",borderRadius:"50%",animation:"spin .7s linear infinite",margin:"0 auto 14px"}}/>
-        <div style={{color:"rgba(255,255,255,0.3)",fontSize:13}}>Loading your dashboard...</div>
-      </div>
-      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+  const loadTax = async () => {
+    const year = new Date().getFullYear();
+    const d = await fetch("/api/user/tax-report?year=" + year).then(r => r.json()).catch(() => null);
+    setTaxData(d);
+  };
+
+  const doWallet = async (action, amount) => {
+    if (!amount || Number(amount) <= 0) return;
+    setMsg("");
+    const r = await fetch("/api/wallet/deposit", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ amount: Number(amount), action }) });
+    const d = await r.json();
+    setMsg(r.ok ? d.message : d.error);
+    setDepositAmt(""); setWithdrawAmt("");
+    loadAll();
+  };
+
+  const doSell = async (inv) => {
+    const u = prompt("Units to sell (max " + inv.units + "):");
+    if (!u || Number(u) <= 0) return;
+    const p = prompt("Price per unit (current: EUR " + inv.pricePerUnit + "):");
+    const r = await fetch("/api/investments/sell", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ investmentId: inv._id, units: Number(u), pricePerUnit: Number(p) || inv.pricePerUnit }) });
+    const d = await r.json();
+    alert(r.ok ? d.message : d.error);
+    loadAll();
+  };
+
+  const markRead = async (id) => {
+    await fetch("/api/notifications", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "mark_read", id }) });
+    loadAll();
+  };
+
+  const st = investments.stats || {};
+  const totalEarnings = investments.investments?.reduce((s, i) => s + (i.earnings?.reduce((es, e) => es + e.amount, 0) || 0), 0) || 0;
+
+  const card = (l, v, c) => (
+    <div style={{ background:"#161b22", border:"1px solid rgba(255,255,255,0.06)", borderRadius:12, padding:"18px 22px", flex:1, minWidth:130 }}>
+      <div style={{ fontSize:24, fontWeight:800, color:c }}>{v}</div>
+      <div style={{ fontSize:11, color:"rgba(255,255,255,0.4)", marginTop:4 }}>{l}</div>
     </div>
   );
 
-  if (!user) return null;
+  const badge = (s) => {
+    const c = { active:"#22c55e", matured:"#3b82f6", sold:"#f59e0b", pending:"#8b5cf6", completed:"#22c55e", failed:"#ef4444", cancelled:"#6b7280", processing:"#f59e0b" };
+    return <span style={{ fontSize:10, padding:"2px 8px", borderRadius:4, background:(c[s]||"#666")+"15", color:c[s]||"#666", fontWeight:700 }}>{s}</span>;
+  };
 
-  const kycApproved  = user.kycStatus === "approved";
-  const kycPending   = user.kycStatus === "pending";
-  const kycSubmitted = user.kycStatus === "submitted";
-
-  const totalInvested = investments.reduce((s, i) => s + i.amount, 0);
-  const totalValue    = investments.reduce((s, i) => s + (i.currentValue || i.amount), 0);
-  const totalReturn   = totalValue - totalInvested;
-  const returnPct     = totalInvested > 0 ? ((totalReturn / totalInvested) * 100).toFixed(1) : "0.0";
+  if (status === "loading" || loading) return <div style={{ minHeight:"100vh", background:"#0B0E11", display:"flex", alignItems:"center", justifyContent:"center", color:"#fff" }}>Loading...</div>;
 
   return (
     <>
-      <Head>
-        <title>Dashboard — Nextoken Capital</title>
-      </Head>
+      <Head><title>Dashboard — Nextoken Capital</title></Head>
       <Navbar />
-      <style>{`
-        .db{min-height:100vh;background:#0B0E11;padding-top:64px}
-        .db-head{background:#0F1318;border-bottom:1px solid rgba(255,255,255,0.07);padding:20px}
-        .db-head-in{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
-        .db-welcome{font-size:clamp(1rem,2.5vw,1.4rem);font-weight:900;color:#fff}
-        .db-welcome-sub{font-size:13px;color:rgba(255,255,255,0.35);margin-top:2px}
-        .db-head-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-        .db-invest-btn{padding:9px 20px;background:#F0B90B;color:#000;border:none;border-radius:7px;font-size:13px;font-weight:800;cursor:pointer;text-decoration:none}
-        .db-logout{padding:9px 16px;background:transparent;color:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.12);border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s}
-        .db-logout:hover{color:#FF6B6B;border-color:rgba(255,77,77,0.3)}
-        .db-body{max-width:1280px;margin:0 auto;padding:22px 20px 60px}
-
-        /* KYC BANNER */
-        .db-kyc-banner{border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
-        .db-kyc-banner.pending{background:rgba(240,185,11,0.06);border:1px solid rgba(240,185,11,0.2)}
-        .db-kyc-banner.submitted{background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.2)}
-        .db-kyc-banner.approved{background:rgba(14,203,129,0.06);border:1px solid rgba(14,203,129,0.2)}
-        .db-kyc-title{font-size:14px;font-weight:700;margin-bottom:3px}
-        .db-kyc-sub{font-size:12px;color:rgba(255,255,255,0.45);line-height:1.5}
-        .db-kyc-btn{padding:8px 18px;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;text-decoration:none;border:none;font-family:inherit;white-space:nowrap}
-
-        .db-tabs{display:flex;border-bottom:1px solid rgba(255,255,255,0.07);margin-bottom:20px;overflow-x:auto}
-        .db-tab{padding:10px 18px;font-size:13px;font-weight:600;color:rgba(255,255,255,0.4);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap;margin-bottom:-1px}
-        .db-tab:hover{color:#fff}
-        .db-tab.on{color:#F0B90B;border-bottom-color:#F0B90B}
-
-        .db-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
-        .db-stat{background:#0F1318;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:18px}
-        .db-stat-v{font-size:1.5rem;font-weight:900;line-height:1;margin-bottom:5px}
-        .db-stat-l{font-size:11px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:.5px}
-        .db-stat-c{font-size:11px;font-weight:700;margin-top:3px}
-        .gold{color:#F0B90B}.green{color:#0ECB81}.red{color:#FF4D4D}.blue{color:#3B82F6}
-
-        .db-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
-        .db-action{background:#0F1318;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:16px;text-align:center;text-decoration:none;transition:all .2s}
-        .db-action:hover{border-color:rgba(240,185,11,0.3);transform:translateY(-1px)}
-        .db-action-ico{font-size:22px;margin-bottom:6px}
-        .db-action-lbl{font-size:12px;font-weight:700;color:rgba(255,255,255,0.6)}
-
-        .db-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:16px}
-        .db-card{background:#0F1318;border:1px solid rgba(255,255,255,0.07);border-radius:13px;overflow:hidden;margin-bottom:16px}
-        .db-card-head{padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-between}
-        .db-card-title{font-size:13px;font-weight:700;color:#fff}
-        .db-card-link{font-size:12px;color:#F0B90B;text-decoration:none;background:none;border:none;cursor:pointer;font-family:inherit}
-        .db-row{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid rgba(255,255,255,0.05);gap:12px}
-        .db-row:last-child{border-bottom:none}
-        .db-row-l{flex:1}
-        .db-row-name{font-size:13px;font-weight:700;color:#fff}
-        .db-row-sub{font-size:11px;color:rgba(255,255,255,0.3);margin-top:1px}
-        .db-row-val{font-size:13px;font-weight:700;text-align:right}
-        .db-row-chg{font-size:11px;font-weight:700;text-align:right;margin-top:1px}
-        .db-empty{padding:28px 18px;font-size:13px;color:rgba(255,255,255,0.3);text-align:center}
-        .db-prog{height:3px;background:rgba(255,255,255,0.06);border-radius:2px;margin-top:5px;overflow:hidden}
-        .db-prog-fill{height:100%;background:#F0B90B;border-radius:2px}
-        .db-invest-row-btn{padding:6px 14px;background:rgba(240,185,11,0.1);border:1px solid rgba(240,185,11,0.25);border-radius:6px;font-size:12px;font-weight:700;color:#F0B90B;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap;flex-shrink:0}
-        .db-invest-row-btn:hover{background:rgba(240,185,11,0.18)}
-        .db-invest-row-btn:disabled{opacity:.35;cursor:not-allowed}
-
-        /* INVEST MODAL */
-        .inv-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px}
-        .inv-modal{background:#0F1318;border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:28px;width:100%;max-width:400px}
-        .inv-title{font-size:17px;font-weight:800;color:#fff;margin-bottom:4px}
-        .inv-sub{font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:20px;line-height:1.5}
-        .inv-label{font-size:11px;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;display:block}
-        .inv-input{width:100%;background:#161B22;color:#fff;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:12px 14px;font-size:16px;font-weight:700;outline:none;font-family:inherit;transition:border-color .15s;box-sizing:border-box}
-        .inv-input:focus{border-color:rgba(240,185,11,0.5)}
-        .inv-hint{font-size:12px;color:rgba(255,255,255,0.3);margin-top:6px}
-        .inv-msg{padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600;margin:14px 0;line-height:1.5}
-        .inv-msg.ok{background:rgba(14,203,129,0.1);border:1px solid rgba(14,203,129,0.25);color:#0ECB81}
-        .inv-msg.err{background:rgba(255,77,77,0.08);border:1px solid rgba(255,77,77,0.2);color:#FF6B6B}
-        .inv-btns{display:grid;grid-template-columns:1fr 1.5fr;gap:10px;margin-top:18px}
-        .inv-btn{padding:12px;border-radius:8px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;transition:all .15s;border:none}
-        .inv-btn.cancel{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6)}
-        .inv-btn.confirm{background:#F0B90B;color:#000}
-        .inv-btn.confirm:hover{background:#FFD000}
-        .inv-btn:disabled{opacity:.4;cursor:not-allowed}
-        .inv-spin{width:14px;height:14px;border:2px solid rgba(0,0,0,0.2);border-top-color:#000;border-radius:50%;animation:spin .6s linear infinite;display:inline-block}
-        @keyframes spin{to{transform:rotate(360deg)}}
-
-        @media(max-width:1000px){.db-stats{grid-template-columns:repeat(2,1fr)}.db-grid{grid-template-columns:1fr}.db-actions{grid-template-columns:repeat(2,1fr)}}
-        @media(max-width:480px){.db-stats{grid-template-columns:1fr 1fr}}
-      `}</style>
-
-      <div className="db">
-        <div className="db-head">
-          <div className="db-head-in">
+      <div style={{ minHeight:"100vh", background:"#0B0E11", color:"#fff", paddingTop:70 }}>
+        <div style={{ maxWidth:1100, margin:"0 auto", padding:"28px 20px" }}>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:24 }}>
             <div>
-              <div className="db-welcome">Welcome back, {user.firstName} 👋</div>
-              <div className="db-welcome-sub">{user.email} · {user.country}</div>
+              <h1 style={{ fontSize:24, fontWeight:800 }}>Investor Dashboard</h1>
+              <p style={{ fontSize:13, color:"rgba(255,255,255,0.4)" }}>Welcome, {session?.user?.name || user?.firstName || "Investor"}</p>
             </div>
-            <div className="db-head-right">
-              {kycApproved && <Link href="/markets" className="db-invest-btn">+ Invest Now</Link>}
-              <button className="db-logout" onClick={logout}>Log Out</button>
+            <div style={{ display:"flex", gap:8 }}>
+              {notifications.unread > 0 && <span style={{ background:"#ef4444", color:"#fff", borderRadius:12, padding:"2px 8px", fontSize:11, fontWeight:700 }}>{notifications.unread} new</span>}
+              <button onClick={() => router.push("/change-password")} style={{ padding:"6px 14px", borderRadius:6, background:"rgba(255,255,255,0.06)", border:"1px solid rgba(255,255,255,0.1)", color:"rgba(255,255,255,0.5)", fontSize:11, cursor:"pointer", fontFamily:"inherit" }}>Password</button>
+              <button onClick={() => signOut({ callbackUrl:"/login" })} style={{ padding:"6px 14px", borderRadius:6, background:"rgba(239,68,68,0.08)", border:"1px solid rgba(239,68,68,0.15)", color:"#ef4444", fontSize:11, cursor:"pointer", fontFamily:"inherit" }}>Sign Out</button>
             </div>
           </div>
-        </div>
 
-        <div className="db-body">
-
-          {/* KYC STATUS BANNER */}
-          {kycPending && (
-            <div className="db-kyc-banner pending">
-              <div>
-                <div className="db-kyc-title" style={{color:"#F0B90B"}}>⚠️ KYC Verification Required</div>
-                <p className="db-kyc-sub">You must complete identity verification before you can invest. This takes 2–5 minutes.</p>
-              </div>
-              <Link href="/kyc" className="db-kyc-btn" style={{background:"#F0B90B",color:"#000"}}>Start Verification →</Link>
-            </div>
-          )}
-          {kycSubmitted && (
-            <div className="db-kyc-banner submitted">
-              <div>
-                <div className="db-kyc-title" style={{color:"#3B82F6"}}>⏳ KYC Under Review</div>
-                <p className="db-kyc-sub">Your documents have been submitted. Verification typically takes 1–2 business days.</p>
-              </div>
-              <span className="db-kyc-btn" style={{background:"rgba(59,130,246,0.1)",color:"#3B82F6",border:"1px solid rgba(59,130,246,0.25)",cursor:"default"}}>Under Review</span>
-            </div>
-          )}
-          {kycApproved && (
-            <div className="db-kyc-banner approved">
-              <div>
-                <div className="db-kyc-title" style={{color:"#0ECB81"}}>✅ KYC Verified — Ready to Invest</div>
-                <p className="db-kyc-sub">Your identity has been verified. You can now invest in any available asset.</p>
-              </div>
-            </div>
-          )}
-
-          {/* TABS */}
-          <div className="db-tabs">
-            {[["overview","Overview"],["portfolio","Portfolio"],["markets","Markets"]].map(([id,lbl]) => (
-              <button key={id} className={`db-tab ${tab===id?"on":""}`} onClick={()=>setTab(id)}>{lbl}</button>
+          <div style={{ display:"flex", gap:4, marginBottom:24, overflowX:"auto", paddingBottom:8 }}>
+            {TABS.map(t => (
+              <button key={t} onClick={() => { setTab(t); if(t==="tax" && !taxData) loadTax(); }} style={{ padding:"7px 16px", borderRadius:7, fontSize:12, fontWeight:600, cursor:"pointer", fontFamily:"inherit", whiteSpace:"nowrap", background:tab===t?"#F0B90B15":"rgba(255,255,255,0.04)", color:tab===t?"#F0B90B":"rgba(255,255,255,0.4)", border:tab===t?"1px solid #F0B90B30":"1px solid rgba(255,255,255,0.06)" }}>
+                {TAB_LABELS[t]}{t==="notifications" && notifications.unread > 0 ? " (" + notifications.unread + ")" : ""}
+              </button>
             ))}
           </div>
 
-          {/* STATS */}
-          <div className="db-stats">
-            <div className="db-stat">
-              <div className="db-stat-v gold">€{totalValue.toLocaleString("de-DE",{minimumFractionDigits:2})}</div>
-              <div className="db-stat-l">Portfolio Value</div>
-            </div>
-            <div className="db-stat">
-              <div className={`db-stat-v ${totalReturn >= 0 ? "green" : "red"}`}>
-                {totalReturn >= 0?"+":""}€{totalReturn.toFixed(2)}
-              </div>
-              <div className="db-stat-l">Total Return</div>
-              <div className={`db-stat-c ${totalReturn >= 0 ? "green" : "red"}`}>{totalReturn >= 0?"+":""}{returnPct}%</div>
-            </div>
-            <div className="db-stat">
-              <div className="db-stat-v" style={{color:"#fff"}}>€{totalInvested.toLocaleString("de-DE",{minimumFractionDigits:2})}</div>
-              <div className="db-stat-l">Total Invested</div>
-            </div>
-            <div className="db-stat">
-              <div className="db-stat-v" style={{color:"#fff"}}>{investments.length}</div>
-              <div className="db-stat-l">Active Investments</div>
-            </div>
-          </div>
+          {msg && <div style={{ background:"rgba(240,185,11,0.08)", border:"1px solid rgba(240,185,11,0.2)", borderRadius:8, padding:"10px 14px", fontSize:13, color:"#F0B90B", marginBottom:16 }}>{msg}</div>}
 
-          {/* QUICK ACTIONS */}
-          <div className="db-actions">
-            {[["🏪","Browse Markets","/markets"],["🔄","Exchange","/exchange"],["📄","Bonds","/bonds"],["📈","IPOs","/equity-ipo"]].map(([ico,lbl,href])=>(
-              <Link key={lbl} href={href} className="db-action">
-                <div className="db-action-ico">{ico}</div>
-                <div className="db-action-lbl">{lbl}</div>
-              </Link>
-            ))}
-          </div>
-
-          {/* OVERVIEW TAB */}
-          {tab === "overview" && (
-            <div className="db-grid">
-              <div className="db-card">
-                <div className="db-card-head">
-                  <div className="db-card-title">My Investments ({investments.length})</div>
-                  <button className="db-card-link" onClick={()=>setTab("portfolio")}>View all →</button>
-                </div>
-                {investments.length === 0 ? (
-                  <div className="db-empty">
-                    No investments yet.{" "}
-                    {kycApproved
-                      ? <Link href="/markets" style={{color:"#F0B90B"}}>Browse markets →</Link>
-                      : <Link href="/kyc" style={{color:"#F0B90B"}}>Complete KYC to invest →</Link>
-                    }
+          {/* PORTFOLIO */}
+          {tab === "portfolio" && <>
+            <div style={{ display:"flex", gap:12, marginBottom:24, flexWrap:"wrap" }}>
+              {card("Total Invested", "EUR " + (st.totalInvested||0).toLocaleString(), "#3b82f6")}
+              {card("Active", st.active||0, "#22c55e")}
+              {card("Earnings", "EUR " + totalEarnings.toLocaleString(), "#F0B90B")}
+              {card("Wallet", "EUR " + (wallet?.available||0).toLocaleString(), "#8b5cf6")}
+            </div>
+            <div style={{ display:"flex", gap:8, marginBottom:16 }}>
+              <button onClick={() => router.push("/marketplace")} style={{ padding:"8px 20px", borderRadius:7, background:"#F0B90B", color:"#000", border:"none", fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>Browse Marketplace</button>
+            </div>
+            <div style={{ background:"#161b22", borderRadius:10, border:"1px solid rgba(255,255,255,0.06)", padding:20 }}>
+              {investments.investments?.length === 0 ? <div style={{ textAlign:"center", color:"rgba(255,255,255,0.3)", padding:20 }}>No investments yet. Visit the marketplace to start.</div>
+              : investments.investments?.map((inv, i) => (
+                <div key={i} style={{ display:"flex", justifyContent:"space-between", padding:"12px 0", borderBottom:"1px solid rgba(255,255,255,0.04)", alignItems:"center" }}>
+                  <div><div style={{ fontSize:14, fontWeight:600 }}>{inv.assetName}</div><div style={{ fontSize:11, color:"rgba(255,255,255,0.3)" }}>{inv.assetType} · {inv.units} units · EUR {inv.pricePerUnit}/unit</div></div>
+                  <div style={{ textAlign:"right", display:"flex", alignItems:"center", gap:8 }}>
+                    <div><div style={{ fontSize:14, fontWeight:700, color:"#F0B90B" }}>EUR {inv.totalInvested?.toLocaleString()}</div>{badge(inv.status)}</div>
+                    {inv.status === "active" && <button onClick={() => doSell(inv)} style={{ padding:"4px 10px", borderRadius:4, background:"rgba(239,68,68,0.1)", border:"1px solid rgba(239,68,68,0.2)", color:"#ef4444", fontSize:10, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}>Sell</button>}
                   </div>
-                ) : investments.slice(0,5).map(i => (
-                  <div key={i.id} className="db-row">
-                    <div className="db-row-l">
-                      <div className="db-row-name">{i.assetSymbol}</div>
-                      <div className="db-row-sub">{i.assetName} · {i.quantity} tokens</div>
-                    </div>
-                    <div>
-                      <div className="db-row-val" style={{color:"#fff"}}>€{(i.currentValue||i.amount).toFixed(2)}</div>
-                      <div className="db-row-chg green">Active</div>
-                    </div>
+                </div>
+              ))}
+            </div>
+          </>}
+
+          {/* INVESTMENTS */}
+          {tab === "bonds" && <>
+            <div style={{ background:"#161b22", borderRadius:10, border:"1px solid rgba(255,255,255,0.06)", overflow:"hidden" }}>
+              <div style={{ display:"grid", gridTemplateColumns:"180px 70px 70px 100px 100px 70px 70px", padding:"10px 16px", background:"rgba(255,255,255,0.03)", fontSize:10, fontWeight:700, color:"rgba(255,255,255,0.3)", textTransform:"uppercase" }}>
+                <span>Asset</span><span>Units</span><span>Yield</span><span>Invested</span><span>Maturity</span><span>Status</span><span>Action</span>
+              </div>
+              {investments.investments?.length === 0 ? <div style={{ padding:30, textAlign:"center", color:"rgba(255,255,255,0.3)" }}>No investments</div>
+              : investments.investments?.map((inv, i) => (
+                <div key={i} style={{ display:"grid", gridTemplateColumns:"180px 70px 70px 100px 100px 70px 70px", padding:"12px 16px", borderBottom:"1px solid rgba(255,255,255,0.04)", fontSize:12, alignItems:"center" }}>
+                  <span style={{ fontWeight:600 }}>{inv.assetName}</span>
+                  <span>{inv.units}</span>
+                  <span style={{ color:"#22c55e" }}>{inv.yieldRate||0}%</span>
+                  <span style={{ fontWeight:600 }}>EUR {inv.totalInvested?.toLocaleString()}</span>
+                  <span style={{ fontSize:10, color:"rgba(255,255,255,0.4)" }}>{inv.maturityDate ? new Date(inv.maturityDate).toLocaleDateString() : "N/A"}</span>
+                  {badge(inv.status)}
+                  <div>{inv.status === "active" && <button onClick={() => doSell(inv)} style={{ padding:"3px 8px", borderRadius:4, background:"rgba(239,68,68,0.1)", border:"1px solid rgba(239,68,68,0.2)", color:"#ef4444", fontSize:9, cursor:"pointer", fontFamily:"inherit" }}>Sell</button>}</div>
+                </div>
+              ))}
+            </div>
+          </>}
+
+          {/* ORDERS */}
+          {tab === "orders" && <>
+            <div style={{ display:"flex", justifyContent:"space-between", marginBottom:12 }}>
+              <h3 style={{ fontSize:15, fontWeight:700 }}>Order History</h3>
+              <button onClick={() => router.push("/marketplace")} style={{ padding:"6px 16px", borderRadius:6, background:"#F0B90B", color:"#000", border:"none", fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>Buy Assets</button>
+            </div>
+            <div style={{ background:"#161b22", borderRadius:10, border:"1px solid rgba(255,255,255,0.06)", overflow:"hidden" }}>
+              <div style={{ display:"grid", gridTemplateColumns:"70px 160px 70px 100px 100px 70px", padding:"10px 16px", background:"rgba(255,255,255,0.03)", fontSize:10, fontWeight:700, color:"rgba(255,255,255,0.3)", textTransform:"uppercase" }}>
+                <span>Type</span><span>Asset</span><span>Units</span><span>Amount</span><span>Date</span><span>Status</span>
+              </div>
+              {orders.length === 0 ? <div style={{ padding:30, textAlign:"center", color:"rgba(255,255,255,0.3)" }}>No orders</div>
+              : orders.map((o, i) => (
+                <div key={i} style={{ display:"grid", gridTemplateColumns:"70px 160px 70px 100px 100px 70px", padding:"12px 16px", borderBottom:"1px solid rgba(255,255,255,0.04)", fontSize:12, alignItems:"center" }}>
+                  <span style={{ fontSize:10, padding:"2px 8px", borderRadius:4, background:o.type==="buy"?"rgba(34,197,94,0.1)":"rgba(239,68,68,0.1)", color:o.type==="buy"?"#22c55e":"#ef4444", fontWeight:700 }}>{o.type}</span>
+                  <span style={{ fontWeight:600 }}>{o.assetName}</span>
+                  <span>{o.units}</span>
+                  <span>EUR {o.totalAmount?.toLocaleString()}</span>
+                  <span style={{ fontSize:10, color:"rgba(255,255,255,0.4)" }}>{new Date(o.createdAt).toLocaleDateString()}</span>
+                  {badge(o.status)}
+                </div>
+              ))}
+            </div>
+          </>}
+
+          {/* EARNINGS */}
+          {tab === "earnings" && <>
+            <div style={{ display:"flex", gap:12, marginBottom:24 }}>
+              {card("Total Earnings", "EUR " + totalEarnings.toLocaleString(), "#F0B90B")}
+            </div>
+            <div style={{ background:"#161b22", borderRadius:10, border:"1px solid rgba(255,255,255,0.06)", overflow:"hidden" }}>
+              <div style={{ display:"grid", gridTemplateColumns:"180px 100px 100px 180px", padding:"10px 16px", background:"rgba(255,255,255,0.03)", fontSize:10, fontWeight:700, color:"rgba(255,255,255,0.3)", textTransform:"uppercase" }}>
+                <span>Asset</span><span>Amount</span><span>Date</span><span>TX Hash</span>
+              </div>
+              {investments.investments?.flatMap(inv => (inv.earnings||[]).map(e => ({...e, assetName: inv.assetName}))).length === 0 ?
+                <div style={{ padding:30, textAlign:"center", color:"rgba(255,255,255,0.3)" }}>No earnings yet</div>
+              : investments.investments?.flatMap(inv => (inv.earnings||[]).map(e => ({...e, assetName: inv.assetName}))).map((e, i) => (
+                <div key={i} style={{ display:"grid", gridTemplateColumns:"180px 100px 100px 180px", padding:"12px 16px", borderBottom:"1px solid rgba(255,255,255,0.04)", fontSize:12, alignItems:"center" }}>
+                  <span style={{ fontWeight:600 }}>{e.assetName}</span>
+                  <span style={{ color:"#22c55e", fontWeight:700 }}>+EUR {e.amount?.toFixed(2)}</span>
+                  <span style={{ fontSize:10, color:"rgba(255,255,255,0.4)" }}>{new Date(e.date).toLocaleDateString()}</span>
+                  <span style={{ fontSize:10, color:"rgba(255,255,255,0.3)", fontFamily:"monospace" }}>{e.txHash?.slice(0,20)}...</span>
+                </div>
+              ))}
+            </div>
+          </>}
+
+          {/* WALLET */}
+          {tab === "wallet" && <>
+            <div style={{ display:"flex", gap:12, marginBottom:16, flexWrap:"wrap" }}>
+              {card("Available", "EUR " + (wallet?.available||0).toLocaleString(), "#22c55e")}
+              {card("Locked", "EUR " + (wallet?.locked||0).toLocaleString(), "#f59e0b")}
+              {card("Earnings", "EUR " + (wallet?.earnings||0).toLocaleString(), "#F0B90B")}
+            </div>
+            <div style={{ display:"flex", gap:8, marginBottom:16, flexWrap:"wrap", alignItems:"center" }}>
+              <input type="number" value={depositAmt} onChange={e => setDepositAmt(e.target.value)} placeholder="Amount" style={{ width:120, background:"#161B22", border:"1px solid rgba(255,255,255,0.1)", borderRadius:6, padding:"8px 12px", color:"#fff", fontSize:13, outline:"none", fontFamily:"inherit" }} />
+              <button onClick={() => doWallet("deposit", depositAmt)} style={{ padding:"8px 16px", borderRadius:6, background:"rgba(34,197,94,0.1)", border:"1px solid rgba(34,197,94,0.2)", color:"#22c55e", fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>Deposit</button>
+              <input type="number" value={withdrawAmt} onChange={e => setWithdrawAmt(e.target.value)} placeholder="Amount" style={{ width:120, background:"#161B22", border:"1px solid rgba(255,255,255,0.1)", borderRadius:6, padding:"8px 12px", color:"#fff", fontSize:13, outline:"none", fontFamily:"inherit" }} />
+              <button onClick={() => doWallet("withdraw", withdrawAmt)} style={{ padding:"8px 16px", borderRadius:6, background:"rgba(239,68,68,0.08)", border:"1px solid rgba(239,68,68,0.15)", color:"#ef4444", fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>Withdraw</button>
+              <button onClick={() => router.push("/marketplace")} style={{ padding:"8px 16px", borderRadius:6, background:"rgba(240,185,11,0.08)", border:"1px solid rgba(240,185,11,0.15)", color:"#F0B90B", fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>Marketplace</button>
+            </div>
+            <div style={{ background:"#161b22", borderRadius:10, border:"1px solid rgba(255,255,255,0.06)", overflow:"hidden" }}>
+              {(wallet?.transactions||[]).length === 0 ? <div style={{ padding:30, textAlign:"center", color:"rgba(255,255,255,0.3)" }}>No transactions</div>
+              : (wallet?.transactions||[]).map((t, i) => (
+                <div key={i} style={{ padding:"12px 16px", borderBottom:"1px solid rgba(255,255,255,0.04)", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                  <div><div style={{ fontSize:13, fontWeight:600 }}>{t.description || t.type}</div><div style={{ fontSize:10, color:"rgba(255,255,255,0.3)" }}>{new Date(t.createdAt).toLocaleString()}{t.txHash ? " · " + t.txHash.slice(0,16) + "..." : ""}</div></div>
+                  <div style={{ fontSize:14, fontWeight:700, color:["deposit","profit_distribution","sell"].includes(t.type)?"#22c55e":"#ef4444" }}>
+                    {t.amount > 0 ? "+" : ""}EUR {Math.abs(t.amount).toLocaleString()}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>}
+
+          {/* KYC */}
+          {tab === "kyc" && <>
+            <div style={{ background:"#161b22", borderRadius:10, border:"1px solid rgba(255,255,255,0.06)", padding:30, textAlign:"center" }}>
+              {user?.kycStatus === "approved" ? <>
+                <div style={{ fontSize:48 }}>✅</div>
+                <div style={{ fontSize:16, fontWeight:700, color:"#22c55e", marginTop:8 }}>KYC Verified</div>
+                <div style={{ fontSize:12, color:"rgba(255,255,255,0.4)", marginTop:4 }}>You can invest in all assets.</div>
+              </> : <>
+                <div style={{ fontSize:48 }}>🪪</div>
+                <div style={{ fontSize:16, fontWeight:700, color:"#f59e0b", marginTop:8 }}>Verification {user?.kycStatus === "pending" ? "Pending" : "Required"}</div>
+                <div style={{ fontSize:12, color:"rgba(255,255,255,0.4)", marginTop:4, marginBottom:16 }}>Complete KYC to start investing.</div>
+                <button onClick={() => router.push("/kyc")} style={{ padding:"10px 24px", background:"#F0B90B", color:"#000", border:"none", borderRadius:8, fontSize:14, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>Start Verification</button>
+              </>}
+            </div>
+          </>}
+
+          {/* TAX */}
+          {tab === "tax" && <>
+            <h3 style={{ fontSize:15, fontWeight:700, marginBottom:12 }}>Tax Report — {new Date().getFullYear()}</h3>
+            {!taxData ? <div style={{ textAlign:"center", padding:20, color:"rgba(255,255,255,0.3)" }}>Loading tax data...</div> : (
+              <div style={{ background:"#161b22", borderRadius:10, border:"1px solid rgba(255,255,255,0.06)", padding:20 }}>
+                {[
+                  { l: "Total Bought", v: "EUR " + (taxData.summary?.totalBought||0).toLocaleString() },
+                  { l: "Total Sold", v: "EUR " + (taxData.summary?.totalSold||0).toLocaleString() },
+                  { l: "Capital Gains", v: "EUR " + (taxData.summary?.capitalGains||0).toLocaleString(), c: (taxData.summary?.capitalGains||0) >= 0 ? "#22c55e" : "#ef4444" },
+                  { l: "Earnings (Distributions)", v: "EUR " + (taxData.summary?.totalEarnings||0).toLocaleString(), c: "#F0B90B" },
+                  { l: "Total Fees Paid", v: "EUR " + (taxData.summary?.totalFees||0).toLocaleString() },
+                  { l: "Net Income", v: "EUR " + (taxData.summary?.netIncome||0).toLocaleString(), c: "#F0B90B" },
+                ].map((r,i) => (
+                  <div key={i} style={{ display:"flex", justifyContent:"space-between", padding:"10px 0", borderBottom:"1px solid rgba(255,255,255,0.04)" }}>
+                    <span style={{ fontSize:13, color:"rgba(255,255,255,0.5)" }}>{r.l}</span>
+                    <span style={{ fontSize:14, fontWeight:700, color:r.c || "#fff" }}>{r.v}</span>
                   </div>
                 ))}
+                <p style={{ fontSize:11, color:"rgba(255,255,255,0.3)", marginTop:12 }}>This is for informational purposes only. Consult a tax professional.</p>
               </div>
+            )}
+          </>}
 
-              <div>
-                <div className="db-card">
-                  <div className="db-card-head">
-                    <div className="db-card-title">Available Markets</div>
-                    <Link href="/markets" className="db-card-link">All →</Link>
-                  </div>
-                  {MARKET_DATA.slice(0,3).map(m => (
-                    <div key={m.id} className="db-row">
-                      <span style={{fontSize:18,flexShrink:0}}>{m.emoji}</span>
-                      <div className="db-row-l">
-                        <div className="db-row-name">{m.title}</div>
-                        <div className="db-row-sub">From €{m.min}</div>
-                      </div>
-                      <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4}}>
-                        <div className="db-row-val gold">{m.roi}%</div>
-                        <button
-                          className="db-invest-row-btn"
-                          disabled={!kycApproved}
-                          onClick={() => { setInvestModal(m); setInvestAmount(String(m.min)); }}
-                          title={!kycApproved ? "Complete KYC to invest" : "Invest"}
-                        >
-                          {kycApproved ? "Invest" : "🔒 KYC"}
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+          {/* NOTIFICATIONS */}
+          {tab === "notifications" && <>
+            <div style={{ display:"flex", justifyContent:"space-between", marginBottom:12 }}>
+              <h3 style={{ fontSize:15, fontWeight:700 }}>Notifications ({notifications.unread} unread)</h3>
+              <button onClick={() => markRead()} style={{ padding:"6px 14px", borderRadius:6, background:"rgba(255,255,255,0.06)", border:"1px solid rgba(255,255,255,0.1)", color:"rgba(255,255,255,0.4)", fontSize:11, cursor:"pointer", fontFamily:"inherit" }}>Mark all read</button>
             </div>
-          )}
-
-          {/* PORTFOLIO TAB */}
-          {tab === "portfolio" && (
-            <div className="db-card">
-              <div className="db-card-head">
-                <div className="db-card-title">All Investments ({investments.length})</div>
-                {kycApproved && <Link href="/markets" className="db-card-link">+ New Investment</Link>}
-              </div>
-              {investments.length === 0 ? (
-                <div className="db-empty">
-                  {kycApproved
-                    ? <><Link href="/markets" style={{color:"#F0B90B"}}>Browse markets</Link> to make your first investment.</>
-                    : <>Complete <Link href="/kyc" style={{color:"#F0B90B"}}>KYC verification</Link> to start investing.</>
-                  }
-                </div>
-              ) : investments.map(i => (
-                <div key={i.id} className="db-row" style={{flexDirection:"column",alignItems:"flex-start",gap:6}}>
-                  <div style={{display:"flex",justifyContent:"space-between",width:"100%"}}>
-                    <div>
-                      <div className="db-row-name">{i.assetName}</div>
-                      <div className="db-row-sub">{i.quantity} tokens @ €{i.tokenPrice?.toFixed(2)} · {new Date(i.createdAt).toLocaleDateString("en-GB")}</div>
-                    </div>
-                    <div>
-                      <div className="db-row-val" style={{color:"#fff"}}>€{(i.currentValue||i.amount).toFixed(2)}</div>
-                      <div className="db-row-chg green">{i.status}</div>
-                    </div>
+            <div style={{ background:"#161b22", borderRadius:10, border:"1px solid rgba(255,255,255,0.06)", overflow:"hidden" }}>
+              {notifications.notifications?.length === 0 ? <div style={{ padding:30, textAlign:"center", color:"rgba(255,255,255,0.3)" }}>No notifications</div>
+              : notifications.notifications?.map((n, i) => (
+                <div key={i} onClick={() => !n.read && markRead(n._id)} style={{ padding:"14px 16px", borderBottom:"1px solid rgba(255,255,255,0.04)", background:n.read?"transparent":"rgba(240,185,11,0.03)", cursor:"pointer" }}>
+                  <div style={{ display:"flex", justifyContent:"space-between" }}>
+                    <span style={{ fontSize:14, fontWeight:n.read?400:700 }}>{n.title}</span>
+                    <span style={{ fontSize:10, color:"rgba(255,255,255,0.3)" }}>{new Date(n.createdAt).toLocaleString()}</span>
                   </div>
-                  <div style={{width:"100%"}}>
-                    <div className="db-prog"><div className="db-prog-fill" style={{width:"100%"}} /></div>
-                  </div>
+                  <div style={{ fontSize:12, color:"rgba(255,255,255,0.4)", marginTop:4 }}>{n.message}</div>
                 </div>
               ))}
             </div>
-          )}
-
-          {/* MARKETS TAB */}
-          {tab === "markets" && (
-            <div className="db-card">
-              <div className="db-card-head">
-                <div className="db-card-title">Available Assets ({MARKET_DATA.length})</div>
-                <Link href="/markets" className="db-card-link">Full page →</Link>
-              </div>
-              {MARKET_DATA.map(m => (
-                <div key={m.id} className="db-row">
-                  <span style={{fontSize:20,flexShrink:0}}>{m.emoji}</span>
-                  <div className="db-row-l">
-                    <div className="db-row-name">{m.title}</div>
-                    <div className="db-row-sub">📍 {m.location} · Min €{m.min} · €{m.price}/token</div>
-                    <div className="db-prog" style={{width:"55%"}}>
-                      <div className="db-prog-fill" style={{width:Math.round(m.raised/m.target*100)+"%"}} />
-                    </div>
-                  </div>
-                  <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:6}}>
-                    <div className="db-row-val gold">{m.roi}% ROI</div>
-                    <button
-                      className="db-invest-row-btn"
-                      disabled={!kycApproved}
-                      onClick={() => { setInvestModal(m); setInvestAmount(String(m.min)); }}
-                      title={!kycApproved ? "Complete KYC to invest" : `Invest in ${m.title}`}
-                    >
-                      {kycApproved ? "Invest →" : "🔒 KYC Required"}
-                    </button>
-                  </div>
-                </div>
-              ))}
-              {!kycApproved && (
-                <div style={{padding:"16px 18px",borderTop:"1px solid rgba(255,255,255,0.06)",fontSize:13,color:"rgba(255,255,255,0.35)",textAlign:"center"}}>
-                  <Link href="/kyc" style={{color:"#F0B90B",textDecoration:"none"}}>Complete KYC verification</Link> to unlock investing
-                </div>
-              )}
-            </div>
-          )}
-
+          </>}
         </div>
       </div>
-
-      {/* INVEST MODAL */}
-      {investModal && (
-        <div className="inv-overlay" onClick={e => { if(e.target===e.currentTarget){setInvestModal(null);setInvestMsg("");} }}>
-          <div className="inv-modal">
-            <div style={{fontSize:28,marginBottom:10}}>{investModal.emoji}</div>
-            <div className="inv-title">{investModal.title}</div>
-            <p className="inv-sub">📍 {investModal.location} · {investModal.roi}% Target ROI · Min €{investModal.min}</p>
-
-            <label className="inv-label">Investment Amount (EUR)</label>
-            <input
-              className="inv-input"
-              type="number"
-              min={investModal.min}
-              step="50"
-              value={investAmount}
-              onChange={e => setInvestAmount(e.target.value)}
-              placeholder={`Min €${investModal.min}`}
-            />
-            <div className="inv-hint">
-              ≈ {investAmount ? Math.floor(parseFloat(investAmount)/investModal.price) : 0} tokens @ €{investModal.price}/token
-            </div>
-
-            {investMsg && (
-              <div className={`inv-msg ${investMsg.startsWith("✅")?"ok":"err"}`}>{investMsg}</div>
-            )}
-
-            <div className="inv-btns">
-              <button className="inv-btn cancel" onClick={() => { setInvestModal(null); setInvestMsg(""); }}>Cancel</button>
-              <button
-                className="inv-btn confirm"
-                disabled={investLoading || !investAmount || parseFloat(investAmount) < investModal.min}
-                onClick={handleInvest}
-              >
-                {investLoading ? <><span className="inv-spin"/>Investing...</> : `Invest €${investAmount||"0"} →`}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <Footer />
     </>
   );
 }

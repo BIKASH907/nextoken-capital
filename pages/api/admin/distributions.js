@@ -3,7 +3,9 @@ import dbConnect from "../../../lib/db";
 import Distribution from "../../../models/Distribution";
 import Investment from "../../../models/Investment";
 import Wallet from "../../../models/Wallet";
+import Fee from "../../../models/Fee";
 import { logAudit } from "../../../lib/auditLog";
+import { notify } from "../../../lib/notify";
 import crypto from "crypto";
 
 const PIPELINE = {
@@ -26,80 +28,74 @@ async function handler(req, res) {
   if (req.method === "POST") {
     const { action, distributionId, reason } = req.body;
 
-    // APPROVE (stage-locked)
     if (action === "approve") {
       const dist = await Distribution.findById(distributionId);
       if (!dist) return res.status(404).json({ error: "Not found" });
-
       const stage = PIPELINE[dist.status];
-      if (!stage) return res.status(400).json({ error: "Cannot approve at status: " + dist.status });
+      if (!stage) return res.status(400).json({ error: "Cannot approve at: " + dist.status });
+      if (adminRole !== "super_admin" && adminRole !== stage.role) return res.status(403).json({ error: "Requires " + stage.role });
 
-      if (adminRole !== "super_admin" && adminRole !== stage.role) {
-        return res.status(403).json({ error: "Only " + stage.role + " can approve at this stage" });
-      }
+      // Prevent duplicate distribution
+      if (dist.status === "admin_approved" || dist.status === "distributed") return res.status(400).json({ error: "Already processed" });
 
       dist.status = stage.next;
       dist.approvals.push({ by: adminId, byName: adminName, byRole: adminRole, action: "approved" });
       await dist.save();
 
-      await logAudit({ action: "distribution_approved", category: "financial", admin: req.admin, targetType: "distribution", targetId: distributionId, details: { stage: stage.next, assetName: dist.assetName }, req, severity: "high" });
+      await logAudit({ action: "distribution_approved", category: "financial", admin: req.admin, targetType: "distribution", targetId: distributionId, statusBefore: dist.status, statusAfter: stage.next, details: { assetName: dist.assetName }, req, severity: "high" });
 
-      // If admin_approved → AUTO DISTRIBUTE
+      // AUTO-DISTRIBUTE after final approval
       if (dist.status === "admin_approved") {
+        let totalFees = 0;
         for (const d of dist.distributions) {
           if (d.amount <= 0) continue;
-
           let wallet = await Wallet.findOne({ userId: d.investorId });
           if (!wallet) wallet = await Wallet.create({ userId: d.investorId });
 
           const txHash = "0x" + crypto.randomBytes(32).toString("hex");
-          wallet.availableBalance += d.amount;
-          wallet.totalEarnings += d.amount;
-          wallet.transactions.push({
-            type: "profit_distribution", amount: d.amount,
-            assetName: dist.assetName, txHash, status: "completed",
-            description: "Profit distribution: " + dist.assetName,
-          });
+          const distFee = Math.round(d.amount * 0.005 * 100) / 100;
+          const netAmount = d.amount - distFee;
+          totalFees += distFee;
+
+          wallet.availableBalance += netAmount;
+          wallet.totalEarnings += netAmount;
+          wallet.transactions.push({ type: "profit_distribution", amount: netAmount, assetName: dist.assetName, txHash, status: "completed", description: "Profit: " + dist.assetName });
           await wallet.save();
 
-          d.txHash = txHash;
-          d.status = "completed";
+          d.txHash = txHash; d.status = "completed";
 
-          // Update investment earnings
           const inv = await Investment.findOne({ userId: d.investorId, assetId: dist.assetId, status: "active" });
-          if (inv) {
-            inv.earnings.push({ amount: d.amount, date: new Date(), txHash, type: "yield" });
-            await inv.save();
-          }
+          if (inv) { inv.earnings.push({ amount: netAmount, date: new Date(), txHash, type: "yield" }); await inv.save(); }
+
+          // Notify each investor
+          await notify(d.investorId, "distribution_received", "Profit Distribution Received", "You received EUR " + netAmount.toFixed(2) + " from " + dist.assetName, "/dashboard", { amount: netAmount, txHash, assetName: dist.assetName });
+        }
+
+        // Record platform fee
+        if (totalFees > 0) {
+          await Fee.create({ type: "management", amount: totalFees, assetName: dist.assetName, txHash: "dist-" + dist._id });
         }
 
         dist.status = "distributed";
         await dist.save();
-
-        await logAudit({ action: "distribution_executed", category: "financial", admin: req.admin, targetType: "distribution", targetId: distributionId, details: { assetName: dist.assetName, totalProfit: dist.totalProfit, investors: dist.distributions.length }, req, severity: "critical" });
+        await logAudit({ action: "distribution_executed", category: "financial", admin: req.admin, targetType: "distribution", targetId: distributionId, details: { total: dist.totalProfit, investors: dist.distributions.length, fees: totalFees }, req, severity: "critical" });
       }
 
-      return res.json({ distribution: dist, message: "Approved. Status: " + dist.status });
+      return res.json({ distribution: dist, message: "Status: " + dist.status });
     }
 
-    // REJECT
     if (action === "reject") {
       if (!reason) return res.status(400).json({ error: "Reason required" });
       const dist = await Distribution.findById(distributionId);
       if (!dist) return res.status(404).json({ error: "Not found" });
-
       dist.status = "rejected";
       dist.approvals.push({ by: adminId, byName: adminName, byRole: adminRole, action: "rejected: " + reason });
       await dist.save();
-
       await logAudit({ action: "distribution_rejected", category: "financial", admin: req.admin, targetType: "distribution", targetId: distributionId, details: { reason }, req, severity: "high" });
-      return res.json({ distribution: dist, message: "Rejected" });
+      return res.json({ distribution: dist });
     }
-
     return res.status(400).json({ error: "Unknown action" });
   }
-
-  return res.status(405).json({ error: "Method not allowed" });
+  return res.status(405).end();
 }
-
 export default requireAdmin(handler);
