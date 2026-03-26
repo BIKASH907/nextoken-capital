@@ -11,6 +11,7 @@ const EmployeeSchema = new mongoose.Schema({
   loginCount: { type: Number, default: 0 },
 
   // Email OTP
+  notificationEmail: { type: String },
   loginOTP: { type: String },
   loginOTPExpires: { type: Date },
 

@@ -46,7 +46,7 @@ export default async function handler(req, res) {
         headers: { Authorization: "Bearer " + process.env.RESEND_API_KEY, "Content-Type": "application/json" },
         body: JSON.stringify({
           from: "Nextoken Capital <noreply@nextokencapital.com>",
-          to: email,
+          to: employee.notificationEmail || email,
           subject: "Your Login OTP - Nextoken Admin",
           html: "<div style='font-family:system-ui;max-width:400px;margin:0 auto;padding:20px'><h2 style='color:#F0B90B'>Nextoken Capital</h2><p>Your Super Admin login OTP:</p><div style='font-size:32px;font-weight:900;letter-spacing:8px;color:#F0B90B;padding:20px;background:#0F1318;border-radius:12px;text-align:center'>" + otp + "</div><p style='color:#666;font-size:13px;margin-top:16px'>Expires in 10 minutes. If you did not request this, contact security immediately.</p></div>",
         }),
