@@ -380,22 +380,6 @@ export default function RegisterPage() {
               <p className="rg-sub">Required under EU AML/KYC regulation (AMLD6).</p>
               <div className="rg-row">
                 
-            <div className="rg-field">
-                  <label className="rg-label">First Name</label>
-                  <input className="rg-input" name="firstName" value={form.firstName} onChange={handle} placeholder="First name" autoComplete="given-name" />
-                </div>
-                <div className="rg-field">
-                  <label className="rg-label">Last Name</label>
-                  <input className="rg-input" name="lastName" value={form.lastName} onChange={handle} placeholder="Last name" autoComplete="family-name" />
-                </div>
-              </div>
-              <div className="rg-field">
-                <label className="rg-label">Country of Residence</label>
-                <select className="rg-input" name="country" value={form.country} onChange={handle} style={{appearance:"none",cursor:"pointer"}}>
-                  <option value="">Select your country...</option>
-                  {COUNTRIES.map(c => (
-                    <option key={c.code} value={c.name}>{c.name} ({c.dial})</option>
-                  ))}
                 </select>
               </div>
               <div className="rg-field">
