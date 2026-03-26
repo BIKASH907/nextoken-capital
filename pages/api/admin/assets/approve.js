@@ -1,6 +1,6 @@
 import { requireAdmin } from "../../../../lib/adminAuth";
 import dbConnect from "../../../../lib/db";
-import Asset from "../../../../models/Asset";
+import Asset from "../../../../lib/models/Asset";
 import { logAudit } from "../../../../lib/auditLog";
 
 const PIPELINE = {
