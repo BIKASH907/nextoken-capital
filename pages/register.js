@@ -168,7 +168,7 @@ export default function RegisterPage() {
         }),
       });
       const data = await res.json();
-      if (res.ok && data.success) {
+      if (res.ok && (data.success || data.user)) {
         setStep(3);
       } else {
         setError(data.error || "Registration failed. Please try again.");
