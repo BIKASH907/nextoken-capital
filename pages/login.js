@@ -68,7 +68,7 @@ export default function LoginPage() {
       <Navbar />
 
       <style>{`
-        .li-page{min-height:100vh;background:#0B0E11;padding:80px 20px 40px;display:flex;align-items:flex-start;justify-content:center;gap:32px}
+        .li-page{flex-wrap:wrap;min-height:100vh;background:#0B0E11;padding:80px 20px 40px;display:flex;align-items:flex-start;justify-content:center;gap:32px}
         .li-left{width:280px;flex-shrink:0;position:sticky;top:84px;display:flex;flex-direction:column;gap:16px}
         .li-brand{background:#0F1318;border:1px solid rgba(240,185,11,0.15);border-radius:14px;padding:22px}
         .li-brand-logo{display:flex;align-items:center;gap:10px;margin-bottom:14px}
