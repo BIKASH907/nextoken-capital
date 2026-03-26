@@ -154,7 +154,7 @@ export default function Navbar() {
   const shortAddr = wallet ? wallet.slice(0, 6) + "..." + wallet.slice(-4) : null;
 
   const links = [
-    { href: "/markets",    label: "Markets" },
+    { href: "/marketplace",    label: "Markets" },
     { href: "/exchange",   label: "Exchange" },
     { href: "/bonds",      label: "Bonds" },
     { href: "/equity-ipo", label: "Equity & IPO" },
