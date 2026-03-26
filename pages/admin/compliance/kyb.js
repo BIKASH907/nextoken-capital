@@ -35,7 +35,7 @@ export default function KYBQueue() {
 
       {/* Navigate to KYC */}
       <div style={{ display:"flex", gap:12, marginBottom:20 }}>
-        <button onClick={() => router.push("/admin/kyc")} style={{ background:"rgba(59,130,246,0.08)", border:"1px solid rgba(59,130,246,0.2)", borderRadius:8, padding:"10px 18px", color:"#3b82f6", fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>
+        <button onClick={() => router.push("/admin/compliance/kyc")} style={{ background:"rgba(59,130,246,0.08)", border:"1px solid rgba(59,130,246,0.2)", borderRadius:8, padding:"10px 18px", color:"#3b82f6", fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>
           🪪 Switch to KYC (Individual Verification) →
         </button>
       </div>
