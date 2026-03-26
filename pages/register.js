@@ -380,22 +380,6 @@ export default function RegisterPage() {
               <p className="rg-sub">Required under EU AML/KYC regulation (AMLD6).</p>
               <div className="rg-row">
                 
-            {/* ROLE SELECTOR */}
-            <div style={{marginBottom:16}}>
-              <label style={{display:"block",fontSize:12,fontWeight:700,color:"rgba(255,255,255,0.4)",marginBottom:8,textTransform:"uppercase",letterSpacing:1}}>I want to</label>
-              <div style={{display:"flex",gap:10}}>
-                <button type="button" onClick={()=>setForm({...form,role:"investor"})} style={{flex:1,padding:"14px 12px",borderRadius:10,cursor:"pointer",fontFamily:"inherit",fontSize:14,fontWeight:700,textAlign:"center",background:form.role==="investor"?"rgba(240,185,11,0.12)":"#161B22",color:form.role==="investor"?"#F0B90B":"rgba(255,255,255,0.4)",border:form.role==="investor"?"2px solid #F0B90B":"2px solid rgba(255,255,255,0.08)",transition:"all .15s"}}>
-                  <div style={{fontSize:24,marginBottom:4}}>💰</div>
-                  Invest in Assets
-                  <div style={{fontSize:10,fontWeight:400,color:"rgba(255,255,255,0.3)",marginTop:4}}>Buy tokenized bonds, equity, real estate</div>
-                </button>
-                <button type="button" onClick={()=>setForm({...form,role:"issuer"})} style={{flex:1,padding:"14px 12px",borderRadius:10,cursor:"pointer",fontFamily:"inherit",fontSize:14,fontWeight:700,textAlign:"center",background:form.role==="issuer"?"rgba(139,92,246,0.12)":"#161B22",color:form.role==="issuer"?"#8b5cf6":"rgba(255,255,255,0.4)",border:form.role==="issuer"?"2px solid #8b5cf6":"2px solid rgba(255,255,255,0.08)",transition:"all .15s"}}>
-                  <div style={{fontSize:24,marginBottom:4}}>🏗️</div>
-                  Tokenize My Assets
-                  <div style={{fontSize:10,fontWeight:400,color:"rgba(255,255,255,0.3)",marginTop:4}}>List bonds, real estate, equity for investors</div>
-                </button>
-              </div>
-            </div>
             <div className="rg-field">
                   <label className="rg-label">First Name</label>
                   <input className="rg-input" name="firstName" value={form.firstName} onChange={handle} placeholder="First name" autoComplete="given-name" />
