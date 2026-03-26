@@ -6,7 +6,7 @@ export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
   await dbConnect();
-  const { email, otp, securityAnswer, newSecurityQuestion, newSecurityAnswer } = req.body;
+  const { email, otp, securityAnswer, securityQuestions } = req.body;
 
   if (!email || !otp) return res.status(400).json({ error: "Email and OTP required" });
 
@@ -21,17 +21,31 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: "OTP expired. Please request a new one." });
   }
 
-  // If setting security question for first time
-  if (newSecurityQuestion && newSecurityAnswer) {
-    employee.securityQuestion = newSecurityQuestion;
-    employee.securityAnswer = newSecurityAnswer.toLowerCase().trim();
-  }
-  // If verifying existing security question
-  else if (employee.securityQuestion && employee.securityAnswer) {
-    if (!securityAnswer) {
-      return res.status(400).json({ error: "Security answer required", securityQuestion: employee.securityQuestion });
+  // FIRST LOGIN: Set all security questions
+  if (!employee.securitySetupDone && securityQuestions) {
+    if (!Array.isArray(securityQuestions) || securityQuestions.length < 3) {
+      return res.status(400).json({ error: "At least 3 security questions required" });
     }
-    if (securityAnswer.toLowerCase().trim() !== employee.securityAnswer) {
+    for (const qa of securityQuestions) {
+      if (!qa.question || !qa.answer || !qa.answer.trim()) {
+        return res.status(400).json({ error: "All questions must have answers" });
+      }
+    }
+    employee.securityQuestions = securityQuestions.map(qa => ({
+      question: qa.question,
+      answer: qa.answer.toLowerCase().trim(),
+    }));
+    employee.securitySetupDone = true;
+    employee.lastQuestionIndex = -1;
+  }
+  // SUBSEQUENT LOGIN: Verify security answer
+  else if (employee.securitySetupDone && employee.securityQuestions?.length > 0) {
+    if (!securityAnswer) {
+      return res.status(400).json({ error: "Security answer required" });
+    }
+    const qIndex = employee.lastQuestionIndex ?? 0;
+    const expected = employee.securityQuestions[qIndex]?.answer;
+    if (!expected || securityAnswer.toLowerCase().trim() !== expected) {
       return res.status(401).json({ error: "Incorrect security answer" });
     }
   }
@@ -43,7 +57,6 @@ export default async function handler(req, res) {
   employee.loginCount = (employee.loginCount || 0) + 1;
   await employee.save();
 
-  // Generate JWT
   const token = jwt.sign(
     { id: employee._id, email: employee.email, role: employee.role, firstName: employee.firstName },
     process.env.JWT_SECRET,

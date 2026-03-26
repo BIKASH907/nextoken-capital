@@ -1,5 +1,10 @@
 import mongoose from "mongoose";
 
+const SecurityQASchema = new mongoose.Schema({
+  question: { type: String, required: true },
+  answer: { type: String, required: true },
+}, { _id: false });
+
 const EmployeeSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true, lowercase: true },
   password: { type: String, required: true },
@@ -10,12 +15,18 @@ const EmployeeSchema = new mongoose.Schema({
   lastLogin: { type: Date },
   loginCount: { type: Number, default: 0 },
 
+  // Multiple security questions (all set on first login)
+  securityQuestions: [SecurityQASchema],
+  securitySetupDone: { type: Boolean, default: false },
+
+  // Which question index was last asked (for rotation)
+  lastQuestionIndex: { type: Number, default: -1 },
+
   // Email OTP
-  notificationEmail: { type: String },
   loginOTP: { type: String },
   loginOTPExpires: { type: Date },
 
-  // Security Question
+  // Legacy fields (keep for backward compat)
   securityQuestion: { type: String },
   securityAnswer: { type: String },
 }, { timestamps: true });
