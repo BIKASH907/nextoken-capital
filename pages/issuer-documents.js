@@ -87,7 +87,7 @@ export default function IssuerDocuments() {
   const visBadge = (v) => { const c = { public: "#22c55e", investors_only: "#3b82f6", admin_only: "#f59e0b" }; const l = { public: "Public", investors_only: "Investors", admin_only: "Admin" }; return <span style={{ fontSize: 9, padding: "2px 6px", borderRadius: 3, background: (c[v] || "#666") + "15", color: c[v] || "#666", fontWeight: 600 }}>{l[v] || v}</span>; };
   const inp = { background: "#0a0e14", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, padding: "8px 12px", color: "#fff", fontSize: 13, outline: "none", fontFamily: "inherit", width: "100%", boxSizing: "border-box" };
 
-  if (!session) { router.push("/login"); return null; }
+  if (typeof window === "undefined") return null; if (!session) { router.push("/login"); return null; }
 
   return (
     <>
