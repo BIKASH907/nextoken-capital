@@ -9,7 +9,7 @@ export default async function handler(req, res) {
   await connectDB();
   const user = await getAuthUser(req, res);
   if (!user) return res.status(401).json({ error: "Please login" });
-  if (user.role !== "issuer") return res.status(403).json({ error: "Issuer access only" });
+  if (user.accountType !== "issuer" && user.role !== "issuer") return res.status(403).json({ error: "Issuer access only" });
 
   const assets = await Asset.find({ issuerId: user._id }).lean();
   const assetIds = assets.map(a => a._id);
