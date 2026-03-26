@@ -7,9 +7,10 @@ async function handler(req, res) {
   await connectDB();
 
   if (req.method === "GET") {
-    const { kyc, page = 1, limit = 50, search } = req.query;
+    const { kyc, page = 1, limit = 50, search, accountType } = req.query;
     const filter = {};
     if (kyc) filter.kycStatus = kyc;
+    if (accountType) filter.accountType = accountType;
     if (search) filter.$or = [
       { email: { $regex: search, $options: "i" } },
       { firstName: { $regex: search, $options: "i" } },
