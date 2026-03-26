@@ -13,7 +13,6 @@ export default async function handler(req, res) {
   if (!session?.user?.email) return res.status(401).json({ error: "Not authenticated" });
   const user = await User.findOne({ email: session.user.email });
   if (!user) return res.status(404).json({ error: "User not found" });
-
   const { action, assetId, totalProfit, proofDocUrl } = req.body;
   if (action === "create") {
     if (!assetId || !totalProfit) return res.status(400).json({ error: "Asset and profit required" });
