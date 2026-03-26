@@ -3,15 +3,12 @@ import User from "../../../lib/models/User";
 import Investment from "../../../models/Investment";
 import Order from "../../../models/Order";
 import Wallet from "../../../models/Wallet";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "../auth/[...nextauth]";
+import { getAuthUser } from "../../../lib/getUser";
 
 export default async function handler(req, res) {
   await connectDB();
-  const session = await getServerSession(req, res, authOptions);
-  if (!session?.user?.email) return res.status(401).json({ error: "Not authenticated" });
-  const user = await User.findOne({ email: session.user.email });
-  if (!user) return res.status(404).json({ error: "User not found" });
+  const user = await getAuthUser(req, res);
+  if (!user) return res.status(401).json({ error: "Please login" });
 
   const { year } = req.query;
   const y = parseInt(year) || new Date().getFullYear();

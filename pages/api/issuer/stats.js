@@ -3,15 +3,12 @@ import User from "../../../lib/models/User";
 import Asset from "../../../lib/models/Asset";
 import Investment from "../../../models/Investment";
 import Distribution from "../../../models/Distribution";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "../auth/[...nextauth]";
+import { getAuthUser } from "../../../lib/getUser";
 
 export default async function handler(req, res) {
   await connectDB();
-  const session = await getServerSession(req, res, authOptions);
-  if (!session?.user?.email) return res.status(401).json({ error: "Not authenticated" });
-  const user = await User.findOne({ email: session.user.email });
-  if (!user) return res.status(404).json({ error: "User not found" });
+  const user = await getAuthUser(req, res);
+  if (!user) return res.status(401).json({ error: "Please login" });
   if (user.role !== "issuer") return res.status(403).json({ error: "Issuer access only" });
 
   const assets = await Asset.find({ issuerId: user._id }).lean();

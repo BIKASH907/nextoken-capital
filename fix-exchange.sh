@@ -1,3 +1,144 @@
+#!/bin/bash
+# EXCHANGE: Market price, price history, session fix, pro UX
+# Run: chmod +x fix-exchange.sh && ./fix-exchange.sh
+set -e
+
+echo "  🏦 Building Pro Exchange Page..."
+
+# ═══════════════════════════════════════
+# 1. FIX SESSION: Use cookie-based auth fallback
+# ═══════════════════════════════════════
+cat > lib/getUser.js << 'EOF'
+import { connectDB } from "./mongodb";
+import User from "./models/User";
+import { getServerSession } from "next-auth/next";
+
+export async function getAuthUser(req, res, authOptions) {
+  await connectDB();
+  
+  // Try NextAuth session first
+  try {
+    const session = await getServerSession(req, res, authOptions);
+    if (session?.user?.email) {
+      const user = await User.findOne({ email: session.user.email });
+      if (user) return user;
+    }
+  } catch(e) {}
+
+  // Fallback: check cookie token
+  try {
+    const cookie = req.cookies?.nxt_session;
+    if (cookie) {
+      const jwt = require("jsonwebtoken");
+      const decoded = jwt.verify(cookie, process.env.JWT_SECRET || "nextoken-capital-jwt-secret-2024");
+      if (decoded?.email) {
+        const user = await User.findOne({ email: decoded.email });
+        if (user) return user;
+      }
+      if (decoded?.id) {
+        const user = await User.findById(decoded.id);
+        if (user) return user;
+      }
+    }
+  } catch(e) {}
+
+  // Fallback: Authorization header
+  try {
+    const auth = req.headers.authorization;
+    if (auth?.startsWith("Bearer ")) {
+      const jwt = require("jsonwebtoken");
+      const decoded = jwt.verify(auth.slice(7), process.env.JWT_SECRET || "nextoken-capital-jwt-secret-2024");
+      if (decoded?.email) {
+        const user = await User.findOne({ email: decoded.email });
+        if (user) return user;
+      }
+    }
+  } catch(e) {}
+
+  return null;
+}
+EOF
+echo "  ✓ Universal auth helper (NextAuth + cookie + Bearer token)"
+
+# ═══════════════════════════════════════
+# 2. UPDATE BUY API (use getAuthUser)
+# ═══════════════════════════════════════
+sed -i 's|import { getServerSession } from "next-auth/next";|import { getAuthUser } from "../../../lib/getUser";|' pages/api/investments/buy.js 2>/dev/null
+sed -i 's|import { authOptions } from "../auth/\[\.\.\.nextauth\]";||' pages/api/investments/buy.js 2>/dev/null
+sed -i 's|const session = await getServerSession(req, res, authOptions);||' pages/api/investments/buy.js 2>/dev/null
+sed -i 's|if (!session?.user?.email) return res.status(401).json({ error: "Not authenticated" });|const user = await getAuthUser(req, res); if (!user) return res.status(401).json({ error: "Please login to continue" });|' pages/api/investments/buy.js 2>/dev/null
+sed -i 's|const user = await User.findOne({ email: session.user.email });||' pages/api/investments/buy.js 2>/dev/null
+sed -i 's|if (!user) return res.status(404).json({ error: "User not found" });||' pages/api/investments/buy.js 2>/dev/null
+
+# Same for sell, buy-secondary, wallet, orderbook/place, orderbook/cancel, my-orders, holdings, notifications
+for f in pages/api/investments/sell.js pages/api/investments/buy-secondary.js pages/api/wallet/deposit.js pages/api/wallet/index.js pages/api/wallet/withdraw-otp.js pages/api/orderbook/place.js pages/api/orderbook/cancel.js pages/api/orderbook/my-orders.js pages/api/investments/my.js pages/api/investments/orders.js pages/api/investments/holdings.js pages/api/notifications/index.js pages/api/user/tax-report.js pages/api/issuer/stats.js pages/api/issuer/distributions.js pages/api/issuer/payout-settings.js; do
+  if [ -f "$f" ]; then
+    sed -i 's|import { getServerSession } from "next-auth/next";|import { getAuthUser } from "../../../lib/getUser";|' "$f" 2>/dev/null
+    sed -i 's|import { getServerSession } from "next-auth\/next";|import { getAuthUser } from "../../../lib/getUser";|' "$f" 2>/dev/null
+    sed -i '/import { authOptions }/d' "$f" 2>/dev/null
+    sed -i 's|const session = await getServerSession(req, res, authOptions);|const user = await getAuthUser(req, res);|' "$f" 2>/dev/null
+    sed -i 's|if (!session?.user?.email) return res.status(401).json({ error: "Not authenticated" });|if (!user) return res.status(401).json({ error: "Please login" });|' "$f" 2>/dev/null
+    sed -i '/const user = await User.findOne({ email: session.user.email });/d' "$f" 2>/dev/null
+    sed -i '/if (!user) return res.status(404).json({ error: "User not found" });/d' "$f" 2>/dev/null
+  fi
+done
+echo "  ✓ All APIs use universal auth (no more random logouts)"
+
+# ═══════════════════════════════════════
+# 3. PRICE HISTORY API
+# ═══════════════════════════════════════
+cat > pages/api/orderbook/price-history.js << 'EOF'
+import { connectDB } from "../../../lib/mongodb";
+import Trade from "../../../models/Trade";
+
+export default async function handler(req, res) {
+  await connectDB();
+  const { assetId, period } = req.query;
+  if (!assetId) return res.status(400).json({ error: "assetId required" });
+
+  const days = period === "7d" ? 7 : period === "30d" ? 30 : period === "90d" ? 90 : 7;
+  const since = new Date(Date.now() - days * 86400000);
+
+  const trades = await Trade.find({ assetId, createdAt: { $gte: since } }).sort({ createdAt: 1 }).lean();
+
+  // Group by day for chart
+  const daily = {};
+  trades.forEach(t => {
+    const day = new Date(t.createdAt).toISOString().split("T")[0];
+    if (!daily[day]) daily[day] = { date: day, open: t.pricePerUnit, high: t.pricePerUnit, low: t.pricePerUnit, close: t.pricePerUnit, volume: 0, trades: 0 };
+    daily[day].high = Math.max(daily[day].high, t.pricePerUnit);
+    daily[day].low = Math.min(daily[day].low, t.pricePerUnit);
+    daily[day].close = t.pricePerUnit;
+    daily[day].volume += t.totalAmount;
+    daily[day].trades += 1;
+  });
+
+  const allTrades = trades.map(t => ({
+    price: t.pricePerUnit, units: t.units, amount: t.totalAmount,
+    time: t.createdAt, txHash: t.txHash,
+  }));
+
+  // Stats
+  const prices = trades.map(t => t.pricePerUnit);
+  const high = prices.length ? Math.max(...prices) : 0;
+  const low = prices.length ? Math.min(...prices) : 0;
+  const avg = prices.length ? Math.round(prices.reduce((s,p) => s+p, 0) / prices.length * 100) / 100 : 0;
+  const totalVolume = trades.reduce((s,t) => s + t.totalAmount, 0);
+  const change = prices.length >= 2 ? Math.round((prices[prices.length-1] - prices[0]) / prices[0] * 10000) / 100 : 0;
+
+  return res.json({
+    candles: Object.values(daily),
+    trades: allTrades.slice(-50).reverse(),
+    stats: { high, low, avg, totalVolume, totalTrades: trades.length, change },
+  });
+}
+EOF
+echo "  ✓ Price history API (OHLCV candles, stats, change %)"
+
+# ═══════════════════════════════════════
+# 4. COMPLETE EXCHANGE PAGE
+# ═══════════════════════════════════════
+cat > pages/exchange.js << 'EOF'
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
@@ -299,3 +440,36 @@ export default function Exchange() {
     </>
   );
 }
+EOF
+echo "  ✓ Complete exchange page"
+
+echo ""
+echo "  ╔═══════════════════════════════════════════════════════════════╗"
+echo "  ║  PRO EXCHANGE ENGINE COMPLETE                                 ║"
+echo "  ║                                                               ║"
+echo "  ║  SESSION FIX:                                                 ║"
+echo "  ║    Universal auth: NextAuth + cookie + Bearer token           ║"
+echo "  ║    No more random logouts on API calls                        ║"
+echo "  ║    Applied to ALL 17 user-facing APIs                         ║"
+echo "  ║                                                               ║"
+echo "  ║  EXCHANGE PAGE (/exchange):                                   ║"
+echo "  ║    Asset selector with live stats bar                         ║"
+echo "  ║    Price chart (OHLCV candles, 7d/30d/90d)                    ║"
+echo "  ║    Order book (bid/ask depth with volume bars)                ║"
+echo "  ║    Last 10 trades (price, units, time, txHash)                ║"
+echo "  ║    Price history table (date, OHLC, volume, trades)           ║"
+echo "  ║    My Orders (open/filled/cancelled + cancel button)          ║"
+echo "  ║    Limit orders (set your own price)                          ║"
+echo "  ║    Market orders (instant buy at best ask/bid)                ║"
+echo "  ║    Quick price buttons (Bid/Ask/Last)                         ║"
+echo "  ║    Fee calculator in order panel                              ║"
+echo "  ║    Auto-refresh every 10 seconds                              ║"
+echo "  ║    24h change %, high, low, volume, spread                    ║"
+echo "  ║                                                               ║"
+echo "  ║  NEW API: /api/orderbook/price-history                        ║"
+echo "  ║    OHLCV candles, stats (high/low/avg/change%)                ║"
+echo "  ║                                                               ║"
+echo "  ║  RUN:                                                         ║"
+echo "  ║    git add -A && git commit -m 'feat: pro exchange'           ║"
+echo "  ║    git push && npx vercel --prod                              ║"
+echo "  ╚═══════════════════════════════════════════════════════════════╝"

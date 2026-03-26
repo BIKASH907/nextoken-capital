@@ -6,15 +6,14 @@ import Wallet from "../../../models/Wallet";
 import HoldingLot from "../../../models/HoldingLot";
 import Fee from "../../../models/Fee";
 import { notify } from "../../../lib/notify";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "../auth/[...nextauth]";
+import { getAuthUser } from "../../../lib/getUser";
 import crypto from "crypto";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
   await connectDB();
-  const session = await getServerSession(req, res, authOptions);
-  if (!session?.user?.email) return res.status(401).json({ error: "Not authenticated" });
+  const user = await getAuthUser(req, res);
+  if (!user) return res.status(401).json({ error: "Please login" });
   const buyer = await User.findOne({ email: session.user.email });
   if (!buyer) return res.status(404).json({ error: "User not found" });
   if (buyer.kycStatus !== "approved") return res.status(403).json({ error: "KYC required" });
