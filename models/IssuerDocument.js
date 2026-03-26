@@ -45,6 +45,12 @@ const IssuerDocumentSchema = new mongoose.Schema({
 
   // Versioning
   version: { type: Number, default: 1 },
+  versionHistory: [{
+    version: Number, fileName: String, fileUrl: String, uploadedBy: String, uploadedAt: { type: Date, default: Date.now },
+    status: String, notes: String,
+  }],
+  lockedVersion: { type: Number },
+  isVersionLocked: { type: Boolean, default: false },
 
   // Audit
   auditLog: [{
