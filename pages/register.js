@@ -379,8 +379,7 @@ export default function RegisterPage() {
               <div className="rg-title">Personal details</div>
               <p className="rg-sub">Required under EU AML/KYC regulation (AMLD6).</p>
               <div className="rg-row">
-                
-                </select>
+                <div className="rg-field"><label className="rg-label">Country</label><select className="rg-input" name="country" value={form.country} onChange={handle} style={{appearance:"none",cursor:"pointer"}}><option value="">Select country</option>{COUNTRIES.map(c=><option key={c.code} value={c.name}>{c.name}</option>)}</select></div>
               </div>
               <div className="rg-field">
                 <label className="rg-label">Phone Number</label>
