@@ -1,62 +1,58 @@
 import mongoose from "mongoose";
 
 const IssuerDocumentSchema = new mongoose.Schema({
-  issuerId: { type: String, required: true },
+  issuerId: { type: String },
   issuerName: { type: String },
   issuerEmail: { type: String },
   assetId: { type: String },
   assetName: { type: String },
-
-  // Document info
   fileName: { type: String, required: true },
   fileUrl: { type: String, required: true },
   fileType: { type: String },
   fileSize: { type: Number },
-
-  // Category determines routing
-  category: {
-    type: String,
-    enum: ["kyc", "financial", "technical", "legal", "valuation", "other"],
-    required: true,
-  },
-
-  // Sub-type for specifics
+  category: { type: String, enum: ["kyc", "financial", "technical", "legal", "valuation", "other"], required: true },
   subType: { type: String },
+  routedTo: { type: String, default: "compliance" },
 
-  // Routing
-  routedTo: {
-    type: String,
-    enum: ["compliance", "finance", "admin", "unassigned"],
-    default: "unassigned",
-  },
-
-  // Review status
+  // Pipeline status
   status: {
     type: String,
-    enum: ["pending", "under_review", "approved", "rejected", "expired"],
+    enum: ["pending", "compliance_approved", "finance_approved", "approved", "rejected_compliance", "rejected_finance", "rejected_final"],
     default: "pending",
   },
-  reviewedBy: { type: String },
-  reviewedByName: { type: String },
-  reviewedAt: { type: Date },
-  reviewNotes: { type: String },
-  rejectionReason: { type: String },
+
+  // Stage approvals
+  complianceApprovedBy: String,
+  complianceApprovedByName: String,
+  complianceApprovedAt: Date,
+  complianceNotes: String,
+
+  financeApprovedBy: String,
+  financeApprovedByName: String,
+  financeApprovedAt: Date,
+  financeNotes: String,
+
+  finalApprovedBy: String,
+  finalApprovedByName: String,
+  finalApprovedAt: Date,
+  finalNotes: String,
+
+  // Rejection
+  rejectionReason: String,
+  rejectedBy: String,
+  rejectedByName: String,
+  rejectedAt: Date,
 
   // Versioning
   version: { type: Number, default: 1 },
-  previousVersionId: { type: String },
-
-  // Expiry
-  expiresAt: { type: Date },
 
   // Audit
-  uploadedAt: { type: Date, default: Date.now },
   auditLog: [{
     action: String,
     by: String,
     byRole: String,
-    at: { type: Date, default: Date.now },
     notes: String,
+    at: { type: Date, default: Date.now },
   }],
 }, { timestamps: true });
 
