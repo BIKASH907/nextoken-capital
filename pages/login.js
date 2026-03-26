@@ -47,7 +47,7 @@ export default function LoginPage() {
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        const redirect = router.query.redirect || "/dashboard";
+        const meRes = await fetch("/api/user/me").then(r=>r.json()).catch(()=>({})); const redirect = router.query.redirect || (meRes?.user?.accountType === "issuer" ? "/issuer-dashboard" : "/dashboard");
         router.push(redirect);
       } else {
         setError(data.error || "Login failed. Please try again.");

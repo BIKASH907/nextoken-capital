@@ -28,6 +28,9 @@ const EmployeeSchema = new mongoose.Schema({
 
   // Legacy fields (keep for backward compat)
   securityQuestion: { type: String },
+  mfaEnabled: { type: Boolean, default: false },
+  mfaMethod: { type: String, default: "none" },
+  mfaSecret: { type: String },
   securityAnswer: { type: String },
 }, { timestamps: true });
 
