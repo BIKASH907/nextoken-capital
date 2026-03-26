@@ -40,11 +40,11 @@ export default async function handler(req, res) {
       countryCode: countryCode || '',
       phone: phone || '',
       dob: dob || '',
-      role: 'investor',
+      role: 'user', accountType: req.body.role === 'issuer' ? 'issuer' : 'investor',
       kycStatus: 'pending',
     });
 
-    const token = createToken(user);
+    const token = createToken({ id: user._id, email: user.email, role: user.role, accountType: user.accountType });
     setSessionCookie(res, token);
     return res.status(201).json({ user: { id: user._id, email: user.email, firstName: user.firstName, lastName: user.lastName, role: user.role } });
   } catch (err) {
