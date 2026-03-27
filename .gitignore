@@ -18,3 +18,4 @@ update-tokenize.sh
 patch-features.sh
 .env
 .env.local
+node_modules/
