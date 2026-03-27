@@ -1,71 +1,41 @@
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '../auth/[...nextauth]';
-import dbConnect from '';
-import User from 'models/User';
-import KYB from 'models/KYB';
+import { requireAdmin } from '../../../lib/adminAuth';
+import dbConnect from '../../../lib/db';
+import User from '../../../models/User';
+import KYB from '../../../models/KYB';
 
 export default async function handler(req, res) {
-  const session = await getServerSession(req, res, authOptions);
-  if (!session?.user?.isAdmin) return res.status(401).json({ error: 'Unauthorized' });
-
+  const admin = await requireAdmin(req, res);
   await dbConnect();
 
   if (req.method === 'GET') {
     const { status } = req.query;
-    const kybQuery = status && status !== 'all' ? { status } : {};
-    
-    let kybRecords = [];
-    try {
-      kybRecords = await KYB.find(kybQuery).populate('userId', 'name email country accountType').lean();
-    } catch(e) {}
-
-    // Auto-stub issuers with no KYB record
-    const issuers = await User.find({ accountType: 'issuer' }).lean();
-    const kybUserIds = kybRecords.map(k => k.userId?._id?.toString() || k.userId?.toString());
-    const issuersWithoutKYB = issuers.filter(u => !kybUserIds.includes(u._id.toString()));
-
-    for (const issuer of issuersWithoutKYB) {
+    const q = status && status !== 'all' ? { status } : {};
+    let records = [];
+    try { records = await KYB.find(q).populate('userId','name email country accountType').lean(); } catch(e) {}
+    const issuers = await User.find({ accountType: 'issuer' }).lean().catch(() => []);
+    const existing = records.map(k => k.userId?._id?.toString() || k.userId?.toString());
       try {
-        const stub = await KYB.create({
-          userId: issuer._id,
-          companyName: issuer.companyName || issuer.name || 'Unnamed Company',
-          status: 'pending',
-          submittedAt: issuer.createdAt || new Date(),
-          autoCreated: true
-        });
-        if (!status || status === 'pending' || status === 'all') {
-          kybRecords.push({ ...stub.toObject(), userId: issuer });
-        }
+        const s = await KYB.create({ userId: u._id, companyName: u.name || 'Unnamed', status: 'pending', submittedAt: new Date() });
+        records.push({ ...s.toObject(), userId: u });
       } catch(e) {}
     }
-
-    const counts = {
-      pending: await KYB.countDocuments({ status: 'pending' }).catch(() => 0),
-      in_review: await KYB.countDocuments({ status: 'in_review' }).catch(() => 0),
-      approved: await KYB.countDocuments({ status: 'approved' }).catch(() => 0),
-      rejected: await KYB.countDocuments({ status: 'rejected' }).catch(() => 0),
-    };
-
-    return res.status(200).json({ kyb: kybRecords, counts });
+    return res.status(200).json({
+      kyb: records,
+      counts: {
+        pending:   await KYB.countDocuments({ status: 'pending' }).catch(() => 0),
+        in_review: await KYB.countDocuments({ status: 'in_review' }).catch(() => 0),
+        approved:  await KYB.countDocuments({ status: 'approved' }).catch(() => 0),
+        rejected:  await KYB.countDocuments({ status: 'rejected' }).catch(() => 0),
+      }
+    });
   }
 
   if (req.method === 'PATCH') {
     const { id, status, notes } = req.body;
-    const valid = ['pending', 'in_review', 'approved', 'rejected'];
-    if (!valid.includes(status)) return res.status(400).json({ error: 'Invalid status' });
-
-    const kyb = await KYB.findByIdAndUpdate(
-      id,
-      { status, adminNotes: notes, reviewedAt: new Date() },
-      { new: true }
-    ).populate('userId', 'name email');
-
-    if (status === 'approved' && kyb?.userId) {
-      await User.findByIdAndUpdate(kyb.userId._id || kyb.userId, {
-        kycStatus: 'approved', verificationStatus: 'approved'
-      }).catch(() => {});
+    const kyb = await KYB.findByIdAndUpdate(id, { status, adminNotes: notes, reviewedAt: new Date() }, { new: true }).populate('userId','name email').catch(() => null);
+    if (status === 'approved' && kyb && kyb.userId) {
+      await User.findByIdAndUpdate(kyb.userId._id || kyb.userId, { kycStatus: 'approved', verificationStatus: 'approved' }).catch(() => {});
     }
-
     return res.status(200).json({ kyb });
   }
 
