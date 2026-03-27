@@ -93,33 +93,42 @@ export default function MarketsPage() {
       <div className="mk-page">
         <div className="mk-hero">
           <div className="mk-hero-tag">Marketplace Listings  <Footer />
+  <Footer />
 </div>
           <h1>Explore the Tokenized Asset Marketplace</h1>
           <p>Browse curated tokenized listings across property, energy, infrastructure, and commercial sectors.</p>
           <Footer />
+  <Footer />
 </div>
 
         <div className="mk-filters">
           <div className="filter-group">
             <div className="filter-label">Category  <Footer />
+  <Footer />
 </div>
             <div className="filter-btns">
               {CATS.map(c => <button key={c} className={"filter-btn"+(cat===c?" on":"")} onClick={()=>setCat(c)}>{c}</button>)}
               <Footer />
+  <Footer />
 </div>
             <Footer />
+  <Footer />
 </div>
           <div className="filter-group">
             <div className="filter-label">Risk Level  <Footer />
+  <Footer />
 </div>
             <div className="filter-btns">
               {RISKS.map(r => <button key={r} className={"filter-btn"+(risk===r?" on":"")} onClick={()=>setRisk(r)}>{r}</button>)}
               <Footer />
+  <Footer />
 </div>
             <Footer />
+  <Footer />
 </div>
           <div className="filter-group">
             <div className="filter-label">Sort By  <Footer />
+  <Footer />
 </div>
             <select className="filter-select" value={sort} onChange={e=>setSort(e.target.value)}>
               <option>Most Funded</option>
@@ -127,10 +136,13 @@ export default function MarketsPage() {
               <option>Lowest Min. Invest</option>
             </select>
             <Footer />
+  <Footer />
 </div>
           <div className="mk-count">Showing <strong>{list.length}</strong> of <strong>{ALL_PROJECTS.length}</strong> opportunities  <Footer />
+  <Footer />
 </div>
           <Footer />
+  <Footer />
 </div>
 
         <div className="mk-grid">
@@ -145,45 +157,61 @@ export default function MarketsPage() {
                       <span className={p.badge==="Closing Soon"?"badge-soon":"badge-live"}>{p.badge}</span>
                       <span className="badge-risk" style={{background:`rgba(${p.risk==="Low"?"14,203,129":p.risk==="Medium"?"240,185,11":"255,77,77"},0.1)`,color:riskColor[p.risk],border:`1px solid ${riskColor[p.risk]}44`}}>{p.risk} Risk</span>
                       <Footer />
+  <Footer />
 </div>
                     <Footer />
+  <Footer />
 </div>
                   <div className="mk-card-cat">{p.cat}  <Footer />
+  <Footer />
 </div>
                   <div className="mk-card-title">{p.title}  <Footer />
+  <Footer />
 </div>
                   <div className="mk-card-loc">📍 {p.location}  <Footer />
+  <Footer />
 </div>
                   <Footer />
+  <Footer />
 </div>
                 <div className="mk-card-stats">
                   <div><div className="mk-stat-val">{p.roi}%</div><div className="mk-stat-lbl">Target ROI</div>  <Footer />
+  <Footer />
 </div>
                   <div><div className="mk-stat-val">{fmt(p.min)}</div><div className="mk-stat-lbl">Min. Invest</div>  <Footer />
+  <Footer />
 </div>
                   <div><div className="mk-stat-val">{p.term}mo</div><div className="mk-stat-lbl">Term</div>  <Footer />
+  <Footer />
 </div>
                   <Footer />
+  <Footer />
 </div>
                 <div className="mk-progress-wrap">
                   <div className="mk-progress-top">
                     <span>Funding Progress <strong style={{color:"#fff"}}>{pct}%</strong></span>
                     <span>{fmt(p.raised)} raised</span>
                     <Footer />
+  <Footer />
 </div>
                   <div className="mk-progress-bar"><div className="mk-progress-fill" style={{width:pct+"%"}} />  <Footer />
+  <Footer />
 </div>
                   <Footer />
+  <Footer />
 </div>
                 <div className="mk-card-action">
                   <Link href="/register" className="mk-btn">View Listing</Link>
                   <Footer />
+  <Footer />
 </div>
                 <Footer />
+  <Footer />
 </div>
             );
           })}
           <Footer />
+  <Footer />
 </div>
 
         <div className="mk-cta">
@@ -191,8 +219,10 @@ export default function MarketsPage() {
           <p>Create your account to trade tokenized assets on our marketplace.</p>
           <Link href="/register" className="mk-cta-btn">Register Now</Link>
           <Footer />
+  <Footer />
 </div>
         <Footer />
+  <Footer />
 </div>
       <Footer />
     </>
