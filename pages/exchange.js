@@ -38,7 +38,7 @@ export default function Exchange() {
   const loadHistory = () => { if(selected) fetch("/api/orderbook/price-history?assetId="+selected._id+"&period="+period).then(r=>r.json()).then(setPriceHistory).catch(()=>{}); };
   const loadMyOrders = () => { if(session) fetch("/api/orderbook/my-orders").then(r=>r.json()).then(d=>setMyOrders(d.orders||[])).catch(()=>{}); };
 
-  const priceOf = (a) => a.tokenPrice || (a.targetRaise && a.tokenSupply ? Math.round(a.targetRaise/a.tokenSupply) : 100);
+  const priceOf = (a) => { if (!a) return 0; return a.tokenPrice || (a.targetRaise && a.tokenSupply ? Math.round(a.targetRaise/a.tokenSupply) : 100); };
 
   const placeOrder = async () => {
     if (!session) { router.push("/login"); return; }
