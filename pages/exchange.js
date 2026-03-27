@@ -47,9 +47,11 @@ export default function Exchange() {
 
     let orderPrice = Number(price);
     if (orderType === "market") {
+      if (!selected) { setMsg("Select an asset first"); return; }
       orderPrice = side === "bid" ? (ob.bestAsk || priceOf(selected)) : (ob.bestBid || priceOf(selected));
     }
-    if (!units || Number(units) <= 0 || orderPrice <= 0) { setMsg("Enter valid units and price"); return; }
+    if (!orderPrice || orderPrice <= 0) { setMsg("No market price available. Place a Limit order first."); return; }
+    if (!units || Number(units) <= 0) { setMsg("Enter valid units and price"); return; }
 
     const r = await fetch("/api/orderbook/place", { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ assetId: selected._id, side, units: Number(units), pricePerUnit: orderPrice }) });
     const d = await r.json();
