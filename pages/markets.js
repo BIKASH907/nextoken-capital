@@ -1,231 +1,235 @@
-// footer-added
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
-const ALL_PROJECTS = [
-  { id:1, emoji:"☀️", badge:"Closing Soon", risk:"Low", cat:"Energy",         title:"Solar Farm Portfolio",     location:"Alicante, Spain",         roi:18.2, min:250,  term:60, raised:4600000, target:5000000 },
-  { id:2, emoji:"🛍️", badge:"Closing Soon", risk:"Low", cat:"Commercial",     title:"Retail Shopping Centre",   location:"Amsterdam, Netherlands",  roi:13.9, min:1000, term:36, raised:3520000, target:4000000 },
-  { id:3, emoji:"🏢", badge:"Live",         risk:"Low", cat:"Property",       title:"Tokenized Office Building", location:"Berlin, Germany",        roi:16.4, min:500,  term:36, raised:1872000, target:2400000 },
-  { id:4, emoji:"🏠", badge:"Live",         risk:"Low", cat:"Property",       title:"Student Housing Block",    location:"Prague, Czechia",         roi:14.2, min:250,  term:24, raised:1278000, target:1800000 },
-  { id:5, emoji:"🏘️", badge:"Live",         risk:"Low", cat:"Property",       title:"Residential Complex",      location:"Lisbon, Portugal",        roi:14.8, min:500,  term:24, raised:1920000, target:3200000 },
-  { id:6, emoji:"🏭", badge:"Live",         risk:"Medium", cat:"Infrastructure", title:"Logistics Hub",          location:"Warsaw, Poland",          roi:15.1, min:1000, term:48, raised:3600000, target:8000000 },
-  { id:7, emoji:"💨", badge:"Live",         risk:"Medium", cat:"Energy",        title:"Wind Energy Project",     location:"Gdansk, Poland",          roi:17.6, min:250,  term:72, raised:2145000, target:6500000 },
-  { id:8, emoji:"💼", badge:"Live",         risk:"Medium", cat:"Commercial",    title:"Tech Business Park",      location:"Dublin, Ireland",         roi:15.9, min:500,  term:60, raised:2000000, target:10000000 },
-  { id:9, emoji:"⚗️", badge:"Live",         risk:"High",   cat:"Energy",        title:"Green Hydrogen Plant",    location:"Rotterdam, Netherlands",  roi:18.8, min:2000, term:84, raised:1800000, target:12000000 },
-];
-
-const CATS = ["All","Property","Energy","Infrastructure","Commercial"];
-const RISKS = ["All","Low","Medium","High"];
+const CATS  = ["All","real_estate","bond","equity","infrastructure","energy","fund","other"];
+const RISKS = ["All","low","medium","high"];
+const SORTS = ["Most Funded","Highest Yield","Lowest Min. Invest","Newest"];
 
 function fmt(n) {
+  if (!n) return "€0";
   if (n >= 1000000) return "€" + (n/1000000).toFixed(1) + "M";
-  if (n >= 1000) return "€" + (n/1000).toFixed(0) + "K";
+  if (n >= 1000)    return "€" + (n/1000).toFixed(0) + "K";
   return "€" + n;
 }
 
+function pct(raised, target) {
+  if (!raised || !target) return 0;
+  return Math.min(100, Math.round((raised / target) * 100));
+}
+
+const riskColor = { low: "#0ECB81", medium: "#F0B90B", high: "#FF4D4D" };
+
+const ASSET_ICONS = {
+  real_estate: "🏢", bond: "📄", equity: "📈",
+  infrastructure: "🏭", energy: "⚡", fund: "💼", other: "💎"
+};
+
 export default function MarketsPage() {
-  const [cat, setCat] = useState("All");
-  const [risk, setRisk] = useState("All");
-  const [sort, setSort] = useState("Most Funded");
+  const [assets, setAssets]   = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [cat, setCat]         = useState("All");
+  const [risk, setRisk]       = useState("All");
+  const [sort, setSort]       = useState("Most Funded");
+  const [search, setSearch]   = useState("");
 
-  let list = ALL_PROJECTS
-    .filter(p => cat  === "All" || p.cat  === cat)
-    .filter(p => risk === "All" || p.risk === risk);
+  useEffect(() => {
+    fetch("/api/assets/index")
+      .then(r => r.json())
+      .then(d => { setAssets(d.assets || []); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, []);
 
-  if (sort === "Highest ROI")       list = [...list].sort((a,b) => b.roi - a.roi);
-  if (sort === "Lowest Min. Invest") list = [...list].sort((a,b) => a.min - b.min);
-  if (sort === "Most Funded")        list = [...list].sort((a,b) => (b.raised/b.target) - (a.raised/a.target));
+  let list = assets
+    .filter(a => cat  === "All" || a.assetType === cat)
+    .filter(a => risk === "All" || a.riskLevel  === risk)
+    .filter(a => !search || a.name?.toLowerCase().includes(search.toLowerCase()) || a.location?.toLowerCase().includes(search.toLowerCase()));
 
-  const riskColor = { Low:"#0ECB81", Medium:"#F0B90B", High:"#FF4D4D" };
+  if (sort === "Highest Yield")      list = [...list].sort((a,b) => (b.annualYield||0) - (a.annualYield||0));
+  if (sort === "Lowest Min. Invest") list = [...list].sort((a,b) => (a.minInvestment||0) - (b.minInvestment||0));
+  if (sort === "Most Funded")        list = [...list].sort((a,b) => pct(b.raisedAmount,b.targetRaise) - pct(a.raisedAmount,a.targetRaise));
+  if (sort === "Newest")             list = [...list].sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   return (
     <>
       <Head><title>Markets — Nextoken Capital</title></Head>
       <Navbar />
-      <style>{`
-        .mk-page { min-height:100vh; background:#0B0E11; padding-top:64px; }
-        .mk-hero { padding:60px 20px 40px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.07); }
-        .mk-hero-tag { font-size:11px; font-weight:700; color:#F0B90B; letter-spacing:2px; text-transform:uppercase; margin-bottom:12px; }
-        .mk-hero h1 { font-size:clamp(1.8rem,4vw,3rem); font-weight:900; color:#fff; margin-bottom:12px; letter-spacing:-1px; }
-        .mk-hero p { font-size:14px; color:rgba(255,255,255,0.45); max-width:520px; margin:0 auto; line-height:1.7; }
-        .mk-filters { max-width:1280px; margin:0 auto; padding:24px 20px; display:flex; gap:16px; flex-wrap:wrap; align-items:center; }
-        .filter-group { display:flex; flex-direction:column; gap:6px; }
-        .filter-label { font-size:11px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:1px; font-weight:700; }
-        .filter-btns { display:flex; gap:6px; flex-wrap:wrap; }
-        .filter-btn { padding:6px 14px; border-radius:6px; font-size:12px; font-weight:600; border:1px solid rgba(255,255,255,0.12); background:transparent; color:rgba(255,255,255,0.55); cursor:pointer; transition:all .15s; font-family:inherit; }
-        .filter-btn:hover { border-color:rgba(255,255,255,0.3); color:#fff; }
-        .filter-btn.on { background:rgba(240,185,11,0.12); border-color:rgba(240,185,11,0.4); color:#F0B90B; }
-        .filter-select { padding:7px 12px; border-radius:6px; font-size:12px; background:#161B22; border:1px solid rgba(255,255,255,0.12); color:#fff; cursor:pointer; font-family:inherit; outline:none; }
-        .mk-count { font-size:12px; color:rgba(255,255,255,0.35); margin-left:auto; align-self:flex-end; padding-bottom:2px; }
-        .mk-grid { max-width:1280px; margin:0 auto; padding:0 20px 60px; display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
-        .mk-card { background:#0F1318; border:1px solid rgba(255,255,255,0.07); border-radius:14px; overflow:hidden; transition:border-color .2s,transform .2s; }
-        .mk-card:hover { border-color:rgba(240,185,11,0.25); transform:translateY(-2px); }
-        .mk-card-top { padding:22px 22px 0; }
-        .mk-card-head { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:14px; }
-        .mk-card-emoji { font-size:32px; line-height:1; }
-        .mk-card-badges { display:flex; flex-direction:column; gap:5px; align-items:flex-end; }
-        .badge-live { padding:3px 10px; border-radius:999px; font-size:10px; font-weight:700; background:rgba(14,203,129,0.12); color:#0ECB81; border:1px solid rgba(14,203,129,0.3); }
-        .badge-soon { padding:3px 10px; border-radius:999px; font-size:10px; font-weight:700; background:rgba(240,185,11,0.12); color:#F0B90B; border:1px solid rgba(240,185,11,0.3); }
-        .badge-risk { padding:3px 10px; border-radius:999px; font-size:10px; font-weight:700; }
-        .mk-card-cat { font-size:11px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; font-weight:700; }
-        .mk-card-title { font-size:16px; font-weight:800; color:#fff; margin-bottom:4px; line-height:1.3; }
-        .mk-card-loc { font-size:12px; color:rgba(255,255,255,0.4); margin-bottom:18px; }
-        .mk-card-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; padding:0 22px 18px; border-top:1px solid rgba(255,255,255,0.06); padding-top:16px; }
-        .mk-stat-val { font-size:15px; font-weight:800; color:#F0B90B; }
-        .mk-stat-lbl { font-size:10px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:.5px; margin-top:2px; }
-        .mk-progress-wrap { padding:0 22px 18px; }
-        .mk-progress-top { display:flex; justify-content:space-between; font-size:11px; color:rgba(255,255,255,0.4); margin-bottom:6px; }
-        .mk-progress-bar { height:4px; background:rgba(255,255,255,0.08); border-radius:2px; overflow:hidden; }
-        .mk-progress-fill { height:100%; background:#F0B90B; border-radius:2px; transition:width .4s; }
-        .mk-card-action { padding:0 22px 22px; }
-        .mk-btn { display:block; width:100%; padding:11px; background:rgba(240,185,11,0.1); border:1px solid rgba(240,185,11,0.25); color:#F0B90B; border-radius:8px; font-size:13px; font-weight:700; text-align:center; text-decoration:none; transition:all .15s; cursor:pointer; font-family:inherit; }
-        .mk-btn:hover { background:rgba(240,185,11,0.18); border-color:rgba(240,185,11,0.5); }
-        .mk-cta { background:#F0B90B; padding:60px 20px; text-align:center; }
-        .mk-cta h2 { font-size:clamp(1.6rem,3vw,2.4rem); font-weight:900; color:#000; margin-bottom:12px; }
-        .mk-cta p { font-size:14px; color:rgba(0,0,0,0.6); margin-bottom:28px; }
-        .mk-cta-btn { display:inline-block; padding:13px 32px; background:#000; color:#fff; border-radius:8px; font-size:14px; font-weight:800; text-decoration:none; }
-        @media(max-width:900px){ .mk-grid{ grid-template-columns:repeat(2,1fr); } }
-        @media(max-width:540px){ .mk-grid{ grid-template-columns:1fr; } .mk-filters{ flex-direction:column; align-items:flex-start; } .mk-count{ margin-left:0; } }
-      `}</style>
+      <div style={{ background: "#0B0E11", minHeight: "100vh", paddingTop: "64px" }}>
 
-      <div className="mk-page">
-        <div className="mk-hero">
-          <div className="mk-hero-tag">Marketplace Listings  <Footer />
-  <Footer />
-</div>
-          <h1>Explore the Tokenized Asset Marketplace</h1>
-          <p>Browse curated tokenized listings across property, energy, infrastructure, and commercial sectors.</p>
-          <Footer />
-  <Footer />
-</div>
+        {/* Hero */}
+        <div style={{ padding: "60px 20px 40px", textAlign: "center", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+          <div style={{ display: "inline-block", background: "rgba(240,185,11,0.1)", border: "1px solid rgba(240,185,11,0.2)", borderRadius: "20px", padding: "6px 16px", fontSize: "12px", color: "#F0B90B", fontWeight: "700", marginBottom: "16px", letterSpacing: "1px" }}>
+            EU REGULATED · MiCA COMPLIANT · POLYGON BLOCKCHAIN
+          </div>
+          <h1 style={{ fontSize: "clamp(28px,5vw,48px)", fontWeight: "900", color: "#fff", marginBottom: "14px" }}>
+            Tokenized Investment Markets
+          </h1>
+          <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "16px", maxWidth: "600px", margin: "0 auto 28px" }}>
+            Invest in real-world assets — real estate, bonds, equity and infrastructure — starting from €100.
+          </p>
+          {/* Stats */}
+          <div style={{ display: "flex", justifyContent: "center", gap: "40px", flexWrap: "wrap" }}>
+            {[
+              ["Total Assets", list.length + " Listed"],
+              ["Min Investment", "€100"],
+              ["Avg. Yield", list.length ? (list.reduce((s,a) => s + (a.annualYield||0), 0) / list.length).toFixed(1) + "%" : "—"],
+              ["Blockchain", "Polygon"],
+            ].map(([k,v]) => (
+              <div key={k} style={{ textAlign: "center" }}>
+                <div style={{ color: "#F0B90B", fontWeight: "900", fontSize: "20px" }}>{v}</div>
+                <div style={{ color: "rgba(255,255,255,0.4)", fontSize: "12px", marginTop: "2px" }}>{k}</div>
+              </div>
+            ))}
+          </div>
+        </div>
 
-        <div className="mk-filters">
-          <div className="filter-group">
-            <div className="filter-label">Category  <Footer />
-  <Footer />
-</div>
-            <div className="filter-btns">
-              {CATS.map(c => <button key={c} className={"filter-btn"+(cat===c?" on":"")} onClick={()=>setCat(c)}>{c}</button>)}
-              <Footer />
-  <Footer />
-</div>
-            <Footer />
-  <Footer />
-</div>
-          <div className="filter-group">
-            <div className="filter-label">Risk Level  <Footer />
-  <Footer />
-</div>
-            <div className="filter-btns">
-              {RISKS.map(r => <button key={r} className={"filter-btn"+(risk===r?" on":"")} onClick={()=>setRisk(r)}>{r}</button>)}
-              <Footer />
-  <Footer />
-</div>
-            <Footer />
-  <Footer />
-</div>
-          <div className="filter-group">
-            <div className="filter-label">Sort By  <Footer />
-  <Footer />
-</div>
-            <select className="filter-select" value={sort} onChange={e=>setSort(e.target.value)}>
-              <option>Most Funded</option>
-              <option>Highest ROI</option>
-              <option>Lowest Min. Invest</option>
+        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "32px 20px" }}>
+
+          {/* Search + Filters */}
+          <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginBottom: "24px", alignItems: "center" }}>
+            <div style={{ position: "relative", flex: "1", minWidth: "200px" }}>
+              <span style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: "#555" }}>🔍</span>
+              <input value={search} onChange={e => setSearch(e.target.value)}
+                placeholder="Search assets, location..."
+                style={{ width: "100%", background: "#161B22", border: "1px solid rgba(255,255,255,0.1)", color: "#fff", padding: "10px 12px 10px 36px", borderRadius: "8px", fontSize: "13px", outline: "none", boxSizing: "border-box" }} />
+            </div>
+            <select value={cat} onChange={e => setCat(e.target.value)}
+              style={{ background: "#161B22", border: "1px solid rgba(255,255,255,0.1)", color: "#fff", padding: "10px 14px", borderRadius: "8px", fontSize: "13px", outline: "none" }}>
+              {CATS.map(c => <option key={c} value={c}>{c === "All" ? "All Types" : c.replace("_"," ").replace(/\b\w/g,l=>l.toUpperCase())}</option>)}
             </select>
-            <Footer />
-  <Footer />
-</div>
-          <div className="mk-count">Showing <strong>{list.length}</strong> of <strong>{ALL_PROJECTS.length}</strong> opportunities  <Footer />
-  <Footer />
-</div>
-          <Footer />
-  <Footer />
-</div>
+            <select value={risk} onChange={e => setRisk(e.target.value)}
+              style={{ background: "#161B22", border: "1px solid rgba(255,255,255,0.1)", color: "#fff", padding: "10px 14px", borderRadius: "8px", fontSize: "13px", outline: "none" }}>
+              {RISKS.map(r => <option key={r} value={r}>{r === "All" ? "All Risk Levels" : r.charAt(0).toUpperCase()+r.slice(1)+" Risk"}</option>)}
+            </select>
+            <select value={sort} onChange={e => setSort(e.target.value)}
+              style={{ background: "#161B22", border: "1px solid rgba(255,255,255,0.1)", color: "#fff", padding: "10px 14px", borderRadius: "8px", fontSize: "13px", outline: "none" }}>
+              {SORTS.map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
 
-        <div className="mk-grid">
-          {list.map(p => {
-            const pct = Math.round((p.raised/p.target)*100);
-            return (
-              <div key={p.id} className="mk-card">
-                <div className="mk-card-top">
-                  <div className="mk-card-head">
-                    <span className="mk-card-emoji">{p.emoji}</span>
-                    <div className="mk-card-badges">
-                      <span className={p.badge==="Closing Soon"?"badge-soon":"badge-live"}>{p.badge}</span>
-                      <span className="badge-risk" style={{background:`rgba(${p.risk==="Low"?"14,203,129":p.risk==="Medium"?"240,185,11":"255,77,77"},0.1)`,color:riskColor[p.risk],border:`1px solid ${riskColor[p.risk]}44`}}>{p.risk} Risk</span>
-                      <Footer />
-  <Footer />
-</div>
-                    <Footer />
-  <Footer />
-</div>
-                  <div className="mk-card-cat">{p.cat}  <Footer />
-  <Footer />
-</div>
-                  <div className="mk-card-title">{p.title}  <Footer />
-  <Footer />
-</div>
-                  <div className="mk-card-loc">📍 {p.location}  <Footer />
-  <Footer />
-</div>
-                  <Footer />
-  <Footer />
-</div>
-                <div className="mk-card-stats">
-                  <div><div className="mk-stat-val">{p.roi}%</div><div className="mk-stat-lbl">Target ROI</div>  <Footer />
-  <Footer />
-</div>
-                  <div><div className="mk-stat-val">{fmt(p.min)}</div><div className="mk-stat-lbl">Min. Invest</div>  <Footer />
-  <Footer />
-</div>
-                  <div><div className="mk-stat-val">{p.term}mo</div><div className="mk-stat-lbl">Term</div>  <Footer />
-  <Footer />
-</div>
-                  <Footer />
-  <Footer />
-</div>
-                <div className="mk-progress-wrap">
-                  <div className="mk-progress-top">
-                    <span>Funding Progress <strong style={{color:"#fff"}}>{pct}%</strong></span>
-                    <span>{fmt(p.raised)} raised</span>
-                    <Footer />
-  <Footer />
-</div>
-                  <div className="mk-progress-bar"><div className="mk-progress-fill" style={{width:pct+"%"}} />  <Footer />
-  <Footer />
-</div>
-                  <Footer />
-  <Footer />
-</div>
-                <div className="mk-card-action">
-                  <Link href="/register" className="mk-btn">View Listing</Link>
-                  <Footer />
-  <Footer />
-</div>
-                <Footer />
-  <Footer />
-</div>
-            );
-          })}
-          <Footer />
-  <Footer />
-</div>
+          {/* Results count */}
+          <div style={{ color: "rgba(255,255,255,0.4)", fontSize: "13px", marginBottom: "20px" }}>
+            {loading ? "Loading assets..." : `Showing ${list.length} investment${list.length !== 1 ? "s" : ""}`}
+          </div>
 
-        <div className="mk-cta">
-          <h2>Start trading on the marketplace today</h2>
-          <p>Create your account to trade tokenized assets on our marketplace.</p>
-          <Link href="/register" className="mk-cta-btn">Register Now</Link>
-          <Footer />
-  <Footer />
-</div>
+          {/* Asset Grid */}
+          {loading ? (
+            <div style={{ textAlign: "center", padding: "80px", color: "rgba(255,255,255,0.3)" }}>
+              <div style={{ fontSize: "48px", marginBottom: "16px" }}>⏳</div>
+              <div>Loading assets...</div>
+            </div>
+          ) : list.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "80px", color: "rgba(255,255,255,0.3)" }}>
+              <div style={{ fontSize: "48px", marginBottom: "16px" }}>📭</div>
+              <div style={{ fontSize: "18px", marginBottom: "8px" }}>No assets found</div>
+              <div style={{ fontSize: "14px" }}>Try adjusting your filters or check back soon</div>
+            </div>
+          ) : (
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))", gap: "20px" }}>
+              {list.map(asset => {
+                const progress = pct(asset.raisedAmount, asset.targetRaise);
+                const icon = ASSET_ICONS[asset.assetType] || "💎";
+                return (
+                  <div key={asset._id} style={{ background: "#0F1318", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "14px", overflow: "hidden", transition: "border-color 0.2s", cursor: "pointer" }}
+                    onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(240,185,11,0.3)"}
+                    onMouseLeave={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)"}>
+
+                    {/* Image / Banner */}
+                    <div style={{ height: "180px", background: "linear-gradient(135deg,#161B22,#0F1318)", position: "relative", overflow: "hidden" }}>
+                      {asset.imageUrl ? (
+                        <img src={asset.imageUrl} alt={asset.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      ) : (
+                        <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "64px" }}>{icon}</div>
+                      )}
+                      {/* Badges */}
+                      <div style={{ position: "absolute", top: "12px", left: "12px", display: "flex", gap: "6px", flexWrap: "wrap" }}>
+                        <span style={{ background: "rgba(0,0,0,0.75)", color: riskColor[asset.riskLevel] || "#fff", border: "1px solid " + (riskColor[asset.riskLevel] || "#fff"), borderRadius: "20px", padding: "3px 10px", fontSize: "11px", fontWeight: "700", backdropFilter: "blur(4px)" }}>
+                          {(asset.riskLevel || "medium").charAt(0).toUpperCase() + (asset.riskLevel || "medium").slice(1)} Risk
+                        </span>
+                        {asset.status === "live" && (
+                          <span style={{ background: "rgba(14,203,129,0.15)", color: "#0ECB81", border: "1px solid rgba(14,203,129,0.3)", borderRadius: "20px", padding: "3px 10px", fontSize: "11px", fontWeight: "700" }}>● Live</span>
+                        )}
+                      </div>
+                      {/* Type badge */}
+                      <div style={{ position: "absolute", top: "12px", right: "12px" }}>
+                        <span style={{ background: "rgba(0,0,0,0.75)", color: "rgba(255,255,255,0.7)", borderRadius: "6px", padding: "3px 8px", fontSize: "11px", fontWeight: "600", textTransform: "capitalize", backdropFilter: "blur(4px)" }}>
+                          {(asset.assetType || "asset").replace("_"," ")}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Content */}
+                    <div style={{ padding: "18px" }}>
+                      <div style={{ marginBottom: "12px" }}>
+                        <h3 style={{ color: "#fff", fontWeight: "800", fontSize: "16px", margin: "0 0 4px" }}>{asset.name}</h3>
+                        <div style={{ color: "rgba(255,255,255,0.4)", fontSize: "13px" }}>📍 {asset.location || asset.country || "—"}</div>
+                      </div>
+
+                      {asset.description && (
+                        <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "12px", lineHeight: "1.5", marginBottom: "14px", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                          {asset.description}
+                        </p>
+                      )}
+
+                      {/* Key stats */}
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px", marginBottom: "14px" }}>
+                        {[
+                          ["Token Price", asset.tokenPrice ? "€" + asset.tokenPrice : "—"],
+                          ["Annual Yield", asset.annualYield ? asset.annualYield + "%" : "—"],
+                          ["Min. Invest",  asset.minInvestment ? "€" + asset.minInvestment : "—"],
+                        ].map(([k,v]) => (
+                          <div key={k} style={{ background: "rgba(255,255,255,0.03)", borderRadius: "8px", padding: "10px 8px", textAlign: "center" }}>
+                            <div style={{ color: "#F0B90B", fontWeight: "800", fontSize: "14px" }}>{v}</div>
+                            <div style={{ color: "rgba(255,255,255,0.35)", fontSize: "10px", marginTop: "2px" }}>{k}</div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Progress bar */}
+                      {asset.targetRaise > 0 && (
+                        <div style={{ marginBottom: "14px" }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px", fontSize: "12px" }}>
+                            <span style={{ color: "rgba(255,255,255,0.4)" }}>Funding Progress</span>
+                            <span style={{ color: "#F0B90B", fontWeight: "700" }}>{progress}%</span>
+                          </div>
+                          <div style={{ background: "rgba(255,255,255,0.07)", borderRadius: "4px", height: "6px", overflow: "hidden" }}>
+                            <div style={{ width: progress + "%", height: "100%", background: "linear-gradient(90deg,#F0B90B,#FFD000)", borderRadius: "4px", transition: "width 0.5s" }} />
+                          </div>
+                          <div style={{ display: "flex", justifyContent: "space-between", marginTop: "5px", fontSize: "11px", color: "rgba(255,255,255,0.3)" }}>
+                            <span>Raised: {fmt(asset.raisedAmount)}</span>
+                            <span>Target: {fmt(asset.targetRaise)}</span>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Extra info row */}
+                      <div style={{ display: "flex", gap: "12px", marginBottom: "16px", fontSize: "11px", color: "rgba(255,255,255,0.35)" }}>
+                        {asset.investmentTerm && <span>⏱ {asset.investmentTerm}</span>}
+                        {asset.totalTokens && <span>🪙 {asset.totalTokens?.toLocaleString()} tokens</span>}
+                        {asset.tokenStandard && <span>🔗 {asset.tokenStandard}</span>}
+                      </div>
+
+                      {/* Action buttons */}
+                      <div style={{ display: "flex", gap: "8px" }}>
+                        <Link href={"/asset/" + asset._id} style={{ flex: 1, background: "#F0B90B", color: "#000", borderRadius: "8px", padding: "11px", textAlign: "center", textDecoration: "none", fontWeight: "800", fontSize: "13px", display: "block" }}>
+                          View & Invest
+                        </Link>
+                        <Link href={"/exchange?asset=" + asset._id} style={{ background: "rgba(255,255,255,0.07)", color: "#fff", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", padding: "11px 16px", textDecoration: "none", fontWeight: "700", fontSize: "13px", display: "block" }}>
+                          Trade
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
         <Footer />
-  <Footer />
-</div>
-      <Footer />
+      </div>
     </>
   );
 }
