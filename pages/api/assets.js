@@ -1,5 +1,5 @@
-import connectDB from '../../../lib/db';
-import Asset from '../../../lib/models/Asset';
+import connectDB from '../../lib/db';
+import Asset from '../../lib/models/Asset';
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).end();
@@ -9,9 +9,7 @@ export default async function handler(req, res) {
   try {
     const { type, search, limit = 50 } = req.query;
 
-    const query = {
-      status: { $in: ['approved', 'live', 'active'] }
-    };
+    const query = { status: { $in: ['live', 'active', 'approved', 'listed'] } };
 
     if (type && type !== 'all') query.assetType = type;
     if (search) query.name = { $regex: search, $options: 'i' };
@@ -22,7 +20,13 @@ export default async function handler(req, res) {
       .lean();
 
     return res.status(200).json({ assets, total: assets.length });
+
   } catch (e) {
     return res.status(500).json({ error: e.message });
   }
 }
+```
+
+Also **go to admin right now** and change your asset statuses from `draft` → `live`:
+```
+nextokencapital.com/admin
