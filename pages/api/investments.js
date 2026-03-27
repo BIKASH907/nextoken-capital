@@ -2,6 +2,9 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from './auth/[...nextauth]';
 import connectDB from '../../lib/db';
 import Asset from '../../lib/models/Asset';
+import Investment from '../../lib/models/Investment';
+import Wallet from '../../models/Wallet';
+import User from '../../lib/models/User';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
@@ -17,6 +20,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Invalid investment details' });
     }
 
+    // Get asset
     const asset = await Asset.findById(assetId);
     if (!asset) return res.status(404).json({ error: 'Asset not found' });
 
@@ -24,18 +28,88 @@ export default async function handler(req, res) {
     const amount    = price * units;
     const minInvest = asset.minInvestment || 100;
 
-    if (price > 0 && amount < minInvest) {
+    if (price === 0) {
+      return res.status(400).json({ error: 'Asset price not set yet' });
+    }
+    if (amount < minInvest) {
       return res.status(400).json({ error: 'Minimum investment is €' + minInvest });
     }
+
+    // Get user
+    const userId = session.id || session.sub || session.user?.id;
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    // Check KYC
+    if (user.kycStatus !== 'approved') {
+      return res.status(400).json({
+        error: 'KYC verification required. Please complete identity verification before investing.',
+        code: 'KYC_REQUIRED'
+      });
+    }
+
+    // Get or create wallet
+    let wallet = await Wallet.findOne({ userId: user._id });
+    if (!wallet) {
+      wallet = await Wallet.create({ userId: user._id, availableBalance: 0 });
+    }
+
+    const balance = wallet.availableBalance || 0;
+
+    // Check balance
+    if (balance < amount) {
+      return res.status(400).json({
+        error: 'Insufficient balance. You have €' + balance.toFixed(2) + ' but need €' + amount.toFixed(2) + '. Please deposit funds to your wallet first.',
+        code: 'INSUFFICIENT_BALANCE',
+        required: amount,
+        available: balance
+      });
+    }
+
+    // Deduct from wallet balance + add transaction record
+    await Wallet.findByIdAndUpdate(wallet._id, {
+      $inc: { availableBalance: -amount, lockedBalance: amount },
+      $push: {
+        transactions: {
+          type: 'buy',
+          amount: -amount,
+          assetId: asset._id.toString(),
+          assetName: asset.name,
+          status: 'completed',
+          description: 'Purchased ' + units + ' tokens of ' + asset.name + ' @ €' + price + '/token',
+          createdAt: new Date()
+        }
+      }
+    });
+
+    // Create investment record
+    const investment = await Investment.create({
+      userId:      user._id,
+      assetId:     asset._id,
+      assetName:   asset.name,
+      assetType:   asset.assetType,
+      ticker:      asset.ticker,
+      amount,
+      tokens:      units,
+      tokenPrice:  price,
+      expectedROI: asset.targetROI || 0,
+      term:        asset.term || 0,
+      status:      'confirmed',
+      paymentMethod: 'platform_balance',
+    });
 
     // Update asset raised amount
     await Asset.findByIdAndUpdate(assetId, {
       $inc: { raisedAmount: amount, investorCount: 1 }
-    }).catch(() => {});
+    });
+
+    const newBalance = balance - amount;
 
     return res.status(200).json({
       success: true,
-      message: 'Investment of €' + amount + ' submitted successfully!'
+      investment,
+      message: 'Investment of €' + amount + ' successful! ' + units + ' tokens purchased.',
+      newBalance
     });
 
   } catch (err) {
