@@ -1,8 +1,8 @@
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../auth/[...nextauth]';
-import dbConnect from '../../../lib/dbConnect';
-import User from '../../../models/User';
-import KYB from '../../../models/KYB';
+import dbConnect from '';
+import User from 'models/User';
+import KYB from 'models/KYB';
 
 export default async function handler(req, res) {
   const session = await getServerSession(req, res, authOptions);
