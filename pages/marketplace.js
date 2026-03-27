@@ -114,7 +114,9 @@ export default function Marketplace() {
 
                       {/* Buttons */}
                       <div style={{ display: "flex", gap: 8 }}>
-                        <button onClick={(e) => { e.stopPropagation(); if (!session) { router.push("/login"); return; } const u = prompt("Units to buy (EUR " + priceOf(a) + "/unit):"); if (!u || Number(u) <= 0) return; fetch("/api/investments/buy", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ assetId: a._id, units: Number(u) }) }).then(r => r.json()).then(d => { alert(d.message || d.error); loadAssets(); }); }} style={{ flex: 1, padding: 12, background: "#F0B90B", color: "#000", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
+                       <button onClick={(e) => { e.stopPropagation(); if (!session) { router.push("/login"); return; } router.push("/asset/" + a._id); }} style={{ flex: 1, padding: 12, background: "#F0B90B", color: "#000", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
+  Invest Now
+</button>
                           Invest Now
                         </button>
                         <button onClick={(e) => { e.stopPropagation(); router.push("/exchange"); }} style={{ padding: "12px 20px", background: "rgba(139,92,246,0.1)", border: "1px solid rgba(139,92,246,0.2)", color: "#8b5cf6", borderRadius: 10, fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
