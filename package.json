@@ -13,7 +13,10 @@
     "deploy:local": "npx hardhat run scripts/deploy.js --network hardhat"
   },
   "dependencies": {
+    "@0xsquid/sdk": "^2.13.0",
     "@anthropic-ai/sdk": "^0.80.0",
+    "@lifi/sdk": "^3.16.3",
+    "@lifi/widget": "^3.40.12",
     "@rainbow-me/rainbowkit": "^2.2.10",
     "@stripe/react-stripe-js": "^5.6.1",
     "@stripe/stripe-js": "^8.11.0",

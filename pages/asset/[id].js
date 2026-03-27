@@ -4,6 +4,7 @@ import Head from "next/head";
 import Link from "next/link";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import InvestmentPayment from "../../components/InvestmentPayment";
 
 export default function AssetDetail() {
   const router = useRouter();
@@ -14,7 +15,7 @@ export default function AssetDetail() {
   const [tab, setTab]             = useState("overview");
   const [msg, setMsg]             = useState("");
   const [msgType, setMsgType]     = useState("error");
-  const [investing, setInvesting] = useState(false);
+  const [showWidget, setShowWidget] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -30,45 +31,6 @@ export default function AssetDetail() {
       })
       .catch(() => setLoading(false));
   }, [id]);
-
-  async function handleInvest() {
-    const price = asset.tokenPrice || 0;
-    const minInvest = asset.minInvestment || 100;
-    if (price > 0 && price * units < minInvest) {
-      setMsgType("error");
-      setMsg("Minimum investment is €" + minInvest + " (" + Math.ceil(minInvest / price) + " tokens)");
-      return;
-    }
-    setInvesting(true);
-    setMsg("");
-    try {
-      const res = await fetch("/api/investments", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ assetId: id, units })
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setMsgType("success");
-        setMsg(data.message || "Investment successful! Wallet balance: €" + (data.newBalance || 0).toFixed(2));
-      } else if (res.status === 401) {
-        router.push("/login?redirect=/asset/" + id);
-      } else if (data.code === "INSUFFICIENT_BALANCE") {
-        setMsgType("error");
-        setMsg(data.error + " → Go to Wallet to deposit funds.");
-      } else if (data.code === "KYC_REQUIRED") {
-        setMsgType("warn");
-        setMsg("KYC required. Please complete identity verification before investing.");
-      } else {
-        setMsgType("error");
-        setMsg(data.error || "Investment failed. Please try again.");
-      }
-    } catch (e) {
-      setMsgType("error");
-      setMsg("Network error. Please check your connection and try again.");
-    }
-    setInvesting(false);
-  }
 
   if (loading) return (
     <div style={{ background: "#0B0E11", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 18 }}>
@@ -113,7 +75,7 @@ export default function AssetDetail() {
 
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: 20, display: "grid", gridTemplateColumns: "1fr 360px", gap: 24 }}>
 
-          {/* LEFT */}
+          {/* ── LEFT ── */}
           <div>
             {/* Hero Image */}
             <div style={{ height: 320, background: "#0F1318", borderRadius: 14, overflow: "hidden", marginBottom: 20, border: "1px solid rgba(255,255,255,0.07)", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -186,14 +148,14 @@ export default function AssetDetail() {
               <div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
                   {[
-                    ["Token Price",    price > 0 ? "€" + price : "—",                                    "#F0B90B"],
-                    ["Annual Yield",   yield_ + "%",                                                       "#22c55e"],
-                    ["Min Investment", "€" + minInvest,                                                    "#3b82f6"],
-                    ["Target Raise",   asset.targetRaise ? "€" + asset.targetRaise.toLocaleString() : "—","#fff"],
-                    ["Raised So Far",  "€" + (asset.raisedAmount || 0).toLocaleString(),                  "#fff"],
-                    ["Total Supply",   supply.toLocaleString() + " tokens",                                "#fff"],
-                    ["Term",           term,                                                                "#fff"],
-                    ["Investors",      (asset.investorCount || 0).toString(),                              "#fff"],
+                    ["Token Price",    price > 0 ? "€" + price : "—",                                     "#F0B90B"],
+                    ["Annual Yield",   yield_ + "%",                                                        "#22c55e"],
+                    ["Min Investment", "€" + minInvest,                                                     "#3b82f6"],
+                    ["Target Raise",   asset.targetRaise ? "€" + asset.targetRaise.toLocaleString() : "—", "#fff"],
+                    ["Raised So Far",  "€" + (asset.raisedAmount || 0).toLocaleString(),                   "#fff"],
+                    ["Total Supply",   supply.toLocaleString() + " tokens",                                 "#fff"],
+                    ["Term",           term,                                                                 "#fff"],
+                    ["Investors",      (asset.investorCount || 0).toString(),                               "#fff"],
                   ].map(([k, v, c]) => (
                     <div key={k} style={{ background: "#0F1318", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: 14 }}>
                       <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: 4 }}>{k}</div>
@@ -242,105 +204,132 @@ export default function AssetDetail() {
             )}
           </div>
 
-          {/* RIGHT: Invest Panel */}
+          {/* ── RIGHT: Invest Panel ── */}
           <div style={{ position: "sticky", top: 84, height: "fit-content" }}>
-            <div style={{ background: "#0F1318", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: 20, marginBottom: 12 }}>
 
-              {/* Price */}
-              <div style={{ color: "#F0B90B", fontSize: 32, fontWeight: 900, marginBottom: 2 }}>
-                {price > 0 ? "€" + price : "Price TBD"}
+            {showWidget ? (
+              /* LiFi Payment Widget */
+              <div style={{ background: "#0F1318", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: 20 }}>
+                <InvestmentPayment
+                  asset={asset}
+                  units={units}
+                  onBack={() => setShowWidget(false)}
+                  onSuccess={data => {
+                    setShowWidget(false);
+                    setMsgType("success");
+                    setMsg(data.message);
+                  }}
+                />
               </div>
-              <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, marginBottom: 16 }}>
-                per token · Annual yield: {yield_}%
-              </div>
+            ) : (
+              /* Normal Invest Panel */
+              <>
+                <div style={{ background: "#0F1318", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: 20, marginBottom: 12 }}>
 
-              {/* Min investment notice */}
-              <div style={{ background: "rgba(240,185,11,0.06)", border: "1px solid rgba(240,185,11,0.15)", borderRadius: 8, padding: "8px 12px", marginBottom: 16, fontSize: 12, color: "#F0B90B" }}>
-                Min investment: <strong>€{minInvest}</strong>
-                {price > 0 && <span> = {minUnits} token{minUnits > 1 ? "s" : ""}</span>}
-              </div>
+                  {/* Price */}
+                  <div style={{ color: "#F0B90B", fontSize: 32, fontWeight: 900, marginBottom: 2 }}>
+                    {price > 0 ? "€" + price : "Price TBD"}
+                  </div>
+                  <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, marginBottom: 16 }}>
+                    per token · Annual yield: {yield_}%
+                  </div>
 
-              {/* Units input */}
-              <label style={{ color: "rgba(255,255,255,0.5)", fontSize: 11, letterSpacing: "1px", textTransform: "uppercase", display: "block", marginBottom: 7 }}>Number of Tokens</label>
-              <input type="number" min={minUnits} value={units}
-                onChange={e => setUnits(Math.max(minUnits, parseInt(e.target.value) || minUnits))}
-                style={{ width: "100%", background: "#161B22", border: "1px solid rgba(255,255,255,0.1)", color: "#fff", padding: 12, borderRadius: 8, fontSize: 16, outline: "none", boxSizing: "border-box", marginBottom: 8, fontFamily: "inherit" }} />
+                  {/* Min investment notice */}
+                  <div style={{ background: "rgba(240,185,11,0.06)", border: "1px solid rgba(240,185,11,0.15)", borderRadius: 8, padding: "8px 12px", marginBottom: 16, fontSize: 12, color: "#F0B90B" }}>
+                    Min investment: <strong>€{minInvest}</strong>
+                    {price > 0 && <span> = {minUnits} token{minUnits > 1 ? "s" : ""}</span>}
+                  </div>
 
-              {/* Quick picks */}
-              <div style={{ display: "flex", gap: 6, marginBottom: 16 }}>
-                {[minUnits, minUnits * 2, minUnits * 5, minUnits * 10, minUnits * 25].map(n => (
-                  <button key={n} onClick={() => setUnits(n)}
-                    style={{ flex: 1, background: units === n ? "#F0B90B" : "rgba(255,255,255,0.05)", color: units === n ? "#000" : "#fff", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, padding: "6px 0", cursor: "pointer", fontSize: 11, fontWeight: 700, fontFamily: "inherit" }}>
-                    {n}
+                  {/* Units input */}
+                  <label style={{ color: "rgba(255,255,255,0.5)", fontSize: 11, letterSpacing: "1px", textTransform: "uppercase", display: "block", marginBottom: 7 }}>Number of Tokens</label>
+                  <input type="number" min={minUnits} value={units}
+                    onChange={e => setUnits(Math.max(minUnits, parseInt(e.target.value) || minUnits))}
+                    style={{ width: "100%", background: "#161B22", border: "1px solid rgba(255,255,255,0.1)", color: "#fff", padding: 12, borderRadius: 8, fontSize: 16, outline: "none", boxSizing: "border-box", marginBottom: 8, fontFamily: "inherit" }} />
+
+                  {/* Quick picks */}
+                  <div style={{ display: "flex", gap: 6, marginBottom: 16 }}>
+                    {[minUnits, minUnits * 2, minUnits * 5, minUnits * 10, minUnits * 25].map(n => (
+                      <button key={n} onClick={() => setUnits(n)}
+                        style={{ flex: 1, background: units === n ? "#F0B90B" : "rgba(255,255,255,0.05)", color: units === n ? "#000" : "#fff", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, padding: "6px 0", cursor: "pointer", fontSize: 11, fontWeight: 700, fontFamily: "inherit" }}>
+                        {n}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Summary */}
+                  <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: 8, padding: 14, marginBottom: 16 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8, fontSize: 13 }}>
+                      <span style={{ color: "rgba(255,255,255,0.4)" }}>{units} tokens × €{price}</span>
+                      <span style={{ color: "#fff" }}>€{total}</span>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8, fontSize: 13 }}>
+                      <span style={{ color: "rgba(255,255,255,0.4)" }}>Est. annual return ({yield_}%)</span>
+                      <span style={{ color: "#22c55e", fontWeight: 700 }}>€{annReturn}</span>
+                    </div>
+                    <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 8, display: "flex", justifyContent: "space-between", fontSize: 15 }}>
+                      <span style={{ color: "rgba(255,255,255,0.6)", fontWeight: 600 }}>Total</span>
+                      <span style={{ color: "#F0B90B", fontWeight: 900, fontSize: 20 }}>€{total}</span>
+                    </div>
+                  </div>
+
+                  {/* Invest Button */}
+                  <button
+                    onClick={() => {
+                      if (!price) { setMsgType("error"); setMsg("Asset price not set yet"); return; }
+                      setShowWidget(true);
+                    }}
+                    style={{ width: "100%", background: "#F0B90B", color: "#000", border: "none", borderRadius: 8, padding: 14, fontSize: 15, fontWeight: 900, cursor: "pointer", marginBottom: 10, fontFamily: "inherit" }}>
+                    Invest €{total} — Pay with Any Crypto
                   </button>
-                ))}
-              </div>
 
-              {/* Summary */}
-              <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: 8, padding: 14, marginBottom: 16 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8, fontSize: 13 }}>
-                  <span style={{ color: "rgba(255,255,255,0.4)" }}>{units} tokens × €{price}</span>
-                  <span style={{ color: "#fff" }}>€{total}</span>
-                </div>
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8, fontSize: 13 }}>
-                  <span style={{ color: "rgba(255,255,255,0.4)" }}>Est. annual return ({yield_}%)</span>
-                  <span style={{ color: "#22c55e", fontWeight: 700 }}>€{annReturn}</span>
-                </div>
-                <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 8, display: "flex", justifyContent: "space-between", fontSize: 15 }}>
-                  <span style={{ color: "rgba(255,255,255,0.6)", fontWeight: 600 }}>Total</span>
-                  <span style={{ color: "#F0B90B", fontWeight: 900, fontSize: 20 }}>€{total}</span>
-                </div>
-              </div>
+                  <Link href={"/exchange?asset=" + id}
+                    style={{ width: "100%", background: "rgba(255,255,255,0.05)", color: "#fff", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, padding: 12, fontSize: 14, fontWeight: 700, display: "block", textAlign: "center", textDecoration: "none" }}>
+                    Trade on Exchange
+                  </Link>
 
-              <button onClick={handleInvest} disabled={investing}
-                style={{ width: "100%", background: investing ? "#333" : "#F0B90B", color: investing ? "#666" : "#000", border: "none", borderRadius: 8, padding: 14, fontSize: 15, fontWeight: 900, cursor: investing ? "not-allowed" : "pointer", marginBottom: 10, fontFamily: "inherit" }}>
-                {investing ? "Processing..." : "Invest €" + total}
-              </button>
+                  {/* Supported chains */}
+                  <div style={{ marginTop: 14, display: "flex", gap: 4, flexWrap: "wrap", justifyContent: "center" }}>
+                    {["ETH", "Polygon", "Arbitrum", "BSC", "Base", "Optimism"].map(c => (
+                      <span key={c} style={{ background: "#141414", border: "1px solid #1f1f1f", borderRadius: 20, padding: "2px 8px", fontSize: 10, color: "#555", fontWeight: 600 }}>{c}</span>
+                    ))}
+                  </div>
 
-              <Link href={"/exchange?asset=" + id}
-                style={{ width: "100%", background: "rgba(255,255,255,0.05)", color: "#fff", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, padding: 12, fontSize: 14, fontWeight: 700, display: "block", textAlign: "center", textDecoration: "none" }}>
-                Trade on Exchange
-              </Link>
-
-              {/* Message */}
-              {msg && (
-                <div style={{ marginTop: 12, padding: 12, background: mc.bg, border: "1px solid " + mc.border, borderRadius: 8, color: mc.color, fontSize: 13, lineHeight: 1.5 }}>
-                  <div style={{ fontWeight: 700, marginBottom: 4 }}>{mc.icon} {msgType === "error" ? "Error" : msgType === "warn" ? "Action Required" : "Success"}</div>
-                  <div>{msg}</div>
-                  {msgType === "error" && msg.includes("balance") && (
-                    <Link href="/wallet" style={{ display: "inline-block", marginTop: 8, background: "#F0B90B", color: "#000", borderRadius: 6, padding: "6px 14px", textDecoration: "none", fontSize: 12, fontWeight: 800 }}>
-                      💰 Fund Wallet
-                    </Link>
+                  {/* Message */}
+                  {msg && (
+                    <div style={{ marginTop: 12, padding: 12, background: mc.bg, border: "1px solid " + mc.border, borderRadius: 8, color: mc.color, fontSize: 13, lineHeight: 1.5 }}>
+                      <div style={{ fontWeight: 700, marginBottom: 4 }}>{mc.icon} {msgType === "error" ? "Error" : msgType === "warn" ? "Action Required" : "Success"}</div>
+                      <div>{msg}</div>
+                      {msgType === "warn" && msg.includes("KYC") && (
+                        <Link href="/kyc" style={{ display: "inline-block", marginTop: 8, background: "#f5c842", color: "#000", borderRadius: 6, padding: "6px 14px", textDecoration: "none", fontSize: 12, fontWeight: 800 }}>
+                          🪪 Complete KYC
+                        </Link>
+                      )}
+                    </div>
                   )}
-                  {msgType === "warn" && msg.includes("KYC") && (
-                    <Link href="/kyc" style={{ display: "inline-block", marginTop: 8, background: "#f5c842", color: "#000", borderRadius: 6, padding: "6px 14px", textDecoration: "none", fontSize: 12, fontWeight: 800 }}>
-                      🪪 Complete KYC
-                    </Link>
-                  )}
-                </div>
-              )}
 
-              <div style={{ color: "rgba(255,255,255,0.2)", fontSize: 11, textAlign: "center", marginTop: 12, lineHeight: 1.5 }}>
-                🔒 KYC required · EU regulated · Polygon blockchain
-              </div>
-            </div>
-
-            {/* Quick stats */}
-            <div style={{ background: "#0F1318", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: 16 }}>
-              {[
-                ["Symbol",   asset.ticker || "—"],
-                ["Supply",   supply.toLocaleString() + " tokens"],
-                ["Min",      "€" + minInvest],
-                ["Term",     term],
-                ["Standard", asset.tokenStandard || "ERC-3643"],
-                ["Chain",    "Polygon"],
-              ].map(([k, v]) => (
-                <div key={k} style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.05)", fontSize: 13 }}>
-                  <span style={{ color: "rgba(255,255,255,0.35)" }}>{k}</span>
-                  <span style={{ color: "#fff", fontWeight: 600 }}>{v}</span>
+                  <div style={{ color: "rgba(255,255,255,0.2)", fontSize: 11, textAlign: "center", marginTop: 12, lineHeight: 1.5 }}>
+                    🔒 KYC required · EU regulated · Polygon blockchain
+                  </div>
                 </div>
-              ))}
-            </div>
+
+                {/* Quick stats */}
+                <div style={{ background: "#0F1318", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: 16 }}>
+                  {[
+                    ["Symbol",   asset.ticker || "—"],
+                    ["Supply",   supply.toLocaleString() + " tokens"],
+                    ["Min",      "€" + minInvest],
+                    ["Term",     term],
+                    ["Standard", asset.tokenStandard || "ERC-3643"],
+                    ["Chain",    "Polygon"],
+                  ].map(([k, v]) => (
+                    <div key={k} style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.05)", fontSize: 13 }}>
+                      <span style={{ color: "rgba(255,255,255,0.35)" }}>{k}</span>
+                      <span style={{ color: "#fff", fontWeight: 600 }}>{v}</span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
 
         </div>
