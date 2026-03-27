@@ -9,7 +9,7 @@ export default async function handler(req, res) {
   try {
     const { type, search, limit = 50 } = req.query;
 
-    const query = { status: { $in: ['live', 'active', 'approved', 'listed'] } };
+    const query = { status: { $in: ['live', 'active', 'approved', 'listed', 'draft'] } };
 
     if (type && type !== 'all') query.assetType = type;
     if (search) query.name = { $regex: search, $options: 'i' };
