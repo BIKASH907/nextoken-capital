@@ -14,10 +14,12 @@ export default async function handler(req, res) {
     };
 
     if (type && type !== 'All') query.assetType = type;
-    if (search) query.$or = [
-      { name:     { $regex: search, $options: 'i' } },
-      { location: { $regex: search, $options: 'i' } },
-    ];
+    if (search) {
+      query.$or = [
+        { name:     { $regex: search, $options: 'i' } },
+        { location: { $regex: search, $options: 'i' } },
+      ];
+    }
 
     const assets = await Asset.find(query)
       .limit(parseInt(limit))
