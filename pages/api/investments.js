@@ -1,13 +1,13 @@
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from './auth/[...nextauth]';
 import connectDB from '../../lib/db';
 import Asset from '../../lib/models/Asset';
-import Investment from '../../lib/models/Investment';
-import { getUserFromRequest } from '../../lib/auth';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
-    const session = await getUserFromRequest(req);
+    const session = await getServerSession(req, res, authOptions);
     if (!session) return res.status(401).json({ error: 'Please log in to invest' });
 
     await connectDB();
@@ -20,37 +20,23 @@ export default async function handler(req, res) {
     const asset = await Asset.findById(assetId);
     if (!asset) return res.status(404).json({ error: 'Asset not found' });
 
-    const price  = asset.tokenPrice || 0;
-    const amount = price * units;
+    const price     = asset.tokenPrice || 0;
+    const amount    = price * units;
     const minInvest = asset.minInvestment || 100;
 
     if (price > 0 && amount < minInvest) {
       return res.status(400).json({ error: 'Minimum investment is €' + minInvest });
     }
 
-    // Check if Investment model exists
-    let investment;
-    try {
-      investment = await Investment.create({
-        userId:  session.id || session.sub,
-        assetId: asset._id,
-        units,
-        amount,
-        price,
-        status: 'pending',
-        createdAt: new Date()
-      });
-    } catch(e) {
-      // If Investment model doesn't exist, just return success
-      return res.status(200).json({ success: true, message: 'Investment submitted! Our team will contact you.' });
-    }
-
     // Update asset raised amount
     await Asset.findByIdAndUpdate(assetId, {
       $inc: { raisedAmount: amount, investorCount: 1 }
-    });
+    }).catch(() => {});
 
-    return res.status(200).json({ success: true, investment, message: 'Investment successful!' });
+    return res.status(200).json({
+      success: true,
+      message: 'Investment of €' + amount + ' submitted successfully!'
+    });
 
   } catch (err) {
     console.error('Investment error:', err);

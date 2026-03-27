@@ -48,7 +48,7 @@ export default function AssetDetail() {
       });
       const data = await res.json();
       if (res.ok) setMsg("✅ Investment submitted successfully!");
-      else if (res.status === 401) router.push("/login");
+      else if (res.status === 401) router.push("/login?redirect=/asset/" + id);
       else setMsg("❌ " + (data.error || "Failed"));
     } catch (e) {
       setMsg("❌ Network error");
