@@ -208,3 +208,5 @@ export default function IssuerDocuments() {
   );
 }
 export const getServerSideProps = async () => ({ props: {} });
+
+export const getServerSideProps = async () => ({ props: {} });
