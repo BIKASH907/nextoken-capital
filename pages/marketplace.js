@@ -81,7 +81,7 @@ export default function Marketplace() {
               {loading ? <div style={{ gridColumn:"1/-1", textAlign:"center", padding:40, color:"rgba(255,255,255,0.3)" }}>Loading...</div>
               : assets.length === 0 ? <div style={{ gridColumn:"1/-1", textAlign:"center", padding:40, color:"rgba(255,255,255,0.3)" }}>No assets available</div>
               : assets.map(a => (
-                <div key={a._id} style={{ background:"#161b22", border:"1px solid rgba(255,255,255,0.06)", borderRadius:12, padding:20 }}>
+                <div key={a._id} onClick={() => router.push("/asset/" + a._id)} style={{ cursor:"pointer", background:"#161b22", border:"1px solid rgba(255,255,255,0.06)", borderRadius:12, padding:20 }}>
                   <div style={{ fontSize:16, fontWeight:700 }}>{a.name}</div>
                   <div style={{ fontSize:11, color:"rgba(255,255,255,0.4)", marginBottom:12 }}>{a.assetType}</div>
                   <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8, marginBottom:12 }}>
@@ -89,8 +89,8 @@ export default function Marketplace() {
                     <div style={{ background:"#0a0e14", borderRadius:6, padding:"8px 10px" }}><div style={{ fontSize:9, color:"rgba(255,255,255,0.3)" }}>YIELD</div><div style={{ fontSize:15, fontWeight:700, color:"#22c55e" }}>{a.targetROI||0}%</div></div>
                   </div>
                   <div style={{ display:"flex", gap:8 }}>
-                    <button onClick={() => buyPrimary(a)} style={{ flex:1, padding:10, background:"#F0B90B", color:"#000", border:"none", borderRadius:8, fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>Buy</button>
-                    <button onClick={() => { setSelectedAsset(a); setTab("trade"); setPrice(String(priceOf(a))); }} style={{ flex:1, padding:10, background:"rgba(139,92,246,0.1)", border:"1px solid rgba(139,92,246,0.2)", color:"#8b5cf6", borderRadius:8, fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>Trade</button>
+                    <button onClick={(e) => { e.stopPropagation(); buyPrimary(a); }} style={{ flex:1, padding:10, background:"#F0B90B", color:"#000", border:"none", borderRadius:8, fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>Buy</button>
+                    <button onClick={(e) => { e.stopPropagation(); setSelectedAsset(a); setTab("trade"); setPrice(String(priceOf(a))); }} style={{ flex:1, padding:10, background:"rgba(139,92,246,0.1)", border:"1px solid rgba(139,92,246,0.2)", color:"#8b5cf6", borderRadius:8, fontSize:13, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>Trade</button>
                   </div>
                 </div>
               ))}
