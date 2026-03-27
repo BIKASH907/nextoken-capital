@@ -1,94 +1,95 @@
-import Link from "next/link";
-
 export default function Footer() {
-  const cols = [
-    { title: "MARKETPLACE", links: [
-      { href: "/markets", label: "All Markets" },
-      { href: "/exchange", label: "Exchange" },
-      { href: "/bonds", label: "Bonds" },
-      { href: "/equity-ipo", label: "Equity & IPO" },
-      { href: "/tokenize", label: "Tokenize Asset" },
-    ]},
-    { title: "COMPANY", links: [
-      { href: "/about", label: "About Us" },
-      { href: "/careers", label: "Careers" },
-      { href: "/press", label: "Press" },
-      { href: "/blog", label: "Blog" },
-    ]},
-    { title: "LEGAL", links: [
-      { href: "/terms", label: "Terms of Service" },
-      { href: "/privacy", label: "Privacy Policy" },
-      { href: "/risk", label: "Risk Disclosure" },
-      { href: "/aml", label: "AML Policy" },
-      { href: "/fees", label: "Fees & Pricing" },
-    ]},
-    { title: "SUPPORT", links: [
-      { href: "/help", label: "Help Center" },
-      { href: "/contact", label: "Contact Us" },
-      { href: "/api", label: "API Docs" },
-      { href: "/status", label: "System Status" },
-    ]},
-  ];
-
   return (
-    <>
-      <style>{`
-        .footer { background:#05060a; border-top:1px solid rgba(255,255,255,0.07); padding:60px 20px 32px; }
-        .footer-inner { max-width:1280px; margin:0 auto; }
-        .footer-top { display:grid; grid-template-columns:1.6fr repeat(4,1fr); gap:48px; margin-bottom:48px; }
-        .footer-brand-logo { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
-        .footer-nxt { font-size:20px; font-weight:900; color:#F0B90B; }
-        .footer-line { width:1px; height:28px; background:rgba(255,255,255,0.15); }
-        .footer-brand-text { display:flex; flex-direction:column; line-height:1.1; }
-        .footer-brand-text .bt1 { font-size:11px; font-weight:800; color:#fff; letter-spacing:2px; }
-        .footer-brand-text .bt2 { font-size:9px; color:rgba(255,255,255,0.4); letter-spacing:3px; }
-        .footer-tagline { font-size:13px; color:rgba(255,255,255,0.4); line-height:1.7; margin-bottom:20px; max-width:200px; }
-        .footer-badge { display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:8px; background:rgba(240,185,11,0.06); border:1px solid rgba(240,185,11,0.2); }
-        .footer-badge-label { font-size:10px; color:rgba(255,255,255,0.45); display:block; }
-        .footer-badge-value { font-size:11px; font-weight:700; color:#F0B90B; display:block; }
-        .footer-col-title { font-size:11px; font-weight:700; color:rgba(255,255,255,0.3); letter-spacing:2px; text-transform:uppercase; margin-bottom:16px; }
-        .footer-col a { display:block; font-size:13px; color:rgba(255,255,255,0.5); text-decoration:none; margin-bottom:10px; transition:color .15s; }
-        .footer-col a:hover { color:#fff; }
-        .footer-bottom { border-top:1px solid rgba(255,255,255,0.06); padding-top:28px; }
-        .footer-copy { font-size:12px; color:rgba(255,255,255,0.28); }
-        .footer-risk { font-size:11px; color:rgba(255,255,255,0.18); line-height:1.7; margin-top:18px; }
-        @media(max-width:1024px){ .footer-top{ grid-template-columns:1fr 1fr 1fr; gap:32px; } .footer-brand{ grid-column:1/-1; } }
-        @media(max-width:640px){ .footer-top{ grid-template-columns:1fr 1fr; gap:24px; } .footer-brand{ grid-column:1/-1; } }
-      `}</style>
-      <footer className="footer">
-        <div className="footer-inner">
-          <div className="footer-top">
-            <div className="footer-brand">
-              <div className="footer-brand-logo">
-                <span className="footer-nxt">NXT</span>
-                <div className="footer-line" />
-                <div className="footer-brand-text">
-                  <span className="bt1">NEXTOKEN</span>
-                  <span className="bt2">CAPITAL</span>
-                </div>
-              </div>
-              <p className="footer-tagline">The regulated marketplace for tokenized real-world assets.</p>
-              <div className="footer-badge">
-                <span>🏛️</span>
-                <div>
-                  <span className="footer-badge-label">MONITORED BY</span>
-                  <span className="footer-badge-value">Bank of Lithuania</span>
-                </div>
-              </div>
+    <footer style={{
+      background: '#0d0d0d',
+      borderTop: '1px solid #1f1f1f',
+      padding: '48px 24px 28px',
+      marginTop: '60px'
+    }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        
+        {/* Top row */}
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: '40px', marginBottom: '40px' }}>
+          
+          {/* Brand */}
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
+              <div style={{ background: '#f5c842', borderRadius: '6px', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900', color: '#000', fontSize: '13px' }}>NXT</div>
+              <span style={{ fontWeight: '700', fontSize: '15px', color: '#fff', letterSpacing: '0.5px' }}>NEXTOKEN CAPITAL</span>
             </div>
-            {cols.map((col) => (
-              <div key={col.title} className="footer-col">
-                <div className="footer-col-title">{col.title}</div>
-                {col.links.map((l) => <Link key={l.href} href={l.href}>{l.label}</Link>)}
-              </div>
+            <p style={{ color: '#555', fontSize: '13px', lineHeight: '1.7', maxWidth: '260px' }}>
+              EU-regulated tokenized real-world asset platform. MiCA CASP licensed. Bringing institutional-grade assets to every investor.
+            </p>
+            <div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
+              {['𝕏', 'in', 'tg'].map(s => (
+                <a key={s} href="#" style={{ background: '#1a1a1a', border: '1px solid #2a2a2a', color: '#888', width: '34px', height: '34px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', textDecoration: 'none', fontWeight: '700', transition: 'all 0.2s' }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = '#f5c842'; e.currentTarget.style.color = '#f5c842'; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = '#2a2a2a'; e.currentTarget.style.color = '#888'; }}>
+                  {s}
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* Platform */}
+          <div>
+            <div style={{ color: '#f5c842', fontSize: '11px', fontWeight: '700', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '16px' }}>Platform</div>
+            {['Markets', 'Exchange', 'Bonds', 'Equity & IPO', 'Tokenize Assets'].map(l => (
+              <a key={l} href={`/${l.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-')}`}
+                style={{ display: 'block', color: '#666', fontSize: '13px', textDecoration: 'none', marginBottom: '10px', transition: 'color 0.2s' }}
+                onMouseEnter={e => e.currentTarget.style.color = '#ccc'}
+                onMouseLeave={e => e.currentTarget.style.color = '#666'}>
+                {l}
+              </a>
             ))}
           </div>
-          <div className="footer-bottom">
-            <p className="footer-copy">© 2026 Nextoken Capital UAB. All rights reserved. Registered in Lithuania.</p>
-            <p className="footer-risk">Risk warning: Trading tokenized assets involves risk including potential loss of capital. Past performance is not indicative of future results. Nextoken Capital is a marketplace platform — we do not provide financial advice or manage funds.</p>
+
+          {/* Company */}
+          <div>
+            <div style={{ color: '#f5c842', fontSize: '11px', fontWeight: '700', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '16px' }}>Company</div>
+            {['About Us', 'How It Works', 'Careers', 'Press', 'Contact'].map(l => (
+              <a key={l} href="#"
+                style={{ display: 'block', color: '#666', fontSize: '13px', textDecoration: 'none', marginBottom: '10px', transition: 'color 0.2s' }}
+                onMouseEnter={e => e.currentTarget.style.color = '#ccc'}
+                onMouseLeave={e => e.currentTarget.style.color = '#666'}>
+                {l}
+              </a>
+            ))}
+          </div>
+
+          {/* Legal */}
+          <div>
+            <div style={{ color: '#f5c842', fontSize: '11px', fontWeight: '700', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '16px' }}>Legal</div>
+            {['Terms of Service', 'Privacy Policy', 'Risk Disclosure', 'KYC/AML Policy', 'Cookie Policy'].map(l => (
+              <a key={l} href="#"
+                style={{ display: 'block', color: '#666', fontSize: '13px', textDecoration: 'none', marginBottom: '10px', transition: 'color 0.2s' }}
+                onMouseEnter={e => e.currentTarget.style.color = '#ccc'}
+                onMouseLeave={e => e.currentTarget.style.color = '#666'}>
+                {l}
+              </a>
+            ))}
           </div>
         </div>
-      </footer>
-    </>
+
+        {/* Divider */}
+        <div style={{ borderTop: '1px solid #1a1a1a', paddingTop: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+          <div style={{ color: '#444', fontSize: '12px' }}>
+            © {new Date().getFullYear()} Nextoken Capital UAB. All rights reserved. Registered in Lithuania. MiCA CASP License pending.
+          </div>
+          <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+            <span style={{ background: '#1a1a1a', border: '1px solid #2a2a2a', color: '#555', fontSize: '11px', padding: '4px 10px', borderRadius: '4px' }}>🇪🇺 EU Regulated</span>
+            <span style={{ background: '#1a1a1a', border: '1px solid #2a2a2a', color: '#555', fontSize: '11px', padding: '4px 10px', borderRadius: '4px' }}>🔒 Polygon Blockchain</span>
+            <span style={{ background: '#1a1a1a', border: '1px solid #2a2a2a', color: '#555', fontSize: '11px', padding: '4px 10px', borderRadius: '4px' }}>✓ Sumsub KYC</span>
+          </div>
+        </div>
+
+        {/* Risk warning */}
+        <div style={{ marginTop: '16px', background: '#111', border: '1px solid #1f1f1f', borderRadius: '8px', padding: '12px 16px' }}>
+          <p style={{ color: '#3a3a3a', fontSize: '11px', lineHeight: '1.6', margin: 0 }}>
+            <strong style={{ color: '#444' }}>Risk Warning:</strong> Investing in tokenized real-world assets carries significant risk including loss of capital. Past performance is not indicative of future results. This platform is for professional and sophisticated investors only. Please read our Risk Disclosure before investing.
+          </p>
+        </div>
+      </div>
+    </footer>
   );
 }
