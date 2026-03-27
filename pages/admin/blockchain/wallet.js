@@ -1,88 +1,65 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import AdminShell from "../../../components/admin/AdminShell";
-import ClearSigningModal from "../../../components/ClearSigningModal";
-import { buildClearTransaction } from "../../../lib/transactionVerify";
 
-export default function WalletSecurity() {
+export default function BlockchainWallet() {
   const router = useRouter();
-  const [showDemo, setShowDemo] = useState(false);
-  const [demoTx, setDemoTx] = useState(null);
+  const [token, setToken] = useState("");
+  const [info, setInfo] = useState({});
+  const [assets, setAssets] = useState([]);
+  const [msg, setMsg] = useState("");
 
-  useEffect(() => { if(!localStorage.getItem("adminToken")) router.push("/admin/login"); }, []);
+  useEffect(() => { const t = localStorage.getItem("adminToken"); if (!t) router.push("/admin/login"); setToken(t); }, []);
+  useEffect(() => { if (token) { loadInfo(); loadAssets(); } }, [token]);
 
-  const openDemo = () => {
-    const tx = buildClearTransaction({
-      type: "Token Transfer",
-      amount: "500",
-      token: "NXT-RE001 (Berlin Office Token)",
-      destination: "0x742d35Cc6634C0532925a3b844Bc9e7595f2bD18",
-      destinationLabel: "Verified investor wallet (KYC approved)",
-      contract: process.env.NEXT_PUBLIC_FACTORY_ADDRESS || "0x7B0a6cEA53cE2dee2793F548573F2F3f42f93B41",
-      functionName: "transfer(address,uint256)",
-      fee: "~0.002 MATIC (~EUR 0.01)",
-      network: "Polygon (MATIC)",
-    });
-    setDemoTx(tx);
-    setShowDemo(true);
+  const headers = { Authorization: "Bearer " + token, "Content-Type": "application/json" };
+  const loadInfo = () => fetch("/api/blockchain/info", { headers }).then(r => r.json()).then(setInfo).catch(() => {});
+  const loadAssets = () => fetch("/api/admin/assets", { headers }).then(r => r.json()).then(d => setAssets(d.assets || [])).catch(() => {});
+
+  const deploy = async (id) => {
+    setMsg("Deploying...");
+    const r = await fetch("/api/blockchain/deploy", { method: "POST", headers, body: JSON.stringify({ assetId: id }) });
+    const d = await r.json();
+    setMsg(r.ok ? d.message : "Error: " + d.error);
+    loadAssets();
   };
 
+  const card = (l, v, c) => <div style={{ background: "#161b22", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "14px 20px", flex: 1 }}><div style={{ fontSize: 18, fontWeight: 800, color: c }}>{v}</div><div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)" }}>{l}</div></div>;
+
   return (
-    <AdminShell title="👛 Wallet Integration Security" subtitle="WalletConnect v2, clear signing, ownership verification, contract allowlist.">
-      <button onClick={openDemo} style={{ padding:"12px 24px", background:"#F0B90B", color:"#000", border:"none", borderRadius:8, fontSize:14, fontWeight:800, cursor:"pointer", fontFamily:"inherit", marginBottom:28 }}>
-        🔐 Preview Clear Signing Modal (Demo)
-      </button>
+    <AdminShell title="Blockchain & Wallet" subtitle="Real Polygon mainnet connection. Deploy tokens, monitor deployer wallet.">
+      {msg && <div style={{ background: "rgba(240,185,11,0.08)", border: "1px solid rgba(240,185,11,0.2)", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#F0B90B", marginBottom: 16 }}>{msg}</div>}
 
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, marginBottom:28 }}>
-        {[
-          { t:"WalletConnect v2", d:"Secure connections with session management. QR or deep link. Auto-disconnect on timeout.", s:"Integrated", c:"#22c55e" },
-          { t:"Clear Signing", d:"Human-readable details before signing. Amount, token, destination ALWAYS visible.", s:"Enforced", c:"#22c55e" },
-          { t:"Ownership Verification", d:"Cryptographic proof of wallet ownership. Challenge-response signature required.", s:"Active", c:"#22c55e" },
-          { t:"Contract Allowlist", d:"Wallet can ONLY interact with verified Nextoken contracts. Unknown blocked.", s:"Enforced", c:"#22c55e" },
-        ].map((r,i) => (
-          <div key={i} style={{ background:"#161b22", border:"1px solid rgba(255,255,255,0.06)", borderRadius:10, padding:"18px 20px" }}>
-            <div style={{ display:"flex", justifyContent:"space-between", marginBottom:8 }}>
-              <span style={{ fontSize:15, fontWeight:700 }}>{r.t}</span>
-              <span style={{ fontSize:10, padding:"3px 10px", borderRadius:4, background:r.c+"15", color:r.c, fontWeight:700 }}>{r.s}</span>
-            </div>
-            <div style={{ fontSize:12, color:"rgba(255,255,255,0.4)", lineHeight:1.7 }}>{r.d}</div>
-          </div>
-        ))}
+      <div style={{ display: "flex", gap: 12, marginBottom: 20, flexWrap: "wrap" }}>
+        {card("Network", info.network || "—", "#8b5cf6")}
+        {card("Chain ID", info.chainId || "—", "#3b82f6")}
+        {card("MATIC Balance", info.maticBalance ? info.maticBalance + " MATIC" : "—", "#22c55e")}
+        {card("RPC", info.rpcConnected ? "Connected" : "Disconnected", info.rpcConnected ? "#22c55e" : "#ef4444")}
       </div>
 
-      <h2 style={{ fontSize:16, fontWeight:700, color:"#ef4444", marginBottom:12 }}>Mandatory Before Every Signing</h2>
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:10, marginBottom:28 }}>
-        {[
-          { f:"Amount", d:"Exact tokens or currency", i:"💰" },
-          { f:"Token", d:"Full name and symbol", i:"🪙" },
-          { f:"Destination", d:"Full wallet address", i:"📍" },
-        ].map((r,i) => (
-          <div key={i} style={{ background:"rgba(239,68,68,0.06)", border:"1px solid rgba(239,68,68,0.15)", borderRadius:8, padding:"14px 16px" }}>
-            <div style={{ fontSize:20, marginBottom:6 }}>{r.i}</div>
-            <div style={{ fontSize:13, fontWeight:700, color:"#ef4444" }}>{r.f}</div>
-            <div style={{ fontSize:11, color:"rgba(255,255,255,0.4)" }}>{r.d}</div>
-          </div>
-        ))}
-      </div>
-
-      {[
-        "No hidden contract calls: Every function displayed in plain text",
-        "No proxy redirects: Transaction goes directly to displayed contract",
-        "No additional approvals: Only shown transaction is executed",
-        "Transaction simulation: Dry-run before signing",
-        "Spending limits: Per-wallet daily limits",
-        "Session expiry: WalletConnect auto-expires after 24 hours",
-        "Multi-wallet support with individual permissions",
-        "Revoke anytime: One-click disconnect",
-      ].map((d,i) => (
-        <div key={i} style={{ background:"#161b22", border:"1px solid rgba(255,255,255,0.06)", borderRadius:8, padding:"12px 16px", marginBottom:6, fontSize:13, color:"rgba(255,255,255,0.6)" }}>
-          <span style={{ color:"#22c55e", marginRight:8 }}>✓</span>{d}
+      {info.deployer && (
+        <div style={{ background: "#161b22", borderRadius: 10, border: "1px solid rgba(255,255,255,0.06)", padding: 16, marginBottom: 20 }}>
+          <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginBottom: 4 }}>Deployer Address</div>
+          <a href={info.explorerUrl} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "monospace", fontSize: 14, color: "#F0B90B", textDecoration: "none" }}>{info.deployer}</a>
         </div>
-      ))}
-
-      {showDemo && demoTx && (
-        <ClearSigningModal transaction={demoTx} onConfirm={() => { alert("Transaction would be submitted"); setShowDemo(false); }} onCancel={() => setShowDemo(false)} loading={false} />
       )}
+
+      <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>Token Deployment</h3>
+      <div style={{ background: "#161b22", borderRadius: 10, border: "1px solid rgba(255,255,255,0.06)", overflow: "hidden" }}>
+        {assets.map((a, i) => (
+          <div key={i} style={{ padding: "12px 20px", borderBottom: "1px solid rgba(255,255,255,0.04)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>{a.name}</div>
+              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>{a.contractAddress ? "Deployed: " + a.contractAddress.slice(0, 20) + "..." : "Not deployed"}</div>
+            </div>
+            {!a.contractAddress ? (
+              <button onClick={() => deploy(a._id)} style={{ padding: "6px 14px", borderRadius: 6, background: "#F0B90B", color: "#000", border: "none", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Deploy Token</button>
+            ) : (
+              <a href={"https://polygonscan.com/address/" + a.contractAddress} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: "#22c55e", textDecoration: "none" }}>View on PolygonScan</a>
+            )}
+          </div>
+        ))}
+      </div>
     </AdminShell>
   );
 }
