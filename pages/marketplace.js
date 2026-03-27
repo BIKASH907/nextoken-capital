@@ -12,7 +12,7 @@ export default function Marketplace() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => { loadAssets(); }, []);
-  const loadAssets = () => fetch("/api/assets/stats").then(r => r.json()).then(d => { setAssets((d.assets || []).filter(a => a.status === "live" || a.approvalStatus === "live")); setLoading(false); }).catch(() => setLoading(false));
+ const loadAssets = () => fetch("/api/assets/index").then(r => r.json()).then(d => { setAssets(d.assets || []); setLoading(false); }).catch(() => setLoading(false));
 
   const priceOf = (a) => a.tokenPrice || (a.targetRaise && a.tokenSupply ? Math.round(a.targetRaise / a.tokenSupply) : 100);
   const riskOf = (a) => (a.targetROI || 0) > 15 ? "High" : (a.targetROI || 0) > 10 ? "Medium" : "Low";
