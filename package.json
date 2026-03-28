@@ -33,6 +33,7 @@
     "jsonwebtoken": "^9.0.3",
     "lightweight-charts": "^5.1.0",
     "lucide-react": "^0.577.0",
+    "mongo-sanitize": "^1.1.0",
     "mongodb": "^7.1.0",
     "mongoose": "^9.3.1",
     "next": "^14.2.35",
@@ -43,7 +44,8 @@
     "resend": "^6.9.4",
     "stripe": "^20.4.1",
     "viem": "^2.47.5",
-    "wagmi": "^2.19.5"
+    "wagmi": "^2.19.5",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^4.0.0",
