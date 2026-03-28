@@ -65,7 +65,19 @@ export default function AssetDetail() {
 
   return (
     <>
-      <Head><title>{asset.name} — Nextoken Capital</title></Head>
+      <Head><title>{asset.name} — Nextoken Capital</title>
+        <style>{`
+          @media(max-width:768px){
+            .asset-layout{grid-template-columns:1fr !important}
+            .asset-sidebar{position:relative !important;top:auto !important}
+            .asset-badges{gap:6px !important}
+            .asset-info-grid{grid-template-columns:1fr !important}
+            .asset-fin-grid{grid-template-columns:1fr !important}
+            .asset-tabs{overflow-x:auto;-webkit-overflow-scrolling:touch}
+            .asset-tabs button{white-space:nowrap;font-size:12px !important;padding:10px 12px !important}
+            .asset-unit-picks{flex-wrap:wrap !important}
+          }
+        `}</style></Head>
       <Navbar />
       <div style={{ background: "#0B0E11", minHeight: "100vh", paddingTop: 64 }}>
 
@@ -73,7 +85,7 @@ export default function AssetDetail() {
           <Link href="/marketplace" style={{ color: "rgba(255,255,255,0.4)", fontSize: 13, textDecoration: "none" }}>← Back to Markets</Link>
         </div>
 
-        <div style={{ maxWidth: 1200, margin: "0 auto", padding: 20, display: "grid", gridTemplateColumns: "1fr 360px", gap: 24 }}>
+        <div className="asset-layout" style={{ maxWidth: 1200, margin: "0 auto", padding: 20, display: "grid", gridTemplateColumns: "1fr 360px", gap: 24 }}>
 
           {/* ── LEFT ── */}
           <div>
@@ -91,7 +103,7 @@ export default function AssetDetail() {
 
             {/* Badges + Title */}
             <div style={{ marginBottom: 20 }}>
-              <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
+              <div className="asset-badges" style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
                 <span style={{ background: "rgba(240,185,11,0.1)", color: "#F0B90B", border: "1px solid rgba(240,185,11,0.2)", borderRadius: 20, padding: "4px 12px", fontSize: 12, fontWeight: 700, textTransform: "capitalize" }}>
                   {(asset.assetType || "asset").replace(/_/g, " ")}
                 </span>
@@ -109,7 +121,7 @@ export default function AssetDetail() {
             </div>
 
             {/* Tabs */}
-            <div style={{ display: "flex", gap: 4, borderBottom: "1px solid rgba(255,255,255,0.07)", marginBottom: 20 }}>
+            <div className="asset-tabs" style={{ display: "flex", gap: 4, borderBottom: "1px solid rgba(255,255,255,0.07)", marginBottom: 20 }}>
               {["overview", "financials", "documents"].map(t => (
                 <button key={t} onClick={() => setTab(t)} style={{ background: "none", border: "none", borderBottom: tab === t ? "2px solid #F0B90B" : "2px solid transparent", color: tab === t ? "#F0B90B" : "rgba(255,255,255,0.4)", padding: "10px 18px", cursor: "pointer", fontSize: 13, fontWeight: 700, textTransform: "capitalize", fontFamily: "inherit" }}>
                   {t}
@@ -123,7 +135,7 @@ export default function AssetDetail() {
                 <p style={{ color: "rgba(255,255,255,0.6)", lineHeight: 1.7, fontSize: 14, marginBottom: 20 }}>
                   {asset.description || "No description provided."}
                 </p>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                <div className="asset-info-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                   {[
                     ["Token Symbol",    asset.ticker || "—"],
                     ["Token Standard",  asset.tokenStandard || "ERC-3643"],
@@ -146,7 +158,7 @@ export default function AssetDetail() {
             {/* FINANCIALS */}
             {tab === "financials" && (
               <div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
+                <div className="asset-fin-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
                   {[
                     ["Token Price",    price > 0 ? "€" + price : "—",                                     "#F0B90B"],
                     ["Annual Yield",   yield_ + "%",                                                        "#22c55e"],
@@ -247,7 +259,7 @@ export default function AssetDetail() {
                     style={{ width: "100%", background: "#161B22", border: "1px solid rgba(255,255,255,0.1)", color: "#fff", padding: 12, borderRadius: 8, fontSize: 16, outline: "none", boxSizing: "border-box", marginBottom: 8, fontFamily: "inherit" }} />
 
                   {/* Quick picks */}
-                  <div style={{ display: "flex", gap: 6, marginBottom: 16 }}>
+                  <div className="asset-unit-picks" style={{ display: "flex", gap: 6, marginBottom: 16 }}>
                     {[minUnits, minUnits * 2, minUnits * 5, minUnits * 10, minUnits * 25].map(n => (
                       <button key={n} onClick={() => setUnits(n)}
                         style={{ flex: 1, background: units === n ? "#F0B90B" : "rgba(255,255,255,0.05)", color: units === n ? "#000" : "#fff", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, padding: "6px 0", cursor: "pointer", fontSize: 11, fontWeight: 700, fontFamily: "inherit" }}>
