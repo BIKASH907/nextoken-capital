@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
@@ -100,6 +101,7 @@ const WALLETS = [
 export default function Navbar() {
   const [open, setOpen]             = useState(false);
   const [scrolled, setScrolled]     = useState(false);
+  const { data: session } = useSession();
   const [wallet, setWallet]         = useState(null);
   const [walletName, setWalletName] = useState("");
   const [showModal, setShowModal]   = useState(false);
@@ -256,7 +258,7 @@ export default function Navbar() {
             <button className={`nb-cw ${wallet ? "on" : ""}`} onClick={() => setShowModal(true)}>
               {wallet ? `● ${shortAddr}` : "Connect Wallet"}
             </button>
-            <Link href="/login" className="nb-li">Log In</Link>
+            {session ? <Link href="/dashboard" className="nb-li" style={{color:"#F0B90B",fontWeight:700}}>{session.user?.name || session.user?.email?.split("@")[0] || "Dashboard"}</Link> : <Link href="/login" className="nb-li">Log In</Link>}
             <button className="nb-hbg" onClick={() => setOpen(!open)} aria-label="Menu">
               <span style={{ transform: open ? "rotate(45deg) translate(5px,5px)" : "none" }} />
               <span style={{ opacity: open ? 0 : 1 }} />
@@ -275,7 +277,7 @@ export default function Navbar() {
         <button className="nb-mob-cw" onClick={() => { setOpen(false); setShowModal(true); }}>
           {wallet ? `● ${shortAddr}` : "Connect Wallet"}
         </button>
-        <Link href="/login" className="nb-mob-li">Log In</Link>
+        {session ? <Link href="/dashboard" className="nb-mob-li" style={{color:"#F0B90B",fontWeight:700}}>{session.user?.name || session.user?.email?.split("@")[0] || "Dashboard"}</Link> : <Link href="/login" className="nb-mob-li">Log In</Link>}
       </div>
 
       {/* WALLET MODAL */}

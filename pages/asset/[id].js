@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import Link from "next/link";
@@ -8,6 +9,7 @@ import InvestmentPayment from "../../components/InvestmentPayment";
 
 export default function AssetDetail() {
   const router = useRouter();
+  const { data: session } = useSession();
   const { id } = router.query;
   const [asset, setAsset]         = useState(null);
   const [loading, setLoading]     = useState(true);
