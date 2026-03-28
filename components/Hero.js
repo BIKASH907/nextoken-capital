@@ -16,7 +16,7 @@ export default function Hero() {
           </p>
           <div className={styles.heroButtons}>
             <Link href="/markets" className={styles.primaryBtn}>Explore Marketplace</Link>
-            <Link href="/auth/register" className={styles.secondaryBtn}>List an Asset</Link>
+            <Link href="/register" className={styles.secondaryBtn}>List an Asset</Link>
           </div>
         </div>
       </div>
