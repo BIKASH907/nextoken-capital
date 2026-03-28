@@ -74,7 +74,7 @@ export const authOptions = {
     warn(code) { console.warn('NEXTAUTH WARN:', code); },
   },
   pages: { signIn: '/login', error: '/login' },
-  session: { strategy: 'jwt', maxAge: 30 * 24 * 60 * 60 },
+  session: { strategy: 'jwt', maxAge: 8 * 60 * 60 },
   secret: process.env.NEXTAUTH_SECRET,
 };
 

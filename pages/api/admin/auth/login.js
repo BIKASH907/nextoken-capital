@@ -18,11 +18,11 @@ export default async function handler(req, res) {
     const token = jwt.sign(
       { id: employee._id, email: employee.email, role: employee.role },
       process.env.JWT_SECRET,
-      { expiresIn: "8h" }
+      { expiresIn: "2h" }
     );
     return res.status(200).json({ token, employee: { id: employee._id, firstName: employee.firstName, lastName: employee.lastName, email: employee.email, role: employee.role } });
   } catch (err) {
     console.error("LOGIN ERROR:", err);
-    return res.status(500).json({ error: err.message, stack: err.stack });
+    return res.status(500).json({ error: "Login failed. Please try again." });
   }
 }
