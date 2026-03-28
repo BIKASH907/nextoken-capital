@@ -18,7 +18,12 @@ export default function Footer() {
               <span style={{ fontWeight: '700', fontSize: '15px', color: '#fff', letterSpacing: '0.5px' }}>NEXTOKEN CAPITAL</span>
             </div>
             <p style={{ color: '#555', fontSize: '13px', lineHeight: '1.7', maxWidth: '260px' }}>
-              EU compliance-ready tokenized real-world asset platform. MiCA CASP license pending. Bringing institutional-grade assets to every investor.
+              EU compliance-ready tokenized real-world asset platform. MiCA CASP license pending. Bringing institutional-grade assets to every investor.</p>
+            <div style={{display:"flex",alignItems:"center",gap:10,marginTop:12}}>
+              <img src="/bikash.jpg" alt="CEO" style={{width:36,height:36,borderRadius:"50%",objectFit:"cover",border:"1px solid rgba(240,185,11,0.3)"}} />
+              <div><div style={{fontSize:12,fontWeight:700,color:"#fff"}}>Bikash Bhat</div><div style={{fontSize:10,color:"rgba(255,255,255,0.4)"}}>CEO & Founder</div></div>
+            </div>
+            <p style={{display:"none"}}
             </p>
             <div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
               {['𝕏', 'in', 'tg'].map(s => (

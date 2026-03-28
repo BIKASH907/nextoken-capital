@@ -4,7 +4,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
 const TEAM = [
-  { name:"Bikash Bhat",       role:"CEO & Founder",          bio:"Fintech entrepreneur with 10+ years in capital markets and blockchain infrastructure." },
+  { name:"Bikash Bhat",       role:"CEO & Founder",          bio:"Fintech entrepreneur with 10+ years in capital markets and blockchain infrastructure.", photo:"/bikash.jpg" },
   { name:"Compliance Team",   role:"Legal & Compliance",     bio:"EU-based regulatory specialists ensuring full MiCA and Bank of Lithuania compliance." },
   { name:"Engineering Team",  role:"Blockchain & Platform",  bio:"Full-stack engineers specialising in ERC-3643 security token infrastructure." },
   { name:"Investment Team",   role:"Asset Origination",      bio:"Asset specialists sourcing and structuring real-world investment opportunities." },
@@ -193,7 +193,7 @@ export default function AboutPage() {
                 <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14 }}>
                   {TEAM.map(t => (
                     <div key={t.name} className="ab-team-card">
-                      <div className="ab-team-avatar">👤</div>
+                      {t.photo ? <img src={t.photo} alt={t.name} style={{width:56,height:56,borderRadius:"50%",objectFit:"cover",border:"2px solid rgba(240,185,11,0.3)",margin:"0 auto 14px",display:"block"}} /> : <div className="ab-team-avatar">👤</div>}
                       <div className="ab-team-name">{t.name}</div>
                       <div className="ab-team-role">{t.role}</div>
                       <div className="ab-team-bio">{t.bio}</div>
