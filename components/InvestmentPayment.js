@@ -5,7 +5,7 @@ export default function InvestmentPayment({ asset, units, onSuccess, onBack }) {
   const [error, setError] = useState('');
   const [txHash, setTxHash] = useState('');
   const amount = (asset.tokenPrice || 0) * units;
-  const receiver = process.env.NEXT_PUBLIC_PAYMENT_RECEIVER || '';
+  const receiver = process.env.NEXT_PUBLIC_PAYMENT_RECEIVER || '0x1A4e894F64b0FB0609CAD3D477E6B104B93F012B';
 
   async function switchToPolygon() {
     try {
