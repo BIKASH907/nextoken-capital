@@ -11,12 +11,21 @@ export default function InvestmentPayment({ asset, units, onSuccess, onBack }) {
   }, []);
 
   const widgetConfig = {
+    // Lock destination: USDC on Polygon to platform wallet
     toChain: 137,
     toToken: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
     toAmount: amount.toString(),
     toAddress: process.env.NEXT_PUBLIC_PAYMENT_RECEIVER || '',
+
+    // Default source: POL on Polygon (user's most likely token)
+    fromChain: 137,
+    fromToken: '0x0000000000000000000000000000000000001010',
+
     integrator: 'nextoken-capital',
     appearance: 'dark',
+    variant: 'compact',
+    subvariant: 'split',
+
     theme: {
       palette: {
         primary:    { main: '#F0B90B' },
@@ -26,23 +35,33 @@ export default function InvestmentPayment({ asset, units, onSuccess, onBack }) {
       },
       shape: { borderRadius: 12, borderRadiusSecondary: 8 },
     },
-    hiddenUI: ['appearance', 'language'],
+
+    // Hide confusing UI elements
+    hiddenUI: [
+      'appearance',
+      'language',
+      'poweredBy',
+      'toToken',
+      'toAddress',
+    ],
+
+    // Allow all major chains so cross-chain still works if needed
     chains: {
-      allow: [1, 137, 42161, 10, 56, 43114, 8453],
+      allow: [1, 137, 42161, 10, 56, 8453],
     },
+
+    // Pre-select common tokens per chain so user sees familiar options
     tokens: {
-      allow: [
+      featured: [
+        { chainId: 137,   address: '0x0000000000000000000000000000000000001010' }, // POL native
+        { chainId: 137,   address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174' }, // USDC.e Polygon
+        { chainId: 137,   address: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F' }, // USDT Polygon
         { chainId: 1,     address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48' }, // USDC ETH
         { chainId: 1,     address: '0xdAC17F958D2ee523a2206206994597C13D831ec7' }, // USDT ETH
-        { chainId: 1,     address: '0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c' }, // EURC ETH
-        { chainId: 137,   address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174' }, // USDC Polygon
-        { chainId: 137,   address: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F' }, // USDT Polygon
-        { chainId: 137,   address: '0x0000000000000000000000000000000000001010' }, // MATIC
-        { chainId: 42161, address: '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8' }, // USDC Arbitrum
-        { chainId: 10,    address: '0x7F5c764cBc14f9669B88837ca1490cCa17c31607' }, // USDC Optimism
-        { chainId: 8453,  address: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913' }, // USDC Base
       ],
     },
+
+    // Record investment after successful payment
     onRouteExecutionCompleted: async (route) => {
       try {
         const lastStep = route.steps[route.steps.length - 1];
@@ -67,6 +86,7 @@ export default function InvestmentPayment({ asset, units, onSuccess, onBack }) {
         console.error('Post-payment error:', e);
       }
     },
+
     onRouteExecutionFailed: (route) => {
       console.error('Payment failed:', route);
     },
@@ -79,9 +99,7 @@ export default function InvestmentPayment({ asset, units, onSuccess, onBack }) {
         <button onClick={onBack} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', padding: 0 }}>
           ← Back
         </button>
-        <div style={{ color: '#fff', fontWeight: 700, fontSize: 14 }}>
-          Pay for Investment
-        </div>
+        <div style={{ color: '#fff', fontWeight: 700, fontSize: 14 }}>Pay for Investment</div>
       </div>
 
       {/* Investment summary */}
@@ -100,17 +118,9 @@ export default function InvestmentPayment({ asset, units, onSuccess, onBack }) {
         </div>
       </div>
 
-      {/* Supported chains info */}
-      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 16 }}>
-        {['Ethereum', 'Polygon', 'Arbitrum', 'Optimism', 'BSC', 'Base'].map(chain => (
-          <span key={chain} style={{ background: '#161B22', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, padding: '3px 10px', fontSize: 11, color: '#888', fontWeight: 600 }}>
-            {chain}
-          </span>
-        ))}
-      </div>
-
+      {/* Simple info */}
       <div style={{ background: '#062015', border: '1px solid #065f46', borderRadius: 8, padding: '8px 12px', marginBottom: 16, fontSize: 12, color: '#0ECB81' }}>
-        ✅ Pay with <strong>any token from any network</strong> — auto-converted to USDC on Polygon
+        ✅ Defaults to <strong>POL on Polygon</strong> — you can also pay with any token from any chain.
       </div>
 
       {/* LiFi Widget */}
@@ -124,7 +134,7 @@ export default function InvestmentPayment({ asset, units, onSuccess, onBack }) {
       )}
 
       <div style={{ color: 'rgba(255,255,255,0.2)', fontSize: 11, textAlign: 'center', marginTop: 12, lineHeight: 1.5 }}>
-        🔒 Powered by LI.FI · Non-custodial · KYC required · EU regulated
+        🔒 Non-custodial · KYC required · EU regulated
       </div>
     </div>
   );
