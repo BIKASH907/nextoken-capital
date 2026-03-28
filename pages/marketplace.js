@@ -30,21 +30,33 @@ export default function Marketplace() {
 
   return (
     <>
-      <Head><title>Marketplace — Nextoken Capital</title></Head>
+      <Head><title>Marketplace — Nextoken Capital</title>
+        <style>{`
+          @media(max-width:768px){
+            .mp-stats{flex-direction:column !important}
+            .mp-grid{grid-template-columns:1fr !important}
+            .mp-head h1{font-size:24px !important}
+            .mp-filters{gap:4px !important}
+            .mp-filters button{padding:5px 10px !important;font-size:11px !important}
+          }
+          @media(max-width:480px){
+            .mp-stats>div{min-width:100% !important}
+          }
+        `}</style></Head>
       <Navbar />
       <div style={{ minHeight: "100vh", background: "#0B0E11", color: "#fff", paddingTop: 70 }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "28px 20px" }}>
 
           {/* HEADER */}
           <div style={{ marginBottom: 28 }}>
-            <h1 style={{ fontSize: 32, fontWeight: 800, marginBottom: 6 }}>Invest in Tokenized Assets</h1>
+            <h1 className="mp-head" style={{ fontSize: 32, fontWeight: 800, marginBottom: 6 }}>Invest in Tokenized Assets</h1>
             <p style={{ fontSize: 14, color: "rgba(255,255,255,0.4)", maxWidth: 600 }}>
               Browse verified real-world assets. Each listing undergoes compliance review, financial verification, and legal structuring before reaching investors.
             </p>
           </div>
 
           {/* STATS */}
-          <div style={{ display: "flex", gap: 12, marginBottom: 24, flexWrap: "wrap" }}>
+          <div className="mp-stats" style={{ display: "flex", gap: 12, marginBottom: 24, flexWrap: "wrap" }}>
             {[
               { l: "Listed Assets",   v: assets.length, c: "#F0B90B" },
               { l: "Asset Types",     v: new Set(assets.map(a => a.assetType)).size, c: "#8b5cf6" },
@@ -59,7 +71,7 @@ export default function Marketplace() {
           </div>
 
           {/* FILTERS */}
-          <div style={{ display: "flex", gap: 6, marginBottom: 20, flexWrap: "wrap" }}>
+          <div className="mp-filters" style={{ display: "flex", gap: 6, marginBottom: 20, flexWrap: "wrap" }}>
             {types.map(t => (
               <button key={t} onClick={() => setFilter(t)} style={{ padding: "6px 16px", borderRadius: 20, fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", background: filter === t ? "#F0B90B15" : "rgba(255,255,255,0.04)", color: filter === t ? "#F0B90B" : "rgba(255,255,255,0.4)", border: filter === t ? "1px solid #F0B90B30" : "1px solid rgba(255,255,255,0.06)", textTransform: "capitalize" }}>
                 {t === "All" ? "All Assets" : t.replace(/_/g, " ")}
@@ -73,7 +85,7 @@ export default function Marketplace() {
           ) : filtered.length === 0 ? (
             <div style={{ textAlign: "center", padding: 60, color: "rgba(255,255,255,0.3)" }}>No assets available yet. Check back soon.</div>
           ) : (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))", gap: 16 }}>
+            <div className="mp-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))", gap: 16 }}>
               {filtered.map(a => {
                 const risk = riskOf(a);
                 const pct  = soldPct(a);

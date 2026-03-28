@@ -54,7 +54,20 @@ export default function MarketsPage() {
 
   return (
     <>
-      <Head><title>Markets — Nextoken Capital</title></Head>
+      <Head><title>Markets — Nextoken Capital</title>
+        <style>{`
+          @media(max-width:768px){
+            .mk-grid{grid-template-columns:1fr !important}
+            .mk-filters{flex-direction:column !important}
+            .mk-filters>*{width:100% !important;min-width:auto !important}
+            .mk-hero-stats{gap:20px !important}
+            .mk-card-stats{grid-template-columns:1fr 1fr !important}
+            .mk-card-btns{flex-direction:column !important}
+          }
+          @media(max-width:480px){
+            .mk-hero-stats{flex-direction:column !important;gap:12px !important}
+          }
+        `}</style></Head>
       <Navbar />
       <div style={{ background: "#0B0E11", minHeight: "100vh", paddingTop: "64px" }}>
 
@@ -70,7 +83,7 @@ export default function MarketsPage() {
             Invest in real-world assets — real estate, bonds, equity and infrastructure — starting from €100.
           </p>
           {/* Stats */}
-          <div style={{ display: "flex", justifyContent: "center", gap: "40px", flexWrap: "wrap" }}>
+          <div className="mk-hero-stats" style={{ display: "flex", justifyContent: "center", gap: "40px", flexWrap: "wrap" }}>
             {[
               ["Total Assets", list.length + " Listed"],
               ["Min Investment", "€100"],
@@ -88,7 +101,7 @@ export default function MarketsPage() {
         <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "32px 20px" }}>
 
           {/* Search + Filters */}
-          <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginBottom: "24px", alignItems: "center" }}>
+          <div className="mk-filters" style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginBottom: "24px", alignItems: "center" }}>
             <div style={{ position: "relative", flex: "1", minWidth: "200px" }}>
               <span style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: "#555" }}>🔍</span>
               <input value={search} onChange={e => setSearch(e.target.value)}
@@ -127,7 +140,7 @@ export default function MarketsPage() {
               <div style={{ fontSize: "14px" }}>Try adjusting your filters or check back soon</div>
             </div>
           ) : (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))", gap: "20px" }}>
+            <div className="mk-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))", gap: "20px" }}>
               {list.map(asset => {
                 const progress = pct(asset.raisedAmount, asset.targetRaise);
                 const icon = ASSET_ICONS[asset.assetType] || "💎";
@@ -174,7 +187,7 @@ export default function MarketsPage() {
                       )}
 
                       {/* Key stats */}
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px", marginBottom: "14px" }}>
+                      <div className="mk-card-stats" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px", marginBottom: "14px" }}>
                         {[
                           ["Token Price", asset.tokenPrice ? "€" + asset.tokenPrice : "—"],
                           ["Annual Yield", asset.annualYield ? asset.annualYield + "%" : "—"],
@@ -212,7 +225,7 @@ export default function MarketsPage() {
                       </div>
 
                       {/* Action buttons */}
-                      <div style={{ display: "flex", gap: "8px" }}>
+                      <div className="mk-card-btns" style={{ display: "flex", gap: "8px" }}>
                         <Link href={"/asset/" + asset._id} style={{ flex: 1, background: "#F0B90B", color: "#000", borderRadius: "8px", padding: "11px", textAlign: "center", textDecoration: "none", fontWeight: "800", fontSize: "13px", display: "block" }}>
                           View & Invest
                         </Link>

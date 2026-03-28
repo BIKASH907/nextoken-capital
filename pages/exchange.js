@@ -102,7 +102,25 @@ export default function Exchange() {
 
   return (
     <>
-      <Head><title>Exchange — Nextoken Capital</title></Head>
+      <Head><title>Exchange — Nextoken Capital</title>
+        <style>{`
+          @media(max-width:900px){
+            .ex-main{grid-template-columns:1fr !important}
+            .ex-sidebar{position:relative !important;top:auto !important;order:-1}
+            .ex-hero-stats{gap:16px !important}
+            .ex-hero-stats>div{min-width:auto}
+          }
+          @media(max-width:640px){
+            .ex-ob-grid{grid-template-columns:1fr !important}
+            .ex-ob-grid>div:first-child{border-right:none !important;border-bottom:1px solid #1a1a1a}
+            .ex-hero-wrap{flex-direction:column !important;align-items:flex-start !important}
+            .ex-hero-wrap select{width:100% !important;min-width:auto !important}
+            .ex-hero-stats{flex-direction:column !important;gap:10px !important}
+            .ex-tabs button{padding:10px 12px !important;font-size:12px !important}
+            .ex-trades-row{grid-template-columns:1fr 1fr !important}
+            .ex-trades-row span:nth-child(3),.ex-trades-row span:nth-child(4){display:none}
+          }
+        `}</style></Head>
       <Navbar />
 
       <div style={{ background: '#080808', minHeight: '100vh', paddingTop: '72px', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
@@ -110,7 +128,7 @@ export default function Exchange() {
         {/* ── HERO ASSET PICKER ── */}
         <div style={{ background: 'linear-gradient(180deg, #0f0f0f 0%, #080808 100%)', borderBottom: '1px solid #1a1a1a', padding: '28px 24px' }}>
           <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap' }}>
+            <div className='ex-hero-wrap' style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap' }}>
 
               {/* Asset Dropdown */}
               <div style={{ position: 'relative' }}>
@@ -139,7 +157,7 @@ export default function Exchange() {
 
               {/* Stats bar */}
               {selectedAsset && (
-                <div style={{ display: 'flex', gap: '32px', flexWrap: 'wrap', alignItems: 'center' }}>
+                <div className='ex-hero-stats' style={{ display: 'flex', gap: '32px', flexWrap: 'wrap', alignItems: 'center' }}>
                   <div>
                     <div style={{ color: '#555', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Mid Price</div>
                     <div style={{ color: '#f5c842', fontSize: '22px', fontWeight: '800' }}>€{midPrice}</div>
@@ -207,7 +225,7 @@ export default function Exchange() {
             </div>
           </div>
         ) : (
-          <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 16px', display: 'grid', gridTemplateColumns: '1fr 360px', gap: '16px', paddingBottom: '40px', paddingTop: '16px' }}>
+          <div className='ex-main' style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 16px', display: 'grid', gridTemplateColumns: '1fr 360px', gap: '16px', className: 'ex-main', paddingBottom: '40px', paddingTop: '16px' }}>
 
             {/* ── LEFT PANEL ── */}
             <div>
@@ -249,7 +267,7 @@ export default function Exchange() {
 
                 {/* ORDER BOOK */}
                 {tab === 'orderbook' && (
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
+                  <div className='ex-ob-grid' style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
                     {/* Bids */}
                     <div style={{ padding: '16px', borderRight: '1px solid #1a1a1a' }}>
                       <div style={{ color: '#4ade80', fontWeight: '700', fontSize: '12px', letterSpacing: '1px', marginBottom: '14px' }}>▲ BIDS (Buyers)</div>
@@ -315,7 +333,7 @@ export default function Exchange() {
             </div>
 
             {/* ── RIGHT PANEL: Place Order ── */}
-            <div style={{ position: 'sticky', top: '88px', height: 'fit-content' }}>
+            <div className='ex-sidebar' style={{ position: 'sticky', top: '88px', height: 'fit-content' }}>
               <div style={{ background: '#0f0f0f', border: '1px solid #1a1a1a', borderRadius: '12px', padding: '20px' }}>
                 <div style={{ fontWeight: '700', fontSize: '16px', marginBottom: '20px', color: '#fff' }}>Place Order</div>
 
