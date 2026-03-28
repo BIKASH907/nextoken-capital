@@ -14,7 +14,7 @@ const WALLETS = [
       const acc = await window.ethereum.request({ method: "eth_requestAccounts" });
       return acc[0];
     },
-    install: "https://metamask.io/download/",
+    install: (typeof window !== "undefined" && /Android|iPhone|iPad/i.test(navigator.userAgent)) ? "https://metamask.app.link/dapp/nextokencapital.com" : "https://metamask.io/download/",
   },
   {
     id: "coinbase",
@@ -26,7 +26,7 @@ const WALLETS = [
       const acc = await window.ethereum.request({ method: "eth_requestAccounts" });
       return acc[0];
     },
-    install: "https://www.coinbase.com/wallet/downloads",
+    install: (typeof window !== "undefined" && /Android|iPhone|iPad/i.test(navigator.userAgent)) ? "https://go.cb-w.com/dapp?cb_url=https://nextokencapital.com" : "https://www.coinbase.com/wallet/downloads",
   },
   {
     id: "trust",
@@ -38,7 +38,7 @@ const WALLETS = [
       const acc = await window.ethereum.request({ method: "eth_requestAccounts" });
       return acc[0];
     },
-    install: "https://trustwallet.com/download",
+    install: (typeof window !== "undefined" && /Android|iPhone|iPad/i.test(navigator.userAgent)) ? "https://link.trustwallet.com/open_url?coin_id=966&url=https://nextokencapital.com" : "https://trustwallet.com/download",
   },
   {
     id: "brave",
@@ -50,7 +50,7 @@ const WALLETS = [
       const acc = await window.ethereum.request({ method: "eth_requestAccounts" });
       return acc[0];
     },
-    install: "https://brave.com/download/",
+    install: (typeof window !== "undefined" && /Android|iPhone|iPad/i.test(navigator.userAgent)) ? "https://brave.com/download/" : "https://brave.com/download/",
   },
   {
     id: "phantom",
@@ -74,7 +74,7 @@ const WALLETS = [
       const acc = await window.okxwallet.request({ method: "eth_requestAccounts" });
       return acc[0];
     },
-    install: "https://www.okx.com/web3/wallet",
+    install: (typeof window !== "undefined" && /Android|iPhone|iPad/i.test(navigator.userAgent)) ? "okx://wallet/dapp/details?dappUrl=https://nextokencapital.com" : "https://www.okx.com/web3/wallet",
   },
   {
     id: "walletconnect",
@@ -83,7 +83,7 @@ const WALLETS = [
     icon: "🔗",
     check: () => false,
     connect: async () => null,
-    install: "https://walletconnect.com/",
+    install: (typeof window !== "undefined" && /Android|iPhone|iPad/i.test(navigator.userAgent)) ? "https://walletconnect.com/" : "https://walletconnect.com/",
     comingSoon: true,
   },
   {

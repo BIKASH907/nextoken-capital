@@ -27,7 +27,28 @@ export default function InvestmentPayment({ asset, units, onSuccess, onBack }) {
   }
 
   async function payWithPOL() {
-    if (!window.ethereum) { setError('MetaMask not found. Please install MetaMask.'); return; }
+    if (!window.ethereum) {
+      const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+      if (isMobile) {
+        const path = window.location.pathname + window.location.search;
+        const deepLinks = [
+          { name: 'MetaMask', url: 'https://metamask.app.link/dapp/nextokencapital.com' + path },
+          { name: 'Coinbase Wallet', url: 'https://go.cb-w.com/dapp?cb_url=https://nextokencapital.com' + path },
+          { name: 'Trust Wallet', url: 'https://link.trustwallet.com/open_url?coin_id=966&url=https://nextokencapital.com' + path },
+          { name: 'OKX Wallet', url: 'okx://wallet/dapp/details?dappUrl=https://nextokencapital.com' + path },
+        ];
+        const choice = window.confirm('Open in MetaMask? (OK = MetaMask, Cancel = other wallets)');
+        if (choice) { window.location.href = deepLinks[0].url; }
+        else {
+          const picked = window.prompt('Enter wallet number:\n1. Coinbase\n2. Trust Wallet\n3. OKX Wallet');
+          const idx = parseInt(picked);
+          if (idx >= 1 && idx <= 3) window.location.href = deepLinks[idx].url;
+        }
+        return;
+      }
+      setError('No wallet detected. Please install MetaMask or another Web3 wallet.');
+      return;
+    }
     setStatus('switching');
     setError('');
     try {
