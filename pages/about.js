@@ -14,7 +14,7 @@ const VALUES = [
   { icon:"⚖️", title:"Regulated First",   desc:"Every product decision starts with regulatory compliance. We hold EMI and CASP authorizations from the Bank of Lithuania." },
   { icon:"🔍", title:"Full Transparency",  desc:"On-chain ownership records, public cap tables, and real-time reporting for every asset on the platform." },
   { icon:"🌍", title:"Global Access",      desc:"Investors from 180+ countries can access institutional-grade assets from as little as EUR 100." },
-  { icon:"🔐", title:"Security First",     desc:"ISO 27001 certified infrastructure, Sumsub KYC, and ERC-3643 transfer controls protect every transaction." },
+  { icon:"🔐", title:"Security First",     desc:"Enterprise-grade security with Sumsub KYC and ERC-3643 transfer controls protect every transaction." },
 ];
 
 const MILESTONES = [
@@ -129,7 +129,7 @@ export default function AboutPage() {
 
         <div className="ab-stats">
           <div className="ab-stats-inner">
-            {[["2022","Year Founded"],["EUR 140M+","Assets Tokenized"],["1,000+","Verified Investors"],["180+","Countries Supported"]].map(([v,l]) => (
+            {[["2022","Year Founded"],["Platform Live","Assets Available"],["Growing","Investor Community"],["180+","Countries Supported"]].map(([v,l]) => (
               <div key={l}><div className="ab-stat-v">{v}</div><div className="ab-stat-l">{l}</div></div>
             ))}
           </div>
@@ -170,7 +170,7 @@ export default function AboutPage() {
               <div>
                 <div className="ab-tag">Our Journey</div>
                 <h2 className="ab-title">Company Timeline</h2>
-                <p className="ab-sub">From founding to EUR 140M+ in tokenized assets.</p>
+                <p className="ab-sub">From founding to a fully operational tokenized asset platform.</p>
                 <div className="ab-timeline">
                   {MILESTONES.map((m, i) => (
                     <div key={m.year} className="ab-timeline-item">
@@ -216,7 +216,7 @@ export default function AboutPage() {
                 { icon:"⚖️", title:"MiCA Regulation",   desc:"We hold a MiCA CASP (Crypto-Asset Service Provider) authorization, the gold standard for EU crypto regulation.", badge:"CASP Authorized" },
                 { icon:"🪪", title:"Sumsub KYC",        desc:"All investors complete identity verification via Sumsub, ensuring full AML and CFT compliance across 180+ countries.", badge:"AML Compliant" },
                 { icon:"🔗", title:"ERC-3643 Standard", desc:"All security tokens are issued under the ERC-3643 standard, providing transfer controls, whitelisting and on-chain compliance.", badge:"Token Standard" },
-                { icon:"🛡️", title:"ISO 27001",         desc:"Our infrastructure is ISO 27001 certified, meeting international standards for information security management.", badge:"Certified" },
+                { icon:"🛡️", title:"Security Standards",         desc:"Our infrastructure follows international standards for information security management.", badge:"In Progress" },
                 { icon:"🌐", title:"FATF Aligned",      desc:"Our AML policies are aligned with FATF (Financial Action Task Force) recommendations for virtual asset service providers.", badge:"FATF Compliant" },
               ].map(r => (
                 <div key={r.title} className="ab-reg-card">

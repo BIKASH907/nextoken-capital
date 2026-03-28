@@ -18,7 +18,7 @@ export default function Footer() {
               <span style={{ fontWeight: '700', fontSize: '15px', color: '#fff', letterSpacing: '0.5px' }}>NEXTOKEN CAPITAL</span>
             </div>
             <p style={{ color: '#555', fontSize: '13px', lineHeight: '1.7', maxWidth: '260px' }}>
-              EU-regulated tokenized real-world asset platform. MiCA CASP licensed. Bringing institutional-grade assets to every investor.
+              EU compliance-ready tokenized real-world asset platform. MiCA CASP license pending. Bringing institutional-grade assets to every investor.
             </p>
             <div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
               {['𝕏', 'in', 'tg'].map(s => (

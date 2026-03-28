@@ -76,12 +76,12 @@ const COUNTRIES = [
 const STEPS = ["Account","Personal","Agreements","Done"];
 
 const FEATURES = [
-  { icon:"🏛️", text:"Bank of Lithuania regulated" },
+  { icon:"🏛️", text:"EU compliance-ready platform" },
   { icon:"⚖️", text:"MiCA compliant platform" },
   { icon:"🌍", text:"Open to 180+ countries" },
   { icon:"💶", text:"Invest from EUR 100" },
   { icon:"📈", text:"15–18% target annual ROI" },
-  { icon:"🔐", text:"ISO 27001 certified" },
+  { icon:"🔐", text:"Enterprise-grade security" },
   { icon:"🔗", text:"ERC-3643 security tokens" },
   { icon:"🪪", text:"Sumsub KYC verification" },
 ];
@@ -283,7 +283,7 @@ export default function RegisterPage() {
             </div>
             <p className="rg-brand-desc">
               The regulated infrastructure for tokenized real-world assets.
-              Nextoken Capital UAB is registered in Lithuania and supervised by the Bank of Lithuania.
+              Nextoken Capital UAB is registered in Lithuania and registered in Lithuania.
             </p>
             <div className="rg-brand-feat">
               {FEATURES.map(f => (
@@ -298,8 +298,8 @@ export default function RegisterPage() {
           <div className="rg-reg-info">
             <div className="rg-reg-info-title">Platform Stats</div>
             {[
-              ["EUR 140M+","Assets tokenized"],
-              ["1,000+","Verified investors"],
+              ["Live","Platform active"],
+              ["Growing","Investor community"],
               ["180+","Countries supported"],
               ["EUR 100","Minimum investment"],
               ["0.2%","Trading fee"],
@@ -337,7 +337,7 @@ export default function RegisterPage() {
               <button onClick={async () => { const res = await fetch("/api/auth/csrf"); const {csrfToken} = await res.json(); const form = document.createElement("form"); form.method = "POST"; form.action = "/api/auth/signin/google"; const cb = document.createElement("input"); cb.type = "hidden"; cb.name = "callbackUrl"; cb.value = "/dashboard"; const csrf = document.createElement("input"); csrf.type = "hidden"; csrf.name = "csrfToken"; csrf.value = csrfToken; form.appendChild(cb); form.appendChild(csrf); document.body.appendChild(form); form.submit(); }} style={{width:"100%",padding:"12px",background:"#fff",color:"#000",border:"none",borderRadius:8,fontSize:14,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:10,marginBottom:20}}><img src="https://www.google.com/favicon.ico" width={18} height={18} alt="" />Continue with Google</button>
               <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:20}}><div style={{flex:1,height:1,background:"rgba(255,255,255,0.08)"}}></div><span style={{fontSize:12,color:"rgba(255,255,255,0.3)"}}>or register with email</span><div style={{flex:1,height:1,background:"rgba(255,255,255,0.08)"}}></div></div>
               <div className="rg-title">Create your account</div>
-              <p className="rg-sub">Join 1,000+ investors. Takes 3 minutes.</p>
+              <p className="rg-sub">Join our investor community. Takes 3 minutes.</p>
               <div style={{marginBottom:16}}><label style={{display:"block",fontSize:12,fontWeight:700,color:"rgba(255,255,255,0.4)",marginBottom:8,textTransform:"uppercase",letterSpacing:1}}>I WANT TO</label><div style={{display:"flex",gap:10}}><button type="button" onClick={()=>setForm({...form,role:"investor"})} style={{flex:1,padding:"14px 12px",borderRadius:10,cursor:"pointer",fontFamily:"inherit",fontSize:14,fontWeight:700,textAlign:"center",background:form.role==="investor"?"rgba(240,185,11,0.12)":"#161B22",color:form.role==="investor"?"#F0B90B":"rgba(255,255,255,0.4)",border:form.role==="investor"?"2px solid #F0B90B":"2px solid rgba(255,255,255,0.08)"}}>Invest in Assets<div style={{fontSize:10,fontWeight:400,color:"rgba(255,255,255,0.3)",marginTop:4}}>Buy tokenized bonds, equity</div></button><button type="button" onClick={()=>setForm({...form,role:"issuer"})} style={{flex:1,padding:"14px 12px",borderRadius:10,cursor:"pointer",fontFamily:"inherit",fontSize:14,fontWeight:700,textAlign:"center",background:form.role==="issuer"?"rgba(139,92,246,0.12)":"#161B22",color:form.role==="issuer"?"#8b5cf6":"rgba(255,255,255,0.4)",border:form.role==="issuer"?"2px solid #8b5cf6":"2px solid rgba(255,255,255,0.08)"}}>Tokenize My Assets<div style={{fontSize:10,fontWeight:400,color:"rgba(255,255,255,0.3)",marginTop:4}}>List assets for investors</div></button></div></div>
               <div className="rg-field">
                 <label className="rg-label">Email Address</label>
@@ -411,7 +411,7 @@ export default function RegisterPage() {
               <label className="rg-check">
                 <input type="checkbox" name="agreeTerms" checked={form.agreeTerms} onChange={handle} />
                 <span className="rg-check-txt">
-                  I agree to the <Link href="/terms" target="_blank">Terms of Service</Link> and <Link href="/privacy" target="_blank">Privacy Policy</Link> of Nextoken Capital UAB, a company registered in Lithuania (reg. no. 306XXXXXX), supervised by the Bank of Lithuania.
+                  I agree to the <Link href="/terms" target="_blank">Terms of Service</Link> and <Link href="/privacy" target="_blank">Privacy Policy</Link> of Nextoken Capital UAB, a company registered in Lithuania , registered in Lithuania.
                 </span>
               </label>
               <label className="rg-check">

@@ -190,7 +190,7 @@ const globalCSS = `
 
 const STATS = [
   { num: '2022',    label: 'Founded'             },
-  { num: '1,000+', label: 'Investors & Issuers' },
+  { num: 'Growing', label: 'Community' },
   { num: '190+',    label: 'Countries Served'    },
   { num: '€420M+',  label: 'Assets Tokenized'   },
 ]
@@ -212,7 +212,7 @@ const TEAM = [
 
 const LICENSES = [
   { flag: '🇱🇹', title: 'Bank of Lithuania',  id: 'License № EMI-2022-041',       desc: 'Authorized EMI under the Lithuanian Law on Electronic Money and Electronic Money Institutions.' },
-  { flag: '🇪🇺', title: 'MiCA Authorization', id: 'MiCA Ref: LT-CASP-2024-007',   desc: 'Full authorization under EU Regulation 2023/1114 for CASP services across all EEA states.' },
+  { flag: '🇪🇺', title: 'MiCA Authorization', id: 'Application in progress',   desc: 'Pursuing full authorization under EU Regulation 2023/1114 for CASP services across EEA states.' },
   { flag: '⚖️',  title: 'DLT Pilot Regime',  id: 'DLT-MTF: ESMA-2023-LT-004',    desc: 'Approved DLT MTF under EU Regulation 2022/858, permitting tokenized securities trading.' },
 ]
 

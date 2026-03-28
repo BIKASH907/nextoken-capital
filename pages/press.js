@@ -4,7 +4,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
 const PRESS = [
-  { date:"Mar 10, 2026", source:"Fintech Lithuania",       title:"Nextoken Capital reaches EUR 140M in tokenized assets", type:"Coverage" },
+  { date:"Mar 10, 2026", source:"Fintech Lithuania",       title:"Nextoken Capital launches tokenized asset platform", type:"Coverage" },
   { date:"Feb 22, 2026", source:"The Paypers",             title:"Nextoken Capital launches secondary market exchange for security tokens", type:"Coverage" },
   { date:"Feb 5, 2026",  source:"Baltic Times",            title:"Lithuanian fintech tokenizes EUR 100M in real-world assets", type:"Coverage" },
   { date:"Jan 18, 2026", source:"CoinDesk",                title:"EU-regulated platform brings institutional assets to retail investors", type:"Coverage" },
@@ -15,8 +15,8 @@ const PRESS = [
 const FACTS = [
   { value:"2022",       label:"Founded" },
   { value:"Vilnius",    label:"Headquarters" },
-  { value:"EUR 140M+",  label:"Assets Tokenized" },
-  { value:"1,000+",    label:"Verified Investors" },
+  { value:"Live",  label:"Platform Status" },
+  { value:"Growing",    label:"Investor Community" },
   { value:"180+",       label:"Countries" },
   { value:"MiCA/EMI",   label:"Regulatory Status" },
 ];

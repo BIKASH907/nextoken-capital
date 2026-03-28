@@ -66,7 +66,7 @@ const stats = [
   { v:"ERC-3643",l:"Institutional Token Standard"},
   { v:"T+0",    l:"Settlement Finality"        },
   { v:"99.9%",  l:"Platform Uptime SLA"        },
-  { v:"ISO 27001",l:"Security Certification"  },
+  { v:"Enterprise",l:"Security Standards"  },
 ];
 
 const faqs = [
@@ -125,7 +125,7 @@ export default function InstitutionalPage() {
 
         {/* Trust badges */}
         <div style={{ display:"flex", flexWrap:"wrap", gap:24, justifyContent:"center", marginTop:48, opacity:0.7 }}>
-          {["🏦 Bank of Lithuania Supervised","⚖️ MiCA Compliant","🔐 ERC-3643 Token Standard","🌍 30+ Jurisdictions","🛡 ISO 27001 Certified"].map((b) => (
+          {["🏦 EU Regulatory Framework","⚖️ MiCA Compliant","🔐 ERC-3643 Token Standard","🌍 30+ Jurisdictions","🛡 Enterprise Security Standards"].map((b) => (
             <span key={b} style={{ fontSize:12.5, color:"rgba(255,255,255,0.5)", fontWeight:600 }}>{b}</span>
           ))}
         </div>
@@ -219,7 +219,7 @@ export default function InstitutionalPage() {
               { icon:"⚖️", title:"MiCA Compliant",       desc:"Full compliance with EU Markets in Crypto-Assets Regulation. Regulated by Bank of Lithuania." },
               { icon:"🔐", title:"ERC-3643 Standard",    desc:"On-chain KYC/AML enforcement. Transfer restrictions and investor whitelisting at smart contract level." },
               { icon:"🌍", title:"FATF Compliant",       desc:"Travel Rule compliance, VASP registration, and cross-border reporting aligned with FATF recommendations." },
-              { icon:"🛡", title:"ISO 27001 Certified",  desc:"Information security management certified. Data protection and cybersecurity at enterprise grade." },
+              { icon:"🛡", title:"Enterprise Security",  desc:"Information security management following international standards. Data protection and cybersecurity at enterprise grade." },
               { icon:"📋", title:"Sumsub KYC/AML",      desc:"Third-party identity verification with enhanced due diligence (EDD) for institutional onboarding." },
               { icon:"🔍", title:"On-Chain Audit Trail", desc:"Full transaction transparency with immutable audit logs. Real-time compliance monitoring and reporting." },
             ].map((c) => (
@@ -279,7 +279,7 @@ export default function InstitutionalPage() {
             <Link href="/contact"  style={S.out}>Talk to Our Team</Link>
           </div>
           <p style={{ fontSize:11.5, color:"rgba(255,255,255,0.5)", marginTop:24, opacity:0.7 }}>
-            Regulated by Bank of Lithuania · MiCA Compliant · ERC-3643 · ISO 27001
+            MiCA Compliance-Ready · EU Regulatory Framework · ERC-3643 · Enterprise Security
           </p>
         </div>
       </div>

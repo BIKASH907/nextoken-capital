@@ -213,7 +213,7 @@ export default function EquityIPOPage() {
         </div>
 
         <div style={{margin:"0 32px",borderTop:"1px solid rgba(255,255,255,0.08)",borderBottom:"1px solid rgba(255,255,255,0.08)",background:"#0B0E11",display:"flex",flexWrap:"wrap"}}>
-          {[{v:"12",l:"Active Offerings"},{v:"EUR 140M+",l:"Total Capital Raised"},{v:"34.2%",l:"Highest Upside"},{v:"EUR 100",l:"Lowest Entry"},{v:"4",l:"Equity Types"},{v:"ERC-3643",l:"Compliance Standard"}].map((s,i,arr)=>(
+          {[{v:"12",l:"Active Offerings"},{v:"Live",l:"Platform Status"},{v:"34.2%",l:"Highest Upside"},{v:"EUR 100",l:"Lowest Entry"},{v:"4",l:"Equity Types"},{v:"ERC-3643",l:"Compliance Standard"}].map((s,i,arr)=>(
             <div key={s.l} style={{flex:1,minWidth:130,padding:"22px 20px",textAlign:"center",borderRight:i<arr.length-1?"1px solid rgba(255,255,255,0.08)":"none"}}>
               <div style={{fontFamily:"Syne,sans-serif",fontSize:24,fontWeight:800,color:"#F0B90B"}}>{s.v}</div>
               <div style={{fontSize:11,color:"rgba(255,255,255,0.45)",marginTop:3}}>{s.l}</div>
@@ -314,7 +314,7 @@ export default function EquityIPOPage() {
           <div style={{position:"relative",zIndex:1}}>
             <span style={S.lbl}>Get Started</span>
             <h2 style={{...S.h2,marginBottom:12}}>Ready to Issue or Invest in Digital Equity?</h2>
-            <p style={{fontSize:15,color:"rgba(255,255,255,0.6)",fontWeight:300,maxWidth:460,margin:"0 auto 32px",lineHeight:1.7}}>Join 1,000+ traders and issuers on the Nextoken marketplace.</p>
+            <p style={{fontSize:15,color:"rgba(255,255,255,0.6)",fontWeight:300,maxWidth:460,margin:"0 auto 32px",lineHeight:1.7}}>Join our growing community of traders and issuers on the Nextoken marketplace.</p>
             <div style={{display:"flex",gap:12,justifyContent:"center",flexWrap:"wrap"}}>
               <Link href="/tokenize" style={S.gold}>Issue Equity</Link>
               <Link href="/exchange" style={S.out}>Explore Exchange</Link>

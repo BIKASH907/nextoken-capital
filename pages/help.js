@@ -15,7 +15,7 @@ const FAQS = [
   { cat:"Exchange",        q:"Can I withdraw my investment early?", a:"You can sell your tokens on the secondary market if there is a buyer available. Liquidity is not guaranteed. Some assets have lock-up periods during which trading is restricted." },
   { cat:"Wallet",          q:"How do I connect my wallet?", a:"Click 'Connect Wallet' in the navigation bar. We support MetaMask, WalletConnect, Coinbase Wallet, and other EVM-compatible wallets. Your wallet address is used for on-chain settlement." },
   { cat:"Wallet",          q:"Is my wallet secure?", a:"We never have access to your private keys or seed phrase. Always keep your recovery phrase offline and secure. Never share it with anyone — including Nextoken Capital staff." },
-  { cat:"Security",        q:"How is my account protected?", a:"We recommend enabling 2FA on your account. All data is encrypted at rest and in transit. Our infrastructure is ISO 27001 certified. We monitor for suspicious activity 24/7." },
+  { cat:"Security",        q:"How is my account protected?", a:"We recommend enabling 2FA on your account. All data is encrypted at rest and in transit. Our infrastructure follows enterprise security standards. We monitor for suspicious activity 24/7." },
   { cat:"Security",        q:"What if I forget my password?", a:"Click 'Forgot password?' on the login page. You will receive a password reset email within a few minutes. If you do not receive it, check your spam folder or contact support." },
 ];
 

@@ -1,5 +1,11 @@
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://nextokencapital.com/</loc>
-  </url>
-</urlset>
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin/*
+Disallow: /api/
+Disallow: /api/*
+Disallow: /dashboard
+Disallow: /issuer-dashboard
+Disallow: /owner-dashboard
+
+Sitemap: https://nextokencapital.com/sitemap.xml

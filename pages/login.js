@@ -6,19 +6,19 @@ import { useRouter } from "next/router";
 import Navbar from "../components/Navbar";
 
 const FEATURES = [
-  { icon:"🏛️", text:"Bank of Lithuania regulated" },
+  { icon:"🏛️", text:"EU compliance-ready platform" },
   { icon:"⚖️", text:"MiCA compliant platform" },
   { icon:"🌍", text:"Open to 180+ countries" },
   { icon:"💶", text:"Invest from EUR 100" },
   { icon:"📈", text:"15–18% target annual ROI" },
-  { icon:"🔐", text:"ISO 27001 certified" },
+  { icon:"🔐", text:"Enterprise-grade security" },
   { icon:"🔗", text:"ERC-3643 security tokens" },
   { icon:"🪪", text:"Sumsub KYC verification" },
 ];
 
 const STATS = [
-  ["EUR 140M+","Assets tokenized"],
-  ["1,000+","Verified investors"],
+  ["Live","Platform active"],
+  ["Growing","Investor community"],
   ["180+","Countries supported"],
   ["EUR 100","Minimum investment"],
   ["0.2%","Trading fee"],

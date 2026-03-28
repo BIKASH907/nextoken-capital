@@ -56,10 +56,10 @@ const frameworks = [
   },
   {
     icon:"🛡", color:"#fb923c",
-    title:"ISO 27001 Information Security",
+    title:"Information Security Standards",
     region:"Global",
     status:"Certified",
-    desc:"Nextoken's information security management system is certified to ISO 27001, the international standard for data protection and cybersecurity. This covers data encryption, access controls, incident response, business continuity, and third-party vendor risk management.",
+    desc:"Nextoken's information security management system follows ISO 27001 standards, the international standard for data protection and cybersecurity. We are working toward formal certification. This covers data encryption, access controls, incident response, business continuity, and third-party vendor risk management.",
     points:["Annual third-party security audits","AES-256 encryption for data at rest","TLS 1.3 for all data in transit","Multi-factor authentication enforced","Penetration testing every 6 months"],
   },
 ];
@@ -130,7 +130,7 @@ export default function CompliancePage() {
           Compliance at Every<br /><span style={{ color:"#F0B90B" }}>Layer of the Stack</span>
         </h1>
         <p style={{ fontSize:18, fontWeight:300, color:"rgba(255,255,255,0.5)", maxWidth:660, margin:"0 auto 40px", lineHeight:1.75 }}>
-          Nextoken Capital is regulated by the Bank of Lithuania, MiCA compliant, FATF aligned, and ISO 27001 certified — with on-chain enforcement via ERC-3643. Compliance is not a checkbox. It is our marketplace infrastructure.
+          Nextoken Capital is pursuing regulation by the Bank of Lithuania, designed for MiCA compliance, FATF aligned, and follows ISO 27001 standards — with on-chain enforcement via ERC-3643. Compliance is not a checkbox. It is our marketplace infrastructure.
         </p>
         <div style={{ display:"flex", gap:14, justifyContent:"center", flexWrap:"wrap", marginBottom:48 }}>
           <Link href="/register"      style={S.gold}>Start Investing</Link>
@@ -143,7 +143,7 @@ export default function CompliancePage() {
             { icon:"⚖️", t:"MiCA Compliant"    },
             { icon:"🌍", t:"FATF Aligned"       },
             { icon:"🔐", t:"ERC-3643"           },
-            { icon:"🛡", t:"ISO 27001"          },
+            { icon:"🛡", t:"Security Standards"          },
             { icon:"🪪", t:"Sumsub KYC"         },
             { icon:"📋", t:"GDPR"               },
           ].map(b => (
@@ -156,7 +156,7 @@ export default function CompliancePage() {
 
       {/* STATS */}
       <div style={{ margin:"0 32px", borderTop:"1px solid rgba(255,255,255,0.07)", borderBottom:"1px solid rgba(255,255,255,0.07)", background:"#0B0E11", display:"flex", flexWrap:"wrap" }}>
-        {[{v:"6",l:"Regulatory Frameworks"},{v:"180+",l:"Jurisdictions"},{v:"100%",l:"On-Chain Enforcement"},{v:"24/7",l:"Transaction Monitoring"},{v:"ISO 27001",l:"Security Certified"},{v:"T+0",l:"Compliant Settlement"}].map((s,i,arr) => (
+        {[{v:"6",l:"Regulatory Frameworks"},{v:"180+",l:"Jurisdictions"},{v:"100%",l:"On-Chain Enforcement"},{v:"24/7",l:"Transaction Monitoring"},{v:"Security Standards",l:"Security Certified"},{v:"T+0",l:"Compliant Settlement"}].map((s,i,arr) => (
           <div key={s.l} style={{ flex:1, minWidth:120, padding:"24px 20px", textAlign:"center", borderRight:i<arr.length-1?"1px solid rgba(255,255,255,0.07)":"none" }}>
             <div style={{ fontFamily:"Syne,sans-serif", fontSize:22, fontWeight:800, color:"#F0B90B" }}>{s.v}</div>
             <div style={{ fontSize:11, color:"rgba(255,255,255,0.5)", marginTop:3 }}>{s.l}</div>
@@ -314,7 +314,7 @@ export default function CompliancePage() {
             <Link href="/institutional" style={S.out}>Institutional Onboarding</Link>
           </div>
           <p style={{ fontSize:11.5, color:"rgba(255,255,255,0.5)", marginTop:24, opacity:0.7 }}>
-            Regulated by Bank of Lithuania · MiCA Compliant · FATF Aligned · ERC-3643 · ISO 27001 · GDPR
+            Designed for EU Regulation · MiCA Compliance-Ready · FATF Aligned · ERC-3643 · Security Standards · GDPR
           </p>
         </div>
       </div>
