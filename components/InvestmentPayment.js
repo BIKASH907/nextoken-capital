@@ -14,13 +14,11 @@ export default function InvestmentPayment({ asset, units, onSuccess, onBack }) {
     // Lock destination: USDC on Polygon to platform wallet
     toChain: 137,
     toToken: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
-    toAmount: amount.toString(),
+    // toAmount removed - LiFi calculates from source
     toAddress: process.env.NEXT_PUBLIC_PAYMENT_RECEIVER || '',
 
     // Default source: POL on Polygon (user's most likely token)
-    fromChain: 137,
-    fromToken: '0x0000000000000000000000000000000000001010',
-
+        
     integrator: 'nextoken-capital',
     appearance: 'dark',
     variant: 'compact',
