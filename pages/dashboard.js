@@ -138,10 +138,10 @@ export default function InvestorDashboard() {
               {investments.investments?.length === 0 ? <div style={{ textAlign:"center", color:"rgba(255,255,255,0.3)", padding:20 }}>No investments yet. Visit the marketplace to start.</div>
               : investments.investments?.map((inv, i) => (
                 <div key={i} style={{ display:"flex", justifyContent:"space-between", padding:"12px 0", borderBottom:"1px solid rgba(255,255,255,0.04)", alignItems:"center" }}>
-                  <div><div style={{ fontSize:14, fontWeight:600 }}>{inv.assetName}</div><div style={{ fontSize:11, color:"rgba(255,255,255,0.3)" }}>{inv.assetType} · {inv.units} units · EUR {inv.pricePerUnit}/unit</div></div>
+                  <div><div style={{ fontSize:14, fontWeight:600 }}>{inv.assetName}</div><div style={{ fontSize:11, color:"rgba(255,255,255,0.3)" }}>{inv.assetType} · {inv.tokens || inv.units} units · EUR {inv.tokenPrice || inv.pricePerUnit}/unit</div></div>
                   <div style={{ textAlign:"right", display:"flex", alignItems:"center", gap:8 }}>
-                    <div><div style={{ fontSize:14, fontWeight:700, color:"#F0B90B" }}>EUR {inv.totalInvested?.toLocaleString()}</div>{badge(inv.status)}</div>
-                    {inv.status === "active" && <button onClick={() => doSell(inv)} style={{ padding:"4px 10px", borderRadius:4, background:"rgba(239,68,68,0.1)", border:"1px solid rgba(239,68,68,0.2)", color:"#ef4444", fontSize:10, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}>Sell</button>}
+                    <div><div style={{ fontSize:14, fontWeight:700, color:"#F0B90B" }}>EUR {(inv.amount || inv.totalInvested || 0).toLocaleString()}</div>{badge(inv.status)}</div>
+                    {(inv.status === "active" || inv.status === "confirmed") && <button onClick={() => doSell(inv)} style={{ padding:"4px 10px", borderRadius:4, background:"rgba(239,68,68,0.1)", border:"1px solid rgba(239,68,68,0.2)", color:"#ef4444", fontSize:10, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}>Sell</button>}
                   </div>
                 </div>
               ))}
@@ -158,12 +158,12 @@ export default function InvestorDashboard() {
               : investments.investments?.map((inv, i) => (
                 <div key={i} style={{ display:"grid", gridTemplateColumns:"180px 70px 70px 100px 100px 70px 70px", padding:"12px 16px", borderBottom:"1px solid rgba(255,255,255,0.04)", fontSize:12, alignItems:"center" }}>
                   <span style={{ fontWeight:600 }}>{inv.assetName}</span>
-                  <span>{inv.units}</span>
-                  <span style={{ color:"#22c55e" }}>{inv.yieldRate||0}%</span>
-                  <span style={{ fontWeight:600 }}>EUR {inv.totalInvested?.toLocaleString()}</span>
+                  <span>{inv.tokens || inv.units}</span>
+                  <span style={{ color:"#22c55e" }}>{inv.expectedROI || inv.yieldRate || 0}%</span>
+                  <span style={{ fontWeight:600 }}>EUR {(inv.amount || inv.totalInvested || 0).toLocaleString()}</span>
                   <span style={{ fontSize:10, color:"rgba(255,255,255,0.4)" }}>{inv.maturityDate ? new Date(inv.maturityDate).toLocaleDateString() : "N/A"}</span>
                   {badge(inv.status)}
-                  <div>{inv.status === "active" && <button onClick={() => doSell(inv)} style={{ padding:"3px 8px", borderRadius:4, background:"rgba(239,68,68,0.1)", border:"1px solid rgba(239,68,68,0.2)", color:"#ef4444", fontSize:9, cursor:"pointer", fontFamily:"inherit" }}>Sell</button>}</div>
+                  <div>{(inv.status === "active" || inv.status === "confirmed") && <button onClick={() => doSell(inv)} style={{ padding:"3px 8px", borderRadius:4, background:"rgba(239,68,68,0.1)", border:"1px solid rgba(239,68,68,0.2)", color:"#ef4444", fontSize:9, cursor:"pointer", fontFamily:"inherit" }}>Sell</button>}</div>
                 </div>
               ))}
             </div>
