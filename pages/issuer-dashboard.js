@@ -14,7 +14,7 @@ const STATUS_COLORS = {
   closing:   { bg: "rgba(240,185,11,0.1)",   color: "#F0B90B",               label: "Closing Soon" },
   closed:    { bg: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.4)", label: "Closed" },
   completed: { bg: "rgba(14,203,129,0.08)",  color: "#0ECB81",               label: "Completed" },
-  cancelled: { bg: "rgba(255,77,77,0.08)",   color: "#FF4D4D",               label: "Cancelled" },
+  cancelled: { bg: "rgba(255,77,77,0.08)",   color: "#ef4444",               label: "Cancelled" },
 };
 
 const TYPE_LABELS = {

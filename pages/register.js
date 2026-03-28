@@ -190,7 +190,7 @@ export default function RegisterPage() {
     if (/[^A-Za-z0-9]/.test(p)) s++;
     return Math.min(s, 5);
   };
-  const SC = ["#1a1a1a","#FF4D4D","#FF8C00","#F0B90B","#0ECB81","#0ECB81"];
+  const SC = ["#1a1a1a","#ef4444","#FF8C00","#F0B90B","#0ECB81","#0ECB81"];
   const SL = ["","Weak","Fair","Good","Strong","Very Strong"];
 
   return (
@@ -354,7 +354,7 @@ export default function RegisterPage() {
               <div className="rg-field">
                 <label className="rg-label">Confirm Password</label>
                 <input className="rg-input" name="confirm" type="password" value={form.confirm} onChange={handle} placeholder="Repeat password" autoComplete="new-password" />
-                {form.confirm && <div style={{fontSize:12,marginTop:4,color:form.confirm===form.password?"#0ECB81":"#FF6B6B"}}>
+                {form.confirm && <div style={{fontSize:12,marginTop:4,color:form.confirm===form.password?"#0ECB81":"#ef4444"}}>
                   {form.confirm===form.password ? "✓ Passwords match" : "✗ Passwords do not match"}
                 </div>}
               </div>

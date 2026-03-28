@@ -20,7 +20,7 @@ function pct(raised, target) {
   return Math.min(100, Math.round((raised / target) * 100));
 }
 
-const riskColor = { low: "#0ECB81", medium: "#F0B90B", high: "#FF4D4D" };
+const riskColor = { low: "#0ECB81", medium: "#F0B90B", high: "#ef4444" };
 
 const ASSET_ICONS = {
   real_estate: "🏢", bond: "📄", equity: "📈",

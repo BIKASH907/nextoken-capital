@@ -103,13 +103,13 @@ export default function InvestmentPayment({ asset, units, onSuccess, onBack }) {
       {/* Supported chains info */}
       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 16 }}>
         {['Ethereum', 'Polygon', 'Arbitrum', 'Optimism', 'BSC', 'Base'].map(chain => (
-          <span key={chain} style={{ background: '#141414', border: '1px solid #2a2a2a', borderRadius: 20, padding: '3px 10px', fontSize: 11, color: '#888', fontWeight: 600 }}>
+          <span key={chain} style={{ background: '#161B22', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, padding: '3px 10px', fontSize: 11, color: '#888', fontWeight: 600 }}>
             {chain}
           </span>
         ))}
       </div>
 
-      <div style={{ background: '#052e16', border: '1px solid #065f46', borderRadius: 8, padding: '8px 12px', marginBottom: 16, fontSize: 12, color: '#4ade80' }}>
+      <div style={{ background: '#062015', border: '1px solid #065f46', borderRadius: 8, padding: '8px 12px', marginBottom: 16, fontSize: 12, color: '#0ECB81' }}>
         ✅ Pay with <strong>any token from any network</strong> — auto-converted to USDC on Polygon
       </div>
 

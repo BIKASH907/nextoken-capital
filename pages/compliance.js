@@ -2,12 +2,12 @@ import Link from "next/link";
 import { useState } from "react";
 
 const S = {
-  page:  { minHeight:"100vh", background:"#05060a", color:"#e8e8f0", fontFamily:"'DM Sans',system-ui,sans-serif" },
+  page:  { minHeight:"100vh", background:"#0B0E11", color:"rgba(255,255,255,0.85)", fontFamily:"'DM Sans',system-ui,sans-serif" },
   sec:   { maxWidth:1200, margin:"0 auto", padding:"72px 32px" },
-  h2:    { fontFamily:"Syne,sans-serif", fontSize:"clamp(26px,4vw,44px)", fontWeight:800, color:"#e8e8f0", margin:"0 0 14px", letterSpacing:"-0.5px" },
+  h2:    { fontFamily:"Syne,sans-serif", fontSize:"clamp(26px,4vw,44px)", fontWeight:800, color:"rgba(255,255,255,0.85)", margin:"0 0 14px", letterSpacing:"-0.5px" },
   lbl:   { fontSize:11, fontWeight:700, letterSpacing:"0.2em", textTransform:"uppercase", color:"#F0B90B", marginBottom:10, display:"block" },
-  sub:   { fontSize:16, color:"#8a9bb8", fontWeight:300, maxWidth:620, lineHeight:1.75, margin:"0 0 44px" },
-  card:  { background:"#0d0d14", border:"1px solid rgba(255,255,255,0.07)", borderRadius:16, padding:28, transition:"all 0.2s" },
+  sub:   { fontSize:16, color:"rgba(255,255,255,0.5)", fontWeight:300, maxWidth:620, lineHeight:1.75, margin:"0 0 44px" },
+  card:  { background:"#0B0E11", border:"1px solid rgba(255,255,255,0.07)", borderRadius:16, padding:28, transition:"all 0.2s" },
   gold:  { padding:"13px 30px", borderRadius:10, background:"#F0B90B", color:"#000", fontSize:14, fontWeight:800, border:"none", cursor:"pointer", textDecoration:"none", display:"inline-block", fontFamily:"inherit" },
   out:   { padding:"13px 30px", borderRadius:10, background:"transparent", color:"#F0B90B", fontSize:14, fontWeight:600, border:"1px solid rgba(240,185,11,0.35)", cursor:"pointer", textDecoration:"none", display:"inline-block", fontFamily:"inherit" },
   badge: { display:"inline-flex", alignItems:"center", gap:8, padding:"5px 16px", borderRadius:20, border:"1px solid rgba(240,185,11,0.3)", background:"rgba(240,185,11,0.08)", color:"#F0B90B", fontSize:11, fontWeight:700, letterSpacing:"0.15em", textTransform:"uppercase" },
@@ -15,7 +15,7 @@ const S = {
 
 const frameworks = [
   {
-    icon:"⚖️", color:"#818cf8",
+    icon:"⚖️", color:"#8b5cf6",
     title:"MiCA — Markets in Crypto-Assets",
     region:"European Union",
     status:"Compliant",
@@ -31,7 +31,7 @@ const frameworks = [
     points:["Direct supervisory relationship","EU passporting rights across 27 member states","Annual compliance audits","Mandatory incident reporting","Consumer complaint resolution framework"],
   },
   {
-    icon:"🌍", color:"#22c55e",
+    icon:"🌍", color:"#0ECB81",
     title:"FATF Recommendations",
     region:"Global",
     status:"Compliant",
@@ -65,14 +65,14 @@ const frameworks = [
 ];
 
 const jurisdictions = [
-  { flag:"🇪🇺", name:"European Union",    framework:"MiCA · GDPR · AMLD6",             access:"Full",       color:"#818cf8" },
+  { flag:"🇪🇺", name:"European Union",    framework:"MiCA · GDPR · AMLD6",             access:"Full",       color:"#8b5cf6" },
   { flag:"🇬🇧", name:"United Kingdom",    framework:"FCA Aligned · UK GDPR",           access:"Full",       color:"#38bdf8" },
-  { flag:"🇸🇬", name:"Singapore",         framework:"MAS Compatible · PS Act",          access:"Full",       color:"#22c55e" },
+  { flag:"🇸🇬", name:"Singapore",         framework:"MAS Compatible · PS Act",          access:"Full",       color:"#0ECB81" },
   { flag:"🇦🇪", name:"UAE / Dubai",       framework:"VARA · DIFC · ADGM",              access:"Full",       color:"#F0B90B" },
   { flag:"🇺🇸", name:"United States",     framework:"Reg D · Reg S · Accredited Only", access:"Limited",    color:"#a78bfa" },
-  { flag:"🇨🇭", name:"Switzerland",       framework:"FINMA · DLT Act",                 access:"Full",       color:"#f87171" },
+  { flag:"🇨🇭", name:"Switzerland",       framework:"FINMA · DLT Act",                 access:"Full",       color:"#ef4444" },
   { flag:"🇮🇳", name:"India",             framework:"GIFT City IFSC · SEBI Aligned",   access:"Full",       color:"#fb923c" },
-  { flag:"🇭🇰", name:"Hong Kong",         framework:"SFC · VASP Licensed Pathway",     access:"Full",       color:"#4ade80" },
+  { flag:"🇭🇰", name:"Hong Kong",         framework:"SFC · VASP Licensed Pathway",     access:"Full",       color:"#0ECB81" },
   { flag:"🇦🇺", name:"Australia",         framework:"AUSTRAC · ASIC Compatible",       access:"Full",       color:"#fbbf24" },
   { flag:"🇨🇦", name:"Canada",            framework:"FINTRAC · CSA Aligned",           access:"Full",       color:"#60a5fa" },
   { flag:"🇧🇷", name:"Brazil",            framework:"CVM · Banco Central",             access:"Limited",    color:"#34d399" },
@@ -94,11 +94,11 @@ function FaqItem({ q, a }) {
   const [open, setOpen] = useState(false);
   return (
     <div style={{ border:"1px solid rgba(255,255,255,0.07)", borderRadius:12, overflow:"hidden", marginBottom:8 }}>
-      <button onClick={() => setOpen(!open)} style={{ width:"100%", display:"flex", alignItems:"center", justifyContent:"space-between", padding:"18px 22px", background:"#0d0d14", border:"none", color:"#e8e8f0", fontSize:15, fontWeight:500, cursor:"pointer", textAlign:"left", fontFamily:"inherit" }}>
+      <button onClick={() => setOpen(!open)} style={{ width:"100%", display:"flex", alignItems:"center", justifyContent:"space-between", padding:"18px 22px", background:"#0B0E11", border:"none", color:"rgba(255,255,255,0.85)", fontSize:15, fontWeight:500, cursor:"pointer", textAlign:"left", fontFamily:"inherit" }}>
         <span>{q}</span>
         <span style={{ color:"#F0B90B", fontSize:22, flexShrink:0, marginLeft:16 }}>{open ? "−" : "+"}</span>
       </button>
-      {open && <div style={{ padding:"0 22px 20px", background:"#0d0d14" }}><p style={{ fontSize:14, color:"#8a9bb8", lineHeight:1.8, margin:0 }}>{a}</p></div>}
+      {open && <div style={{ padding:"0 22px 20px", background:"#0B0E11" }}><p style={{ fontSize:14, color:"rgba(255,255,255,0.5)", lineHeight:1.8, margin:0 }}>{a}</p></div>}
     </div>
   );
 }
@@ -126,10 +126,10 @@ export default function CompliancePage() {
           <span className="pulse" style={{ width:7, height:7, borderRadius:"50%", background:"#F0B90B", display:"inline-block" }} />
           Regulatory Compliance
         </div>
-        <h1 style={{ fontFamily:"Syne,sans-serif", fontSize:"clamp(36px,6vw,72px)", fontWeight:800, lineHeight:1.04, letterSpacing:"-2px", color:"#e8e8f0", maxWidth:900, margin:"0 auto 22px" }}>
+        <h1 style={{ fontFamily:"Syne,sans-serif", fontSize:"clamp(36px,6vw,72px)", fontWeight:800, lineHeight:1.04, letterSpacing:"-2px", color:"rgba(255,255,255,0.85)", maxWidth:900, margin:"0 auto 22px" }}>
           Compliance at Every<br /><span style={{ color:"#F0B90B" }}>Layer of the Stack</span>
         </h1>
-        <p style={{ fontSize:18, fontWeight:300, color:"#8a9bb8", maxWidth:660, margin:"0 auto 40px", lineHeight:1.75 }}>
+        <p style={{ fontSize:18, fontWeight:300, color:"rgba(255,255,255,0.5)", maxWidth:660, margin:"0 auto 40px", lineHeight:1.75 }}>
           Nextoken Capital is regulated by the Bank of Lithuania, MiCA compliant, FATF aligned, and ISO 27001 certified — with on-chain enforcement via ERC-3643. Compliance is not a checkbox. It is our marketplace infrastructure.
         </p>
         <div style={{ display:"flex", gap:14, justifyContent:"center", flexWrap:"wrap", marginBottom:48 }}>
@@ -147,7 +147,7 @@ export default function CompliancePage() {
             { icon:"🪪", t:"Sumsub KYC"         },
             { icon:"📋", t:"GDPR"               },
           ].map(b => (
-            <span key={b.t} style={{ display:"inline-flex", alignItems:"center", gap:6, padding:"6px 14px", borderRadius:20, border:"1px solid rgba(255,255,255,0.10)", background:"rgba(255,255,255,0.03)", fontSize:12.5, color:"#b0b7c3", fontWeight:600 }}>
+            <span key={b.t} style={{ display:"inline-flex", alignItems:"center", gap:6, padding:"6px 14px", borderRadius:20, border:"1px solid rgba(255,255,255,0.10)", background:"rgba(255,255,255,0.03)", fontSize:12.5, color:"rgba(255,255,255,0.6)", fontWeight:600 }}>
               {b.icon} {b.t}
             </span>
           ))}
@@ -155,11 +155,11 @@ export default function CompliancePage() {
       </div>
 
       {/* STATS */}
-      <div style={{ margin:"0 32px", borderTop:"1px solid rgba(255,255,255,0.07)", borderBottom:"1px solid rgba(255,255,255,0.07)", background:"#0d0d14", display:"flex", flexWrap:"wrap" }}>
+      <div style={{ margin:"0 32px", borderTop:"1px solid rgba(255,255,255,0.07)", borderBottom:"1px solid rgba(255,255,255,0.07)", background:"#0B0E11", display:"flex", flexWrap:"wrap" }}>
         {[{v:"6",l:"Regulatory Frameworks"},{v:"180+",l:"Jurisdictions"},{v:"100%",l:"On-Chain Enforcement"},{v:"24/7",l:"Transaction Monitoring"},{v:"ISO 27001",l:"Security Certified"},{v:"T+0",l:"Compliant Settlement"}].map((s,i,arr) => (
           <div key={s.l} style={{ flex:1, minWidth:120, padding:"24px 20px", textAlign:"center", borderRight:i<arr.length-1?"1px solid rgba(255,255,255,0.07)":"none" }}>
             <div style={{ fontFamily:"Syne,sans-serif", fontSize:22, fontWeight:800, color:"#F0B90B" }}>{s.v}</div>
-            <div style={{ fontSize:11, color:"#8a9bb8", marginTop:3 }}>{s.l}</div>
+            <div style={{ fontSize:11, color:"rgba(255,255,255,0.5)", marginTop:3 }}>{s.l}</div>
           </div>
         ))}
       </div>
@@ -175,13 +175,13 @@ export default function CompliancePage() {
           <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
             {frameworks.map((f,i) => (
               <button key={f.title} onClick={() => setActiveFramework(i)}
-                style={{ display:"flex", alignItems:"center", gap:12, padding:"14px 16px", borderRadius:12, border:"1px solid "+(i===activeFramework?"rgba(240,185,11,0.4)":"rgba(255,255,255,0.07)"), background:i===activeFramework?"rgba(240,185,11,0.07)":"#0d0d14", cursor:"pointer", textAlign:"left", fontFamily:"inherit", transition:"all 0.15s" }}>
+                style={{ display:"flex", alignItems:"center", gap:12, padding:"14px 16px", borderRadius:12, border:"1px solid "+(i===activeFramework?"rgba(240,185,11,0.4)":"rgba(255,255,255,0.07)"), background:i===activeFramework?"rgba(240,185,11,0.07)":"#0B0E11", cursor:"pointer", textAlign:"left", fontFamily:"inherit", transition:"all 0.15s" }}>
                 <span style={{ fontSize:22, flexShrink:0 }}>{f.icon}</span>
                 <div>
-                  <div style={{ fontSize:12.5, fontWeight:700, color:i===activeFramework?"#F0B90B":"#e8e8f0", lineHeight:1.3 }}>{f.title.split("—")[0].trim()}</div>
-                  <div style={{ fontSize:11, color:"#8a9bb8", marginTop:2 }}>{f.region}</div>
+                  <div style={{ fontSize:12.5, fontWeight:700, color:i===activeFramework?"#F0B90B":"rgba(255,255,255,0.85)", lineHeight:1.3 }}>{f.title.split("—")[0].trim()}</div>
+                  <div style={{ fontSize:11, color:"rgba(255,255,255,0.5)", marginTop:2 }}>{f.region}</div>
                 </div>
-                <span style={{ marginLeft:"auto", padding:"2px 8px", borderRadius:20, fontSize:10, fontWeight:700, background:"rgba(34,197,94,0.1)", color:"#22c55e", border:"1px solid rgba(34,197,94,0.2)", flexShrink:0 }}>{f.status}</span>
+                <span style={{ marginLeft:"auto", padding:"2px 8px", borderRadius:20, fontSize:10, fontWeight:700, background:"rgba(34,197,94,0.1)", color:"#0ECB81", border:"1px solid rgba(34,197,94,0.2)", flexShrink:0 }}>{f.status}</span>
               </button>
             ))}
           </div>
@@ -195,19 +195,19 @@ export default function CompliancePage() {
               <div>
                 <h3 style={{ fontFamily:"Syne,sans-serif", fontSize:20, fontWeight:800, color:frameworks[activeFramework].color, margin:"0 0 4px" }}>{frameworks[activeFramework].title}</h3>
                 <div style={{ display:"flex", gap:8 }}>
-                  <span style={{ fontSize:12, color:"#8a9bb8" }}>{frameworks[activeFramework].region}</span>
-                  <span style={{ padding:"1px 8px", borderRadius:20, fontSize:10.5, fontWeight:700, background:"rgba(34,197,94,0.1)", color:"#22c55e", border:"1px solid rgba(34,197,94,0.2)" }}>{frameworks[activeFramework].status}</span>
+                  <span style={{ fontSize:12, color:"rgba(255,255,255,0.5)" }}>{frameworks[activeFramework].region}</span>
+                  <span style={{ padding:"1px 8px", borderRadius:20, fontSize:10.5, fontWeight:700, background:"rgba(34,197,94,0.1)", color:"#0ECB81", border:"1px solid rgba(34,197,94,0.2)" }}>{frameworks[activeFramework].status}</span>
                 </div>
               </div>
             </div>
-            <p style={{ fontSize:14.5, color:"#8a9bb8", lineHeight:1.8, marginBottom:24 }}>{frameworks[activeFramework].desc}</p>
+            <p style={{ fontSize:14.5, color:"rgba(255,255,255,0.5)", lineHeight:1.8, marginBottom:24 }}>{frameworks[activeFramework].desc}</p>
             <div style={{ borderTop:"1px solid rgba(255,255,255,0.07)", paddingTop:20 }}>
-              <p style={{ fontSize:11, fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase", color:"#8a9bb8", margin:"0 0 14px" }}>Key Requirements Met</p>
+              <p style={{ fontSize:11, fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase", color:"rgba(255,255,255,0.5)", margin:"0 0 14px" }}>Key Requirements Met</p>
               <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10 }}>
                 {frameworks[activeFramework].points.map(p => (
                   <div key={p} style={{ display:"flex", alignItems:"flex-start", gap:10 }}>
-                    <span style={{ width:20, height:20, borderRadius:"50%", background:"rgba(34,197,94,0.1)", border:"1px solid rgba(34,197,94,0.25)", display:"flex", alignItems:"center", justifyContent:"center", color:"#22c55e", fontSize:11, fontWeight:800, flexShrink:0, marginTop:1 }}>✓</span>
-                    <span style={{ fontSize:13, color:"#b0b7c3", lineHeight:1.5 }}>{p}</span>
+                    <span style={{ width:20, height:20, borderRadius:"50%", background:"rgba(34,197,94,0.1)", border:"1px solid rgba(34,197,94,0.25)", display:"flex", alignItems:"center", justifyContent:"center", color:"#0ECB81", fontSize:11, fontWeight:800, flexShrink:0, marginTop:1 }}>✓</span>
+                    <span style={{ fontSize:13, color:"rgba(255,255,255,0.6)", lineHeight:1.5 }}>{p}</span>
                   </div>
                 ))}
               </div>
@@ -228,8 +228,8 @@ export default function CompliancePage() {
                 <span style={{ fontSize:32, flexShrink:0 }}>{j.flag}</span>
                 <div style={{ flex:1 }}>
                   <div style={{ fontFamily:"Syne,sans-serif", fontSize:14.5, fontWeight:700, color:j.color, marginBottom:3 }}>{j.name}</div>
-                  <div style={{ fontSize:11.5, color:"#8a9bb8", lineHeight:1.5, marginBottom:6 }}>{j.framework}</div>
-                  <span style={{ padding:"2px 8px", borderRadius:20, fontSize:10.5, fontWeight:700, background:j.access==="Full"?"rgba(34,197,94,0.1)":"rgba(245,158,11,0.1)", color:j.access==="Full"?"#22c55e":"#f59e0b", border:"1px solid "+(j.access==="Full"?"rgba(34,197,94,0.25)":"rgba(245,158,11,0.25)") }}>
+                  <div style={{ fontSize:11.5, color:"rgba(255,255,255,0.5)", lineHeight:1.5, marginBottom:6 }}>{j.framework}</div>
+                  <span style={{ padding:"2px 8px", borderRadius:20, fontSize:10.5, fontWeight:700, background:j.access==="Full"?"rgba(34,197,94,0.1)":"rgba(245,158,11,0.1)", color:j.access==="Full"?"#0ECB81":"#f59e0b", border:"1px solid "+(j.access==="Full"?"rgba(34,197,94,0.25)":"rgba(245,158,11,0.25)") }}>
                     {j.access} Access
                   </span>
                 </div>
@@ -238,7 +238,7 @@ export default function CompliancePage() {
           </div>
           <div style={{ marginTop:20, padding:18, borderRadius:12, border:"1px solid rgba(245,158,11,0.2)", background:"rgba(245,158,11,0.05)", display:"flex", gap:12, alignItems:"flex-start" }}>
             <span style={{ fontSize:20, flexShrink:0 }}>⚠️</span>
-            <p style={{ fontSize:13, color:"#8a9bb8", margin:0, lineHeight:1.7 }}>
+            <p style={{ fontSize:13, color:"rgba(255,255,255,0.5)", margin:0, lineHeight:1.7 }}>
               <strong style={{ color:"#f59e0b" }}>US Investors:</strong> Participation is restricted to accredited investors under Regulation D (Rule 506(b)/506(c)) or offshore offerings under Regulation S. All US-linked investors require enhanced KYC and accredited investor verification. Contact our compliance team for details.
             </p>
           </div>
@@ -262,7 +262,7 @@ export default function CompliancePage() {
             <div key={c.t} style={{ ...S.card }}>
               <div style={{ fontSize:28, marginBottom:12 }}>{c.icon}</div>
               <h4 style={{ fontFamily:"Syne,sans-serif", fontSize:14.5, fontWeight:700, color:"#F0B90B", marginBottom:8 }}>{c.t}</h4>
-              <p style={{ fontSize:13, color:"#8a9bb8", lineHeight:1.65 }}>{c.d}</p>
+              <p style={{ fontSize:13, color:"rgba(255,255,255,0.5)", lineHeight:1.65 }}>{c.d}</p>
             </div>
           ))}
         </div>
@@ -285,8 +285,8 @@ export default function CompliancePage() {
             ].map(c => (
               <div key={c.t} style={{ ...S.card }}>
                 <div style={{ fontSize:28, marginBottom:12 }}>{c.icon}</div>
-                <h4 style={{ fontFamily:"Syne,sans-serif", fontSize:15, fontWeight:700, color:"#e8e8f0", marginBottom:8 }}>{c.t}</h4>
-                <p style={{ fontSize:13, color:"#8a9bb8", lineHeight:1.65 }}>{c.d}</p>
+                <h4 style={{ fontFamily:"Syne,sans-serif", fontSize:15, fontWeight:700, color:"rgba(255,255,255,0.85)", marginBottom:8 }}>{c.t}</h4>
+                <p style={{ fontSize:13, color:"rgba(255,255,255,0.5)", lineHeight:1.65 }}>{c.d}</p>
               </div>
             ))}
           </div>
@@ -306,14 +306,14 @@ export default function CompliancePage() {
         <div style={{ position:"relative", zIndex:1 }}>
           <span style={S.lbl}>Questions About Compliance?</span>
           <h2 style={{ ...S.h2, marginBottom:14 }}>Talk to Our Compliance Team</h2>
-          <p style={{ fontSize:16, color:"#8a9bb8", fontWeight:300, maxWidth:520, margin:"0 auto 36px", lineHeight:1.75 }}>
+          <p style={{ fontSize:16, color:"rgba(255,255,255,0.5)", fontWeight:300, maxWidth:520, margin:"0 auto 36px", lineHeight:1.75 }}>
             Our in-house compliance and legal team is available to answer questions from investors, issuers, and institutional partners about our regulatory framework.
           </p>
           <div style={{ display:"flex", gap:14, justifyContent:"center", flexWrap:"wrap" }}>
             <Link href="/contact"      style={S.gold}>Contact Compliance Team</Link>
             <Link href="/institutional" style={S.out}>Institutional Onboarding</Link>
           </div>
-          <p style={{ fontSize:11.5, color:"#8a9bb8", marginTop:24, opacity:0.7 }}>
+          <p style={{ fontSize:11.5, color:"rgba(255,255,255,0.5)", marginTop:24, opacity:0.7 }}>
             Regulated by Bank of Lithuania · MiCA Compliant · FATF Aligned · ERC-3643 · ISO 27001 · GDPR
           </p>
         </div>
@@ -329,28 +329,28 @@ export default function CompliancePage() {
                 <div style={{ width:1, height:22, background:"rgba(240,185,11,0.25)" }} />
                 <div>
                   <div style={{ fontFamily:"Syne,sans-serif", fontSize:13, fontWeight:800, letterSpacing:"0.15em", color:"#F0B90B" }}>NEXTOKEN</div>
-                  <div style={{ fontSize:9, letterSpacing:"0.2em", color:"#8a9bb8", textTransform:"uppercase" }}>CAPITAL</div>
+                  <div style={{ fontSize:9, letterSpacing:"0.2em", color:"rgba(255,255,255,0.5)", textTransform:"uppercase" }}>CAPITAL</div>
                 </div>
               </div>
-              <p style={{ fontSize:13, color:"#8a9bb8", maxWidth:260, lineHeight:1.75, marginBottom:16 }}>The regulated infrastructure for tokenized real-world assets. Registered in Lithuania.</p>
-              <p style={{ fontSize:11, color:"#8a9bb8", textTransform:"uppercase", letterSpacing:"0.05em" }}>MONITORED BY <a href="#" style={{ color:"#F0B90B", textDecoration:"none" }}>Bank of Lithuania</a></p>
+              <p style={{ fontSize:13, color:"rgba(255,255,255,0.5)", maxWidth:260, lineHeight:1.75, marginBottom:16 }}>The regulated infrastructure for tokenized real-world assets. Registered in Lithuania.</p>
+              <p style={{ fontSize:11, color:"rgba(255,255,255,0.5)", textTransform:"uppercase", letterSpacing:"0.05em" }}>MONITORED BY <a href="#" style={{ color:"#F0B90B", textDecoration:"none" }}>Bank of Lithuania</a></p>
             </div>
             <div>
-              <h5 style={{ fontSize:11, fontWeight:700, letterSpacing:"0.15em", textTransform:"uppercase", color:"#8a9bb8", marginBottom:16 }}>Products</h5>
+              <h5 style={{ fontSize:11, fontWeight:700, letterSpacing:"0.15em", textTransform:"uppercase", color:"rgba(255,255,255,0.5)", marginBottom:16 }}>Products</h5>
               {[["Markets","/markets"],["Exchange","/exchange"],["Bonds","/bonds"],["Equity & IPO","/equity-ipo"],["Tokenize","/tokenize"]].map(([l,h]) => (
-                <Link key={l} href={h} style={{ display:"block", fontSize:13, color:"#b0b7c3", textDecoration:"none", marginBottom:10 }}>{l}</Link>
+                <Link key={l} href={h} style={{ display:"block", fontSize:13, color:"rgba(255,255,255,0.6)", textDecoration:"none", marginBottom:10 }}>{l}</Link>
               ))}
             </div>
             <div>
-              <h5 style={{ fontSize:11, fontWeight:700, letterSpacing:"0.15em", textTransform:"uppercase", color:"#8a9bb8", marginBottom:16 }}>Legal</h5>
+              <h5 style={{ fontSize:11, fontWeight:700, letterSpacing:"0.15em", textTransform:"uppercase", color:"rgba(255,255,255,0.5)", marginBottom:16 }}>Legal</h5>
               {[["Terms of Service","/terms"],["Privacy Policy","/privacy"],["Risk Disclosure","/risk"],["AML Policy","/aml"],["Compliance","/compliance"]].map(([l,h]) => (
-                <Link key={l} href={h} style={{ display:"block", fontSize:13, color:"#b0b7c3", textDecoration:"none", marginBottom:10 }}>{l}</Link>
+                <Link key={l} href={h} style={{ display:"block", fontSize:13, color:"rgba(255,255,255,0.6)", textDecoration:"none", marginBottom:10 }}>{l}</Link>
               ))}
             </div>
           </div>
           <div style={{ borderTop:"1px solid rgba(255,255,255,0.07)", paddingTop:20, display:"flex", flexWrap:"wrap", justifyContent:"space-between", gap:10 }}>
-            <p style={{ fontSize:12, color:"#8a9bb8", margin:0 }}>© 2026 Nextoken Capital UAB. All rights reserved. Registered in Lithuania.</p>
-            <p style={{ fontSize:11, color:"#8a9bb8", opacity:0.6, margin:0 }}>This page is for informational purposes only and does not constitute legal or financial advice.</p>
+            <p style={{ fontSize:12, color:"rgba(255,255,255,0.5)", margin:0 }}>© 2026 Nextoken Capital UAB. All rights reserved. Registered in Lithuania.</p>
+            <p style={{ fontSize:11, color:"rgba(255,255,255,0.5)", opacity:0.6, margin:0 }}>This page is for informational purposes only and does not constitute legal or financial advice.</p>
           </div>
         </div>
       </footer>

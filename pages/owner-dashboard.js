@@ -11,9 +11,9 @@ const STATUS_STYLES = {
   approved:  { bg:"rgba(59,130,246,0.1)",  color:"#3B82F6",              label:"Approved" },
   live:      { bg:"rgba(14,203,129,0.1)",  color:"#0ECB81",              label:"Live" },
   closing:   { bg:"rgba(240,185,11,0.1)",  color:"#F0B90B",              label:"Closing Soon" },
-  closed:    { bg:"rgba(99,102,241,0.1)",  color:"#818cf8",              label:"Fully Funded" },
+  closed:    { bg:"rgba(99,102,241,0.1)",  color:"#8b5cf6",              label:"Fully Funded" },
   completed: { bg:"rgba(14,203,129,0.1)",  color:"#0ECB81",              label:"Completed" },
-  cancelled: { bg:"rgba(255,77,77,0.1)",   color:"#FF6B6B",              label:"Cancelled" },
+  cancelled: { bg:"rgba(255,77,77,0.1)",   color:"#ef4444",              label:"Cancelled" },
 };
 
 const ASSET_ICONS = {

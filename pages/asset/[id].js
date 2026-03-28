@@ -44,7 +44,7 @@ export default function AssetDetail() {
     </div>
   );
 
-  const riskColor = { low: "#22c55e", medium: "#f59e0b", high: "#ef4444" };
+  const riskColor = { low: "#0ECB81", medium: "#f59e0b", high: "#ef4444" };
   const price     = asset.tokenPrice || 0;
   const yield_    = asset.targetROI || asset.annualYield || 0;
   const minInvest = asset.minInvestment || 100;
@@ -57,9 +57,9 @@ export default function AssetDetail() {
   const funded    = asset.targetRaise > 0 ? Math.min(100, Math.round(((asset.raisedAmount || 0) / asset.targetRaise) * 100)) : 0;
 
   const msgColors = {
-    success: { bg: "#052e16", border: "#065f46", color: "#4ade80", icon: "✅" },
-    error:   { bg: "#2d0a0a", border: "#7f1d1d", color: "#f87171", icon: "❌" },
-    warn:    { bg: "#2d1f00", border: "#5a3e00", color: "#f5c842", icon: "⚠️" },
+    success: { bg: "#062015", border: "#065f46", color: "#0ECB81", icon: "✅" },
+    error:   { bg: "#2d0a0a", border: "#7f1d1d", color: "#ef4444", icon: "❌" },
+    warn:    { bg: "#2d1f00", border: "#5a3e00", color: "#F0B90B", icon: "⚠️" },
   };
   const mc = msgColors[msgType] || msgColors.error;
 
@@ -111,7 +111,7 @@ export default function AssetDetail() {
                   {(asset.riskLevel || "medium")} Risk
                 </span>
                 {asset.status === "live" && (
-                  <span style={{ background: "rgba(34,197,94,0.1)", color: "#22c55e", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 20, padding: "4px 12px", fontSize: 12, fontWeight: 700 }}>● Live</span>
+                  <span style={{ background: "rgba(34,197,94,0.1)", color: "#0ECB81", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 20, padding: "4px 12px", fontSize: 12, fontWeight: 700 }}>● Live</span>
                 )}
               </div>
               <h1 style={{ color: "#fff", fontWeight: 900, fontSize: 28, margin: "0 0 6px" }}>{asset.name}</h1>
@@ -161,7 +161,7 @@ export default function AssetDetail() {
                 <div className="asset-fin-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
                   {[
                     ["Token Price",    price > 0 ? "€" + price : "—",                                     "#F0B90B"],
-                    ["Annual Yield",   yield_ + "%",                                                        "#22c55e"],
+                    ["Annual Yield",   yield_ + "%",                                                        "#0ECB81"],
                     ["Min Investment", "€" + minInvest,                                                     "#3b82f6"],
                     ["Target Raise",   asset.targetRaise ? "€" + asset.targetRaise.toLocaleString() : "—", "#fff"],
                     ["Raised So Far",  "€" + (asset.raisedAmount || 0).toLocaleString(),                   "#fff"],
@@ -276,7 +276,7 @@ export default function AssetDetail() {
                     </div>
                     <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8, fontSize: 13 }}>
                       <span style={{ color: "rgba(255,255,255,0.4)" }}>Est. annual return ({yield_}%)</span>
-                      <span style={{ color: "#22c55e", fontWeight: 700 }}>€{annReturn}</span>
+                      <span style={{ color: "#0ECB81", fontWeight: 700 }}>€{annReturn}</span>
                     </div>
                     <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 8, display: "flex", justifyContent: "space-between", fontSize: 15 }}>
                       <span style={{ color: "rgba(255,255,255,0.6)", fontWeight: 600 }}>Total</span>
@@ -302,7 +302,7 @@ export default function AssetDetail() {
                   {/* Supported chains */}
                   <div style={{ marginTop: 14, display: "flex", gap: 4, flexWrap: "wrap", justifyContent: "center" }}>
                     {["ETH", "Polygon", "Arbitrum", "BSC", "Base", "Optimism"].map(c => (
-                      <span key={c} style={{ background: "#141414", border: "1px solid #1f1f1f", borderRadius: 20, padding: "2px 8px", fontSize: 10, color: "#555", fontWeight: 600 }}>{c}</span>
+                      <span key={c} style={{ background: "#161B22", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 20, padding: "2px 8px", fontSize: 10, color: "#555", fontWeight: 600 }}>{c}</span>
                     ))}
                   </div>
 
@@ -312,7 +312,7 @@ export default function AssetDetail() {
                       <div style={{ fontWeight: 700, marginBottom: 4 }}>{mc.icon} {msgType === "error" ? "Error" : msgType === "warn" ? "Action Required" : "Success"}</div>
                       <div>{msg}</div>
                       {msgType === "warn" && msg.includes("KYC") && (
-                        <Link href="/kyc" style={{ display: "inline-block", marginTop: 8, background: "#f5c842", color: "#000", borderRadius: 6, padding: "6px 14px", textDecoration: "none", fontSize: 12, fontWeight: 800 }}>
+                        <Link href="/kyc" style={{ display: "inline-block", marginTop: 8, background: "#F0B90B", color: "#000", borderRadius: 6, padding: "6px 14px", textDecoration: "none", fontSize: 12, fontWeight: 800 }}>
                           🪪 Complete KYC
                         </Link>
                       )}

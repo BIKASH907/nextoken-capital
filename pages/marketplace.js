@@ -21,7 +21,7 @@ export default function Marketplace() {
 
   const priceOf = (a) => a.tokenPrice || (a.targetRaise && a.tokenSupply ? Math.round(a.targetRaise / a.tokenSupply) : 100);
   const riskOf  = (a) => (a.targetROI || 0) > 15 ? "High" : (a.targetROI || 0) > 10 ? "Medium" : "Low";
-  const riskColor = (r) => ({ High: "#ef4444", Medium: "#f59e0b", Low: "#22c55e" }[r]);
+  const riskColor = (r) => ({ High: "#ef4444", Medium: "#f59e0b", Low: "#0ECB81" }[r]);
   const typeIcon  = (t) => ({ real_estate: "🏢", bond: "📜", equity: "📈", fund: "💼", energy: "⚡", commodity: "🪙", infrastructure: "🏗️" }[t] || "📦");
   const soldPct   = (a) => a.soldUnits && a.tokenSupply ? Math.round(a.soldUnits / a.tokenSupply * 100) : 0;
 
@@ -60,7 +60,7 @@ export default function Marketplace() {
             {[
               { l: "Listed Assets",   v: assets.length, c: "#F0B90B" },
               { l: "Asset Types",     v: new Set(assets.map(a => a.assetType)).size, c: "#8b5cf6" },
-              { l: "Min Investment",  v: "EUR 100", c: "#22c55e" },
+              { l: "Min Investment",  v: "EUR 100", c: "#0ECB81" },
               { l: "Avg Yield",       v: assets.length ? (assets.reduce((s, a) => s + (a.targetROI || 0), 0) / assets.length).toFixed(1) + "%" : "—", c: "#3b82f6" },
             ].map((s, i) => (
               <div key={i} style={{ background: "#161b22", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "14px 20px", flex: 1, minWidth: 120 }}>
@@ -127,7 +127,7 @@ export default function Marketplace() {
                       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 14 }}>
                         {[
                           { l: "TOKEN PRICE",   v: "EUR " + priceOf(a),          c: "#F0B90B" },
-                          { l: "ANNUAL YIELD",  v: (a.targetROI || 0) + "%",     c: "#22c55e" },
+                          { l: "ANNUAL YIELD",  v: (a.targetROI || 0) + "%",     c: "#0ECB81" },
                           { l: "MIN INVEST",    v: "EUR " + (a.minInvestment || 100), c: "#3b82f6" },
                         ].map(({ l, v, c }) => (
                           <div key={l} style={{ background: "#0a0e14", borderRadius: 8, padding: "8px 10px", textAlign: "center" }}>

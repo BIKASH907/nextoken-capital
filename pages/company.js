@@ -470,7 +470,7 @@ function Press() {
             {RELEASES.map(r => (
               <div key={r.title} className="card" style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:'20px',padding:'20px 28px'}}>
                 <div>
-                  <div style={{fontFamily:"'DM Mono',monospace",fontSize:'.68rem',color:'#4a5568',marginBottom:'6px'}}>{r.date}</div>
+                  <div style={{fontFamily:"'DM Mono',monospace",fontSize:'.68rem',color:'rgba(255,255,255,0.35)',marginBottom:'6px'}}>{r.date}</div>
                   <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:'.98rem'}}>{r.title}</div>
                 </div>
                 <span className="rlink" style={{flexShrink:0}}>PDF</span>
@@ -519,11 +519,11 @@ function Blog() {
                 <div className="adot">JK</div>
                 <div>
                   <div style={{fontSize:'.82rem',color:'#e8edf5'}}>Jonas Kazlauskas</div>
-                  <div style={{fontSize:'.72rem',color:'#4a5568',fontFamily:"'DM Mono',monospace"}}>Head of Compliance</div>
+                  <div style={{fontSize:'.72rem',color:'rgba(255,255,255,0.35)',fontFamily:"'DM Mono',monospace"}}>Head of Compliance</div>
                 </div>
               </div>
-              <span style={{fontSize:'.78rem',color:'#4a5568',fontFamily:"'DM Mono',monospace"}}>March 12, 2026</span>
-              <span style={{fontSize:'.78rem',color:'#4a5568'}}>12 min read</span>
+              <span style={{fontSize:'.78rem',color:'rgba(255,255,255,0.35)',fontFamily:"'DM Mono',monospace"}}>March 12, 2026</span>
+              <span style={{fontSize:'.78rem',color:'rgba(255,255,255,0.35)'}}>12 min read</span>
               <span className="rlink">Read</span>
             </div>
           </div>
@@ -541,8 +541,8 @@ function Blog() {
                   <div className="btitle">{p.title}</div>
                   <div className="bex">{p.ex}</div>
                   <div className="bfoot">
-                    <span style={{fontSize:'.75rem',color:'#4a5568'}}>{p.by}</span>
-                    <span style={{fontSize:'.72rem',color:'#4a5568',fontFamily:"'DM Mono',monospace"}}>{p.at}</span>
+                    <span style={{fontSize:'.75rem',color:'rgba(255,255,255,0.35)'}}>{p.by}</span>
+                    <span style={{fontSize:'.72rem',color:'rgba(255,255,255,0.35)',fontFamily:"'DM Mono',monospace"}}>{p.at}</span>
                   </div>
                 </div>
               </div>

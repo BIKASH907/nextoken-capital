@@ -4,17 +4,17 @@ import { useState } from "react";
 import Navbar from "../components/Navbar";
 
 const typeColor = {
-  Green:       { bg:"rgba(34,197,94,0.08)",  color:"#22c55e", border:"rgba(34,197,94,0.25)"  },
-  Corporate:   { bg:"rgba(99,102,241,0.08)", color:"#818cf8", border:"rgba(99,102,241,0.3)"  },
+  Green:       { bg:"rgba(34,197,94,0.08)",  color:"#0ECB81", border:"rgba(34,197,94,0.25)"  },
+  Corporate:   { bg:"rgba(99,102,241,0.08)", color:"#8b5cf6", border:"rgba(99,102,241,0.3)"  },
   Convertible: { bg:"rgba(240,185,11,0.08)", color:"#F0B90B", border:"rgba(240,185,11,0.3)"  },
   Municipal:   { bg:"rgba(14,165,233,0.08)", color:"#38bdf8", border:"rgba(14,165,233,0.25)" },
 };
 const statusStyle = {
-  Live:     { bg:"rgba(34,197,94,0.10)",  color:"#22c55e", border:"rgba(34,197,94,0.25)"  },
+  Live:     { bg:"rgba(34,197,94,0.10)",  color:"#0ECB81", border:"rgba(34,197,94,0.25)"  },
   Closing:  { bg:"rgba(240,185,11,0.10)", color:"#F0B90B", border:"rgba(240,185,11,0.3)"  },
-  Upcoming: { bg:"rgba(99,102,241,0.10)", color:"#818cf8", border:"rgba(99,102,241,0.3)"  },
+  Upcoming: { bg:"rgba(99,102,241,0.10)", color:"#8b5cf6", border:"rgba(99,102,241,0.3)"  },
 };
-const ratingColor = (r) => { if (r.startsWith("A")) return "#22c55e"; if (r.startsWith("BB")) return "#f59e0b"; return "#ef4444"; };
+const ratingColor = (r) => { if (r.startsWith("A")) return "#0ECB81"; if (r.startsWith("BB")) return "#f59e0b"; return "#ef4444"; };
 
 const bonds = [
   { id:1, name:"SME Convertible Note I",     ticker:"SME-CNV-26",    type:"Convertible", issuer:"Growth Capital Partners", yld:"8.2%", price:"99.8",  term:"2Y", rating:"BB",   progress:94, raised:"940K",  target:"1M",   min:"250",   status:"Closing", emoji:"💼", featured:true  },
@@ -32,16 +32,16 @@ const faqs = [
   { q:"How do issuers launch a bond?",      a:"Issuers begin through the Tokenize workflow, define structure, maturity, and investor terms, then submit documentation for review." },
 ];
 const S = {
-  page:  { minHeight:"100vh", background:"#05060a", color:"#e8e8f0", fontFamily:"'DM Sans',system-ui,sans-serif" },
+  page:  { minHeight:"100vh", background:"#0B0E11", color:"rgba(255,255,255,0.85)", fontFamily:"'DM Sans',system-ui,sans-serif" },
   sec:   { maxWidth:1200, margin:"0 auto", padding:"64px 32px" },
-  h2:    { fontFamily:"Syne,sans-serif", fontSize:"clamp(26px,4vw,42px)", fontWeight:800, color:"#e8e8f0", margin:"0 0 12px", letterSpacing:"-0.5px" },
+  h2:    { fontFamily:"Syne,sans-serif", fontSize:"clamp(26px,4vw,42px)", fontWeight:800, color:"rgba(255,255,255,0.85)", margin:"0 0 12px", letterSpacing:"-0.5px" },
   lbl:   { fontSize:11, fontWeight:700, letterSpacing:"0.2em", textTransform:"uppercase", color:"#F0B90B", marginBottom:10, display:"block" },
-  sub:   { fontSize:15, color:"#b0b0c8", fontWeight:300, maxWidth:580, lineHeight:1.7, margin:"0 0 32px" },
-  card:  { background:"#0d0d14", border:"1px solid rgba(255,255,255,0.08)", borderRadius:16, padding:24, transition:"all 0.2s" },
+  sub:   { fontSize:15, color:"rgba(255,255,255,0.6)", fontWeight:300, maxWidth:580, lineHeight:1.7, margin:"0 0 32px" },
+  card:  { background:"#0B0E11", border:"1px solid rgba(255,255,255,0.08)", borderRadius:16, padding:24, transition:"all 0.2s" },
   gold:  { padding:"12px 28px", borderRadius:10, background:"#F0B90B", color:"#000", fontSize:14, fontWeight:800, border:"none", cursor:"pointer", textDecoration:"none", display:"inline-block" },
   out:   { padding:"12px 28px", borderRadius:10, background:"transparent", color:"#F0B90B", fontSize:14, fontWeight:600, border:"1px solid rgba(240,185,11,0.35)", cursor:"pointer", textDecoration:"none", display:"inline-block" },
   badge: { display:"inline-flex", alignItems:"center", gap:8, padding:"5px 14px", borderRadius:20, border:"1px solid rgba(240,185,11,0.3)", background:"rgba(240,185,11,0.08)", color:"#F0B90B", fontSize:11, fontWeight:600, letterSpacing:"0.15em", textTransform:"uppercase" },
-  FB:    (a) => ({ padding:"6px 14px", borderRadius:20, border:"1px solid "+(a?"rgba(240,185,11,0.5)":"rgba(255,255,255,0.08)"), background:a?"rgba(240,185,11,0.12)":"transparent", color:a?"#F0B90B":"#b0b0c8", fontSize:12.5, fontWeight:500, cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s" }),
+  FB:    (a) => ({ padding:"6px 14px", borderRadius:20, border:"1px solid "+(a?"rgba(240,185,11,0.5)":"rgba(255,255,255,0.08)"), background:a?"rgba(240,185,11,0.12)":"transparent", color:a?"#F0B90B":"rgba(255,255,255,0.6)", fontSize:12.5, fontWeight:500, cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s" }),
 };
 
 function TypeTag({ type }) { const c = typeColor[type]||typeColor.Corporate; return <span style={{ padding:"3px 10px", borderRadius:20, fontSize:11, fontWeight:600, background:c.bg, color:c.color, border:"1px solid "+c.border }}>{type}</span>; }
@@ -51,10 +51,10 @@ function FaqItem({ q, a }) {
   const [open, setOpen] = useState(false);
   return (
     <div style={{ border:"1px solid rgba(255,255,255,0.08)", borderRadius:12, overflow:"hidden", marginBottom:8 }}>
-      <button onClick={() => setOpen(!open)} style={{ width:"100%", display:"flex", alignItems:"center", justifyContent:"space-between", padding:"18px 20px", background:"#0d0d14", border:"none", color:"#e8e8f0", fontSize:14.5, fontWeight:500, cursor:"pointer", textAlign:"left", fontFamily:"inherit" }}>
+      <button onClick={() => setOpen(!open)} style={{ width:"100%", display:"flex", alignItems:"center", justifyContent:"space-between", padding:"18px 20px", background:"#0B0E11", border:"none", color:"rgba(255,255,255,0.85)", fontSize:14.5, fontWeight:500, cursor:"pointer", textAlign:"left", fontFamily:"inherit" }}>
         <span>{q}</span><span style={{ color:"#F0B90B", fontSize:20, flexShrink:0, marginLeft:16 }}>{open?"-":"+"}</span>
       </button>
-      {open && <div style={{ padding:"0 20px 18px", background:"#0d0d14" }}><p style={{ fontSize:13.5, color:"#b0b0c8", lineHeight:1.7, margin:0 }}>{a}</p></div>}
+      {open && <div style={{ padding:"0 20px 18px", background:"#0B0E11" }}><p style={{ fontSize:13.5, color:"rgba(255,255,255,0.6)", lineHeight:1.7, margin:0 }}>{a}</p></div>}
     </div>
   );
 }
@@ -76,20 +76,20 @@ function InvestModal({ bond, onClose }) {
 
   return (
     <div onClick={e=>{if(e.target===e.currentTarget)onClose();}} style={{ position:"fixed",inset:0,background:"rgba(0,0,0,0.85)",zIndex:10000,display:"flex",alignItems:"center",justifyContent:"center",padding:20 }}>
-      <div style={{ background:"#0d0d14",border:"1px solid rgba(240,185,11,0.25)",borderRadius:18,padding:28,width:"100%",maxWidth:420,position:"relative" }}>
+      <div style={{ background:"#0B0E11",border:"1px solid rgba(240,185,11,0.25)",borderRadius:18,padding:28,width:"100%",maxWidth:420,position:"relative" }}>
         <button onClick={onClose} style={{ position:"absolute",top:16,right:18,background:"none",border:"none",color:"rgba(255,255,255,0.4)",fontSize:22,cursor:"pointer",lineHeight:1 }}>×</button>
         <style>{`@keyframes bspin{to{transform:rotate(360deg)}}`}</style>
 
         {step==="success" ? (
           <div style={{ textAlign:"center",padding:"16px 0" }}>
             <div style={{ fontSize:52,marginBottom:14 }}>🎉</div>
-            <div style={{ fontFamily:"Syne,sans-serif",fontSize:20,fontWeight:800,color:"#22c55e",marginBottom:8 }}>Investment Placed!</div>
-            <p style={{ fontSize:13,color:"#b0b0c8",lineHeight:1.7,marginBottom:20 }}>You invested <strong style={{color:"#F0B90B"}}>EUR {amount}</strong> in <strong style={{color:"#fff"}}>{bond.name}</strong>. Confirmation sent to your registered email.</p>
+            <div style={{ fontFamily:"Syne,sans-serif",fontSize:20,fontWeight:800,color:"#0ECB81",marginBottom:8 }}>Investment Placed!</div>
+            <p style={{ fontSize:13,color:"rgba(255,255,255,0.6)",lineHeight:1.7,marginBottom:20 }}>You invested <strong style={{color:"#F0B90B"}}>EUR {amount}</strong> in <strong style={{color:"#fff"}}>{bond.name}</strong>. Confirmation sent to your registered email.</p>
             <div style={{ background:"rgba(240,185,11,0.06)",border:"1px solid rgba(240,185,11,0.15)",borderRadius:10,padding:16,marginBottom:20,textAlign:"left" }}>
               {[["Bond",bond.name],["Amount","EUR "+amount],["Yield",bond.yld+" p.a."],["Est. Annual Return","EUR "+annual],["Term",bond.term]].map(([l,v])=>(
                 <div key={l} style={{ display:"flex",justifyContent:"space-between",fontSize:12,marginBottom:6 }}>
                   <span style={{color:"rgba(255,255,255,0.4)"}}>{l}</span>
-                  <span style={{fontWeight:600,color:"#e8e8f0"}}>{v}</span>
+                  <span style={{fontWeight:600,color:"rgba(255,255,255,0.85)"}}>{v}</span>
                 </div>
               ))}
             </div>
@@ -97,13 +97,13 @@ function InvestModal({ bond, onClose }) {
           </div>
         ) : step==="confirm" ? (
           <>
-            <div style={{ fontFamily:"Syne,sans-serif",fontSize:17,fontWeight:800,color:"#e8e8f0",marginBottom:4 }}>Confirm Investment</div>
-            <p style={{ fontSize:12,color:"#7a7a96",marginBottom:20,lineHeight:1.6 }}>Review your details before confirming.</p>
+            <div style={{ fontFamily:"Syne,sans-serif",fontSize:17,fontWeight:800,color:"rgba(255,255,255,0.85)",marginBottom:4 }}>Confirm Investment</div>
+            <p style={{ fontSize:12,color:"rgba(255,255,255,0.45)",marginBottom:20,lineHeight:1.6 }}>Review your details before confirming.</p>
             <div style={{ background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:12,padding:16,marginBottom:16 }}>
               {[["Bond",bond.name],["Issuer",bond.issuer],["Amount","EUR "+amount],["Tokens",tokens+" tokens @ EUR "+bond.price],["Yield",bond.yld+" per annum"],["Est. Annual Return","EUR "+annual],["Term",bond.term],["Rating",bond.rating]].map(([l,v])=>(
                 <div key={l} style={{ display:"flex",justifyContent:"space-between",fontSize:12.5,marginBottom:8,borderBottom:"1px solid rgba(255,255,255,0.04)",paddingBottom:8 }}>
-                  <span style={{color:"#7a7a96"}}>{l}</span>
-                  <span style={{fontWeight:600,color:"#e8e8f0",textAlign:"right",maxWidth:"55%"}}>{v}</span>
+                  <span style={{color:"rgba(255,255,255,0.45)"}}>{l}</span>
+                  <span style={{fontWeight:600,color:"rgba(255,255,255,0.85)",textAlign:"right",maxWidth:"55%"}}>{v}</span>
                 </div>
               ))}
             </div>
@@ -120,21 +120,21 @@ function InvestModal({ bond, onClose }) {
         ) : (
           <>
             <div style={{ fontSize:28,marginBottom:10 }}>{bond.emoji}</div>
-            <div style={{ fontFamily:"Syne,sans-serif",fontSize:17,fontWeight:800,color:"#e8e8f0",marginBottom:2 }}>{bond.name}</div>
-            <div style={{ fontFamily:"monospace",fontSize:11,color:"#7a7a96",marginBottom:16 }}>{bond.ticker} · {bond.issuer}</div>
+            <div style={{ fontFamily:"Syne,sans-serif",fontSize:17,fontWeight:800,color:"rgba(255,255,255,0.85)",marginBottom:2 }}>{bond.name}</div>
+            <div style={{ fontFamily:"monospace",fontSize:11,color:"rgba(255,255,255,0.45)",marginBottom:16 }}>{bond.ticker} · {bond.issuer}</div>
             <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,background:"rgba(255,255,255,0.025)",borderRadius:10,padding:12,marginBottom:20 }}>
               {[["Yield",bond.yld],["Term",bond.term],["Rating",bond.rating]].map(([l,v])=>(
                 <div key={l} style={{textAlign:"center"}}>
                   <div style={{fontFamily:"Syne,sans-serif",fontSize:16,fontWeight:700,color:"#F0B90B"}}>{v}</div>
-                  <div style={{fontSize:10,color:"#7a7a96",marginTop:2}}>{l}</div>
+                  <div style={{fontSize:10,color:"rgba(255,255,255,0.45)",marginTop:2}}>{l}</div>
                 </div>
               ))}
             </div>
             <label style={{ display:"block",fontSize:11,fontWeight:700,color:"rgba(255,255,255,0.4)",textTransform:"uppercase",letterSpacing:".5px",marginBottom:7 }}>Investment Amount (EUR)</label>
             <input type="number" min={bond.min} step="50" value={amount} onChange={e=>setAmount(e.target.value)}
               style={{ width:"100%",background:"#161B22",color:"#fff",border:"1px solid rgba(255,255,255,0.1)",borderRadius:8,padding:"12px 14px",fontSize:16,fontWeight:700,outline:"none",fontFamily:"inherit",boxSizing:"border-box",marginBottom:8 }} />
-            <div style={{ fontSize:12,color:"#7a7a96",marginBottom:14 }}>
-              ≈ {tokens} tokens · Est. annual return: <span style={{color:"#22c55e",fontWeight:700}}>EUR {annual}</span>
+            <div style={{ fontSize:12,color:"rgba(255,255,255,0.45)",marginBottom:14 }}>
+              ≈ {tokens} tokens · Est. annual return: <span style={{color:"#0ECB81",fontWeight:700}}>EUR {annual}</span>
             </div>
             <div style={{ display:"flex",gap:8,flexWrap:"wrap",marginBottom:18 }}>
               {[bond.min, String(parseInt(bond.min)*2), String(parseInt(bond.min)*5), String(parseInt(bond.min)*10)].map(v=>(
@@ -164,34 +164,34 @@ function BondCard({ bond, onInvest }) {
   return (
     <div onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}
       style={{ ...S.card,border:"1px solid "+(hov?"rgba(240,185,11,0.35)":"rgba(255,255,255,0.08)"),transform:hov?"translateY(-2px)":"none",position:"relative",overflow:"hidden" }}>
-      {hov&&<div style={{ position:"absolute",top:0,left:0,right:0,height:2,background:"linear-gradient(90deg,#F0B90B,#fcd34d)" }}/>}
+      {hov&&<div style={{ position:"absolute",top:0,left:0,right:0,height:2,background:"linear-gradient(90deg,#F0B90B,#F0B90B)" }}/>}
       {bond.featured&&<div style={{ position:"absolute",top:14,right:14 }}><span style={{ padding:"2px 8px",borderRadius:20,fontSize:10,fontWeight:700,background:"rgba(240,185,11,0.15)",color:"#F0B90B",border:"1px solid rgba(240,185,11,0.3)" }}>Featured</span></div>}
       <div style={{ fontSize:32,marginBottom:12 }}>{bond.emoji}</div>
       <div style={{ display:"flex",gap:6,flexWrap:"wrap",marginBottom:12 }}>
         <span style={{ padding:"3px 10px",borderRadius:20,fontSize:11,fontWeight:600,background:sc.bg,color:sc.color,border:"1px solid "+sc.border }}>{bond.status}</span>
         <TypeTag type={bond.type}/>
       </div>
-      <div style={{ fontFamily:"Syne,sans-serif",fontSize:17,fontWeight:700,color:"#e8e8f0",marginBottom:3 }}>{bond.name}</div>
-      <div style={{ fontFamily:"monospace",fontSize:11,color:"#7a7a96",marginBottom:4 }}>{bond.ticker}</div>
-      <div style={{ fontSize:12.5,color:"#7a7a96",marginBottom:16 }}>Issuer: {bond.issuer}</div>
+      <div style={{ fontFamily:"Syne,sans-serif",fontSize:17,fontWeight:700,color:"rgba(255,255,255,0.85)",marginBottom:3 }}>{bond.name}</div>
+      <div style={{ fontFamily:"monospace",fontSize:11,color:"rgba(255,255,255,0.45)",marginBottom:4 }}>{bond.ticker}</div>
+      <div style={{ fontSize:12.5,color:"rgba(255,255,255,0.45)",marginBottom:16 }}>Issuer: {bond.issuer}</div>
       <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,padding:14,background:"rgba(255,255,255,0.025)",borderRadius:10,marginBottom:16 }}>
         {[["Yield",bond.yld],["Price","EUR "+bond.price],["Term",bond.term]].map(([l,v])=>(
-          <div key={l}><div style={{ fontFamily:"Syne,sans-serif",fontSize:17,fontWeight:700,color:"#F0B90B" }}>{v}</div><div style={{ fontSize:10.5,color:"#7a7a96",marginTop:2 }}>{l}</div></div>
+          <div key={l}><div style={{ fontFamily:"Syne,sans-serif",fontSize:17,fontWeight:700,color:"#F0B90B" }}>{v}</div><div style={{ fontSize:10.5,color:"rgba(255,255,255,0.45)",marginTop:2 }}>{l}</div></div>
         ))}
       </div>
       <div style={{ display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8 }}>
         <div style={{ display:"flex",gap:8,alignItems:"center" }}>
-          <span style={{ fontSize:11,color:"#7a7a96" }}>Rating</span>
+          <span style={{ fontSize:11,color:"rgba(255,255,255,0.45)" }}>Rating</span>
           <span style={{ fontFamily:"monospace",fontSize:13,fontWeight:700,color:ratingColor(bond.rating) }}>{bond.rating}</span>
         </div>
-        <span style={{ fontSize:12,color:"#7a7a96" }}>Min: EUR {bond.min}</span>
+        <span style={{ fontSize:12,color:"rgba(255,255,255,0.45)" }}>Min: EUR {bond.min}</span>
       </div>
       <div style={{ marginBottom:16 }}>
-        <div style={{ display:"flex",justifyContent:"space-between",fontSize:12,color:"#7a7a96",marginBottom:6 }}>
+        <div style={{ display:"flex",justifyContent:"space-between",fontSize:12,color:"rgba(255,255,255,0.45)",marginBottom:6 }}>
           <span>Funding {bond.progress}%</span><span>EUR {bond.raised} / EUR {bond.target}</span>
         </div>
         <div style={{ height:5,background:"rgba(255,255,255,0.07)",borderRadius:4,overflow:"hidden" }}>
-          <div style={{ width:bond.progress+"%",height:"100%",background:"linear-gradient(90deg,#F0B90B,#fcd34d)",borderRadius:4 }}/>
+          <div style={{ width:bond.progress+"%",height:"100%",background:"linear-gradient(90deg,#F0B90B,#F0B90B)",borderRadius:4 }}/>
         </div>
       </div>
       <button onClick={()=>onInvest(bond)}
@@ -237,10 +237,10 @@ export default function BondsPage() {
             <span className="pulse" style={{ width:7,height:7,borderRadius:"50%",background:"#F0B90B",display:"inline-block" }}/>
             Fixed Income Market
           </div>
-          <h1 style={{ fontFamily:"Syne,sans-serif",fontSize:"clamp(36px,6vw,68px)",fontWeight:800,lineHeight:1.05,letterSpacing:"-1.5px",color:"#e8e8f0",maxWidth:820,margin:"0 auto 20px" }}>
+          <h1 style={{ fontFamily:"Syne,sans-serif",fontSize:"clamp(36px,6vw,68px)",fontWeight:800,lineHeight:1.05,letterSpacing:"-1.5px",color:"rgba(255,255,255,0.85)",maxWidth:820,margin:"0 auto 20px" }}>
             Tokenized<br/><span style={{ color:"#F0B90B" }}>Bond Market</span>
           </h1>
-          <p style={{ fontSize:17,fontWeight:300,color:"#b0b0c8",maxWidth:600,margin:"0 auto 36px",lineHeight:1.7 }}>
+          <p style={{ fontSize:17,fontWeight:300,color:"rgba(255,255,255,0.6)",maxWidth:600,margin:"0 auto 36px",lineHeight:1.7 }}>
             Explore corporate, green, municipal, and convertible bonds with digital issuance, transparent fundraising progress, and modern fixed-income discovery tools.
           </p>
           <div style={{ display:"flex",gap:12,justifyContent:"center",flexWrap:"wrap" }}>
@@ -250,11 +250,11 @@ export default function BondsPage() {
         </div>
 
         {/* STATS */}
-        <div style={{ margin:"0 32px",borderTop:"1px solid rgba(255,255,255,0.08)",borderBottom:"1px solid rgba(255,255,255,0.08)",background:"#0d0d14",display:"flex",flexWrap:"wrap" }}>
+        <div style={{ margin:"0 32px",borderTop:"1px solid rgba(255,255,255,0.08)",borderBottom:"1px solid rgba(255,255,255,0.08)",background:"#0B0E11",display:"flex",flexWrap:"wrap" }}>
           {[{v:"6+",l:"Bond Listings"},{v:"8.2%",l:"Top Yield"},{v:"EUR 48M+",l:"Raise Pipeline"},{v:"4",l:"Bond Types"},{v:"EUR 250",l:"Min. Entry"},{v:"Live",l:"Digital Issuance"}].map((s,i,arr)=>(
             <div key={s.l} style={{ flex:1,minWidth:120,padding:"22px 20px",textAlign:"center",borderRight:i<arr.length-1?"1px solid rgba(255,255,255,0.08)":"none" }}>
               <div style={{ fontFamily:"Syne,sans-serif",fontSize:24,fontWeight:800,color:"#F0B90B" }}>{s.v}</div>
-              <div style={{ fontSize:11,color:"#7a7a96",marginTop:3 }}>{s.l}</div>
+              <div style={{ fontSize:11,color:"rgba(255,255,255,0.45)",marginTop:3 }}>{s.l}</div>
             </div>
           ))}
         </div>
@@ -265,14 +265,14 @@ export default function BondsPage() {
           <h2 style={S.h2}>Bond Categories</h2>
           <p style={S.sub}>Four distinct bond structures for different investor profiles and risk appetites.</p>
           <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:16 }}>
-            {[{icon:"🌱",name:"Green Bonds",color:"#22c55e",desc:"Finance sustainability-focused infrastructure and energy projects with transparent yield structures."},{icon:"🏢",name:"Corporate Bonds",color:"#818cf8",desc:"Raise working capital and growth funding through modern digital bond issuance workflows."},{icon:"🔄",name:"Convertible Notes",color:"#F0B90B",desc:"Blend debt yield with future equity conversion logic for growth-stage issuers."},{icon:"🏛",name:"Municipal Bonds",color:"#38bdf8",desc:"Support public and regional development with long-term funding structures."}].map(c=>(
+            {[{icon:"🌱",name:"Green Bonds",color:"#0ECB81",desc:"Finance sustainability-focused infrastructure and energy projects with transparent yield structures."},{icon:"🏢",name:"Corporate Bonds",color:"#8b5cf6",desc:"Raise working capital and growth funding through modern digital bond issuance workflows."},{icon:"🔄",name:"Convertible Notes",color:"#F0B90B",desc:"Blend debt yield with future equity conversion logic for growth-stage issuers."},{icon:"🏛",name:"Municipal Bonds",color:"#38bdf8",desc:"Support public and regional development with long-term funding structures."}].map(c=>(
               <div key={c.name}
                 onMouseEnter={e=>{e.currentTarget.style.borderColor="rgba(240,185,11,0.3)";e.currentTarget.style.transform="translateY(-2px)";}}
                 onMouseLeave={e=>{e.currentTarget.style.borderColor="rgba(255,255,255,0.08)";e.currentTarget.style.transform="none";}}
                 style={{ ...S.card,cursor:"pointer" }}>
                 <div style={{ fontSize:28,marginBottom:14 }}>{c.icon}</div>
                 <div style={{ fontFamily:"Syne,sans-serif",fontSize:16,fontWeight:700,color:c.color,marginBottom:8 }}>{c.name}</div>
-                <div style={{ fontSize:13,color:"#b0b0c8",lineHeight:1.6 }}>{c.desc}</div>
+                <div style={{ fontSize:13,color:"rgba(255,255,255,0.6)",lineHeight:1.6 }}>{c.desc}</div>
               </div>
             ))}
           </div>
@@ -284,7 +284,7 @@ export default function BondsPage() {
           <h2 style={S.h2}>Bond Directory</h2>
           <p style={S.sub}>Digital bond listings live on the marketplace right now.</p>
           <div style={{ display:"flex",flexWrap:"wrap",gap:10,alignItems:"center",marginBottom:28 }}>
-            <span style={{ fontSize:11.5,color:"#7a7a96",fontWeight:600 }}>TYPE</span>
+            <span style={{ fontSize:11.5,color:"rgba(255,255,255,0.45)",fontWeight:600 }}>TYPE</span>
             <div style={{ display:"flex",gap:6,flexWrap:"wrap" }}>
               {["All","Green","Corporate","Convertible","Municipal"].map(t=>(
                 <button key={t} onClick={()=>setActiveType(t)} style={S.FB(activeType===t)}>{t}</button>
@@ -299,18 +299,18 @@ export default function BondsPage() {
           </div>
           <div style={{ display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))",gap:20 }}>
             {filtered.map(b=><BondCard key={b.id} bond={b} onInvest={setInvestBond}/>)}
-            {filtered.length===0&&<div style={{ gridColumn:"1/-1",padding:"60px 0",textAlign:"center",color:"#7a7a96" }}>No bonds match this filter.</div>}
+            {filtered.length===0&&<div style={{ gridColumn:"1/-1",padding:"60px 0",textAlign:"center",color:"rgba(255,255,255,0.45)" }}>No bonds match this filter.</div>}
           </div>
         </div>
 
         {/* TABLE */}
-        <div style={{ background:"#0a0a10",borderTop:"1px solid rgba(255,255,255,0.06)" }}>
+        <div style={{ background:"#0B0E11",borderTop:"1px solid rgba(255,255,255,0.06)" }}>
           <div style={S.sec}>
             <span style={S.lbl}>Full Directory</span>
             <h2 style={S.h2}>All Bond Listings</h2>
             <div style={{ display:"flex",gap:6,flexWrap:"wrap",marginBottom:20 }}>
               {["Yield","Price","Term","Progress","Name"].map(s=>(
-                <button key={s} onClick={()=>setActiveSort(s)} style={{ padding:"6px 12px",borderRadius:8,border:"1px solid "+(activeSort===s?"rgba(240,185,11,0.5)":"rgba(255,255,255,0.08)"),background:activeSort===s?"rgba(240,185,11,0.12)":"transparent",color:activeSort===s?"#F0B90B":"#7a7a96",fontSize:12,fontWeight:500,cursor:"pointer",fontFamily:"inherit" }}>Sort: {s}</button>
+                <button key={s} onClick={()=>setActiveSort(s)} style={{ padding:"6px 12px",borderRadius:8,border:"1px solid "+(activeSort===s?"rgba(240,185,11,0.5)":"rgba(255,255,255,0.08)"),background:activeSort===s?"rgba(240,185,11,0.12)":"transparent",color:activeSort===s?"#F0B90B":"rgba(255,255,255,0.45)",fontSize:12,fontWeight:500,cursor:"pointer",fontFamily:"inherit" }}>Sort: {s}</button>
               ))}
             </div>
             <div style={{ overflowX:"auto",border:"1px solid rgba(255,255,255,0.08)",borderRadius:14 }}>
@@ -318,7 +318,7 @@ export default function BondsPage() {
                 <thead>
                   <tr style={{ background:"#12121c" }}>
                     {["Bond","Type","Issuer","Yield","Price","Term","Rating","Progress","Min","Status",""].map(h=>(
-                      <th key={h} style={{ padding:"13px 16px",fontSize:11,fontWeight:600,letterSpacing:"0.08em",textTransform:"uppercase",color:"#7a7a96",borderBottom:"1px solid rgba(255,255,255,0.08)",whiteSpace:"nowrap" }}>{h}</th>
+                      <th key={h} style={{ padding:"13px 16px",fontSize:11,fontWeight:600,letterSpacing:"0.08em",textTransform:"uppercase",color:"rgba(255,255,255,0.45)",borderBottom:"1px solid rgba(255,255,255,0.08)",whiteSpace:"nowrap" }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
@@ -327,20 +327,20 @@ export default function BondsPage() {
                     <tr key={i} style={{ borderBottom:"1px solid rgba(255,255,255,0.06)" }}
                       onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.02)"}
                       onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
-                      <td style={{ padding:"14px 16px" }}><div style={{ fontWeight:600,fontSize:13.5,color:"#e8e8f0" }}>{b.name}</div><div style={{ fontFamily:"monospace",fontSize:10.5,color:"#7a7a96" }}>{b.ticker}</div></td>
+                      <td style={{ padding:"14px 16px" }}><div style={{ fontWeight:600,fontSize:13.5,color:"rgba(255,255,255,0.85)" }}>{b.name}</div><div style={{ fontFamily:"monospace",fontSize:10.5,color:"rgba(255,255,255,0.45)" }}>{b.ticker}</div></td>
                       <td style={{ padding:"14px 16px" }}><TypeTag type={b.type}/></td>
-                      <td style={{ padding:"14px 16px",fontSize:12.5,color:"#b0b0c8" }}>{b.issuer}</td>
-                      <td style={{ padding:"14px 16px",fontFamily:"Syne,sans-serif",fontWeight:700,color:"#22c55e",fontSize:14 }}>{b.yld}</td>
-                      <td style={{ padding:"14px 16px",fontFamily:"monospace",fontSize:12.5,color:"#e8e8f0" }}>EUR {b.price}</td>
-                      <td style={{ padding:"14px 16px",fontSize:13,color:"#b0b0c8" }}>{b.term}</td>
+                      <td style={{ padding:"14px 16px",fontSize:12.5,color:"rgba(255,255,255,0.6)" }}>{b.issuer}</td>
+                      <td style={{ padding:"14px 16px",fontFamily:"Syne,sans-serif",fontWeight:700,color:"#0ECB81",fontSize:14 }}>{b.yld}</td>
+                      <td style={{ padding:"14px 16px",fontFamily:"monospace",fontSize:12.5,color:"rgba(255,255,255,0.85)" }}>EUR {b.price}</td>
+                      <td style={{ padding:"14px 16px",fontSize:13,color:"rgba(255,255,255,0.6)" }}>{b.term}</td>
                       <td style={{ padding:"14px 16px",fontFamily:"monospace",fontWeight:700,fontSize:13,color:ratingColor(b.rating) }}>{b.rating}</td>
                       <td style={{ padding:"14px 16px" }}>
-                        <div style={{ fontSize:11.5,color:"#7a7a96",marginBottom:4 }}>{b.progress}%</div>
+                        <div style={{ fontSize:11.5,color:"rgba(255,255,255,0.45)",marginBottom:4 }}>{b.progress}%</div>
                         <div style={{ height:4,background:"rgba(255,255,255,0.07)",borderRadius:3,overflow:"hidden",width:80 }}>
-                          <div style={{ width:b.progress+"%",height:"100%",background:"linear-gradient(90deg,#F0B90B,#fcd34d)" }}/>
+                          <div style={{ width:b.progress+"%",height:"100%",background:"linear-gradient(90deg,#F0B90B,#F0B90B)" }}/>
                         </div>
                       </td>
-                      <td style={{ padding:"14px 16px",fontFamily:"monospace",fontSize:12.5,color:"#e8e8f0" }}>EUR {b.min}</td>
+                      <td style={{ padding:"14px 16px",fontFamily:"monospace",fontSize:12.5,color:"rgba(255,255,255,0.85)" }}>EUR {b.min}</td>
                       <td style={{ padding:"14px 16px" }}><StatusTag status={b.status}/></td>
                       <td style={{ padding:"14px 16px",textAlign:"right" }}>
                         <button onClick={()=>setInvestBond(b)}
@@ -368,15 +368,15 @@ export default function BondsPage() {
             {[{n:"01",t:"Submit Bond Structure",b:"Define size, maturity, yield, investor profile, and offering goals."},{n:"02",t:"Review Documentation",b:"Prepare issuer data, legal structure, financials, and disclosure package."},{n:"03",t:"Launch Fundraise",b:"Open the offering to eligible investors through a digital bond issuance workflow."},{n:"04",t:"Track Progress",b:"Monitor subscriptions, allocation progress, and fundraising milestones in real time."},{n:"05",t:"Secondary Market",b:"Move eligible instruments toward digital exchange visibility and liquidity workflows."}].map(s=>(
               <div key={s.n}>
                 <div style={{ width:48,height:48,borderRadius:"50%",border:"1px solid rgba(240,185,11,0.3)",background:"rgba(240,185,11,0.10)",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"Syne,sans-serif",fontSize:15,fontWeight:700,color:"#F0B90B",marginBottom:16,position:"relative",zIndex:1 }}>{s.n}</div>
-                <h4 style={{ fontFamily:"Syne,sans-serif",fontSize:14.5,fontWeight:700,color:"#e8e8f0",marginBottom:8 }}>{s.t}</h4>
-                <p style={{ fontSize:13,color:"#7a7a96",lineHeight:1.65,margin:0 }}>{s.b}</p>
+                <h4 style={{ fontFamily:"Syne,sans-serif",fontSize:14.5,fontWeight:700,color:"rgba(255,255,255,0.85)",marginBottom:8 }}>{s.t}</h4>
+                <p style={{ fontSize:13,color:"rgba(255,255,255,0.45)",lineHeight:1.65,margin:0 }}>{s.b}</p>
               </div>
             ))}
           </div>
         </div>
 
         {/* FAQ */}
-        <div style={{ background:"#0a0a10",borderTop:"1px solid rgba(255,255,255,0.06)" }}>
+        <div style={{ background:"#0B0E11",borderTop:"1px solid rgba(255,255,255,0.06)" }}>
           <div style={S.sec}>
             <span style={S.lbl}>FAQ</span>
             <h2 style={{ ...S.h2,marginBottom:28 }}>Common Bond Questions</h2>
@@ -390,12 +390,12 @@ export default function BondsPage() {
           <div style={{ position:"relative",zIndex:1 }}>
             <span style={S.lbl}>Ready to Launch?</span>
             <h2 style={{ ...S.h2,marginBottom:12 }}>Launch a Digital Bond Today</h2>
-            <p style={{ fontSize:15,color:"#b0b0c8",fontWeight:300,maxWidth:460,margin:"0 auto 32px",lineHeight:1.7 }}>Build a modern fixed-income offering with digital fundraising, transparent progress, and exchange-ready visibility.</p>
+            <p style={{ fontSize:15,color:"rgba(255,255,255,0.6)",fontWeight:300,maxWidth:460,margin:"0 auto 32px",lineHeight:1.7 }}>Build a modern fixed-income offering with digital fundraising, transparent progress, and exchange-ready visibility.</p>
             <div style={{ display:"flex",gap:12,justifyContent:"center",flexWrap:"wrap" }}>
               <Link href="/tokenize" style={S.gold}>Issue a Bond</Link>
               <Link href="/exchange" style={S.out}>Explore Exchange</Link>
             </div>
-            <p style={{ fontSize:11,color:"#7a7a96",marginTop:24,opacity:0.7 }}>Bond market notice: Yield, price, and maturity may vary depending on issuer structure and jurisdiction.</p>
+            <p style={{ fontSize:11,color:"rgba(255,255,255,0.45)",marginTop:24,opacity:0.7 }}>Bond market notice: Yield, price, and maturity may vary depending on issuer structure and jurisdiction.</p>
           </div>
         </div>
 
@@ -409,22 +409,22 @@ export default function BondsPage() {
                   <div style={{ width:1,height:22,background:"rgba(240,185,11,0.25)" }}/>
                   <div>
                     <div style={{ fontFamily:"Syne,sans-serif",fontSize:13,fontWeight:800,letterSpacing:"0.15em",color:"#F0B90B" }}>NEXTOKEN</div>
-                    <div style={{ fontSize:9,letterSpacing:"0.2em",color:"#7a7a96",textTransform:"uppercase" }}>CAPITAL</div>
+                    <div style={{ fontSize:9,letterSpacing:"0.2em",color:"rgba(255,255,255,0.45)",textTransform:"uppercase" }}>CAPITAL</div>
                   </div>
                 </div>
-                <p style={{ fontSize:13,color:"#7a7a96",maxWidth:240,lineHeight:1.7,marginBottom:16 }}>The regulated infrastructure for tokenized real-world assets. Registered in Lithuania.</p>
-                <p style={{ fontSize:11,color:"#7a7a96",textTransform:"uppercase",letterSpacing:"0.05em" }}>MONITORED BY <a href="#" style={{ color:"#F0B90B",textDecoration:"none" }}>Bank of Lithuania</a></p>
+                <p style={{ fontSize:13,color:"rgba(255,255,255,0.45)",maxWidth:240,lineHeight:1.7,marginBottom:16 }}>The regulated infrastructure for tokenized real-world assets. Registered in Lithuania.</p>
+                <p style={{ fontSize:11,color:"rgba(255,255,255,0.45)",textTransform:"uppercase",letterSpacing:"0.05em" }}>MONITORED BY <a href="#" style={{ color:"#F0B90B",textDecoration:"none" }}>Bank of Lithuania</a></p>
               </div>
               <div>
-                <h5 style={{ fontSize:11,fontWeight:700,letterSpacing:"0.15em",textTransform:"uppercase",color:"#7a7a96",marginBottom:16 }}>Products</h5>
+                <h5 style={{ fontSize:11,fontWeight:700,letterSpacing:"0.15em",textTransform:"uppercase",color:"rgba(255,255,255,0.45)",marginBottom:16 }}>Products</h5>
                 {[["Markets","/markets"],["Exchange","/exchange"],["Bonds","/bonds"],["Equity & IPO","/equity-ipo"],["Tokenize","/tokenize"]].map(([l,h])=>(
-                  <Link key={l} href={h} style={{ display:"block",fontSize:13,color:"#b0b0c8",textDecoration:"none",marginBottom:10 }}>{l}</Link>
+                  <Link key={l} href={h} style={{ display:"block",fontSize:13,color:"rgba(255,255,255,0.6)",textDecoration:"none",marginBottom:10 }}>{l}</Link>
                 ))}
               </div>
             </div>
             <div style={{ borderTop:"1px solid rgba(255,255,255,0.08)",paddingTop:20,display:"flex",flexWrap:"wrap",justifyContent:"space-between",gap:10 }}>
-              <p style={{ fontSize:12,color:"#7a7a96",margin:0 }}>2026 Nextoken Capital UAB. All rights reserved.</p>
-              <p style={{ fontSize:11,color:"#7a7a96",opacity:0.7,margin:0 }}>Risk warning: Fixed income products may involve credit, liquidity, and market risks.</p>
+              <p style={{ fontSize:12,color:"rgba(255,255,255,0.45)",margin:0 }}>2026 Nextoken Capital UAB. All rights reserved.</p>
+              <p style={{ fontSize:11,color:"rgba(255,255,255,0.45)",opacity:0.7,margin:0 }}>Risk warning: Fixed income products may involve credit, liquidity, and market risks.</p>
             </div>
           </div>
         </footer>

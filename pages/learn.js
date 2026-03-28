@@ -2,16 +2,16 @@ import Link from "next/link";
 import { useState } from "react";
 
 const S = {
-  page:  { minHeight:"100vh", background:"#05060a", color:"#e8e8f0", fontFamily:"'DM Sans',system-ui,sans-serif" },
+  page:  { minHeight:"100vh", background:"#0B0E11", color:"rgba(255,255,255,0.85)", fontFamily:"'DM Sans',system-ui,sans-serif" },
   sec:   { maxWidth:1200, margin:"0 auto", padding:"64px 32px" },
-  h2:    { fontFamily:"Syne,sans-serif", fontSize:"clamp(26px,4vw,42px)", fontWeight:800, color:"#e8e8f0", margin:"0 0 14px", letterSpacing:"-0.5px" },
+  h2:    { fontFamily:"Syne,sans-serif", fontSize:"clamp(26px,4vw,42px)", fontWeight:800, color:"rgba(255,255,255,0.85)", margin:"0 0 14px", letterSpacing:"-0.5px" },
   lbl:   { fontSize:11, fontWeight:700, letterSpacing:"0.2em", textTransform:"uppercase", color:"#F0B90B", marginBottom:10, display:"block" },
-  sub:   { fontSize:16, color:"#8a9bb8", fontWeight:300, maxWidth:620, lineHeight:1.75, margin:"0 0 44px" },
-  card:  { background:"#0d0d14", border:"1px solid rgba(255,255,255,0.07)", borderRadius:16, padding:28, transition:"all 0.2s" },
+  sub:   { fontSize:16, color:"rgba(255,255,255,0.5)", fontWeight:300, maxWidth:620, lineHeight:1.75, margin:"0 0 44px" },
+  card:  { background:"#0B0E11", border:"1px solid rgba(255,255,255,0.07)", borderRadius:16, padding:28, transition:"all 0.2s" },
   gold:  { padding:"13px 30px", borderRadius:10, background:"#F0B90B", color:"#000", fontSize:14, fontWeight:800, border:"none", cursor:"pointer", textDecoration:"none", display:"inline-block", fontFamily:"inherit" },
   out:   { padding:"13px 30px", borderRadius:10, background:"transparent", color:"#F0B90B", fontSize:14, fontWeight:600, border:"1px solid rgba(240,185,11,0.35)", cursor:"pointer", textDecoration:"none", display:"inline-block", fontFamily:"inherit" },
   badge: { display:"inline-flex", alignItems:"center", gap:8, padding:"5px 16px", borderRadius:20, border:"1px solid rgba(240,185,11,0.3)", background:"rgba(240,185,11,0.08)", color:"#F0B90B", fontSize:11, fontWeight:700, letterSpacing:"0.15em", textTransform:"uppercase" },
-  FB:    (a) => ({ padding:"7px 16px", borderRadius:20, border:"1px solid "+(a?"rgba(240,185,11,0.5)":"rgba(255,255,255,0.08)"), background:a?"rgba(240,185,11,0.12)":"transparent", color:a?"#F0B90B":"#b0b0c8", fontSize:12.5, fontWeight:500, cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s" }),
+  FB:    (a) => ({ padding:"7px 16px", borderRadius:20, border:"1px solid "+(a?"rgba(240,185,11,0.5)":"rgba(255,255,255,0.08)"), background:a?"rgba(240,185,11,0.12)":"transparent", color:a?"#F0B90B":"rgba(255,255,255,0.6)", fontSize:12.5, fontWeight:500, cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s" }),
 };
 
 const categories = ["All","Getting Started","Tokenization","Compliance","Blockchain","Investing","DeFi"];
@@ -19,7 +19,7 @@ const categories = ["All","Getting Started","Tokenization","Compliance","Blockch
 const articles = [
   {
     id:1, cat:"Getting Started", readTime:"4 min", level:"Beginner",
-    emoji:"🚀", color:"#22c55e",
+    emoji:"🚀", color:"#0ECB81",
     title:"What is Nextoken Capital?",
     desc:"A complete introduction to the platform — what we do, who we serve, and how tokenized investing works for everyday investors.",
     topics:["Platform overview","How to register","KYC process","First investment"],
@@ -33,7 +33,7 @@ const articles = [
   },
   {
     id:3, cat:"Blockchain", readTime:"5 min", level:"Beginner",
-    emoji:"🔐", color:"#818cf8",
+    emoji:"🔐", color:"#8b5cf6",
     title:"What is ERC-3643 and Why Does It Matter?",
     desc:"The ERC-3643 standard is the backbone of regulated security tokens. Understand how it enforces compliance at the smart contract level — automatically.",
     topics:["ERC-3643 explained","On-chain KYC/AML","Transfer restrictions","Why it beats ERC-20 for securities"],
@@ -54,7 +54,7 @@ const articles = [
   },
   {
     id:6, cat:"Tokenization", readTime:"10 min", level:"Advanced",
-    emoji:"🏗", color:"#f87171",
+    emoji:"🏗", color:"#ef4444",
     title:"How to Tokenize a Real Estate Asset",
     desc:"A detailed guide for property owners and issuers looking to tokenize real estate on Nextoken — from legal structure to smart contract deployment.",
     topics:["Legal structuring","SPV setup","Token issuance","Investor whitelisting","Secondary market"],
@@ -68,7 +68,7 @@ const articles = [
   },
   {
     id:8, cat:"Compliance", readTime:"6 min", level:"Intermediate",
-    emoji:"🪪", color:"#4ade80",
+    emoji:"🪪", color:"#0ECB81",
     title:"KYC & AML: Why Identity Verification is Required",
     desc:"Every investor on Nextoken must complete KYC. Learn why this is legally required, how Sumsub works, and what data is collected.",
     topics:["What is KYC","What is AML","FATF requirements","Sumsub process","Data privacy"],
@@ -122,7 +122,7 @@ const glossary = [
 ];
 
 const levelColor = {
-  Beginner:     { bg:"rgba(34,197,94,0.10)",  color:"#22c55e", border:"rgba(34,197,94,0.25)"  },
+  Beginner:     { bg:"rgba(34,197,94,0.10)",  color:"#0ECB81", border:"rgba(34,197,94,0.25)"  },
   Intermediate: { bg:"rgba(240,185,11,0.10)", color:"#F0B90B", border:"rgba(240,185,11,0.3)"  },
   Advanced:     { bg:"rgba(239,68,68,0.10)",  color:"#ef4444", border:"rgba(239,68,68,0.25)"  },
 };
@@ -137,16 +137,16 @@ function ArticleCard({ a }) {
         <span style={{ fontSize:32 }}>{a.emoji}</span>
         <div style={{ display:"flex", flexDirection:"column", alignItems:"flex-end", gap:5 }}>
           <span style={{ padding:"3px 9px", borderRadius:20, fontSize:10.5, fontWeight:600, background:lc.bg, color:lc.color, border:"1px solid "+lc.border }}>{a.level}</span>
-          <span style={{ fontSize:11, color:"#8a9bb8" }}>⏱ {a.readTime} read</span>
+          <span style={{ fontSize:11, color:"rgba(255,255,255,0.5)" }}>⏱ {a.readTime} read</span>
         </div>
       </div>
-      <h3 style={{ fontFamily:"Syne,sans-serif", fontSize:16, fontWeight:700, color:"#e8e8f0", marginBottom:8, lineHeight:1.35, flex:1 }}>{a.title}</h3>
-      <p style={{ fontSize:13, color:"#8a9bb8", lineHeight:1.7, marginBottom:14 }}>{a.desc}</p>
+      <h3 style={{ fontFamily:"Syne,sans-serif", fontSize:16, fontWeight:700, color:"rgba(255,255,255,0.85)", marginBottom:8, lineHeight:1.35, flex:1 }}>{a.title}</h3>
+      <p style={{ fontSize:13, color:"rgba(255,255,255,0.5)", lineHeight:1.7, marginBottom:14 }}>{a.desc}</p>
       <div style={{ display:"flex", flexWrap:"wrap", gap:5, marginBottom:14 }}>
-        {a.topics.map(t => <span key={t} style={{ padding:"2px 8px", borderRadius:6, fontSize:10.5, background:"rgba(255,255,255,0.04)", color:"#8a9bb8", border:"1px solid rgba(255,255,255,0.07)" }}>{t}</span>)}
+        {a.topics.map(t => <span key={t} style={{ padding:"2px 8px", borderRadius:6, fontSize:10.5, background:"rgba(255,255,255,0.04)", color:"rgba(255,255,255,0.5)", border:"1px solid rgba(255,255,255,0.07)" }}>{t}</span>)}
       </div>
       <div style={{ display:"flex", alignItems:"center", gap:6 }}>
-        <span style={{ padding:"2px 8px", borderRadius:6, fontSize:10.5, background:"rgba(255,255,255,0.04)", color:"#8a9bb8", border:"1px solid rgba(255,255,255,0.07)" }}>{a.cat}</span>
+        <span style={{ padding:"2px 8px", borderRadius:6, fontSize:10.5, background:"rgba(255,255,255,0.04)", color:"rgba(255,255,255,0.5)", border:"1px solid rgba(255,255,255,0.07)" }}>{a.cat}</span>
         <span style={{ marginLeft:"auto", fontSize:13, color:a.color, fontWeight:600 }}>Read article →</span>
       </div>
     </div>
@@ -157,11 +157,11 @@ function FaqItem({ q, a }) {
   const [open, setOpen] = useState(false);
   return (
     <div style={{ border:"1px solid rgba(255,255,255,0.07)", borderRadius:12, overflow:"hidden", marginBottom:8 }}>
-      <button onClick={() => setOpen(!open)} style={{ width:"100%", display:"flex", alignItems:"center", justifyContent:"space-between", padding:"16px 20px", background:"#0d0d14", border:"none", color:"#e8e8f0", fontSize:14.5, fontWeight:500, cursor:"pointer", textAlign:"left", fontFamily:"inherit" }}>
+      <button onClick={() => setOpen(!open)} style={{ width:"100%", display:"flex", alignItems:"center", justifyContent:"space-between", padding:"16px 20px", background:"#0B0E11", border:"none", color:"rgba(255,255,255,0.85)", fontSize:14.5, fontWeight:500, cursor:"pointer", textAlign:"left", fontFamily:"inherit" }}>
         <span>{q}</span>
         <span style={{ color:"#F0B90B", fontSize:20, flexShrink:0, marginLeft:16 }}>{open ? "-" : "+"}</span>
       </button>
-      {open && <div style={{ padding:"0 20px 16px", background:"#0d0d14" }}><p style={{ fontSize:13.5, color:"#8a9bb8", lineHeight:1.75, margin:0 }}>{a}</p></div>}
+      {open && <div style={{ padding:"0 20px 16px", background:"#0B0E11" }}><p style={{ fontSize:13.5, color:"rgba(255,255,255,0.5)", lineHeight:1.75, margin:0 }}>{a}</p></div>}
     </div>
   );
 }
@@ -204,26 +204,26 @@ export default function LearnPage() {
           <span className="pulse" style={{ width:7, height:7, borderRadius:"50%", background:"#F0B90B", display:"inline-block" }} />
           Education Hub
         </div>
-        <h1 style={{ fontFamily:"Syne,sans-serif", fontSize:"clamp(36px,6vw,68px)", fontWeight:800, lineHeight:1.05, letterSpacing:"-1.5px", color:"#e8e8f0", maxWidth:820, margin:"0 auto 20px" }}>
+        <h1 style={{ fontFamily:"Syne,sans-serif", fontSize:"clamp(36px,6vw,68px)", fontWeight:800, lineHeight:1.05, letterSpacing:"-1.5px", color:"rgba(255,255,255,0.85)", maxWidth:820, margin:"0 auto 20px" }}>
           Learn to Invest in<br /><span style={{ color:"#F0B90B" }}>Tokenized Assets</span>
         </h1>
-        <p style={{ fontSize:17, fontWeight:300, color:"#8a9bb8", maxWidth:600, margin:"0 auto 36px", lineHeight:1.75 }}>
+        <p style={{ fontSize:17, fontWeight:300, color:"rgba(255,255,255,0.5)", maxWidth:600, margin:"0 auto 36px", lineHeight:1.75 }}>
           From blockchain basics to advanced tokenization strategies — everything you need to invest confidently in real-world tokenized assets.
         </p>
         {/* Search */}
         <div style={{ position:"relative", maxWidth:520, margin:"0 auto" }}>
-          <span style={{ position:"absolute", left:18, top:"50%", transform:"translateY(-50%)", fontSize:18, color:"#8a9bb8" }}>🔍</span>
+          <span style={{ position:"absolute", left:18, top:"50%", transform:"translateY(-50%)", fontSize:18, color:"rgba(255,255,255,0.5)" }}>🔍</span>
           <input placeholder="Search articles, topics, terms..." value={search} onChange={e => setSearch(e.target.value)}
-            style={{ width:"100%", padding:"14px 18px 14px 50px", borderRadius:14, background:"#0d0d14", border:"1.5px solid rgba(255,255,255,0.10)", color:"#e8e8f0", fontSize:15, fontFamily:"inherit", boxSizing:"border-box" }} />
+            style={{ width:"100%", padding:"14px 18px 14px 50px", borderRadius:14, background:"#0B0E11", border:"1.5px solid rgba(255,255,255,0.10)", color:"rgba(255,255,255,0.85)", fontSize:15, fontFamily:"inherit", boxSizing:"border-box" }} />
         </div>
       </div>
 
       {/* STATS */}
-      <div style={{ margin:"0 32px", borderTop:"1px solid rgba(255,255,255,0.07)", borderBottom:"1px solid rgba(255,255,255,0.07)", background:"#0d0d14", display:"flex", flexWrap:"wrap" }}>
+      <div style={{ margin:"0 32px", borderTop:"1px solid rgba(255,255,255,0.07)", borderBottom:"1px solid rgba(255,255,255,0.07)", background:"#0B0E11", display:"flex", flexWrap:"wrap" }}>
         {[{v:"12",l:"Articles"},{v:"15",l:"Glossary Terms"},{v:"3",l:"Skill Levels"},{v:"7",l:"Topic Categories"},{v:"Free",l:"Always Free"},{v:"5 min",l:"Avg. Read Time"}].map((s,i,arr) => (
           <div key={s.l} style={{ flex:1, minWidth:100, padding:"20px 16px", textAlign:"center", borderRight:i<arr.length-1?"1px solid rgba(255,255,255,0.07)":"none" }}>
             <div style={{ fontFamily:"Syne,sans-serif", fontSize:22, fontWeight:800, color:"#F0B90B" }}>{s.v}</div>
-            <div style={{ fontSize:11, color:"#8a9bb8", marginTop:3 }}>{s.l}</div>
+            <div style={{ fontSize:11, color:"rgba(255,255,255,0.5)", marginTop:3 }}>{s.l}</div>
           </div>
         ))}
       </div>
@@ -235,9 +235,9 @@ export default function LearnPage() {
         <p style={S.sub}>Choose a learning path based on your experience level or investment goal.</p>
         <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(260px,1fr))", gap:16, marginBottom:12 }}>
           {[
-            { icon:"🌱", color:"#22c55e", bg:"rgba(34,197,94,0.10)", title:"Complete Beginner",      desc:"Never invested before? Start here. Learn what tokenized assets are, how blockchain works, and how to make your first investment.",  steps:["What is RWA tokenization?","Blockchain basics","How KYC works","Your first investment"] },
+            { icon:"🌱", color:"#0ECB81", bg:"rgba(34,197,94,0.10)", title:"Complete Beginner",      desc:"Never invested before? Start here. Learn what tokenized assets are, how blockchain works, and how to make your first investment.",  steps:["What is RWA tokenization?","Blockchain basics","How KYC works","Your first investment"] },
             { icon:"📊", color:"#F0B90B", bg:"rgba(240,185,11,0.10)", title:"Experienced Investor",  desc:"Already invest in stocks or bonds? Learn how tokenized assets compare, the advantages, and how to diversify your portfolio.",         steps:["RWA vs traditional assets","Risk assessment","Bond vs equity tokens","Portfolio diversification"] },
-            { icon:"🏢", color:"#818cf8", bg:"rgba(129,140,248,0.10)", title:"Asset Issuer",         desc:"Want to raise capital by tokenizing your asset? Learn the full issuance process from legal structure to investor distribution.",       steps:["Tokenization overview","Legal structures","Smart contract setup","Running a fundraise"] },
+            { icon:"🏢", color:"#8b5cf6", bg:"rgba(129,140,248,0.10)", title:"Asset Issuer",         desc:"Want to raise capital by tokenizing your asset? Learn the full issuance process from legal structure to investor distribution.",       steps:["Tokenization overview","Legal structures","Smart contract setup","Running a fundraise"] },
             { icon:"🏦", color:"#38bdf8", bg:"rgba(56,189,248,0.10)", title:"Institutional Investor", desc:"Managing significant capital? Learn about ERC-3643 compliance, institutional-grade custody, and our dedicated onboarding process.",   steps:["ERC-3643 explained","MiCA compliance","Institutional tiers","Enhanced due diligence"] },
           ].map(p => (
             <div key={p.title}
@@ -246,12 +246,12 @@ export default function LearnPage() {
               style={{ ...S.card, cursor:"pointer" }}>
               <div style={{ width:52, height:52, borderRadius:14, background:p.bg, display:"flex", alignItems:"center", justifyContent:"center", fontSize:24, marginBottom:14 }}>{p.icon}</div>
               <h3 style={{ fontFamily:"Syne,sans-serif", fontSize:17, fontWeight:700, color:p.color, marginBottom:8 }}>{p.title}</h3>
-              <p style={{ fontSize:13, color:"#8a9bb8", lineHeight:1.7, marginBottom:14 }}>{p.desc}</p>
+              <p style={{ fontSize:13, color:"rgba(255,255,255,0.5)", lineHeight:1.7, marginBottom:14 }}>{p.desc}</p>
               <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
                 {p.steps.map((s,i) => (
                   <div key={s} style={{ display:"flex", alignItems:"center", gap:8 }}>
                     <div style={{ width:18, height:18, borderRadius:"50%", background:p.bg, border:"1px solid "+p.color+"55", display:"flex", alignItems:"center", justifyContent:"center", fontSize:10, fontWeight:700, color:p.color, flexShrink:0 }}>{i+1}</div>
-                    <span style={{ fontSize:12.5, color:"#b0b7c3" }}>{s}</span>
+                    <span style={{ fontSize:12.5, color:"rgba(255,255,255,0.6)" }}>{s}</span>
                   </div>
                 ))}
               </div>
@@ -268,7 +268,7 @@ export default function LearnPage() {
           <div style={{ display:"flex", gap:6, marginBottom:28, borderBottom:"1px solid rgba(255,255,255,0.07)", paddingBottom:12 }}>
             {[["articles","📚 Articles ("+articles.length+")"],["glossary","📖 Glossary ("+glossary.length+" terms)"]].map(([v,l]) => (
               <button key={v} onClick={() => setActiveTab(v)}
-                style={{ padding:"9px 20px", borderRadius:8, border:"none", cursor:"pointer", fontFamily:"inherit", fontSize:14, fontWeight:600, background:activeTab===v?"rgba(240,185,11,0.12)":"transparent", color:activeTab===v?"#F0B90B":"#8a9bb8", transition:"all 0.15s" }}>{l}</button>
+                style={{ padding:"9px 20px", borderRadius:8, border:"none", cursor:"pointer", fontFamily:"inherit", fontSize:14, fontWeight:600, background:activeTab===v?"rgba(240,185,11,0.12)":"transparent", color:activeTab===v?"#F0B90B":"rgba(255,255,255,0.5)", transition:"all 0.15s" }}>{l}</button>
             ))}
           </div>
 
@@ -278,14 +278,14 @@ export default function LearnPage() {
               <div style={{ display:"flex", flexWrap:"wrap", gap:8, marginBottom:28 }}>
                 {categories.map(c => <button key={c} onClick={() => setActiveCat(c)} style={S.FB(activeCat===c)}>{c}</button>)}
               </div>
-              <p style={{ fontSize:13, color:"#8a9bb8", marginBottom:20 }}>
-                Showing <strong style={{ color:"#e8e8f0" }}>{filtered.length}</strong> of <strong style={{ color:"#e8e8f0" }}>{articles.length}</strong> articles
+              <p style={{ fontSize:13, color:"rgba(255,255,255,0.5)", marginBottom:20 }}>
+                Showing <strong style={{ color:"rgba(255,255,255,0.85)" }}>{filtered.length}</strong> of <strong style={{ color:"rgba(255,255,255,0.85)" }}>{articles.length}</strong> articles
                 {activeCat!=="All" && <span> in <strong style={{ color:"#F0B90B" }}>{activeCat}</strong></span>}
               </p>
               <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))", gap:18 }}>
                 {filtered.map(a => <ArticleCard key={a.id} a={a} />)}
                 {filtered.length===0 && (
-                  <div style={{ gridColumn:"1/-1", padding:"60px 0", textAlign:"center", color:"#8a9bb8" }}>
+                  <div style={{ gridColumn:"1/-1", padding:"60px 0", textAlign:"center", color:"rgba(255,255,255,0.5)" }}>
                     <p style={{ fontSize:16, marginBottom:8 }}>No articles found for "{search}"</p>
                     <button onClick={() => { setSearch(""); setActiveCat("All"); }} style={{ color:"#F0B90B", background:"none", border:"none", cursor:"pointer", fontSize:14, fontFamily:"inherit" }}>Clear filters →</button>
                   </div>
@@ -298,9 +298,9 @@ export default function LearnPage() {
           {activeTab==="glossary" && (
             <>
               <div style={{ position:"relative", marginBottom:24 }}>
-                <span style={{ position:"absolute", left:16, top:"50%", transform:"translateY(-50%)", fontSize:16, color:"#8a9bb8" }}>🔍</span>
+                <span style={{ position:"absolute", left:16, top:"50%", transform:"translateY(-50%)", fontSize:16, color:"rgba(255,255,255,0.5)" }}>🔍</span>
                 <input placeholder="Search glossary terms..." value={glossarySearch} onChange={e => setGlossarySearch(e.target.value)}
-                  style={{ width:"100%", padding:"12px 16px 12px 44px", borderRadius:12, background:"#0d0d14", border:"1.5px solid rgba(255,255,255,0.10)", color:"#e8e8f0", fontSize:14, fontFamily:"inherit", boxSizing:"border-box" }} />
+                  style={{ width:"100%", padding:"12px 16px 12px 44px", borderRadius:12, background:"#0B0E11", border:"1.5px solid rgba(255,255,255,0.10)", color:"rgba(255,255,255,0.85)", fontSize:14, fontFamily:"inherit", boxSizing:"border-box" }} />
               </div>
               <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(340px,1fr))", gap:12 }}>
                 {filteredGlossary.map(g => (
@@ -308,11 +308,11 @@ export default function LearnPage() {
                     <div style={{ minWidth:70, padding:"4px 10px", borderRadius:8, background:"rgba(240,185,11,0.10)", border:"1px solid rgba(240,185,11,0.25)", textAlign:"center" }}>
                       <span style={{ fontFamily:"Syne,sans-serif", fontSize:12, fontWeight:800, color:"#F0B90B" }}>{g.term}</span>
                     </div>
-                    <p style={{ fontSize:13, color:"#8a9bb8", lineHeight:1.65, margin:0 }}>{g.def}</p>
+                    <p style={{ fontSize:13, color:"rgba(255,255,255,0.5)", lineHeight:1.65, margin:0 }}>{g.def}</p>
                   </div>
                 ))}
                 {filteredGlossary.length===0 && (
-                  <div style={{ gridColumn:"1/-1", padding:"40px 0", textAlign:"center", color:"#8a9bb8" }}>No terms found for "{glossarySearch}"</div>
+                  <div style={{ gridColumn:"1/-1", padding:"40px 0", textAlign:"center", color:"rgba(255,255,255,0.5)" }}>No terms found for "{glossarySearch}"</div>
                 )}
               </div>
             </>
@@ -338,8 +338,8 @@ export default function LearnPage() {
       <div style={{ margin:"0 32px 64px", borderRadius:18, padding:"64px 40px", textAlign:"center", position:"relative", overflow:"hidden", border:"1px solid rgba(240,185,11,0.25)", background:"linear-gradient(135deg,rgba(240,185,11,0.08) 0%,rgba(99,102,241,0.05) 100%)" }}>
         <div style={{ position:"absolute", inset:0, background:"radial-gradient(ellipse 600px 300px at 50% 0%,rgba(240,185,11,0.10) 0%,transparent 70%)", pointerEvents:"none" }} />
         <div style={{ position:"relative", zIndex:1 }}>
-          <h2 style={{ fontFamily:"Syne,sans-serif", fontSize:"clamp(24px,4vw,40px)", fontWeight:800, color:"#e8e8f0", margin:"0 0 14px", letterSpacing:"-0.5px" }}>Ready to Start Investing?</h2>
-          <p style={{ fontSize:15, color:"#8a9bb8", fontWeight:300, maxWidth:440, margin:"0 auto 32px", lineHeight:1.75 }}>
+          <h2 style={{ fontFamily:"Syne,sans-serif", fontSize:"clamp(24px,4vw,40px)", fontWeight:800, color:"rgba(255,255,255,0.85)", margin:"0 0 14px", letterSpacing:"-0.5px" }}>Ready to Start Investing?</h2>
+          <p style={{ fontSize:15, color:"rgba(255,255,255,0.5)", fontWeight:300, maxWidth:440, margin:"0 auto 32px", lineHeight:1.75 }}>
             Create your free account, complete KYC in 5 minutes, and access tokenized bonds, equity, and real estate from EUR 100.
           </p>
           <div style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap" }}>
@@ -359,10 +359,10 @@ export default function LearnPage() {
           </div>
           <div style={{ display:"flex", gap:20 }}>
             {[["Markets","/markets"],["Bonds","/bonds"],["Equity & IPO","/equity-ipo"],["Tokenize","/tokenize"],["Compliance","/compliance"]].map(([l,h]) => (
-              <Link key={l} href={h} style={{ fontSize:13, color:"#8a9bb8", textDecoration:"none" }}>{l}</Link>
+              <Link key={l} href={h} style={{ fontSize:13, color:"rgba(255,255,255,0.5)", textDecoration:"none" }}>{l}</Link>
             ))}
           </div>
-          <p style={{ fontSize:11.5, color:"#8a9bb8", margin:0 }}>© 2026 Nextoken Capital UAB · Regulated by Bank of Lithuania</p>
+          <p style={{ fontSize:11.5, color:"rgba(255,255,255,0.5)", margin:0 }}>© 2026 Nextoken Capital UAB · Regulated by Bank of Lithuania</p>
         </div>
       </footer>
     </div>

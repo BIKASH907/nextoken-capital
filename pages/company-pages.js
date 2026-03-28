@@ -22,8 +22,8 @@ const globalCSS = `
     --accent-dim: rgba(56,189,130,0.12);
     --text: #e8edf5;
     --text-muted: #7a8599;
-    --text-dim: #4a5568;
-    --gold: #f0c040;
+    --text-dim: rgba(255,255,255,0.35);
+    --gold: #F0B90B;
     --red: #e05050;
   }
 
@@ -317,8 +317,8 @@ function Footer({ setPage }) {
         <div className="c-footer-col"><h4>Support</h4><a>Help Center</a><a>Contact Us</a><a onClick={() => setPage('api')} style={{cursor:'pointer'}}>API Docs</a><a>Status</a></div>
       </footer>
       <div className="c-footer-btm">
-        <p style={{fontSize:'.75rem',color:'#4a5568',margin:0}}>© 2026 Nextoken Capital UAB. All rights reserved. Registered in Lithuania.</p>
-        <p style={{fontSize:'.75rem',color:'#4a5568',margin:0}}>Risk warning: Investing in tokenized assets involves risk. Past performance is not indicative of future results.</p>
+        <p style={{fontSize:'.75rem',color:'rgba(255,255,255,0.35)',margin:0}}>© 2026 Nextoken Capital UAB. All rights reserved. Registered in Lithuania.</p>
+        <p style={{fontSize:'.75rem',color:'rgba(255,255,255,0.35)',margin:0}}>Risk warning: Investing in tokenized assets involves risk. Past performance is not indicative of future results.</p>
       </div>
     </>
   )
@@ -512,7 +512,7 @@ function PressPage() {
             {RELEASES.map(r => (
               <div key={r.title} className="c-card" style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:'20px',padding:'20px 28px'}}>
                 <div>
-                  <div style={{fontFamily:"'DM Mono',monospace",fontSize:'.68rem',color:'#4a5568',marginBottom:'6px'}}>{r.date}</div>
+                  <div style={{fontFamily:"'DM Mono',monospace",fontSize:'.68rem',color:'rgba(255,255,255,0.35)',marginBottom:'6px'}}>{r.date}</div>
                   <div style={{fontFamily:"'Syne',sans-serif",fontWeight:700,fontSize:'.98rem'}}>{r.title}</div>
                 </div>
                 <span className="c-read" style={{flexShrink:0}}>PDF ↗</span>
@@ -561,11 +561,11 @@ function BlogPage() {
                 <div className="c-author-dot">JK</div>
                 <div>
                   <div style={{fontSize:'.82rem',color:'#e8edf5'}}>Jonas Kazlauskas</div>
-                  <div style={{fontSize:'.72rem',color:'#4a5568',fontFamily:"'DM Mono',monospace"}}>Head of Compliance</div>
+                  <div style={{fontSize:'.72rem',color:'rgba(255,255,255,0.35)',fontFamily:"'DM Mono',monospace"}}>Head of Compliance</div>
                 </div>
               </div>
-              <span style={{fontSize:'.78rem',color:'#4a5568',fontFamily:"'DM Mono',monospace"}}>March 12, 2026</span>
-              <span style={{fontSize:'.78rem',color:'#4a5568'}}>12 min read</span>
+              <span style={{fontSize:'.78rem',color:'rgba(255,255,255,0.35)',fontFamily:"'DM Mono',monospace"}}>March 12, 2026</span>
+              <span style={{fontSize:'.78rem',color:'rgba(255,255,255,0.35)'}}>12 min read</span>
               <span className="c-read">Read →</span>
             </div>
           </div>
@@ -585,8 +585,8 @@ function BlogPage() {
                   <div className="c-blog-title">{p.title}</div>
                   <div className="c-blog-excerpt">{p.excerpt}</div>
                   <div className="c-blog-footer">
-                    <span style={{fontSize:'.75rem',color:'#4a5568'}}>{p.author}</span>
-                    <span style={{fontSize:'.72rem',color:'#4a5568',fontFamily:"'DM Mono',monospace"}}>{p.time}</span>
+                    <span style={{fontSize:'.75rem',color:'rgba(255,255,255,0.35)'}}>{p.author}</span>
+                    <span style={{fontSize:'.72rem',color:'rgba(255,255,255,0.35)',fontFamily:"'DM Mono',monospace"}}>{p.time}</span>
                   </div>
                 </div>
               </div>
