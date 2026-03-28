@@ -92,21 +92,49 @@ async function matchOrders(assetId, assetName) {
         const matchPrice = sell.pricePerUnit;
         const totalAmount = matchPrice * matchUnits;
 
+        // Create trade record
         await Trade.create({
-          assetId,
-          assetName,
-          buyerId: buy.userId,
-          sellerId: sell.userId,
-          buyOrderId: buy._id,
-          sellOrderId: sell._id,
-          units: matchUnits,
-          pricePerUnit: matchPrice,
-          totalAmount,
-          buyerFee: totalAmount * 0.005,
-          sellerFee: totalAmount * 0.005,
+          assetId, assetName,
+          buyerId: buy.userId, sellerId: sell.userId,
+          buyOrderId: buy._id, sellOrderId: sell._id,
+          units: matchUnits, pricePerUnit: matchPrice, totalAmount,
+          buyerFee: totalAmount * 0.005, sellerFee: totalAmount * 0.005,
           matchType: 'auto',
         });
 
+        // Deduct tokens from seller's investment
+        let remaining = matchUnits;
+        const sellerInvestments = await Investment.find({
+          userId: sell.userId, assetId, status: { $in: ['confirmed', 'active'] }
+        }).sort({ createdAt: 1 });
+
+        for (const inv of sellerInvestments) {
+          if (remaining <= 0) break;
+          const deduct = Math.min(inv.tokens, remaining);
+          inv.tokens -= deduct;
+          inv.amount = inv.tokens * (inv.tokenPrice || matchPrice);
+          if (inv.tokens <= 0) inv.status = 'sold';
+          await inv.save();
+          remaining -= deduct;
+        }
+
+        // Create investment for buyer
+        const asset = await Asset.findById(assetId);
+        await Investment.create({
+          userId: buy.userId,
+          assetId, assetName,
+          assetType: asset?.assetType || 'unknown',
+          amount: totalAmount,
+          tokens: matchUnits,
+          tokenPrice: matchPrice,
+          expectedROI: asset?.targetROI || 0,
+          status: 'confirmed',
+          paymentMethod: 'exchange',
+          paymentTxHash: 'exchange-' + Date.now(),
+          chainId: 137,
+        });
+
+        // Update order statuses
         if (matchUnits >= buy.units) buy.status = 'completed';
         else buy.units -= matchUnits;
         await buy.save();
