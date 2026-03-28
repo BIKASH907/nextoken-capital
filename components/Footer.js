@@ -14,7 +14,7 @@ export default function Footer() {
         <div className="ft-grid">
           <div>
             <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:14}}>
-              <img src="/logo.png" alt="NXT" style={{height:32,width:"auto"}} onError={(e)=>{e.target.style.display='none'}} />
+              <span style={{fontSize:20,fontWeight:900,color:"#F0B90B",letterSpacing:2}}>NXT</span>
               <div style={{width:1,height:22,background:"rgba(240,185,11,0.25)"}} />
               <div>
                 <div style={{fontFamily:"Syne,sans-serif",fontSize:13,fontWeight:800,letterSpacing:"0.15em",color:"#F0B90B"}}>NEXTOKEN</div>
