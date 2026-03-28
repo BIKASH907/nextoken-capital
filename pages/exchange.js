@@ -1,9 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
 export default function Exchange() {
+  const { data: session } = useSession();
   const [assets, setAssets] = useState([]);
   const [selectedAsset, setSelectedAsset] = useState(null);
   const [orderBook, setOrderBook] = useState({ bids: [], asks: [] });
@@ -63,6 +66,7 @@ export default function Exchange() {
 
   async function placeOrder(e) {
     e.preventDefault();
+    if (!session) { setMsg('Please log in to place orders'); window.location.href = '/login'; return; }
     if (!units || parseFloat(units) <= 0) return;
     setLoading(true);
     setMsg('');
