@@ -1,5 +1,5 @@
+import Link from "next/link";
 import styles from "../styles/Hero.module.css";
-
 export default function Hero() {
   return (
     <section className={styles.hero}>
@@ -14,10 +14,9 @@ export default function Hero() {
             assets — from bonds and equities to real estate and commodities. Issue, trade,
             and settle with institutional-grade security and MiCA compliance.
           </p>
-
           <div className={styles.heroButtons}>
-            <button className={styles.primaryBtn}>Explore Marketplace</button>
-            <button className={styles.secondaryBtn}>List an Asset</button>
+            <Link href="/markets" className={styles.primaryBtn}>Explore Marketplace</Link>
+            <Link href="/auth/register" className={styles.secondaryBtn}>List an Asset</Link>
           </div>
         </div>
       </div>
