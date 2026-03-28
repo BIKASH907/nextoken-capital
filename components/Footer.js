@@ -30,7 +30,7 @@ export default function Footer() {
               </div>
             </div>
             <div style={{display:"flex",gap:10}}>
-              {[["X","#"],["in","#"],["tg","#"]].map(([s,h])=>(
+              {[["X","#"],["in","https://www.linkedin.com/in/bikash-bhat-87700318a"],["tg","#"]].map(([s,h])=>(
                 <a key={s} href={h} className="ft-link" style={{background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.08)",width:34,height:34,borderRadius:8,display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:700,marginBottom:0}}>{s}</a>
               ))}
             </div>

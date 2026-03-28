@@ -10,7 +10,7 @@ const SYSTEM = `You are the official AI support assistant for Nextoken Capital �
 COMPANY INFORMATION
 ═══════════════════════════════════════════════════════════
 Company Name: Nextoken Capital UAB
-CEO & Founder: the founding team
+CEO & Founder: the founding team (CEO LinkedIn: https://www.linkedin.com/in/bikash-bhat-87700318a)
 Headquarters: Gynėjų g. 14, Vilnius 01109, Lithuania
 Country: Lithuania, European Union
 Founded: 2022

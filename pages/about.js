@@ -4,7 +4,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
 const TEAM = [
-  { name:"Bikash Bhat",       role:"CEO & Founder",          bio:"Fintech entrepreneur with 10+ years in capital markets and blockchain infrastructure.", photo:"/bikash.jpg" },
+  { name:"Bikash Bhat",       role:"CEO & Founder",          bio:"Fintech entrepreneur with 10+ years in capital markets and blockchain infrastructure.", photo:"/bikash.jpg", linkedin:"https://www.linkedin.com/in/bikash-bhat-87700318a" },
   { name:"Compliance Team",   role:"Legal & Compliance",     bio:"EU-based regulatory specialists ensuring full MiCA and Bank of Lithuania compliance." },
   { name:"Engineering Team",  role:"Blockchain & Platform",  bio:"Full-stack engineers specialising in ERC-3643 security token infrastructure." },
   { name:"Investment Team",   role:"Asset Origination",      bio:"Asset specialists sourcing and structuring real-world investment opportunities." },
