@@ -10,6 +10,29 @@ export default function InvestmentPayment({ asset, units, onSuccess, onBack }) {
     }).catch(e => console.error('LiFi load error:', e));
   }, []);
 
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.ethereum) {
+      window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: '0x89' }],
+      }).catch((err) => {
+        if (err.code === 4902) {
+          window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [{
+              chainId: '0x89',
+              chainName: 'Polygon Mainnet',
+              nativeCurrency: { name: 'POL', symbol: 'POL', decimals: 18 },
+              rpcUrls: ['https://polygon-rpc.com'],
+              blockExplorerUrls: ['https://polygonscan.com'],
+            }],
+          });
+        }
+      });
+    }
+  }, []);
+
+
   const widgetConfig = {
     // Lock destination: USDC on Polygon to platform wallet
     toChain: 137,
