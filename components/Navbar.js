@@ -8,7 +8,7 @@ const WALLETS = [
     id: "metamask",
     name: "MetaMask",
     desc: "Most popular browser wallet",
-    icon: "🦊",
+    icon: "\uD83E\uDD8A",
     check: () => typeof window !== "undefined" && !!window.ethereum?.isMetaMask,
     connect: async () => {
       const acc = await window.ethereum.request({ method: "eth_requestAccounts" });
@@ -20,7 +20,7 @@ const WALLETS = [
     id: "coinbase",
     name: "Coinbase Wallet",
     desc: "By Coinbase exchange",
-    icon: "🔵",
+    icon: "\uD83D\uDD35",
     check: () => typeof window !== "undefined" && !!window.ethereum?.isCoinbaseWallet,
     connect: async () => {
       const acc = await window.ethereum.request({ method: "eth_requestAccounts" });
@@ -32,7 +32,7 @@ const WALLETS = [
     id: "trust",
     name: "Trust Wallet",
     desc: "Mobile & browser wallet",
-    icon: "🛡️",
+    icon: "\uD83D\uDEE1\uFE0F",
     check: () => typeof window !== "undefined" && !!window.ethereum?.isTrust,
     connect: async () => {
       const acc = await window.ethereum.request({ method: "eth_requestAccounts" });
@@ -44,7 +44,7 @@ const WALLETS = [
     id: "brave",
     name: "Brave Wallet",
     desc: "Built into Brave browser",
-    icon: "🦁",
+    icon: "\uD83E\uDD81",
     check: () => typeof window !== "undefined" && !!window.ethereum?.isBraveWallet,
     connect: async () => {
       const acc = await window.ethereum.request({ method: "eth_requestAccounts" });
@@ -56,7 +56,7 @@ const WALLETS = [
     id: "phantom",
     name: "Phantom",
     desc: "Solana & EVM wallet",
-    icon: "👻",
+    icon: "\uD83D\uDC7B",
     check: () => typeof window !== "undefined" && !!window.phantom?.ethereum,
     connect: async () => {
       const acc = await window.phantom.ethereum.request({ method: "eth_requestAccounts" });
@@ -68,7 +68,7 @@ const WALLETS = [
     id: "okx",
     name: "OKX Wallet",
     desc: "By OKX exchange",
-    icon: "⭕",
+    icon: "\u2B55",
     check: () => typeof window !== "undefined" && !!window.okxwallet,
     connect: async () => {
       const acc = await window.okxwallet.request({ method: "eth_requestAccounts" });
@@ -80,7 +80,7 @@ const WALLETS = [
     id: "walletconnect",
     name: "WalletConnect",
     desc: "Scan QR with any mobile wallet",
-    icon: "🔗",
+    icon: "\uD83D\uDD17",
     check: () => false,
     connect: async () => null,
     install: (typeof window !== "undefined" && /Android|iPhone|iPad/i.test(navigator.userAgent)) ? "https://walletconnect.com/" : "https://walletconnect.com/",
@@ -90,7 +90,7 @@ const WALLETS = [
     id: "ledger",
     name: "Ledger",
     desc: "Hardware wallet",
-    icon: "🔐",
+    icon: "\uD83D\uDD10",
     check: () => false,
     connect: async () => null,
     install: "https://www.ledger.com/",
@@ -99,14 +99,21 @@ const WALLETS = [
 ];
 
 export default function Navbar() {
-  const [open, setOpen]             = useState(false);
-  const [scrolled, setScrolled]     = useState(false);
+  const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const { data: session } = useSession();
-  const [wallet, setWallet]         = useState(null);
+  const [customUser, setCustomUser] = useState(null);
+  useEffect(() => {
+    if (!session) {
+      fetch("/api/user/me").then(r => r.ok ? r.json() : null).then(d => { if (d?.user) setCustomUser(d.user); }).catch(() => {});
+    }
+  }, [session]);
+  const activeUser = session?.user || customUser;
+  const [wallet, setWallet] = useState(null);
   const [walletName, setWalletName] = useState("");
-  const [showModal, setShowModal]   = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [connecting, setConnecting] = useState(null);
-  const [error, setError]           = useState("");
+  const [error, setError] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -118,7 +125,6 @@ export default function Navbar() {
 
   useEffect(() => { setOpen(false); }, [router.asPath]);
 
-  // Auto-reconnect on load
   useEffect(() => {
     if (typeof window !== "undefined" && window.ethereum) {
       window.ethereum.request({ method: "eth_accounts" }).then(acc => {
@@ -152,15 +158,15 @@ export default function Navbar() {
 
   const disconnect = () => { setWallet(null); setWalletName(""); setShowModal(false); };
 
-  const isActive  = (href) => router.asPath === href;
+  const isActive = (href) => router.asPath === href;
   const shortAddr = wallet ? wallet.slice(0, 6) + "..." + wallet.slice(-4) : null;
 
   const links = [
-    { href: "/marketplace",    label: "Markets" },
-    { href: "/exchange",   label: "Exchange" },
-    { href: "/bonds",      label: "Bonds" },
+    { href: "/marketplace", label: "Markets" },
+    { href: "/exchange", label: "Exchange" },
+    { href: "/bonds", label: "Bonds" },
     { href: "/equity-ipo", label: "Equity & IPO" },
-    { href: "/tokenize",   label: "Tokenize Assets" },
+    { href: "/tokenize", label: "Tokenize Assets" },
   ];
 
   return (
@@ -196,8 +202,6 @@ export default function Navbar() {
         .nb-mob-sep{height:1px;background:rgba(255,255,255,0.08);margin:10px 0}
         .nb-mob-cw{display:block;width:100%;padding:14px 18px;border-radius:10px;font-size:15px;font-weight:700;color:#000;background:#F0B90B;border:none;text-align:center;cursor:pointer;font-family:inherit;margin-bottom:8px}
         .nb-mob-li{display:block;padding:14px 18px;border-radius:10px;font-size:15px;font-weight:700;color:rgba(255,255,255,0.8);text-decoration:none;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);text-align:center}
-
-        /* MODAL */
         .wm-ov{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;animation:wfade .15s ease}
         @keyframes wfade{from{opacity:0}to{opacity:1}}
         .wm-box{background:#0F1318;border:1px solid rgba(255,255,255,0.1);border-radius:18px;padding:28px;width:100%;max-width:460px;animation:wup .2s ease}
@@ -231,12 +235,10 @@ export default function Navbar() {
         .wm-disc:hover{background:rgba(255,77,77,0.15)}
         .wm-note{font-size:11px;color:rgba(255,255,255,0.22);text-align:center;margin-top:16px;line-height:1.7}
         .wm-note a{color:#F0B90B}
-
         @media(max-width:900px){.nb-links{display:none}}
         @media(max-width:640px){.nb-li,.nb-cw{display:none}.nb-hbg{display:flex}}
       `}</style>
 
-      {/* NAVBAR */}
       <nav className={`nb ${scrolled ? "sc" : "tp"}`}>
         <div className="nb-in">
           <Link href="/" className="nb-logo">
@@ -256,9 +258,9 @@ export default function Navbar() {
 
           <div className="nb-right">
             <button className={`nb-cw ${wallet ? "on" : ""}`} onClick={() => setShowModal(true)}>
-              {wallet ? `● ${shortAddr}` : "Connect Wallet"}
+              {wallet ? `\u25CF ${shortAddr}` : "Connect Wallet"}
             </button>
-            {session ? <Link href="/dashboard" className="nb-li" style={{color:"#F0B90B",fontWeight:700}}>{session.user?.name || session.user?.email?.split("@")[0] || "Dashboard"}</Link> : <Link href="/login" className="nb-li">Log In</Link>}
+            {activeUser ? <Link href="/dashboard" className="nb-li" style={{color:"#F0B90B",fontWeight:700}}>{activeUser.firstName || activeUser.name || activeUser.email?.split("@")[0] || "Dashboard"}</Link> : <Link href="/login" className="nb-li">Log In</Link>}
             <button className="nb-hbg" onClick={() => setOpen(!open)} aria-label="Menu">
               <span style={{ transform: open ? "rotate(45deg) translate(5px,5px)" : "none" }} />
               <span style={{ opacity: open ? 0 : 1 }} />
@@ -268,30 +270,28 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* MOBILE MENU */}
       <div className={`nb-mob ${open ? "open" : ""}`}>
         {links.map(l => (
           <Link key={l.href} href={l.href} className={isActive(l.href) ? "on" : ""}>{l.label}</Link>
         ))}
         <div className="nb-mob-sep" />
         <button className="nb-mob-cw" onClick={() => { setOpen(false); setShowModal(true); }}>
-          {wallet ? `● ${shortAddr}` : "Connect Wallet"}
+          {wallet ? `\u25CF ${shortAddr}` : "Connect Wallet"}
         </button>
-        {session ? <Link href="/dashboard" className="nb-mob-li" style={{color:"#F0B90B",fontWeight:700}}>{session.user?.name || session.user?.email?.split("@")[0] || "Dashboard"}</Link> : <Link href="/login" className="nb-mob-li">Log In</Link>}
+        {activeUser ? <Link href="/dashboard" className="nb-mob-li" style={{color:"#F0B90B",fontWeight:700}}>{activeUser.firstName || activeUser.name || activeUser.email?.split("@")[0] || "Dashboard"}</Link> : <Link href="/login" className="nb-mob-li">Log In</Link>}
       </div>
 
-      {/* WALLET MODAL */}
       {showModal && (
         <div className="wm-ov" onClick={e => { if (e.target === e.currentTarget) setShowModal(false); }}>
           <div className="wm-box">
             <div className="wm-head">
               <div className="wm-title">{wallet ? "Wallet Connected" : "Connect a Wallet"}</div>
-              <button className="wm-x" onClick={() => setShowModal(false)}>×</button>
+              <button className="wm-x" onClick={() => setShowModal(false)}>&times;</button>
             </div>
 
             {wallet ? (
               <div className="wm-connected">
-                <div style={{ fontSize: 44, marginBottom: 14 }}>✅</div>
+                <div style={{ fontSize: 44, marginBottom: 14 }}>&check;</div>
                 <div className="wm-conn-addr">{shortAddr}</div>
                 <div className="wm-conn-via">Connected via {walletName}</div>
                 <button className="wm-disc" onClick={disconnect}>Disconnect Wallet</button>
@@ -319,7 +319,7 @@ export default function Navbar() {
                         ) : w.comingSoon ? (
                           <span className="wm-badge soon">Soon</span>
                         ) : installed ? (
-                          <span className="wm-badge ok">Installed ✓</span>
+                          <span className="wm-badge ok">Installed &check;</span>
                         ) : (
                           <span className="wm-badge get">Install</span>
                         )}
@@ -327,7 +327,7 @@ export default function Navbar() {
                     );
                   })}
                 </div>
-                {error && <div className="wm-err">⚠️ {error}</div>}
+                {error && <div className="wm-err">&amp;#9888; {error}</div>}
                 <p className="wm-note">
                   By connecting you agree to our{" "}
                   <Link href="/terms" onClick={() => setShowModal(false)}>Terms</Link> and{" "}
