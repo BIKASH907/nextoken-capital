@@ -1,7 +1,5 @@
 // pages/api/monerium/index.js
-// GET: connection status, IBANs, balances
-// POST: link address, request IBAN, get orders
-import { connectDB } from "../../../lib/mongodb";
+import connectDB from "../../../lib/db";
 import User from "../../../lib/models/User";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]";
@@ -21,7 +19,6 @@ async function mFetch(path, token, opts = {}) {
 
 async function getValidToken(user) {
   if (!user.monerium?.accessToken) return null;
-  // Refresh if expiring within 5 minutes
   if (user.monerium.expiresAt && new Date(user.monerium.expiresAt) < new Date(Date.now() + 300000)) {
     if (!user.monerium.refreshToken) return null;
     try {
@@ -50,26 +47,22 @@ async function getValidToken(user) {
 export default async function handler(req, res) {
   await connectDB();
   const session = await getServerSession(req, res, authOptions);
-  if (!session?.user?.email) return res.status(401).json({ error: "Not authenticated" });
+  if (!session) return res.status(401).json({ error: "Not authenticated" });
 
-  const user = await User.findOne({ email: session.user.email });
+  const userId = session.id || session.sub || session.user?.id;
+  const user = await User.findById(userId);
   if (!user) return res.status(404).json({ error: "User not found" });
 
-  // ── GET ───────────────────────────────────────────────────────
   if (req.method === "GET") {
     const token = await getValidToken(user);
-    if (!token) return res.json({ connected: false, ibans: [], balances: [], profile: null });
-
+    if (!token) return res.json({ connected: false, ibans: [], balances: [] });
     try {
-      const [profile, ibans, balances] = await Promise.allSettled([
-        mFetch("/profiles", token),
+      const [ibans, balances] = await Promise.allSettled([
         mFetch("/ibans", token),
         mFetch("/balances", token),
       ]);
       return res.json({
         connected: true,
-        connectedAt: user.monerium?.connectedAt,
-        profile: profile.status === "fulfilled" ? profile.value : null,
         ibans: ibans.status === "fulfilled" ? ibans.value : [],
         balances: balances.status === "fulfilled" ? balances.value : [],
       });
@@ -78,45 +71,28 @@ export default async function handler(req, res) {
     }
   }
 
-  // ── POST ──────────────────────────────────────────────────────
   if (req.method === "POST") {
     const token = await getValidToken(user);
     if (!token) return res.status(401).json({ error: "Monerium not connected" });
-
     const { action, address, message, signature, chain } = req.body;
     try {
       if (action === "link_address") {
         const result = await mFetch("/addresses", token, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            address,
-            message: message || "I hereby declare that I am the address owner.",
-            signature,
-            chain: chain || "polygon",
-          }),
+          body: JSON.stringify({ address, message: message || "I hereby declare that I am the address owner.", signature, chain: chain || "polygon" }),
         });
         return res.json({ success: true, data: result });
       }
-
       if (action === "request_iban") {
         const result = await mFetch("/ibans", token, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ address, chain: chain || "polygon" }),
         });
-        await User.findOneAndUpdate(
-          { email: session.user.email },
-          { $set: { "monerium.iban": result.iban, "monerium.ibanAddress": address } }
-        );
+        await User.findByIdAndUpdate(userId, { $set: { "monerium.iban": result.iban, "monerium.ibanAddress": address } });
         return res.json({ success: true, data: result });
       }
-
-      if (action === "get_orders") {
-        const orders = await mFetch("/orders", token);
-        return res.json({ success: true, data: orders });
-      }
-
       return res.status(400).json({ error: "Unknown action" });
     } catch (err) {
       return res.status(500).json({ error: err.message });

@@ -1,5 +1,5 @@
 // pages/api/issuer/dashboard.js
-import { connectDB } from "../../../lib/mongodb";
+import connectDB from "../../../lib/db";
 import User from "../../../lib/models/User";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]";
@@ -9,10 +9,11 @@ export default async function handler(req, res) {
 
   await connectDB();
   const session = await getServerSession(req, res, authOptions);
-  if (!session?.user?.email) return res.status(401).json({ error: "Not authenticated" });
+  if (!session) return res.status(401).json({ error: "Not authenticated" });
 
-  const user = await User.findOne({ email: session.user.email });
-  if (!user) return res.status(404).json({ error: "User not found" });
+  const userId = session.id || session.sub || session.user?.id;
+  const user = await User.findById(userId);
+  if (!user) return res.status(401).json({ error: "User not found" });
 
   try {
     const mongoose = require("mongoose");
@@ -21,47 +22,33 @@ export default async function handler(req, res) {
 
     const assets = await Asset.find({ issuerId: user._id }).sort({ createdAt: -1 }).lean();
     const assetIds = assets.map(a => a._id);
-    const investments = await Investment.find({ assetId: { $in: assetIds } }).lean();
-
-    // Try to get user info for investors
-    const investorIds = [...new Set(investments.map(i => i.userId?.toString()).filter(Boolean))];
-    let investorMap = {};
-    if (investorIds.length > 0) {
-      const investors = await User.find({ _id: { $in: investorIds } }).select("name email").lean();
-      investors.forEach(u => { investorMap[u._id.toString()] = { name: u.name, email: u.email }; });
-    }
+    const investments = assetIds.length > 0
+      ? await Investment.find({ assetId: { $in: assetIds } }).lean()
+      : [];
 
     const assetsWithData = assets.map(a => {
       const inv = investments.filter(i => i.assetId?.toString() === a._id.toString());
-      const uniqueInvestors = [...new Set(inv.map(i => i.userId?.toString()).filter(Boolean))];
       return {
         ...a,
-        raised: inv.reduce((s, i) => s + (i.amount || i.totalInvested || 0), 0),
-        investorCount: uniqueInvestors.length,
-        investors: inv.map(i => ({
-          userId: i.userId,
-          name: investorMap[i.userId?.toString()]?.name || "",
-          email: investorMap[i.userId?.toString()]?.email || "",
-          tokens: i.tokens || i.units || 0,
-          amount: i.amount || i.totalInvested || 0,
-        })),
+        totalRaised: inv.reduce((s, i) => s + (i.amount || i.totalInvested || 0), 0),
+        totalInvestors: [...new Set(inv.map(i => i.userId?.toString()).filter(Boolean))].length,
+        tokensSold: inv.reduce((s, i) => s + (i.tokens || i.units || 0), 0),
       };
     });
 
-    const totalRaised = assetsWithData.reduce((s, a) => s + a.raised, 0);
-    const allInvestorIds = [...new Set(investments.map(i => i.userId?.toString()).filter(Boolean))];
-
     return res.json({
-      assets: assetsWithData,
-      distributions: [],
-      stats: {
-        totalAssets: assets.length,
-        liveAssets: assets.filter(a => a.status === "live" || a.approvalStatus === "live").length,
-        totalRaised,
-        totalInvestors: allInvestorIds.length,
-        totalInvestments: investments.length,
-        totalDistributed: 0,
+      issuer: {
+        _id: user._id,
+        companyName: user.companyName || user.name || "Your Company",
+        walletAddress: user.walletAddress || user.monerium?.ibanAddress || null,
+        bankIBAN: user.bankIBAN || null,
+        moneriumIBAN: user.monerium?.iban || null,
+        moneriumProfileId: user.monerium?.profileId || null,
+        eureBalance: 0,
+        onboardingStatus: user.kycStatus === "approved" ? "complete" : "Pending",
       },
+      assets: assetsWithData,
+      redemptions: [],
     });
   } catch (err) {
     console.error("Issuer dashboard error:", err);
