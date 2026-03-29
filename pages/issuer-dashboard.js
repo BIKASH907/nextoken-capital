@@ -23,6 +23,46 @@ const TYPE_LABELS = {
   fund: "Fund", commodity: "Commodity", infrastructure: "Infrastructure", other: "Other",
 };
 
+// 6 document categories matching admin panel
+const DOC_CATEGORIES = [
+  {
+    id: "photos", label: "Photos", icon: "\uD83D\uDCF8", color: "#F0B90B",
+    desc: "Public — visible to all visitors after approval",
+    types: ["Property Exterior", "Interior", "Aerial View", "Progress Photos", "Other"],
+    accept: ".jpg,.jpeg,.png,.webp",
+  },
+  {
+    id: "legal", label: "Legal", icon: "\u2696\uFE0F", color: "#3B82F6",
+    desc: "Admin only — reviewed by compliance team",
+    types: ["Certificate of Incorporation", "Articles of Association", "Board Resolution", "UBO Declaration", "Legal Opinion", "Other"],
+    accept: ".pdf,.doc,.docx",
+  },
+  {
+    id: "financial", label: "Financial", icon: "\uD83D\uDCB0", color: "#0ECB81",
+    desc: "Investors only — visible to verified investors with active holdings",
+    types: ["Audited Financial Statements", "Bank Statements", "Asset Valuation Report", "P&L Statement", "Cash Flow", "Other"],
+    accept: ".pdf,.xls,.xlsx,.doc,.docx",
+  },
+  {
+    id: "operational", label: "Operational", icon: "\uD83C\uDFD7\uFE0F", color: "#f59e0b",
+    desc: "Admin only — property and operational documents",
+    types: ["Title Deed", "Appraisal Report", "Insurance Certificate", "Lease Agreement", "Maintenance Records", "Other"],
+    accept: ".pdf,.doc,.docx",
+  },
+  {
+    id: "compliance", label: "Compliance & KYC", icon: "\uD83D\uDD10", color: "#8b5cf6",
+    desc: "Admin only — identity and regulatory documents",
+    types: ["Government-issued ID", "Proof of Address", "Sanctions Screening", "AML Check", "Tax ID Certificate", "Other"],
+    accept: ".pdf,.jpg,.jpeg,.png",
+  },
+  {
+    id: "technical", label: "Technical / Blockchain", icon: "\u26D3\uFE0F", color: "#06b6d4",
+    desc: "Admin only — smart contract and tokenomics documents",
+    types: ["Smart Contract Details", "Tokenomics Document", "Offering Structure", "Milestone Plan", "Whitepaper", "Other"],
+    accept: ".pdf,.doc,.docx",
+  },
+];
+
 function fmt(n) {
   if (n >= 1000000) return "\u20AC" + (n / 1000000).toFixed(1) + "M";
   if (n >= 1000) return "\u20AC" + (n / 1000).toFixed(0) + "K";
@@ -42,12 +82,18 @@ export default function IssuerDashboardPage() {
   const [createLoading, setCreateLoading] = useState(false);
   const [walletAddress, setWalletAddress] = useState("");
   const [ibanData, setIbanData] = useState(null);
+  // Document upload state
+  const [docCategory, setDocCategory] = useState("photos");
+  const [docSubType, setDocSubType] = useState("");
+  const [docTab, setDocTab] = useState("photos");
+  const [selectedAssetForDocs, setSelectedAssetForDocs] = useState("");
   const fileRef = useRef(null);
 
   const emptyForm = {
     name: "", ticker: "", description: "", assetType: "real_estate", category: "",
     location: "", country: "", targetRaise: "", minInvestment: "100", targetROI: "",
-    term: "", tokenPrice: "", riskLevel: "medium", documents: [],
+    term: "", tokenPrice: "", riskLevel: "medium",
+    documents: { photos: [], legal: [], financial: [], operational: [], compliance: [], technical: [] },
   };
   const [cf, setCf] = useState(emptyForm);
   const uf = (k, v) => setCf(f => ({ ...f, [k]: v }));
@@ -73,26 +119,69 @@ export default function IssuerDashboardPage() {
     }
   }, []);
 
-  const handleUpload = async (e) => {
+  // Upload to a specific category
+  const handleCategoryUpload = async (e, catId, subType) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
     try {
       const fd = new FormData();
       fd.append("file", file);
+      fd.append("category", catId);
+      fd.append("subType", subType || "");
       const res = await fetch("/api/upload/document", { method: "POST", body: fd });
       const data = await res.json();
-      if (data.success) uf("documents", [...cf.documents, { name: data.name, url: data.url, type: data.type }]);
+      if (data.success || data.url) {
+        const newDoc = { name: data.name || file.name, url: data.url, type: data.type || file.type, category: catId, subType: subType || "", uploadedAt: new Date().toISOString() };
+        const updated = { ...cf.documents };
+        updated[catId] = [...(updated[catId] || []), newDoc];
+        uf("documents", updated);
+      }
     } catch (err) { console.error(err); }
     finally { setUploading(false); if (fileRef.current) fileRef.current.value = ""; }
   };
 
-  const removeDoc = (idx) => uf("documents", cf.documents.filter((_, i) => i !== idx));
+  // Upload for existing asset (Documents tab)
+  const handleAssetDocUpload = async (e, catId, subType) => {
+    const file = e.target.files?.[0];
+    if (!file || !selectedAssetForDocs) return;
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("category", catId);
+      fd.append("subType", subType || "");
+      fd.append("assetId", selectedAssetForDocs);
+      const res = await fetch("/api/upload/document", { method: "POST", body: fd });
+      const data = await res.json();
+      if (data.success || data.url) { loadData(); }
+    } catch (err) { console.error(err); }
+    finally { setUploading(false); }
+  };
+
+  const removeDoc = (catId, idx) => {
+    const updated = { ...cf.documents };
+    updated[catId] = updated[catId].filter((_, i) => i !== idx);
+    uf("documents", updated);
+  };
 
   const handleCreate = async () => {
     setCreateMsg(""); setCreateLoading(true);
     try {
-      const body = { ...cf, targetRaise: Number(cf.targetRaise), minInvestment: Number(cf.minInvestment) || 100, targetROI: Number(cf.targetROI) || undefined, term: Number(cf.term) || undefined, tokenPrice: Number(cf.tokenPrice) || undefined };
+      // Flatten documents for API
+      const allDocs = [];
+      Object.entries(cf.documents).forEach(([cat, docs]) => {
+        docs.forEach(d => allDocs.push({ ...d, category: cat }));
+      });
+      const body = {
+        ...cf,
+        documents: allDocs,
+        targetRaise: Number(cf.targetRaise),
+        minInvestment: Number(cf.minInvestment) || 100,
+        targetROI: Number(cf.targetROI) || undefined,
+        term: Number(cf.term) || undefined,
+        tokenPrice: Number(cf.tokenPrice) || undefined,
+      };
       const res = await fetch("/api/assets/create", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
       const data = await res.json();
       if (data.success) { setCreateMsg("\u2705 Listing created!"); setShowCreate(false); setCf(emptyForm); loadData(); }
@@ -106,6 +195,8 @@ export default function IssuerDashboardPage() {
     const data = await res.json();
     if (data.success) loadData(); else alert(data.error);
   };
+
+  const totalDocsCount = Object.values(cf.documents).reduce((s, arr) => s + arr.length, 0);
 
   if (loading) return (
     <div style={{ minHeight: "100vh", background: "#0B0E11", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -144,8 +235,8 @@ export default function IssuerDashboardPage() {
         .id-btn-gold{background:#F0B90B;color:#000}.id-btn-gold:hover{background:#FFD000}
         .id-btn-ghost{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6);border:1px solid rgba(255,255,255,0.1)}
         .id-btn-blue{background:rgba(59,130,246,0.1);color:#3B82F6;border:1px solid rgba(59,130,246,0.25)}
-        .id-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:10000;display:flex;align-items:flex-start;justify-content:center;padding:20px;padding-top:80px;overflow-y:auto}
-        .id-modal{background:#0F1318;border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:28px;width:100%;max-width:620px}
+        .id-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:10000;display:flex;align-items:flex-start;justify-content:center;padding:20px;padding-top:60px;overflow-y:auto}
+        .id-modal{background:#0F1318;border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:28px;width:100%;max-width:720px}
         .id-field{margin-bottom:14px}
         .id-label{display:block;font-size:11px;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
         .id-input{width:100%;background:#161B22;color:#fff;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:11px 14px;font-size:13px;outline:none;font-family:inherit;transition:border-color .15s;box-sizing:border-box}
@@ -158,6 +249,14 @@ export default function IssuerDashboardPage() {
         .id-msg{padding:10px 14px;border-radius:8px;font-size:13px;margin:14px 0;line-height:1.5}
         .id-msg.ok{background:rgba(14,203,129,0.1);border:1px solid rgba(14,203,129,0.25);color:#0ECB81}
         .id-msg.err{background:rgba(255,77,77,0.08);border:1px solid rgba(255,77,77,0.2);color:#FF6B6B}
+        .id-doc-cats{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:14px}
+        .id-doc-cat{padding:6px 12px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.03);color:rgba(255,255,255,0.4);transition:all .15s;display:flex;align-items:center;gap:5px}
+        .id-doc-cat:hover{background:rgba(255,255,255,0.06);color:#fff}
+        .id-doc-cat.on{border-color:rgba(240,185,11,0.4);background:rgba(240,185,11,0.08);color:#F0B90B}
+        .id-photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-top:10px}
+        .id-photo-thumb{position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);background:#161B22}
+        .id-photo-thumb img{width:100%;height:100%;object-fit:cover}
+        .id-photo-rm{position:absolute;top:4px;right:4px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,0.7);color:#FF4D4D;border:none;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center}
         @media(max-width:900px){.id-stats{grid-template-columns:repeat(2,1fr)}.id-2col,.id-3col{grid-template-columns:1fr}}
       `}</style>
 
@@ -189,12 +288,12 @@ export default function IssuerDashboardPage() {
 
           {/* TABS */}
           <div className="id-tabs">
-            {[["overview", "Overview"], ["listings", "My Listings"], ["bank", "Bank & Wallet"], ["analytics", "Analytics"]].map(([id, lbl]) => (
+            {[["overview", "Overview"], ["listings", "My Listings"], ["documents", "Documents"], ["bank", "Bank & Wallet"], ["analytics", "Analytics"]].map(([id, lbl]) => (
               <button key={id} className={`id-tab ${tab === id ? "on" : ""}`} onClick={() => setTab(id)}>{lbl}</button>
             ))}
           </div>
 
-          {/* LISTINGS TABLE */}
+          {/* ═══════ LISTINGS TABLE ═══════ */}
           {(tab === "overview" || tab === "listings") && (
             <div className="id-card">
               <div className="id-card-head">
@@ -250,7 +349,136 @@ export default function IssuerDashboardPage() {
             </div>
           )}
 
-          {/* BANK & WALLET */}
+          {/* ═══════ DOCUMENTS TAB ═══════ */}
+          {tab === "documents" && (
+            <div>
+              {/* Asset Selector */}
+              <div className="id-card">
+                <div className="id-card-head"><span className="id-card-title">Upload Documents for Asset</span></div>
+                <div style={{ padding: 18 }}>
+                  {assets.length === 0 ? (
+                    <div className="id-empty">Create a listing first to upload documents.</div>
+                  ) : (
+                    <>
+                      <label className="id-label">Select Asset</label>
+                      <select className="id-input" value={selectedAssetForDocs} onChange={e => setSelectedAssetForDocs(e.target.value)} style={{ marginBottom: 16 }}>
+                        <option value="">Choose an asset...</option>
+                        {assets.map(a => <option key={a._id} value={a._id}>{a.name} ({a.ticker})</option>)}
+                      </select>
+
+                      {selectedAssetForDocs && (
+                        <>
+                          {/* Category Tabs */}
+                          <div className="id-doc-cats">
+                            {DOC_CATEGORIES.map(cat => (
+                              <button key={cat.id} className={`id-doc-cat ${docTab === cat.id ? "on" : ""}`} onClick={() => setDocTab(cat.id)}>
+                                <span>{cat.icon}</span> {cat.label}
+                              </button>
+                            ))}
+                          </div>
+
+                          {/* Current Category Upload */}
+                          {DOC_CATEGORIES.filter(c => c.id === docTab).map(cat => (
+                            <div key={cat.id}>
+                              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginBottom: 12, fontStyle: "italic" }}>{cat.desc}</div>
+
+                              {/* Sub-type selector */}
+                              <div className="id-2col" style={{ marginBottom: 12 }}>
+                                <div>
+                                  <label className="id-label">Document Type</label>
+                                  <select className="id-input" value={docSubType} onChange={e => setDocSubType(e.target.value)}>
+                                    <option value="">Select type...</option>
+                                    {cat.types.map(t => <option key={t} value={t}>{t}</option>)}
+                                  </select>
+                                </div>
+                                <div style={{ display: "flex", alignItems: "flex-end" }}>
+                                  <div>
+                                    <input type="file" ref={fileRef} accept={cat.accept} onChange={e => handleAssetDocUpload(e, cat.id, docSubType)} style={{ display: "none" }} />
+                                    <button onClick={() => fileRef.current?.click()} disabled={uploading || !docSubType} className="id-btn id-btn-gold" style={{ fontSize: 12, opacity: !docSubType ? 0.4 : 1 }}>
+                                      {uploading ? "Uploading..." : `Upload ${cat.label}`}
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Show existing docs for this category */}
+                              {(() => {
+                                const asset = assets.find(a => a._id === selectedAssetForDocs);
+                                const catDocs = (asset?.documents || []).filter(d => d.category === cat.id);
+                                if (catDocs.length === 0) return <div style={{ fontSize: 12, color: "rgba(255,255,255,0.2)", padding: "12px 0" }}>No {cat.label.toLowerCase()} documents uploaded yet.</div>;
+
+                                // Photos show as grid
+                                if (cat.id === "photos") {
+                                  return (
+                                    <div className="id-photo-grid">
+                                      {catDocs.map((d, i) => (
+                                        <div key={i} className="id-photo-thumb">
+                                          <img src={d.url} alt={d.subType || d.name} />
+                                          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "4px 6px", background: "rgba(0,0,0,0.7)", fontSize: 9, color: "rgba(255,255,255,0.6)" }}>{d.subType || d.name}</div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  );
+                                }
+
+                                return (
+                                  <div className="id-doc-list">
+                                    {catDocs.map((d, i) => (
+                                      <div key={i} className="id-doc-item">
+                                        <div>
+                                          <span style={{ color: cat.color, marginRight: 6 }}>{cat.icon}</span>
+                                          <a href={d.url} target="_blank" rel="noopener noreferrer" style={{ color: "#F0B90B", textDecoration: "none" }}>{d.name}</a>
+                                          {d.subType && <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", marginLeft: 8 }}>{d.subType}</span>}
+                                        </div>
+                                        <span style={{ fontSize: 10, color: "rgba(255,255,255,0.2)" }}>{d.uploadedAt ? new Date(d.uploadedAt).toLocaleDateString() : ""}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                );
+                              })()}
+                            </div>
+                          ))}
+                        </>
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Owner / Company Documents */}
+              <div className="id-card">
+                <div className="id-card-head"><span className="id-card-title">Owner / Company Documents</span></div>
+                <div style={{ padding: 18 }}>
+                  <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginBottom: 14, lineHeight: 1.6 }}>
+                    These documents apply to your company, not a specific asset. Required for KYB verification and compliance.
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 10 }}>
+                    {[
+                      { label: "Certificate of Incorporation", icon: "\uD83C\uDFDB\uFE0F" },
+                      { label: "Proof of Address", icon: "\uD83C\uDFE0" },
+                      { label: "Director ID / Passport", icon: "\uD83E\uDEAA" },
+                      { label: "UBO Declaration", icon: "\uD83D\uDC64" },
+                      { label: "Tax Registration", icon: "\uD83D\uDCCB" },
+                      { label: "Bank Statement", icon: "\uD83C\uDFE6" },
+                    ].map((doc, i) => (
+                      <div key={i} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: "14px 16px" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                          <span style={{ fontSize: 18 }}>{doc.icon}</span>
+                          <span style={{ fontSize: 12, fontWeight: 700, color: "#fff" }}>{doc.label}</span>
+                        </div>
+                        <input type="file" accept=".pdf,.jpg,.jpeg,.png" onChange={e => handleAssetDocUpload(e, "compliance", doc.label)} style={{ display: "none" }} id={`owner-doc-${i}`} />
+                        <label htmlFor={`owner-doc-${i}`} className="id-btn id-btn-ghost" style={{ fontSize: 11, padding: "5px 12px", cursor: "pointer", display: "inline-block" }}>
+                          {uploading ? "..." : "Upload"}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ═══════ BANK & WALLET ═══════ */}
           {tab === "bank" && (
             <div>
               <MoneriumConnect walletAddress={walletAddress} onIBANReceived={setIbanData} />
@@ -286,7 +514,7 @@ export default function IssuerDashboardPage() {
             </div>
           )}
 
-          {/* ANALYTICS */}
+          {/* ═══════ ANALYTICS ═══════ */}
           {tab === "analytics" && (
             <div className="id-card">
               <div className="id-card-head"><span className="id-card-title">Analytics</span></div>
@@ -305,7 +533,9 @@ export default function IssuerDashboardPage() {
         </div>
       </div>
 
-      {/* CREATE LISTING MODAL */}
+      {/* ══════════════════════════════════════════════════════════════════════
+         CREATE LISTING MODAL — with categorized document upload
+      ══════════════════════════════════════════════════════════════════════ */}
       {showCreate && (
         <div className="id-overlay" onClick={e => { if (e.target === e.currentTarget) setShowCreate(false); }}>
           <div className="id-modal">
@@ -314,6 +544,7 @@ export default function IssuerDashboardPage() {
               <button onClick={() => setShowCreate(false)} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", fontSize: 22, cursor: "pointer" }}>&times;</button>
             </div>
 
+            {/* BASIC INFO */}
             <div className="id-2col">
               <div className="id-field">
                 <label className="id-label">Asset Name *</label>
@@ -351,6 +582,7 @@ export default function IssuerDashboardPage() {
               </div>
             </div>
 
+            {/* FINANCIALS */}
             <div style={{ fontSize: 12, fontWeight: 700, color: "#F0B90B", letterSpacing: 1, textTransform: "uppercase", margin: "20px 0 10px" }}>Financials</div>
             <div className="id-3col">
               <div className="id-field">
@@ -385,31 +617,81 @@ export default function IssuerDashboardPage() {
               </div>
             </div>
 
+            {/* ─── CATEGORIZED DOCUMENT UPLOAD ─── */}
             <div style={{ fontSize: 12, fontWeight: 700, color: "#F0B90B", letterSpacing: 1, textTransform: "uppercase", margin: "20px 0 10px" }}>
-              Documents &amp; Financials
+              Documents &amp; Photos ({totalDocsCount} uploaded)
             </div>
-            <div style={{ padding: 16, border: "2px dashed rgba(255,255,255,0.1)", borderRadius: 12, textAlign: "center", marginBottom: 8 }}>
-              <input ref={fileRef} type="file" onChange={handleUpload} accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx" style={{ display: "none" }} />
-              <button onClick={() => fileRef.current?.click()} disabled={uploading} className="id-btn id-btn-ghost" style={{ fontSize: 12 }}>
-                {uploading ? "\u23F3 Uploading..." : "\uD83D\uDCCE Upload Document"}
-              </button>
-              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.25)", marginTop: 6 }}>
-                PDF, JPG, PNG, DOC, DOCX, XLS, XLSX &mdash; max 20MB each
-              </div>
-            </div>
-            {cf.documents.length > 0 && (
-              <div className="id-doc-list">
-                {cf.documents.map((doc, i) => (
-                  <div key={i} className="id-doc-item">
-                    <a href={doc.url} target="_blank" rel="noopener noreferrer" style={{ color: "#F0B90B", textDecoration: "none" }}>
-                      &#128196; {doc.name}
-                    </a>
-                    <button className="id-doc-rm" onClick={() => removeDoc(i)}>&times;</button>
-                  </div>
-                ))}
-              </div>
-            )}
 
+            {/* Category selector */}
+            <div className="id-doc-cats">
+              {DOC_CATEGORIES.map(cat => {
+                const count = (cf.documents[cat.id] || []).length;
+                return (
+                  <button key={cat.id} className={`id-doc-cat ${docCategory === cat.id ? "on" : ""}`} onClick={() => setDocCategory(cat.id)}>
+                    <span>{cat.icon}</span> {cat.label} {count > 0 && <span style={{ background: "rgba(240,185,11,0.2)", borderRadius: 10, padding: "1px 6px", fontSize: 10, color: "#F0B90B" }}>{count}</span>}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Active category upload */}
+            {DOC_CATEGORIES.filter(c => c.id === docCategory).map(cat => (
+              <div key={cat.id} style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: 14 }}>
+                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginBottom: 10, fontStyle: "italic" }}>{cat.desc}</div>
+
+                <div className="id-2col" style={{ marginBottom: 10 }}>
+                  <div>
+                    <label className="id-label">Type</label>
+                    <select className="id-input" value={docSubType} onChange={e => setDocSubType(e.target.value)} style={{ fontSize: 12 }}>
+                      <option value="">Select...</option>
+                      {cat.types.map(t => <option key={t} value={t}>{t}</option>)}
+                    </select>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "flex-end" }}>
+                    <div>
+                      <input type="file" ref={fileRef} accept={cat.accept} onChange={e => handleCategoryUpload(e, cat.id, docSubType)} style={{ display: "none" }} />
+                      <button onClick={() => fileRef.current?.click()} disabled={uploading} className="id-btn id-btn-gold" style={{ fontSize: 12 }}>
+                        {uploading ? "Uploading..." : `Upload ${cat.label}`}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Photo grid or doc list */}
+                {cat.id === "photos" && (cf.documents.photos || []).length > 0 && (
+                  <div className="id-photo-grid">
+                    {cf.documents.photos.map((d, i) => (
+                      <div key={i} className="id-photo-thumb">
+                        <img src={d.url} alt={d.subType || d.name} />
+                        <button className="id-photo-rm" onClick={() => removeDoc("photos", i)}>&times;</button>
+                        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "3px 6px", background: "rgba(0,0,0,0.7)", fontSize: 9, color: "rgba(255,255,255,0.6)" }}>{d.subType || d.name}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {cat.id !== "photos" && (cf.documents[cat.id] || []).length > 0 && (
+                  <div className="id-doc-list">
+                    {cf.documents[cat.id].map((d, i) => (
+                      <div key={i} className="id-doc-item">
+                        <div>
+                          <span style={{ color: cat.color, marginRight: 6 }}>{cat.icon}</span>
+                          <a href={d.url} target="_blank" rel="noopener noreferrer" style={{ color: "#F0B90B", textDecoration: "none" }}>{d.name}</a>
+                          {d.subType && <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", marginLeft: 8 }}>&middot; {d.subType}</span>}
+                        </div>
+                        <button className="id-doc-rm" onClick={() => removeDoc(cat.id, i)}>&times;</button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {(cf.documents[cat.id] || []).length === 0 && (
+                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.2)", textAlign: "center", padding: "8px 0" }}>No {cat.label.toLowerCase()} uploaded yet</div>
+                )}
+              </div>
+            ))}
+
+            {/* SUBMIT */}
             <div style={{ display: "flex", gap: 10, marginTop: 24 }}>
               <button className="id-btn id-btn-ghost" style={{ flex: 1 }} onClick={() => setShowCreate(false)}>Cancel</button>
               <button
