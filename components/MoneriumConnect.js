@@ -1,245 +1,197 @@
 // components/MoneriumConnect.js
-// Embeds Monerium connection flow directly inside Nextoken Capital
-// Issuer never leaves the site — everything happens in an iframe/modal
-'use client';
-import { useState, useEffect, useRef } from 'react';
+// Bank connection widget — OAuth + Link Wallet + IBAN
+import { useState, useEffect, useCallback } from "react";
+import { useSession } from "next-auth/react";
 
-const MONERIUM_ENV = process.env.NEXT_PUBLIC_MONERIUM_ENV || 'sandbox';
-const MONERIUM_APP = MONERIUM_ENV === 'production'
-  ? 'https://monerium.app'
-  : 'https://sandbox.monerium.dev';
+const MONERIUM_ENV = process.env.NEXT_PUBLIC_MONERIUM_ENV || "sandbox";
+const API_BASE = MONERIUM_ENV === "production" ? "https://api.monerium.app" : "https://api.monerium.dev";
 
-export default function MoneriumConnect({ 
-  issuerId, 
-  walletAddress, 
-  onConnected,  // callback: ({ profileId, iban, accessToken }) => void
-  onError,      // callback: (error) => void
-}) {
-  const [step, setStep] = useState('idle'); // idle | connecting | verifying | linked | error
-  const [showModal, setShowModal] = useState(false);
-  const [authUrl, setAuthUrl] = useState('');
-  const [pollInterval, setPollInterval] = useState(null);
-  const [errorMsg, setErrorMsg] = useState('');
-  const iframeRef = useRef(null);
+export default function MoneriumConnect({ walletAddress, onIBANReceived }) {
+  const { data: session } = useSession();
+  const [status, setStatus] = useState("loading");
+  const [ibans, setIbans] = useState([]);
+  const [balances, setBalances] = useState([]);
+  const [error, setError] = useState("");
+  const [linking, setLinking] = useState(false);
+  const [requestingIBAN, setRequestingIBAN] = useState(false);
 
-  // Step 1: Get OAuth URL from our API (but display in iframe, not redirect)
-  const startConnection = async () => {
-    setStep('connecting');
-    setShowModal(true);
-    setErrorMsg('');
-
+  const checkStatus = useCallback(async () => {
     try {
-      // Get the OAuth URL from our backend
-      const res = await fetch(`/api/auth/monerium/start?issuerId=${issuerId}`);
+      const res = await fetch("/api/monerium");
       const data = await res.json();
-
-      if (data.authUrl) {
-        setAuthUrl(data.authUrl);
-        // Start polling for completion
-        startPolling();
+      if (data.connected) {
+        setIbans(data.ibans || []);
+        setBalances(data.balances || []);
+        setStatus(data.ibans?.length > 0 ? "has_iban" : "connected");
+        if (data.ibans?.length > 0 && onIBANReceived) onIBANReceived(data.ibans[0]);
       } else {
-        throw new Error(data.error || 'Failed to start connection');
+        setStatus("disconnected");
       }
-    } catch (err) {
-      setStep('error');
-      setErrorMsg(err.message);
-      onError?.(err.message);
+    } catch { setStatus("disconnected"); }
+  }, [onIBANReceived]);
+
+  useEffect(() => { if (session) checkStatus(); }, [session, checkStatus]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("monerium") === "success") {
+      checkStatus();
+      window.history.replaceState({}, "", window.location.pathname);
+    } else if (params.get("monerium") === "error") {
+      setError(params.get("reason") || "Connection failed");
+      window.history.replaceState({}, "", window.location.pathname);
     }
+  }, [checkStatus]);
+
+  const connectMonerium = () => {
+    const clientId = process.env.NEXT_PUBLIC_MONERIUM_CLIENT_ID;
+    const redirectUri = process.env.NEXT_PUBLIC_MONERIUM_REDIRECT_URI ||
+      `${window.location.origin}/api/monerium/callback`;
+    const params = new URLSearchParams({
+      client_id: clientId,
+      redirect_uri: redirectUri,
+      response_type: "code",
+      state: "nextoken_issuer",
+    });
+    window.location.href = `${API_BASE}/auth?${params.toString()}`;
   };
 
-  // Poll our backend to check if OAuth callback was received
-  const startPolling = () => {
-    const interval = setInterval(async () => {
-      try {
-        const res = await fetch(`/api/auth/monerium/status?issuerId=${issuerId}`);
-        const data = await res.json();
-
-        if (data.connected) {
-          clearInterval(interval);
-          setPollInterval(null);
-          setStep('linked');
-          setShowModal(false);
-          onConnected?.({
-            profileId: data.profileId,
-            iban: data.iban,
-            accessToken: data.accessToken,
-          });
-        }
-      } catch (e) {
-        // Keep polling
-      }
-    }, 2000); // Check every 2 seconds
-
-    setPollInterval(interval);
+  const linkWallet = async () => {
+    if (!walletAddress) { setError("Connect MetaMask first"); return; }
+    setLinking(true); setError("");
+    try {
+      const message = "I hereby declare that I am the address owner.";
+      const signature = await window.ethereum.request({
+        method: "personal_sign", params: [message, walletAddress],
+      });
+      const res = await fetch("/api/monerium", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "link_address", address: walletAddress, message, signature, chain: "polygon" }),
+      });
+      const data = await res.json();
+      if (data.success) await checkStatus();
+      else setError(data.error || "Failed to link wallet");
+    } catch (err) { setError(err.message); }
+    setLinking(false);
   };
 
-  // Cleanup polling on unmount
-  useEffect(() => {
-    return () => {
-      if (pollInterval) clearInterval(pollInterval);
-    };
-  }, [pollInterval]);
+  const doRequestIBAN = async () => {
+    if (!walletAddress) { setError("Connect wallet first"); return; }
+    setRequestingIBAN(true); setError("");
+    try {
+      const res = await fetch("/api/monerium", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "request_iban", address: walletAddress, chain: "polygon" }),
+      });
+      const data = await res.json();
+      if (data.success) await checkStatus();
+      else setError(data.error || "Failed to request IBAN");
+    } catch (err) { setError(err.message); }
+    setRequestingIBAN(false);
+  };
 
-  // Listen for message from iframe (Monerium sends postMessage on completion)
-  useEffect(() => {
-    const handleMessage = (event) => {
-      // Accept messages from Monerium domain
-      if (event.origin === MONERIUM_APP || event.origin.includes('monerium')) {
-        if (event.data?.type === 'monerium:authorized' || event.data?.code) {
-          // OAuth completed in iframe — send code to our callback
-          fetch(`/api/auth/monerium/callback?code=${event.data.code}&state=${issuerId}`)
-            .then(res => res.json())
-            .then(data => {
-              if (data.connected) {
-                setStep('linked');
-                setShowModal(false);
-                onConnected?.(data);
-              }
-            })
-            .catch(() => {});
-        }
-      }
-    };
+  const card = { background:"#161b22", border:"1px solid rgba(255,255,255,0.06)", borderRadius:12, padding:24, marginBottom:24 };
+  const badgeStyle = (c) => ({ display:"inline-flex", alignItems:"center", gap:6, padding:"4px 10px", borderRadius:20, fontSize:11, fontWeight:700, background:`${c}15`, color:c, border:`1px solid ${c}30` });
+  const btnStyle = (bg, fg, off) => ({ padding:"12px 24px", borderRadius:8, border:"none", background:off?"#1e242c":bg, color:off?"rgba(255,255,255,0.3)":fg, fontSize:14, fontWeight:700, cursor:off?"not-allowed":"pointer", fontFamily:"inherit", width:"100%", transition:"all 0.2s" });
 
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
-  }, [issuerId]);
+  if (!session) return null;
 
   return (
-    <div>
-      {/* ── IDLE / NOT CONNECTED ── */}
-      {step === 'idle' && (
-        <div className="space-y-3">
-          <button
-            onClick={startConnection}
-            className="w-full py-4 rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold hover:from-blue-500 hover:to-blue-400 transition flex items-center justify-center gap-3"
-          >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <rect x="2" y="4" width="20" height="16" rx="3" stroke="white" strokeWidth="2"/>
-              <path d="M2 10h20" stroke="white" strokeWidth="2"/>
-              <circle cx="7" cy="15" r="1.5" fill="white"/>
-            </svg>
-            Connect Bank Account via Monerium
-          </button>
-          <div className="flex items-center gap-3 text-xs text-gray-500">
-            <span className="flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-green-500"></span>
-              EU Regulated
-            </span>
-            <span>•</span>
-            <span>0% conversion fee</span>
-            <span>•</span>
-            <span>SEPA payout</span>
-            <span>•</span>
-            <span>5 min setup</span>
+    <div style={card}>
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:16 }}>
+        <div>
+          <div style={{ fontSize:16, fontWeight:800, color:"#fff" }}>🏦 Bank Account Connection</div>
+          <div style={{ fontSize:12, color:"rgba(255,255,255,0.4)", marginTop:4 }}>Powered by Monerium · EU Licensed EMI · SEPA + EURe on Polygon</div>
+        </div>
+        <div style={badgeStyle(status==="has_iban"?"#22c55e":status==="connected"?"#3b82f6":"#6b7280")}>
+          <span style={{ width:6, height:6, borderRadius:"50%", background:status==="has_iban"?"#22c55e":status==="connected"?"#3b82f6":"#6b7280" }} />
+          {status==="has_iban"?"IBAN Active":status==="connected"?"Connected":status==="loading"?"Checking...":"Not Connected"}
+        </div>
+      </div>
+
+      {error && (
+        <div style={{ background:"rgba(239,68,68,0.08)", border:"1px solid rgba(239,68,68,0.2)", borderRadius:8, padding:"10px 14px", fontSize:12, color:"#ef4444", marginBottom:16 }}>
+          {error} <span onClick={() => setError("")} style={{ float:"right", cursor:"pointer", opacity:0.6 }}>x</span>
+        </div>
+      )}
+
+      {status === "disconnected" && (
+        <div>
+          <div style={{ background:"rgba(59,130,246,0.06)", border:"1px solid rgba(59,130,246,0.15)", borderRadius:10, padding:16, marginBottom:16, fontSize:13, color:"rgba(255,255,255,0.6)", lineHeight:1.7 }}>
+            <strong style={{ color:"#3b82f6" }}>How it works:</strong> Connect your Monerium account to get a personal <strong style={{ color:"#fff" }}>IBAN</strong> linked to your Polygon wallet. Investors send EUR via SEPA — automatically converted to <strong style={{ color:"#F0B90B" }}>EURe</strong> tokens on Polygon.
+          </div>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:12, marginBottom:20 }}>
+            {[{i:"🔗",t:"1. Connect",d:"Authorize Monerium"},{i:"👛",t:"2. Link Wallet",d:"Sign to verify"},{i:"🏦",t:"3. Get IBAN",d:"Personal IBAN"}].map((s,j) => (
+              <div key={j} style={{ background:"#0d1117", borderRadius:8, padding:"14px 12px", textAlign:"center", border:"1px solid rgba(255,255,255,0.04)" }}>
+                <div style={{ fontSize:24, marginBottom:6 }}>{s.i}</div>
+                <div style={{ fontSize:12, fontWeight:700, color:"#fff" }}>{s.t}</div>
+                <div style={{ fontSize:10, color:"rgba(255,255,255,0.35)", marginTop:2 }}>{s.d}</div>
+              </div>
+            ))}
+          </div>
+          <button onClick={connectMonerium} style={btnStyle("#3b82f6","#fff",false)}>Connect Monerium Account</button>
+          <div style={{ fontSize:10, color:"rgba(255,255,255,0.25)", textAlign:"center", marginTop:10 }}>
+            Monerium is a licensed EU Electronic Money Institution. Funds protected under EU e-money regulations.
           </div>
         </div>
       )}
 
-      {/* ── CONNECTING (shows modal with iframe) ── */}
-      {step === 'connecting' && !showModal && (
-        <button
-          onClick={() => setShowModal(true)}
-          className="w-full py-3 rounded-xl border border-blue-600 text-blue-400 font-bold hover:bg-blue-900/20 transition text-sm"
-        >
-          ⏳ Connection in progress — Click to continue
-        </button>
-      )}
-
-      {/* ── LINKED ── */}
-      {step === 'linked' && (
-        <div className="p-4 bg-green-900/20 border border-green-700 rounded-xl">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center text-white text-sm font-bold">✓</div>
+      {status === "connected" && (
+        <div>
+          <div style={{ background:"rgba(59,130,246,0.06)", border:"1px solid rgba(59,130,246,0.15)", borderRadius:10, padding:14, marginBottom:16, fontSize:13, color:"rgba(255,255,255,0.6)" }}>
+            Monerium connected. Link your wallet and request an IBAN.
+          </div>
+          {walletAddress ? (
             <div>
-              <div className="text-green-400 font-bold text-sm">Monerium Connected</div>
-              <div className="text-gray-400 text-xs">EUR payouts active • 0% conversion fee</div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ── ERROR ── */}
-      {step === 'error' && (
-        <div className="space-y-3">
-          <div className="p-3 bg-red-900/20 border border-red-700 rounded-xl text-sm text-red-400">
-            {errorMsg || 'Connection failed'}
-          </div>
-          <button
-            onClick={() => { setStep('idle'); setErrorMsg(''); }}
-            className="w-full py-3 rounded-xl border border-gray-700 text-gray-400 font-bold hover:text-white transition text-sm"
-          >
-            Try Again
-          </button>
-        </div>
-      )}
-
-      {/* ── MODAL WITH IFRAME ── */}
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-          <div className="bg-[#0d0e12] border border-gray-700 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl">
-            {/* Modal Header */}
-            <div className="flex justify-between items-center px-5 py-4 border-b border-gray-800">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <rect x="2" y="4" width="20" height="16" rx="3" stroke="white" strokeWidth="2"/>
-                    <path d="M2 10h20" stroke="white" strokeWidth="2"/>
-                  </svg>
-                </div>
+              <div style={{ background:"#0d1117", borderRadius:8, padding:"12px 16px", marginBottom:16, border:"1px solid rgba(255,255,255,0.04)", display:"flex", alignItems:"center", gap:10 }}>
+                <div style={{ width:32, height:32, borderRadius:"50%", background:"rgba(240,185,11,0.15)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:14 }}>W</div>
                 <div>
-                  <div className="text-white font-bold text-sm">Connect Monerium</div>
-                  <div className="text-gray-500 text-xs">Secure bank connection</div>
+                  <div style={{ fontSize:10, color:"rgba(255,255,255,0.35)" }}>Polygon Wallet</div>
+                  <div style={{ fontSize:13, fontFamily:"monospace", color:"#F0B90B" }}>{walletAddress.slice(0,8)}...{walletAddress.slice(-6)}</div>
                 </div>
               </div>
-              <button
-                onClick={() => setShowModal(false)}
-                className="text-gray-500 hover:text-white transition p-1"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                  <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                </svg>
-              </button>
-            </div>
-
-            {/* Iframe Content */}
-            <div className="relative" style={{ height: '600px' }}>
-              {authUrl ? (
-                <iframe
-                  ref={iframeRef}
-                  src={authUrl}
-                  className="w-full h-full border-0"
-                  allow="camera;microphone"
-                  sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-top-navigation"
-                />
-              ) : (
-                <div className="flex items-center justify-center h-full">
-                  <div className="text-center">
-                    <div className="animate-spin w-8 h-8 border-2 border-[#d4af37] border-t-transparent rounded-full mx-auto mb-3"></div>
-                    <div className="text-gray-400 text-sm">Loading Monerium...</div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Modal Footer */}
-            <div className="px-5 py-3 border-t border-gray-800 flex items-center justify-between">
-              <div className="flex items-center gap-2 text-xs text-gray-500">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                  <rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" strokeWidth="2"/>
-                  <path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" strokeWidth="2"/>
-                </svg>
-                Secured by Monerium • EU Regulated EMI
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
+                <button onClick={linkWallet} disabled={linking} style={btnStyle("#8b5cf6","#fff",linking)}>{linking?"Signing...":"1. Link Wallet"}</button>
+                <button onClick={doRequestIBAN} disabled={requestingIBAN} style={btnStyle("#F0B90B","#000",requestingIBAN)}>{requestingIBAN?"Requesting...":"2. Request IBAN"}</button>
               </div>
-              <button
-                onClick={() => setShowModal(false)}
-                className="text-xs text-gray-500 hover:text-white transition"
-              >
-                I'll do this later
-              </button>
             </div>
+          ) : (
+            <div style={{ textAlign:"center", padding:20, color:"rgba(255,255,255,0.4)", fontSize:13 }}>Connect MetaMask first.</div>
+          )}
+        </div>
+      )}
+
+      {status === "has_iban" && (
+        <div>
+          {ibans.map((ib,i) => (
+            <div key={i} style={{ marginBottom:16 }}>
+              <div style={{ fontSize:10, color:"rgba(255,255,255,0.35)", marginBottom:6, textTransform:"uppercase", letterSpacing:1 }}>Your Personal IBAN</div>
+              <div style={{ background:"rgba(240,185,11,0.06)", border:"1px solid rgba(240,185,11,0.2)", borderRadius:10, padding:"16px 20px", fontFamily:"monospace", fontSize:16, fontWeight:700, color:"#F0B90B", letterSpacing:"1.5px", textAlign:"center" }}>
+                {ib.iban || ib}
+              </div>
+              <div style={{ fontSize:11, color:"rgba(255,255,255,0.3)", marginTop:6, textAlign:"center" }}>EUR sent here becomes EURe on Polygon automatically</div>
+            </div>
+          ))}
+          {balances.length > 0 && (
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(140px, 1fr))", gap:10, marginBottom:16 }}>
+              {balances.map((b,i) => (
+                <div key={i} style={{ background:"#0d1117", borderRadius:8, padding:"12px 16px", border:"1px solid rgba(255,255,255,0.04)", textAlign:"center" }}>
+                  <div style={{ fontSize:20, fontWeight:800, color:"#22c55e" }}>{parseFloat(b.amount||0).toLocaleString()} EUR</div>
+                  <div style={{ fontSize:10, color:"rgba(255,255,255,0.35)", marginTop:2 }}>EURe Balance</div>
+                </div>
+              ))}
+            </div>
+          )}
+          <div style={{ background:"rgba(34,197,94,0.06)", border:"1px solid rgba(34,197,94,0.15)", borderRadius:10, padding:14, fontSize:12, color:"rgba(255,255,255,0.5)", lineHeight:1.7 }}>
+            <strong style={{ color:"#22c55e" }}>Bank active.</strong> Investors pay via SEPA to your IBAN. Funds auto-tokenized as EURe on Polygon. Send EURe back to convert to EUR via SEPA.
           </div>
         </div>
+      )}
+
+      {status === "loading" && (
+        <div style={{ textAlign:"center", padding:30, color:"rgba(255,255,255,0.3)", fontSize:13 }}>Checking Monerium connection...</div>
       )}
     </div>
   );

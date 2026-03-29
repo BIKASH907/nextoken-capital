@@ -1,159 +1,62 @@
-// pages/api/auth/monerium/callback.js
-// Handles Monerium OAuth redirect after issuer authorizes
-// Exchanges code for tokens, links wallet, gets IBAN, saves to MongoDB
+// pages/api/monerium/callback.js
+// Handles Monerium OAuth redirect — exchanges code, saves tokens to User
+import { connectDB } from "../../../lib/mongodb";
+import User from "../../../lib/models/User";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../auth/[...nextauth]";
 
-import { getServerSession } from 'next-auth';
-import { authOptions } from '../../auth/[...nextauth]';
-import clientPromise from '@/lib/mongodb';
-import { ObjectId } from 'mongodb';
-import { exchangeCode, getProfile, linkWallet, requestIBAN, getIBANs } from '@/lib/monerium';
+const MONERIUM_ENV = process.env.NEXT_PUBLIC_MONERIUM_ENV || "sandbox";
+const API_BASE = MONERIUM_ENV === "production" ? "https://api.monerium.app" : "https://api.monerium.dev";
 
 export default async function handler(req, res) {
-  if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
+  const { code, error: authError } = req.query;
+  if (authError) return res.redirect("/dashboard/issuer?tab=bank&monerium=error&reason=" + encodeURIComponent(authError));
+  if (!code) return res.redirect("/dashboard/issuer?tab=bank&monerium=error&reason=no_code");
 
   try {
-    const { code, state } = req.query;
+    await connectDB();
+    const session = await getServerSession(req, res, authOptions);
+    if (!session?.user?.email) return res.redirect("/login?redirect=/dashboard/issuer");
 
-    if (!code) {
-      return res.redirect('/issuer/onboard?error=monerium_denied');
+    const redirectUri = process.env.NEXT_PUBLIC_MONERIUM_REDIRECT_URI ||
+      `${process.env.NEXTAUTH_URL || "https://nextokencapital.com"}/api/monerium/callback`;
+
+    const tokenRes = await fetch(`${API_BASE}/auth/token`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        grant_type: "authorization_code",
+        code,
+        client_id: process.env.NEXT_PUBLIC_MONERIUM_CLIENT_ID,
+        client_secret: process.env.MONERIUM_CLIENT_SECRET,
+        redirect_uri: redirectUri,
+      }),
+    });
+
+    if (!tokenRes.ok) {
+      const errText = await tokenRes.text();
+      console.error("Monerium token exchange failed:", errText);
+      return res.redirect("/dashboard/issuer?tab=bank&monerium=error&reason=token_exchange_failed");
     }
 
-    // state contains issuerId
-    const issuerId = state;
+    const tokens = await tokenRes.json();
 
-    // Exchange code for access token
-    const tokenData = await exchangeCode(code);
-    const { access_token, refresh_token, profile: profileId } = tokenData;
-
-    const client = await clientPromise;
-    const db = client.db();
-
-    // Get issuer from MongoDB
-    const issuer = await db.collection('issuers').findOne({ _id: new ObjectId(issuerId) });
-    if (!issuer) {
-      return res.redirect('/issuer/onboard?error=issuer_not_found');
-    }
-
-    // Link issuer's wallet to Monerium
-    let walletLinked = false;
-    if (issuer.walletAddress) {
-      try {
-        await linkWallet(profileId, issuer.walletAddress, access_token);
-        walletLinked = true;
-      } catch (e) {
-        console.log('Wallet may already be linked:', e.message);
-        walletLinked = true; // Likely already linked
-      }
-    }
-
-    // Get or request IBAN
-    let iban = null;
-    try {
-      const ibans = await getIBANs(profileId, access_token);
-      if (ibans && ibans.length > 0) {
-        iban = ibans[0].iban;
-      } else {
-        const ibanResult = await requestIBAN(profileId, access_token);
-        iban = ibanResult.iban;
-      }
-    } catch (e) {
-      console.error('IBAN request error:', e.message);
-    }
-
-    // Get profile details
-    let profileData = null;
-    try {
-      profileData = await getProfile(profileId, access_token);
-    } catch (e) {
-      console.error('Profile fetch error:', e.message);
-    }
-
-    // Save Monerium data to issuer record
-    await db.collection('issuers').updateOne(
-      { _id: new ObjectId(issuerId) },
+    await User.findOneAndUpdate(
+      { email: session.user.email },
       {
         $set: {
-          moneriumProfileId: profileId,
-          moneriumAccessToken: access_token,
-          moneriumRefreshToken: refresh_token,
-          moneriumIBAN: iban,
-          moneriumWalletLinked: walletLinked,
-          moneriumConnectedAt: new Date(),
-          updatedAt: new Date(),
-        }
+          "monerium.accessToken": tokens.access_token,
+          "monerium.refreshToken": tokens.refresh_token,
+          "monerium.expiresAt": new Date(Date.now() + (tokens.expires_in || 3600) * 1000),
+          "monerium.profileId": tokens.profile || null,
+          "monerium.connectedAt": new Date(),
+        },
       }
     );
 
-    // Also update any assets by this issuer with the IBAN
-    if (iban) {
-      await db.collection('assets').updateMany(
-        { issuerId: new ObjectId(issuerId) },
-        { $set: { issuerIBAN: iban, updatedAt: new Date() } }
-      );
-    }
-
-    // Check if this is an iframe callback (Accept header or query param)
-    const isIframe = req.query.iframe === 'true' || req.headers['sec-fetch-dest'] === 'iframe';
-
-    if (isIframe) {
-      // Send postMessage to parent window and close iframe
-      return res.status(200).send(`
-        <!DOCTYPE html>
-        <html>
-        <head><title>Connected</title></head>
-        <body style="background:#0a0b0f;color:#4ade80;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0">
-          <div style="text-align:center">
-            <div style="font-size:48px;margin-bottom:16px">✅</div>
-            <div style="font-size:18px;font-weight:bold">Monerium Connected!</div>
-            <div style="color:#9ca3af;font-size:14px;margin-top:8px">Closing automatically...</div>
-          </div>
-          <script>
-            // Notify parent window that connection is complete
-            if (window.parent !== window) {
-              window.parent.postMessage({
-                type: 'monerium:connected',
-                profileId: '${profileId}',
-                iban: '${iban || ''}',
-                connected: true
-              }, '*');
-            }
-          </script>
-        </body>
-        </html>
-      `);
-    }
-
-    // Normal redirect flow (non-iframe)
-    const redirectTo = issuer.onboardingStatus === 'complete'
-      ? '/dashboard/issuer?monerium=connected'
-      : '/issuer/onboard?step=2&monerium=connected';
-
-    return res.redirect(redirectTo);
-
-  } catch (error) {
-    console.error('Monerium callback error:', error);
-
-    // Check if iframe
-    if (req.query.iframe === 'true' || req.headers['sec-fetch-dest'] === 'iframe') {
-      return res.status(200).send(`
-        <!DOCTYPE html>
-        <html>
-        <body style="background:#0a0b0f;color:#f87171;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0">
-          <div style="text-align:center">
-            <div style="font-size:48px;margin-bottom:16px">❌</div>
-            <div style="font-size:18px;font-weight:bold">Connection Failed</div>
-            <div style="color:#9ca3af;font-size:14px;margin-top:8px">Please try again</div>
-          </div>
-          <script>
-            if (window.parent !== window) {
-              window.parent.postMessage({ type: 'monerium:error', error: '${error.message}' }, '*');
-            }
-          </script>
-        </body>
-        </html>
-      `);
-    }
-
-    return res.redirect('/issuer/onboard?error=monerium_failed');
+    return res.redirect("/dashboard/issuer?tab=bank&monerium=success");
+  } catch (err) {
+    console.error("Monerium callback error:", err);
+    return res.redirect("/dashboard/issuer?tab=bank&monerium=error&reason=" + encodeURIComponent(err.message));
   }
 }
