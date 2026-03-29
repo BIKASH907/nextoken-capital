@@ -1,23 +1,22 @@
 // pages/api/monerium/index.js
 import connectDB from "../../../lib/db";
 import User from "../../../lib/models/User";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "../auth/[...nextauth]";
+import { getToken } from "next-auth/jwt";
 
 const MONERIUM_ENV = process.env.NEXT_PUBLIC_MONERIUM_ENV || "sandbox";
 const API_BASE = MONERIUM_ENV === "production" ? "https://api.monerium.app" : "https://api.monerium.dev";
 const V2 = { Accept: "application/vnd.monerium.api-v2+json" };
 
-async function mFetch(path, token, opts = {}) {
+async function mFetch(path, tok, opts = {}) {
   const r = await fetch(`${API_BASE}${path}`, {
     ...opts,
-    headers: { Authorization: `Bearer ${token}`, ...V2, ...(opts.headers || {}) },
+    headers: { Authorization: `Bearer ${tok}`, ...V2, ...(opts.headers || {}) },
   });
   if (!r.ok) throw new Error(`Monerium ${path}: ${r.status}`);
   return r.json();
 }
 
-async function getValidToken(user) {
+async function getValidMoneriumToken(user) {
   if (!user.monerium?.accessToken) return null;
   if (user.monerium.expiresAt && new Date(user.monerium.expiresAt) < new Date(Date.now() + 300000)) {
     if (!user.monerium.refreshToken) return null;
@@ -46,23 +45,22 @@ async function getValidToken(user) {
 
 export default async function handler(req, res) {
   await connectDB();
-  const session = await getServerSession(req, res, authOptions);
-  if (!session) return res.status(401).json({ error: "Not authenticated" });
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  if (!token) return res.status(401).json({ error: "Not authenticated" });
 
-  const userId = session.id || session.sub || session.user?.id;
-  let user = userId ? await User.findById(userId).catch(() => null) : null;
-  if (!user && session.user?.email) {
-    user = await User.findOne({ email: session.user.email.toLowerCase() });
+  let user = token.id ? await User.findById(token.id).catch(() => null) : null;
+  if (!user && token.email) {
+    user = await User.findOne({ email: token.email.toLowerCase() });
   }
   if (!user) return res.status(404).json({ error: "User not found" });
 
   if (req.method === "GET") {
-    const token = await getValidToken(user);
-    if (!token) return res.json({ connected: false, ibans: [], balances: [] });
+    const mToken = await getValidMoneriumToken(user);
+    if (!mToken) return res.json({ connected: false, ibans: [], balances: [] });
     try {
       const [ibans, balances] = await Promise.allSettled([
-        mFetch("/ibans", token),
-        mFetch("/balances", token),
+        mFetch("/ibans", mToken),
+        mFetch("/balances", mToken),
       ]);
       return res.json({
         connected: true,
@@ -75,12 +73,12 @@ export default async function handler(req, res) {
   }
 
   if (req.method === "POST") {
-    const token = await getValidToken(user);
-    if (!token) return res.status(401).json({ error: "Monerium not connected" });
+    const mToken = await getValidMoneriumToken(user);
+    if (!mToken) return res.status(401).json({ error: "Monerium not connected" });
     const { action, address, message, signature, chain } = req.body;
     try {
       if (action === "link_address") {
-        const result = await mFetch("/addresses", token, {
+        const result = await mFetch("/addresses", mToken, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ address, message: message || "I hereby declare that I am the address owner.", signature, chain: chain || "polygon" }),
@@ -88,7 +86,7 @@ export default async function handler(req, res) {
         return res.json({ success: true, data: result });
       }
       if (action === "request_iban") {
-        const result = await mFetch("/ibans", token, {
+        const result = await mFetch("/ibans", mToken, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ address, chain: chain || "polygon" }),

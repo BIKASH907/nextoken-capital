@@ -1,8 +1,7 @@
 // pages/api/monerium/callback.js
 import connectDB from "../../../lib/db";
 import User from "../../../lib/models/User";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "../auth/[...nextauth]";
+import { getToken } from "next-auth/jwt";
 
 const MONERIUM_ENV = process.env.NEXT_PUBLIC_MONERIUM_ENV || "sandbox";
 const API_BASE = MONERIUM_ENV === "production" ? "https://api.monerium.app" : "https://api.monerium.dev";
@@ -14,13 +13,12 @@ export default async function handler(req, res) {
 
   try {
     await connectDB();
-    const session = await getServerSession(req, res, authOptions);
-    if (!session) return res.redirect("/login?redirect=/dashboard/issuer");
+    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    if (!token) return res.redirect("/login?redirect=/dashboard/issuer");
 
-    const userId = session.id || session.sub || session.user?.id;
-    let user = userId ? await User.findById(userId).catch(() => null) : null;
-    if (!user && session.user?.email) {
-      user = await User.findOne({ email: session.user.email.toLowerCase() });
+    let user = token.id ? await User.findById(token.id).catch(() => null) : null;
+    if (!user && token.email) {
+      user = await User.findOne({ email: token.email.toLowerCase() });
     }
     if (!user) return res.redirect("/dashboard/issuer?monerium=error&reason=user_not_found");
 
