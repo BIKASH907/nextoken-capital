@@ -2,7 +2,7 @@
 // Redirect-based OAuth flow with PKCE (fallback for when iframe doesn't work)
 
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../auth/[...nextauth]';
+import { authOptions } from '../auth/[...nextauth]';
 import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import crypto from 'crypto';
