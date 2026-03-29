@@ -142,7 +142,7 @@ export default function IssuerDashboard() {
                   <span className="text-green-400">✓ Connected — FREE EUR conversion</span>
                 ) : (
                   <button
-                    onClick={() => window.location.href = `/api/auth/monerium/connect?issuerId=${issuer?._id}`}
+                    onClick={() => window.location.href = `/api/monerium/connect?issuerId=${issuer?._id}`}
                     className="px-4 py-2 rounded-lg border border-[#d4af37] text-[#d4af37] text-xs font-bold hover:bg-[#d4af37]/10 transition"
                   >
                     🔗 Connect Monerium
