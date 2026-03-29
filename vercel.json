@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/issuer/redeem-eure",
+      "schedule": "0 * * * *"
+    }
+  ]
+}

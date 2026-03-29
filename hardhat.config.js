@@ -1,22 +1,30 @@
+// hardhat.config.js
 require("@nomicfoundation/hardhat-toolbox");
-require("dotenv").config({ path: ".env.local" });
-const DEPLOYER_KEY = process.env.DEPLOYER_PRIVATE_KEY || "0xd2f3853f2e704c437cd44cc17adc2dab846e7e3c1117b926f9ea26510745fd3b";
+require('dotenv').config({ path: '.env.local' });
+
 module.exports = {
   solidity: {
-    version: "0.8.24",
-    settings: { optimizer: { enabled: true, runs: 200 } },
+    version: "0.8.20",
+    settings: {
+      optimizer: { enabled: true, runs: 200 },
+    },
   },
   networks: {
-    hardhat: {},
     polygon: {
-      url: process.env.NEXT_PUBLIC_POLYGON_RPC || "https://polygon-mainnet.g.alchemy.com/v2/YUDOmcxLQXpJYpcKpceyu",
-      accounts: [DEPLOYER_KEY],
+      url: process.env.POLYGON_RPC || "https://polygon-rpc.com",
       chainId: 137,
+      accounts: process.env.ADMIN_PRIVATE_KEY ? [process.env.ADMIN_PRIVATE_KEY] : [],
     },
     amoy: {
       url: "https://rpc-amoy.polygon.technology",
-      accounts: [DEPLOYER_KEY],
       chainId: 80002,
+      accounts: process.env.ADMIN_PRIVATE_KEY ? [process.env.ADMIN_PRIVATE_KEY] : [],
+    },
+  },
+  etherscan: {
+    apiKey: {
+      polygon: process.env.POLYGONSCAN_API_KEY || "",
+      polygonAmoy: process.env.POLYGONSCAN_API_KEY || "",
     },
   },
 };
