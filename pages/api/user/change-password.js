@@ -1,43 +1,47 @@
-import dbConnect from "../../../lib/db";
-import User from "../../../models/User";
+// pages/api/user/change-password.js
+import connectDB from "../../../lib/db";
+import User from "../../../lib/models/User";
+import { getToken } from "next-auth/jwt";
 import bcrypt from "bcryptjs";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "../auth/[...nextauth]";
-import { isPasswordBreached } from "../../../lib/checkPasswordBreach";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
-  await dbConnect();
+  await connectDB();
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  if (!token) return res.status(401).json({ error: "Not authenticated" });
 
-  // Check session
-  const session = await getServerSession(req, res, authOptions);
-  if (!session?.user?.email) return res.status(401).json({ error: "Not authenticated" });
+  let user = token.id ? await User.findById(token.id).catch(() => null) : null;
+  if (!user && token.email) user = await User.findOne({ email: token.email.toLowerCase() });
+  if (!user) return res.status(401).json({ error: "User not found" });
 
   const { currentPassword, newPassword } = req.body;
 
-  if (!currentPassword || !newPassword) return res.status(400).json({ error: "Both current and new password required" });
-  if (newPassword.length < 8) return res.status(400).json({ error: "New password must be at least 8 characters" });
-  if (currentPassword === newPassword) return res.status(400).json({ error: "New password must be different from current" });
-
-  // Check new password against breaches BEFORE changing
-  const breach = await isPasswordBreached(newPassword);
-  if (breach.breached) {
-    return res.status(400).json({
-      error: "This password has appeared in " + breach.count.toLocaleString() + " data breaches. Choose a different password."
-    });
+  if (!currentPassword || !newPassword) {
+    return res.status(400).json({ error: "Both current and new password required" });
   }
 
-  const user = await User.findOne({ email: session.user.email });
-  if (!user) return res.status(404).json({ error: "User not found" });
-  if (!user.password) return res.status(400).json({ error: "Account uses Google sign-in. Password cannot be changed." });
+  if (newPassword.length < 8) {
+    return res.status(400).json({ error: "New password must be at least 8 characters" });
+  }
 
+  // Google OAuth users may not have a password
+  if (!user.password) {
+    // Set password for first time (Google users)
+    const hash = await bcrypt.hash(newPassword, 12);
+    await User.findByIdAndUpdate(user._id, { $set: { password: hash } });
+    return res.json({ success: true, message: "Password set successfully" });
+  }
+
+  // Verify current password
   const valid = await bcrypt.compare(currentPassword, user.password);
-  if (!valid) return res.status(401).json({ error: "Current password is incorrect" });
+  if (!valid) {
+    return res.status(400).json({ error: "Current password is incorrect" });
+  }
 
-  user.password = await bcrypt.hash(newPassword, 12);
-  user.passwordChangedAt = new Date();
-  await user.save();
+  // Hash and save new password
+  const hash = await bcrypt.hash(newPassword, 12);
+  await User.findByIdAndUpdate(user._id, { $set: { password: hash } });
 
   return res.json({ success: true, message: "Password changed successfully" });
 }

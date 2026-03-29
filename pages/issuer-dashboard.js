@@ -78,7 +78,8 @@ export default function IssuerDashboardPage() {
     try {
       const uRes = await fetch("/api/user/me");
       if (!uRes.ok) { router.push("/login?redirect=/issuer-dashboard"); return; }
-      setUser(await uRes.json());
+      const uData = await uRes.json();
+setUser(uData.user || uData);
       const [sRes, aRes] = await Promise.all([fetch("/api/assets/stats"), fetch("/api/assets/my-listings")]);
       if (sRes.ok) { const d = await sRes.json(); setStats(d.stats); }
       if (aRes.ok) { const d = await aRes.json(); setAssets(d.assets || []); }
