@@ -1,16 +1,27 @@
 // pages/api/auth/monerium/start.js
-// Returns OAuth URL as JSON (for iframe embedding) instead of redirecting
-// The MoneriumConnect component loads this URL in an iframe
+// Returns OAuth URL with PKCE code_challenge for iframe embedding
+// Stores code_verifier in MongoDB for callback to use
 
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../auth/[...nextauth]';
 import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
+import crypto from 'crypto';
 
 const MONERIUM_ENV = process.env.MONERIUM_ENV || 'sandbox';
 const MONERIUM_AUTH = MONERIUM_ENV === 'production'
   ? 'https://monerium.app'
   : 'https://sandbox.monerium.dev';
+
+// Generate PKCE code_verifier and code_challenge
+function generatePKCE() {
+  const verifier = crypto.randomBytes(32).toString('base64url');
+  const challenge = crypto
+    .createHash('sha256')
+    .update(verifier)
+    .digest('base64url');
+  return { verifier, challenge };
+}
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
@@ -22,22 +33,36 @@ export default async function handler(req, res) {
     const { issuerId } = req.query;
     if (!issuerId) return res.status(400).json({ error: 'issuerId required' });
 
-    // Verify issuer exists
     const client = await clientPromise;
     const db = client.db();
+
     const issuer = await db.collection('issuers').findOne({
       _id: new ObjectId(issuerId),
       userId: session.user.id,
     });
-
     if (!issuer) return res.status(404).json({ error: 'Issuer not found' });
 
-    // Build OAuth URL
+    // Generate PKCE pair
+    const { verifier, challenge } = generatePKCE();
+
+    // Store verifier in DB so callback can use it
+    await db.collection('issuers').updateOne(
+      { _id: new ObjectId(issuerId) },
+      {
+        $set: {
+          moneriumCodeVerifier: verifier,
+          moneriumOAuthStartedAt: new Date(),
+        }
+      }
+    );
+
+    // Build OAuth URL with PKCE
     const params = new URLSearchParams({
       client_id: process.env.MONERIUM_CLIENT_ID,
       redirect_uri: process.env.MONERIUM_REDIRECT_URI,
       response_type: 'code',
-      scope: 'orders:read orders:write accounts:read',
+      code_challenge: challenge,
+      code_challenge_method: 'S256',
       state: issuerId,
     });
 
