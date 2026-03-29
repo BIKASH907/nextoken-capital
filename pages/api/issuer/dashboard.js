@@ -12,7 +12,10 @@ export default async function handler(req, res) {
   if (!session) return res.status(401).json({ error: "Not authenticated" });
 
   const userId = session.id || session.sub || session.user?.id;
-  const user = await User.findById(userId);
+  let user = userId ? await User.findById(userId).catch(() => null) : null;
+  if (!user && session.user?.email) {
+    user = await User.findOne({ email: session.user.email.toLowerCase() });
+  }
   if (!user) return res.status(401).json({ error: "User not found" });
 
   try {
@@ -54,4 +57,4 @@ export default async function handler(req, res) {
     console.error("Issuer dashboard error:", err);
     return res.status(500).json({ error: "Server error" });
   }
-}// v2
+}

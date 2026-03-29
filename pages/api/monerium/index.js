@@ -50,7 +50,10 @@ export default async function handler(req, res) {
   if (!session) return res.status(401).json({ error: "Not authenticated" });
 
   const userId = session.id || session.sub || session.user?.id;
-  const user = await User.findById(userId);
+  let user = userId ? await User.findById(userId).catch(() => null) : null;
+  if (!user && session.user?.email) {
+    user = await User.findOne({ email: session.user.email.toLowerCase() });
+  }
   if (!user) return res.status(404).json({ error: "User not found" });
 
   if (req.method === "GET") {
@@ -90,7 +93,7 @@ export default async function handler(req, res) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ address, chain: chain || "polygon" }),
         });
-        await User.findByIdAndUpdate(userId, { $set: { "monerium.iban": result.iban, "monerium.ibanAddress": address } });
+        await User.findByIdAndUpdate(user._id, { $set: { "monerium.iban": result.iban, "monerium.ibanAddress": address } });
         return res.json({ success: true, data: result });
       }
       return res.status(400).json({ error: "Unknown action" });

@@ -18,7 +18,10 @@ export default async function handler(req, res) {
     if (!session) return res.redirect("/login?redirect=/dashboard/issuer");
 
     const userId = session.id || session.sub || session.user?.id;
-    const user = await User.findById(userId);
+    let user = userId ? await User.findById(userId).catch(() => null) : null;
+    if (!user && session.user?.email) {
+      user = await User.findOne({ email: session.user.email.toLowerCase() });
+    }
     if (!user) return res.redirect("/dashboard/issuer?monerium=error&reason=user_not_found");
 
     const redirectUri = process.env.NEXT_PUBLIC_MONERIUM_REDIRECT_URI ||
@@ -43,7 +46,7 @@ export default async function handler(req, res) {
 
     const tokens = await tokenRes.json();
 
-    await User.findByIdAndUpdate(userId, {
+    await User.findByIdAndUpdate(user._id, {
       $set: {
         "monerium.accessToken": tokens.access_token,
         "monerium.refreshToken": tokens.refresh_token,
