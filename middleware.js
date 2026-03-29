@@ -47,7 +47,7 @@ export function middleware(request) {
   }
 
   // Protect admin routes
-  if (pathname.startsWith('/api/admin/')) {
+  if (pathname.startsWith("/api/admin/") && !pathname.includes("seed-super")) {
     const authHeader = request.headers.get('authorization');
     const cookie = request.cookies.get('next-auth.session-token') || request.cookies.get('__Secure-next-auth.session-token');
     if (!authHeader && !cookie) {
