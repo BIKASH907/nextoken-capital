@@ -23,7 +23,7 @@ export default function AssetDetail() {
     try {
       const token = localStorage.getItem("adminToken");
       const res = await fetch("/api/admin/assets/" + id, { headers: { Authorization: "Bearer " + token } });
-      if (!res.ok) throw new Error("Failed to load asset");
+      if (!res.ok) throw new Error("Failed to load");
       const data = await res.json();
       setAsset(data.asset || data);
     } catch (err) { setError(err.message); }
@@ -57,7 +57,7 @@ export default function AssetDetail() {
       <Head><title>{asset.name} | Admin</title></Head>
       <div style={{minHeight:"100vh",background:"#0D1117",color:"#fff",fontFamily:"-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif"}}>
         <div style={{padding:"20px 32px",borderBottom:"1px solid rgba(255,255,255,0.06)",display:"flex",alignItems:"center",gap:16}}>
-          <Link href="/admin/assets" style={{background:"none",border:"1px solid rgba(255,255,255,0.1)",borderRadius:8,padding:"6px 14px",color:"rgba(255,255,255,0.5)",cursor:"pointer",fontSize:13,textDecoration:"none"}}>Back to Assets</Link>
+          <Link href="/admin/assets" style={{background:"none",border:"1px solid rgba(255,255,255,0.1)",borderRadius:8,padding:"6px 14px",color:"rgba(255,255,255,0.5)",fontSize:13,textDecoration:"none"}}>Back to Assets</Link>
           <div style={{flex:1}} />
           <span style={{padding:"3px 10px",borderRadius:6,fontSize:11,fontWeight:600,background:(sc[asset.status]||"#6B7280")+"15",color:sc[asset.status]||"#6B7280"}}>{asset.status}</span>
         </div>
@@ -85,7 +85,6 @@ export default function AssetDetail() {
             </Card>
           </div>
           {asset.images && asset.images.length > 0 && <Card title={"Images ("+asset.images.length+")"}><div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:12}}>{asset.images.map((img,i)=><img key={i} src={img.url||img} alt="" style={{width:"100%",height:200,objectFit:"cover",borderRadius:10}} />)}</div></Card>}
-          {asset.documents && asset.documents.length > 0 && <Card title={"Documents ("+asset.documents.length+")"}>{asset.documents.map((doc,i)=><a key={i} href={doc.url||doc.path||doc} target="_blank" rel="noreferrer" style={{display:"inline-block",background:"rgba(240,185,11,0.06)",border:"1px solid rgba(240,185,11,0.15)",borderRadius:8,padding:"8px 14px",fontSize:12,color:"#F0B90B",textDecoration:"none",marginRight:8,marginBottom:8}}>{doc.type||doc.name||("Document "+(i+1))}</a>)}</Card>}
           <Card title="Admin Actions">
             <Btn onClick={()=>updateStatus("approved")} bg="rgba(14,203,129,0.15)" color="#0ECB81">Approve</Btn>
             <Btn onClick={()=>updateStatus("live")} bg="rgba(14,203,129,0.12)" color="#0ECB81">Set Live</Btn>
