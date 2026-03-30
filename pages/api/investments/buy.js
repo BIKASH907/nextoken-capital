@@ -57,7 +57,7 @@ export default async function handler(req, res) {
 
     // CREATE HOLDING LOT (for 30-day tracking)
     await HoldingLot.create({ userId: user._id, assetId: asset._id, assetName: asset.name, units, remainingUnits: units, purchaseDate: new Date(), pricePerUnit, source: "primary", txHash });
-    await Asset.findByIdAndUpdate(asset._id, { $inc: { raisedAmount: totalAmount, investorCount: 1 } });
+    await Asset.findByIdAndUpdate(asset._id, { $inc: { raisedAmount: totalAmount, soldUnits: units, investorCount: 1 } });
 
     // Credit issuer wallet automatically
     if (asset.issuerId) {
