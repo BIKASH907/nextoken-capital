@@ -244,7 +244,7 @@ const ARTICLES = [
   { src: 'CoinDesk',       date: 'Jan 28, 2026', title: "How Lithuania became Europe's quiet leader in tokenized capital markets regulation",      desc: "A deep dive into how the Lithuania's pragmatic approach to DLT licensing created a cluster of RWA platforms." },
   { src: 'Financial Times',date: 'Dec 10, 2025', title: 'Tokenized real estate: the Baltic platforms reshaping European property investment',     desc: "FT Alphaville covers Nextoken's Vilnius Office Token as a case study for compliant fractional property ownership." },
   { src: 'Bloomberg',      date: 'Nov 3, 2025',  title: 'EU DLT Pilot Regime: one year in, the platforms that are making it work',               desc: 'Bloomberg Markets profiles the five most active DLT MTF operators. Nextoken Capital placed second by trading volume.' },
-  { src: 'Decrypt',        date: 'Sep 18, 2025', title: "MiCA's first cohort: which crypto platforms earned the EU's highest compliance badge",  desc: 'Analysis of the initial wave of MiCA CASP licenses, with Nextoken Capital highlighted as a model for RWA-focused platforms.' },
+  { src: 'Decrypt',        date: 'Sep 18, 2025', title: "EU tokenization marketplaces: emerging platforms to watch in 2025",  desc: 'Overview of emerging RWA tokenization marketplaces in the EU, featuring Nextoken Capital.' },
   { src: 'Verslo žinios',  date: 'Aug 5, 2025',  title: 'Nextoken pritraukė 12 000 investuotojų iš 190 šalių',                                   desc: 'Lietuvos verslo leidinys apie Nextoken Capital augimą ir Lietuvos banko priežiūrą per pirmuosius trejus veiklos metus.' },
 ]
 
@@ -555,7 +555,7 @@ function BlogPage() {
           <div className="c-featured">
             <div className="c-feat-badge">⭐ Featured</div>
             <div className="c-feat-title">MiCA one year on: what compliant tokenization actually looks like in practice</div>
-            <p style={{maxWidth:'620px',fontSize:'.9rem',color:'#7a8599',margin:0}}>Twelve months since the first MiCA CASP licenses were issued, we look at what compliance really required, what surprised us, and what it means for issuers entering the EU capital market.</p>
+            <p style={{maxWidth:'620px',fontSize:'.9rem',color:'#7a8599',margin:0}}>A look at building a compliant tokenized asset marketplace in the EU — lessons learned and what it means for issuers.</p>
             <div className="c-post-meta">
               <div className="c-author-chip">
                 <div className="c-author-dot">JK</div>
