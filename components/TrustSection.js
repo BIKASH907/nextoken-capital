@@ -10,7 +10,7 @@ export default function TrustSection() {
             Security First. Compliance Built-In. Trust Automated.
           </h2>
           <p className={styles.sectionTextLight}>
-            MiCA-compliant infrastructure with institutional custody, AI-powered KYC/AML,
+            MiCA-ready infrastructure with institutional custody, AI-powered KYC/AML,
             and audited smart contracts. Your assets are protected by multi-signature vaults
             and regulated custodians — not promises.
           </p>

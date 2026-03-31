@@ -50,7 +50,7 @@ export default function AMLPage() {
           <div className="lp-hero-inner">
             <div className="lp-tag">Legal</div>
             <h1 className="lp-h1">AML Policy</h1>
-            <p className="lp-meta">Last updated: March 1, 2026 · Nextoken Capital UAB · FATF Aligned · Lithuanian authorities Supervised</p>
+            <p className="lp-meta">Last updated: March 1, 2026 · Nextoken Capital UAB · FATF Aligned · Lithuania Registered</p>
           </div>
         </div>
         <div className="lp-body">

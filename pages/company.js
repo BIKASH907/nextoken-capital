@@ -144,7 +144,7 @@ const STATS = [
 
 const TIMELINE = [
   { y:'2022 · Q1', t:'Founded in Vilnius',               b:'Nextoken Capital UAB incorporated in Lithuania, selected for its progressive DLT regulatory environment and EU membership.' },
-  { y:'2022 · Q4', t:'Lithuanian authorities Authorization',  b:'Received authorization from Lithuanian authorities as an technology marketplace company, enabling tokenized digital asset custody.' },
+  { y:'2022 · Q4', t:'Company Registration',  b:'Nextoken Capital UAB registered in Lithuania as a technology marketplace for tokenized real-world assets.' },
   { y:'2023 · Q3', t:'DLT Pilot Regime Admission',       b:'Admitted to the EU DLT Pilot Regime, granting permission to operate a DLT-based multilateral trading facility.' },
   { y:'2024 · Q2', t:'MiCA License Granted',             b:'Full MiCA license issued — the first of its class for an RWA tokenization platform in the Baltics.' },
   { y:'2025 · Q1', t:'€420M in Tokenized Assets',        b:'Platform surpassed 420M EUR in total tokenized asset value across real estate, sovereign bonds, and venture equity.' },
@@ -256,7 +256,7 @@ function Footer({ setPage }) {
         <div className="fbrand">
           <h3>NXT NEXTOKEN</h3>
           <p style={{fontSize:'.8rem',color:'#7a8599',maxWidth:'260px'}}>
-            The compliant infrastructure for tokenized real-world assets. Supervised by the Lithuanian authorities.
+            The compliant infrastructure for tokenized real-world assets. Registered in Lithuania.
           </p>
         </div>
         <div className="fcol">

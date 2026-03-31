@@ -5,7 +5,7 @@ import Footer from "../components/Footer";
 
 const TEAM = [
   { name:"Bikash Bhat",       role:"CEO & Founder",          bio:"Fintech entrepreneur with 10+ years in capital markets and blockchain infrastructure.", photo:"/bikash.jpg", linkedin:"https://www.linkedin.com/in/bikash-bhat-87700318a" },
-  { name:"Compliance Team",   role:"Legal & Compliance",     bio:"EU-based regulatory specialists ensuring full MiCA and Lithuanian authorities compliance." },
+  { name:"Compliance Team",   role:"Legal & Compliance",     bio:"EU-based compliance specialists building toward MiCA-ready operations." },
   { name:"Engineering Team",  role:"Blockchain & Platform",  bio:"Full-stack engineers specialising in ERC-3643 asset token infrastructure." },
   { name:"Investment Team",   role:"Asset Origination",      bio:"Asset specialists sourcing and structuring real-world asset listings." },
 ];
@@ -19,8 +19,8 @@ const VALUES = [
 
 const MILESTONES = [
   { year:"2022", event:"Nextoken Capital UAB founded in Vilnius, Lithuania." },
-  { year:"2023", event:"Lithuanian authorities UAB registration granted. First asset tokenized on platform." },
-  { year:"2024", event:"MiCA CASP authorization received. Platform launched to public investors." },
+  { year:"2023", event:"Nextoken Capital UAB registered in Lithuania. First asset tokenized on platform." },
+  { year:"2024", event:"MiCA marketplace registration received. Platform launched to public investors." },
   { year:"2025", event:"EUR 100M+ in assets tokenized. 10,000+ verified buyers onboarded." },
   { year:"2026", event:"Secondary market exchange launched. 180+ countries supported." },
 ];
@@ -142,7 +142,7 @@ export default function AboutPage() {
             <div className="ab-mission">
               <p>Traditional capital markets are fragmented, slow, and inaccessible to most investors. <strong>Real estate deals require hundreds of thousands of euros.</strong> Private equity is reserved for institutions. Bond markets are opaque.</p>
               <p>Nextoken Capital was founded to change this. By tokenizing real-world assets on compliant blockchain infrastructure, we enable <strong>buyers from 180+ countries to access tokenized real-world assets from EUR 100</strong> — with full transparency and on-chain settlement.</p>
-              <p>We are registered in Lithuania, monitored by the Lithuanian authorities, and operate under MiCA — the EU's comprehensive crypto-asset regulation framework. <strong>Compliance is not an afterthought. It is our foundation.</strong></p>
+              <p>We are registered in Lithuania, registered in Lithuania and building toward MiCA compliance — the EU's comprehensive crypto-asset regulation framework. <strong>Compliance is not an afterthought. It is our foundation.</strong></p>
             </div>
           </div>
         </section>
