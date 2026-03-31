@@ -173,7 +173,7 @@ export default function Marketplace() {
                     {/* Footer */}
                     <div style={{ background: "rgba(255,255,255,0.02)", padding: "8px 20px", display: "flex", justifyContent: "space-between", fontSize: 10, color: "rgba(255,255,255,0.25)" }}>
                       <span>30-day min hold for profit</span>
-                      <span>MiCA compliant · Audited</span>
+                      <span>Non-custodial investment · Direct to issuer</span>
                     </div>
                   </div>
                 );

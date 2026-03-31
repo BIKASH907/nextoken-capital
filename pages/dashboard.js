@@ -223,10 +223,7 @@ export default function InvestorDashboard() {
               {card("Earnings", "EUR " + (wallet?.earnings||0).toLocaleString(), "#F0B90B")}
             </div>
             <div style={{ display:"flex", gap:8, marginBottom:16, flexWrap:"wrap", alignItems:"center" }}>
-              <input type="number" value={depositAmt} onChange={e => setDepositAmt(e.target.value)} placeholder="Amount" style={{ width:120, background:"#161B22", border:"1px solid rgba(255,255,255,0.1)", borderRadius:6, padding:"8px 12px", color:"#fff", fontSize:13, outline:"none", fontFamily:"inherit" }} />
-              <button onClick={() => doWallet("deposit", depositAmt)} style={{ padding:"8px 16px", borderRadius:6, background:"rgba(34,197,94,0.1)", border:"1px solid rgba(34,197,94,0.2)", color:"#22c55e", fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>Deposit</button>
-              <input type="number" value={withdrawAmt} onChange={e => setWithdrawAmt(e.target.value)} placeholder="Amount" style={{ width:120, background:"#161B22", border:"1px solid rgba(255,255,255,0.1)", borderRadius:6, padding:"8px 12px", color:"#fff", fontSize:13, outline:"none", fontFamily:"inherit" }} />
-              <button onClick={() => doWallet("withdraw", withdrawAmt)} style={{ padding:"8px 16px", borderRadius:6, background:"rgba(239,68,68,0.08)", border:"1px solid rgba(239,68,68,0.15)", color:"#ef4444", fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>Withdraw</button>
+              <div style={{fontSize:13,color:"rgba(255,255,255,0.4)"}}>Connect your wallet (MetaMask, WalletConnect) to invest directly in assets. Non-custodial — your funds stay in your wallet.</div>
               <button onClick={() => router.push("/marketplace")} style={{ padding:"8px 16px", borderRadius:6, background:"rgba(240,185,11,0.08)", border:"1px solid rgba(240,185,11,0.15)", color:"#F0B90B", fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit" }}>Marketplace</button>
             </div>
             <div style={{ background:"#161b22", borderRadius:10, border:"1px solid rgba(255,255,255,0.06)", overflow:"hidden" }}>
