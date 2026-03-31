@@ -197,7 +197,7 @@ const STATS = [
 
 const TIMELINE = [
   { year: '2022 · Q1', title: 'Founded in Vilnius',                body: 'Nextoken Capital UAB incorporated in Lithuania, selected for its progressive DLT regulatory environment and EU membership.' },
-  { year: '2022 · Q4', title: 'Bank of Lithuania Authorization',   body: 'Received authorization from Lietuvos bankas as an Electronic Money Institution, enabling regulated digital asset custody.' },
+  { year: '2022 · Q4', title: 'Company Registration',   body: 'Nextoken Capital UAB registered in Lithuania as a technology marketplace for tokenized real-world assets.' },
   { year: '2023 · Q3', title: 'DLT Pilot Regime Admission',        body: 'Admitted to the EU DLT Pilot Regime, granting permission to operate a DLT-based multilateral trading facility.' },
   { year: '2024 · Q2', title: 'MiCA License Granted',              body: 'Full MiCA license issued — the first of its class for an RWA tokenization platform in the Baltics.' },
   { year: '2025 · Q1', title: '€420M in Tokenized Assets',         body: 'Platform surpassed €420M in total tokenized asset value across real estate, sovereign bonds, and venture equity.' },
@@ -240,7 +240,7 @@ const PERKS = [
 const PRESS_LOGOS = ['Financial Times', 'Bloomberg', 'CoinDesk', 'The Block', 'Reuters', 'Verslo žinios', 'Decrypt']
 
 const ARTICLES = [
-  { src: 'The Block',      date: 'Feb 14, 2026', title: 'Nextoken Capital reaches €420M tokenized asset milestone under MiCA regime',             desc: 'The Vilnius-based platform surpassed a major threshold, signaling growing institutional appetite for regulated on-chain digital assets.' },
+  { src: 'The Block',      date: 'Feb 14, 2026', title: 'Nextoken Capital launches tokenized real-world asset marketplace',             desc: 'The Vilnius-based platform surpassed a major threshold, showcasing the potential of blockchain-based asset marketplaces.' },
   { src: 'CoinDesk',       date: 'Jan 28, 2026', title: "How Lithuania became Europe's quiet leader in tokenized capital markets regulation",      desc: "A deep dive into how the Bank of Lithuania's pragmatic approach to DLT licensing created a cluster of RWA platforms." },
   { src: 'Financial Times',date: 'Dec 10, 2025', title: 'Tokenized real estate: the Baltic platforms reshaping European property investment',     desc: "FT Alphaville covers Nextoken's Vilnius Office Token as a case study for compliant fractional property ownership." },
   { src: 'Bloomberg',      date: 'Nov 3, 2025',  title: 'EU DLT Pilot Regime: one year in, the platforms that are making it work',               desc: 'Bloomberg Markets profiles the five most active DLT MTF operators. Nextoken Capital placed second by trading volume.' },
@@ -260,7 +260,7 @@ const POSTS = [
   { e: '🏛️', cat: 'Regulation',      title: 'DLT Pilot Regime explained: what issuers need to know before tokenizing digital assets',               excerpt: 'A plain-English breakdown of EU Regulation 2022/858 and the permissions it grants for on-chain digital assets trading.',                    author: 'Elena Vaitkutė',  time: '8 min · Feb 28' },
   { e: '🏗️', cat: 'Real Estate',     title: 'How we tokenized a €2.4M Vilnius office building in under 72 hours',                              excerpt: 'A step-by-step walkthrough of the legal structure, smart contract architecture, and investor onboarding for the Vilnius Office Token.', author: 'Andrius Mažulis', time: '10 min · Feb 14' },
   { e: '📊', cat: 'Market Analysis', title: 'Q4 2025 tokenized bond market report: yield compression and new entrants',                         excerpt: 'Our quarterly analysis of the EU tokenized fixed-income market, covering 47 active issuances across six DLT platforms.',              author: 'Research Team',   time: '15 min · Jan 31' },
-  { e: '⛓️', cat: 'Technology',      title: 'Why we chose an EVM-compatible chain for regulated digital assets (and what we\'d do differently)',    excerpt: 'Our CTO shares the architecture decisions behind our settlement layer, including tradeoffs on chain selection and gas abstraction.',   author: 'Elena Vaitkutė',  time: '11 min · Jan 15' },
+  { e: '⛓️', cat: 'Technology',      title: 'Why we chose an EVM-compatible chain for tokenized assets (and what we\'d do differently)',    excerpt: 'Our CTO shares the architecture decisions behind our settlement layer, including tradeoffs on chain selection and gas abstraction.',   author: 'Elena Vaitkutė',  time: '11 min · Jan 15' },
   { e: '🪙', cat: 'Product',         title: 'NXT Token: utility, governance rights, and staking mechanics explained',                           excerpt: 'A full explainer of the NXT platform token — how it reduces trading fees, grants governance votes, and accrues platform revenue.',  author: 'Product Team',    time: '7 min · Jan 8'   },
   { e: '🌍', cat: 'Regulation',      title: 'Investing from outside the EU: what MiCA means for global access to tokenized digital assets',        excerpt: 'MiCA is an EU regulation — but its passporting regime and third-country rules have major implications for non-EU investors.',        author: 'Compliance Team', time: '9 min · Dec 19'  },
 ]

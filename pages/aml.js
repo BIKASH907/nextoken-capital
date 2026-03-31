@@ -21,7 +21,7 @@ export default function AMLPage() {
     <>
       <Head>
         <title>AML Policy — Nextoken Capital</title>
-        <meta name="description" content="Anti-Money Laundering Policy for Nextoken Capital UAB, regulated by the Bank of Lithuania." />
+        <meta name="description" content="Anti-Money Laundering Policy for Nextoken Capital UAB, registered in Lithuania." />
       </Head>
       <Navbar />
       <style>{`

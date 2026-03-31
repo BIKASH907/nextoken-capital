@@ -322,7 +322,7 @@ export default function AssetDetail() {
                   )}
 
                   <div style={{ color: "rgba(255,255,255,0.2)", fontSize: 11, textAlign: "center", marginTop: 12, lineHeight: 1.5 }}>
-                    🔒 KYC required · EU regulated · Polygon blockchain
+                    🔒 KYC required · Non-custodial · Polygon blockchain
                   </div>
                 </div>
 

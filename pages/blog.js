@@ -4,7 +4,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
 const POSTS = [
-  { id:1, cat:"Regulation",   date:"Mar 15, 2026", title:"MiCA Regulation: What It Means for Tokenized Asset Investors",       excerpt:"The EU's Markets in Crypto-Assets Regulation came into full effect in 2025. Here is what every investor on a regulated tokenization platform needs to know.",                  readTime:"6 min" },
+  { id:1, cat:"Regulation",   date:"Mar 15, 2026", title:"MiCA Regulation: What It Means for Tokenized Asset Investors",       excerpt:"The EU's Markets in Crypto-Assets Regulation came into full effect in 2025. Here is what every buyer on a tokenization marketplace needs to know.",                  readTime:"6 min" },
   { id:2, cat:"Education",    date:"Mar 8, 2026",  title:"ERC-3643: The Asset Token Standard Explained",                    excerpt:"ERC-3643 is the token standard we use for all asset tokens on the platform. This guide explains how it works, why it matters, and how it protects investors.",         readTime:"8 min" },
   { id:3, cat:"Markets",      date:"Feb 28, 2026", title:"European Real Estate Tokenization: Q1 2026 Market Update",           excerpt:"A look at the latest trends in tokenized real estate across Europe, including market performance, new issuances, and investor sentiment going into Q2.",              readTime:"5 min" },
   { id:4, cat:"Investing",    date:"Feb 20, 2026", title:"How to Build a Diversified Tokenized Asset Portfolio",               excerpt:"Diversification is one of the most important principles of investing. Here is how to build a balanced portfolio using tokenized bonds, equity, real estate, and energy.", readTime:"7 min" },

@@ -412,7 +412,7 @@ export default function BondsPage() {
                     <div style={{ fontSize:9,letterSpacing:"0.2em",color:"rgba(255,255,255,0.45)",textTransform:"uppercase" }}>CAPITAL</div>
                   </div>
                 </div>
-                <p style={{ fontSize:13,color:"rgba(255,255,255,0.45)",maxWidth:240,lineHeight:1.7,marginBottom:16 }}>The regulated infrastructure for tokenized real-world assets. Registered in Lithuania.</p>
+                <p style={{ fontSize:13,color:"rgba(255,255,255,0.45)",maxWidth:240,lineHeight:1.7,marginBottom:16 }}>The marketplace for tokenized real-world assets. Registered in Lithuania.</p>
                 <p style={{ fontSize:11,color:"rgba(255,255,255,0.45)",textTransform:"uppercase",letterSpacing:"0.05em" }}>MONITORED BY <a href="#" style={{ color:"#F0B90B",textDecoration:"none" }}>Bank of Lithuania</a></p>
               </div>
               <div>

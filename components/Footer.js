@@ -10,7 +10,7 @@ const Footer = () => {
             <span style={{fontSize:22,fontWeight:900,color:"#F0B90B"}}>NXT</span>
             <span style={{fontSize:13,color:"rgba(255,255,255,0.4)"}}>NEXTOKEN CAPITAL</span>
           </div>
-          <p style={{fontSize:13,color:"rgba(255,255,255,0.4)",lineHeight:1.7,marginBottom:16}}>EU-regulated tokenized real-world asset investment platform. Bringing institutional-grade investments to everyone.</p>
+          <p style={{fontSize:13,color:"rgba(255,255,255,0.4)",lineHeight:1.7,marginBottom:16}}>Tokenized real-world asset marketplace. Connecting issuers with global buyers through blockchain technology.</p>
           <div style={{fontSize:12,color:"rgba(255,255,255,0.25)"}}>Nextoken Capital UAB<br/>Vilnius, Lithuania</div>
         </div>
         <div>

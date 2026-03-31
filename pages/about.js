@@ -30,7 +30,7 @@ export default function AboutPage() {
     <>
       <Head>
         <title>About Us — Nextoken Capital</title>
-        <meta name="description" content="Nextoken Capital is the regulated infrastructure for tokenized real-world assets, registered in Lithuania and monitored by the Bank of Lithuania." />
+        <meta name="description" content="Nextoken Capital is a tokenized real-world asset marketplace registered in Lithuania, connecting asset issuers with global buyers." />
       </Head>
       <Navbar />
 
@@ -118,9 +118,9 @@ export default function AboutPage() {
           <div className="ab-hero-inner">
             <div className="ab-hero-tag">About Us</div>
             <h1>The Regulated Marketplace for <em>Tokenized Assets</em></h1>
-            <p>Nextoken Capital is the regulated marketplace for the next generation of tokenized assets — compliant, accessible, and on-chain.</p>
+            <p>Nextoken Capital is a technology marketplace for tokenized real-world assets — transparent, accessible, and on-chain.</p>
             <div className="ab-hero-badges">
-              {["🏛️ Bank of Lithuania","📍 Vilnius, Lithuania","⚖️ MiCA Compliant","🔗 Founded 2022"].map(b => (
+              {["🏛️ Lithuania UAB","📍 Vilnius, Lithuania","⚖️ MiCA-Ready","🔗 Founded 2022"].map(b => (
                 <div key={b} className="ab-hero-badge">{b}</div>
               ))}
             </div>
@@ -141,7 +141,7 @@ export default function AboutPage() {
             <h2 className="ab-title">Why We Built Nextoken Capital</h2>
             <div className="ab-mission">
               <p>Traditional capital markets are fragmented, slow, and inaccessible to most investors. <strong>Real estate deals require hundreds of thousands of euros.</strong> Private equity is reserved for institutions. Bond markets are opaque.</p>
-              <p>Nextoken Capital was founded to change this. By tokenizing real-world assets on regulated blockchain infrastructure, we enable <strong>investors from 180+ countries to access institutional-grade investments from EUR 100</strong> — with full transparency, on-chain settlement, and EU regulatory oversight.</p>
+              <p>Nextoken Capital was founded to change this. By tokenizing real-world assets on regulated blockchain infrastructure, we enable <strong>buyers from 180+ countries to access tokenized real-world assets from EUR 100</strong> — with full transparency and on-chain settlement.</p>
               <p>We are registered in Lithuania, monitored by the Bank of Lithuania, and operate under MiCA — the EU's comprehensive crypto-asset regulation framework. <strong>Compliance is not an afterthought. It is our foundation.</strong></p>
             </div>
           </div>
@@ -212,7 +212,7 @@ export default function AboutPage() {
             <p className="ab-sub">Every service we offer operates under EU financial regulation.</p>
             <div className="ab-reg-grid">
               {[
-                { icon:"🏛️", title:"Bank of Lithuania", desc:"Nextoken Capital UAB is authorized and monitored by the Bank of Lithuania as an Electronic Money Institution.", badge:"EMI License" },
+                { icon:"🏛️", title:"Registered in Lithuania", desc:"Nextoken Capital UAB is registered in Lithuania as a technology marketplace. Payments handled by Monerium (EU-licensed EMI).", badge:"UAB Registered" },
                 { icon:"⚖️", title:"MiCA Regulation",   desc:"We hold a MiCA CASP (Crypto-Asset Service Provider) authorization, the gold standard for EU crypto regulation.", badge:"CASP Authorized" },
                 { icon:"🪪", title:"Sumsub KYC",        desc:"All investors complete identity verification via Sumsub, ensuring full AML and CFT compliance across 180+ countries.", badge:"AML Compliant" },
                 { icon:"🔗", title:"ERC-3643 Standard", desc:"All asset tokens are issued under the ERC-3643 standard, providing transfer controls, whitelisting and on-chain compliance.", badge:"Token Standard" },

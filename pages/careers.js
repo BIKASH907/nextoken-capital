@@ -35,7 +35,7 @@ export default function CareersPage() {
     <>
       <Head>
         <title>Careers — Nextoken Capital</title>
-        <meta name="description" content="Join the Nextoken Capital team and help build the regulated infrastructure for tokenized real-world assets." />
+        <meta name="description" content="Join the Nextoken Capital team and help build the marketplace for tokenized real-world assets." />
       </Head>
       <Navbar />
 
@@ -114,7 +114,7 @@ export default function CareersPage() {
           <div className="cr-hero-glow" />
           <div className="cr-hero-tag">We are hiring</div>
           <h1>Build the Future of <em>Capital Markets</em></h1>
-          <p>Join a team of fintech engineers, compliance specialists, and investment professionals building regulated tokenization infrastructure.</p>
+          <p>Join a team of fintech engineers, compliance specialists, and investment professionals building tokenization marketplace infrastructure.</p>
         </section>
 
         <div className="cr-stats">

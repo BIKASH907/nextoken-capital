@@ -280,7 +280,7 @@ export default function CompliancePage() {
               { icon:"📋", t:"Mandatory Disclosure",      d:"All token offerings require a legally compliant white paper with full risk disclosures, financials, and investor rights." },
               { icon:"🔍", t:"Right to Information",      d:"You have the right to access all information about your investments, transactions, fees, and KYC data held about you." },
               { icon:"🏛", t:"Regulatory Recourse",       d:"Complaints can be escalated to the Bank of Lithuania if unresolved by Nextoken. EU investors have additional ADR rights." },
-              { icon:"🗳", t:"Investor Rights",           d:"Security token holders retain the economic rights of the underlying asset including dividends, interest, and voting where applicable." },
+              { icon:"🗳", t:"Investor Rights",           d:"Security token holders retain the economic rights of the underlying asset including earnings distributions, interest, and voting where applicable." },
               { icon:"🔒", t:"Self-Custody Option",       d:"Tokens are held in your own wallet — Nextoken does not control your assets. Only a court order can trigger regulatory freeze." },
             ].map(c => (
               <div key={c.t} style={{ ...S.card }}>
