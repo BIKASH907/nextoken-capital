@@ -5,14 +5,14 @@ export default function Hero() {
     <section className={styles.hero}>
       <div className={styles.container}>
         <div className={styles.heroContent}>
-          <p className={styles.heroLabel}>The Regulated RWA Marketplace</p>
+          <p className={styles.heroLabel}>The Non-Custodial RWA Marketplace</p>
           <h1 className={styles.heroTitle}>
-            Real-World Assets, Reimagined. Trade Tokenized Digital Assets 24/7.
+            Real-World Assets, Reimagined. Buy Tokenized Digital Assets On-Chain.
           </h1>
           <p className={styles.heroText}>
             Nextoken Capital is a structured digital marketplace for tokenized real-world
             assets — from bonds and equities to real estate and commodities. Issue, trade,
-            and settle with institutional-grade security and MiCA compliance.
+            and settle with institutional-grade security on Polygon blockchain.
           </p>
           <div className={styles.heroButtons}>
             <Link href="/markets" className={styles.primaryBtn}>Explore Marketplace</Link>

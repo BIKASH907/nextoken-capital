@@ -5,7 +5,7 @@ export default function StatsSection() {
     { number: "0.25%", text: "Trading Fee" },
     { number: "24/7", text: "Market Access" },
     { number: "T+0", text: "Settlement Time" },
-    { number: "MiCA", text: "EU Compliant" },
+    { number: "EU-Based", text: "Blockchain" },
   ];
 
   return (
