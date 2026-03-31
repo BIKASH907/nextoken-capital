@@ -7,6 +7,7 @@ import Order from "../../../models/Order";
 import HoldingLot from "../../../models/HoldingLot";
 import Fee from "../../../models/Fee";
 import Escrow from "../../../models/Escrow";
+import { creditPlatformWallet } from "../../../lib/platformWallet";
 import { notify } from "../../../lib/notify";
 import { checkRisk } from "../../../lib/riskEngine";
 import crypto from "crypto";
@@ -159,6 +160,9 @@ export default async function handler(req, res) {
     txHash,
     description: COMMISSION_RATE*100 + "% platform commission on EUR " + investmentAmount + " investment",
   });
+
+  // 7b. Credit Nextoken platform wallet
+  await creditPlatformWallet(commission, "Buy commission: " + units + " units of " + asset.name + " (EUR " + investmentAmount + ")", txHash, asset.name);
 
   // 8. Create escrow record for audit trail
   let escrow = await Escrow.findOne({ assetId: asset._id, status: { $in: ["active", "funded"] } });

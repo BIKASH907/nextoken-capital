@@ -5,6 +5,7 @@ import Order from "../../../models/Order";
 import OrderBook from "../../../models/OrderBook";
 import HoldingLot from "../../../models/HoldingLot";
 import Fee from "../../../models/Fee";
+import { creditPlatformWallet } from "../../../lib/platformWallet";
 import { notify } from "../../../lib/notify";
 import { checkRisk } from "../../../lib/riskEngine";
 import { getAuthUser } from "../../../lib/getUser";
@@ -45,6 +46,10 @@ export default async function handler(req, res) {
   const txHash = "0x" + crypto.randomBytes(32).toString("hex");
   const order = await Order.create({ userId: user._id, assetId: investment.assetId, assetName: investment.assetName, type: "sell", units, pricePerUnit: sellPrice, totalAmount, fee, status: "pending", txHash, sellerId: user._id });
   await OrderBook.create({ assetId: investment.assetId, assetName: investment.assetName, side: "ask", userId: user._id, units, pricePerUnit: sellPrice, totalAmount, fee, expiresAt: new Date(Date.now() + 7*24*60*60*1000) });
+
+  // Collect sell commission to platform wallet
+  await Fee.create({ type: "trading_sell", amount: fee, assetName: investment.assetName, userId: user._id.toString(), orderId: order._id.toString(), txHash });
+  await creditPlatformWallet(fee, "Sell commission: " + units + " units of " + investment.assetName, txHash, investment.assetName);
 
   await notify(user._id, "sell_completed", "Sell Order Listed", units + " units listed at EUR " + sellPrice + "/unit", "/dashboard");
   return res.json({ success: true, order: { id: order._id, units, pricePerUnit: sellPrice, totalAmount, fee }, message: units + " units listed for sale" });

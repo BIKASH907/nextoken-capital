@@ -1,3 +1,4 @@
+import { creditPlatformWallet } from "../../../lib/platformWallet";
 import { connectDB } from "../../../lib/mongodb";
 import User from "../../../lib/models/User";
 import Investment from "../../../models/Investment";
@@ -56,6 +57,7 @@ export default async function handler(req, res) {
 
     sellOrder.status = "completed"; sellOrder.buyerId = buyer._id; sellOrder.txHash = txHash; await sellOrder.save();
 
+    await creditPlatformWallet(fee * 2, "Secondary trade commission: " + sellOrder.assetName, txHash, sellOrder.assetName);
     await Fee.create({ type: "trading", amount: fee * 2, assetName: sellOrder.assetName, userId: buyer._id.toString(), orderId: sellOrder._id.toString(), txHash });
     await notify(buyer._id, "buy_completed", "Purchase Complete", "Bought " + sellOrder.units + " units. Hold 30 days for profit eligibility.", "/dashboard", { txHash });
     await notify(sellOrder.userId, "sell_completed", "Tokens Sold", sellOrder.units + " units sold for EUR " + sellerAmt.toLocaleString(), "/dashboard", { txHash });
