@@ -65,7 +65,7 @@ export default async function handler(req, res) {
 
     // Credit fee to platform wallet
     try {
-      const { creditPlatformWallet } = await import("../../../lib/platformWallet.mjs").catch(() => require("../../../lib/platformWallet"));
+      const { creditPlatformWallet } = await import("../../../lib/platformWallet").catch(() => require("../../../lib/platformWallet"));
       await creditPlatformWallet(withdrawFee, "Withdrawal fee: EUR " + amount + " withdrawal", "wfee-" + Date.now(), "Withdrawal");
     } catch(e) {
       // Fallback: just record the fee
