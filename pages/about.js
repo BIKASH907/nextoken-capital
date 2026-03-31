@@ -11,7 +11,7 @@ const TEAM = [
 ];
 
 const VALUES = [
-  { icon:"⚖️", title:"Regulated First",   desc:"Every product decision starts with regulatory compliance. We hold EMI and CASP authorizations from the Lithuanian authorities." },
+  { icon:"⚖️", title:"Compliance First",   desc:"Every product decision starts with compliance. We integrate licensed third-party services for payments (Monerium) and identity verification (Sumsub)." },
   { icon:"🔍", title:"Full Transparency",  desc:"On-chain ownership records, public cap tables, and real-time reporting for every asset on the platform." },
   { icon:"🌍", title:"Global Access",      desc:"Investors from 180+ countries can access institutional-grade assets from as little as EUR 100." },
   { icon:"🔐", title:"Security First",     desc:"Enterprise-grade security with Sumsub KYC and ERC-3643 transfer controls protect every transaction." },
