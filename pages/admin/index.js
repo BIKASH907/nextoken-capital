@@ -17,6 +17,9 @@ export default function AdminDashboard() {
   const [assetMsg, setAssetMsg] = useState("");
   const [images, setImages] = useState([]);
   const [uploading, setUploading] = useState(false);
+  const [documents, setDocuments] = useState([]);
+  const [docUploading, setDocUploading] = useState(false);
+  const docRef = useRef();
   const fileRef = useRef();
 
   useEffect(() => {
@@ -67,13 +70,31 @@ export default function AdminDashboard() {
     e.target.value = "";
   };
 
+  const handleDocUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setDocUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const r = await fetch("/api/admin/upload", { method: "POST", headers: { Authorization: "Bearer " + token }, body: fd });
+      const d = await r.json();
+      if (d.url) {
+        const ext = file.name.split(".").pop().toLowerCase();
+        const docType = ext === "pdf" ? "PDF" : ["doc","docx"].includes(ext) ? "Word" : ["xls","xlsx"].includes(ext) ? "Excel" : "File";
+        setDocuments(prev => [...prev, { name: file.name, url: d.url, type: docType }]);
+      }
+    } catch(err) { console.error("Doc upload error:", err); }
+    setDocUploading(false);
+    e.target.value = "";
+  };
   const removeImage = (tempId) => setImages(prev => prev.filter(img => img.tempId !== tempId));
 
   const createAsset = async (e) => {
     e.preventDefault();
     setLoading(true); setAssetMsg("");
     try {
-      const payload = { ...assetForm, imageUrl: images.find(i => i.url)?.url || undefined };
+      const payload = { ...assetForm, imageUrl: images.find(i => i.url)?.url || undefined, documents };
       if (assetForm.targetRaise) payload.targetRaise = Number(assetForm.targetRaise);
       if (assetForm.minInvestment) payload.minInvestment = Number(assetForm.minInvestment);
       if (assetForm.targetROI) payload.targetROI = Number(assetForm.targetROI);
@@ -86,7 +107,7 @@ export default function AdminDashboard() {
         body: JSON.stringify(payload),
       });
       const d = await r.json();
-      if (r.ok) { setAssetMsg("Asset created successfully!"); setAssetForm(emptyForm); setImages([]); fetchAssets(); }
+      if (r.ok) { setAssetMsg("Asset created successfully!"); setAssetForm(emptyForm); setImages([]); setDocuments([]); fetchAssets(); }
       else setAssetMsg(d.error || "Failed to create asset");
     } catch { setAssetMsg("Network error"); }
     setLoading(false);
@@ -275,6 +296,19 @@ export default function AdminDashboard() {
               ))}</div>}
               <input type="file" accept="image/*" multiple ref={fileRef} style={{display:"none"}} onChange={handleImagePick} />
               <div className="upload-zone" onClick={()=>fileRef.current.click()}><div style={{fontSize:20}}>+</div><div style={{fontSize:12,color:"rgba(255,255,255,0.4)"}}>{uploading?"Uploading...":"Click to add photos"}</div></div>
+              <div className="section-title">Documents (Legal, Financial)</div>
+              {documents.length > 0 && <div style={{marginBottom:12}}>{documents.map((doc, i) => (
+                <div key={i} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"8px 12px",background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:8,marginBottom:6}}>
+                  <div style={{display:"flex",alignItems:"center",gap:8}}>
+                    <span>{doc.type === "PDF" ? "\uD83D\uDCC4" : "\uD83D\uDCC1"}</span>
+                    <span style={{fontSize:13,fontWeight:500}}>{doc.name}</span>
+                    <span style={{fontSize:11,color:"rgba(255,255,255,0.3)"}}>{doc.type}</span>
+                  </div>
+                  <button type="button" onClick={()=>setDocuments(prev=>prev.filter((_,j)=>j!==i))} style={{background:"none",border:"none",color:"#ff6b6b",cursor:"pointer",fontSize:14}}>x</button>
+                </div>
+              ))}</div>}
+              <input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx" ref={docRef} style={{display:"none"}} onChange={handleDocUpload} />
+              <div className="upload-zone" onClick={()=>docRef.current.click()} style={{marginBottom:16}}><div style={{fontSize:16}}>\uD83D\uDCC4</div><div style={{fontSize:12,color:"rgba(255,255,255,0.4)"}}>{docUploading ? "Uploading..." : "Click to add documents (PDF, Word, Excel)"}</div></div>
               <button className="submit-btn" type="submit" disabled={loading||uploading}>{loading?"Creating...":"Create Asset"}</button>
               {assetMsg && <div className={assetMsg.includes("success")?"success-msg":"error-msg"}>{assetMsg}</div>}
             </form>
