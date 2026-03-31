@@ -50,14 +50,31 @@ export default async function handler(req, res) {
   }
 
   if (action === "withdraw") {
-    if (wallet.availableBalance < amount) return res.status(400).json({ error: "Insufficient balance" });
+    // 0.3% withdrawal fee (min EUR 2, max EUR 50)
+    let withdrawFee = Math.round(Number(amount) * 0.003 * 100) / 100;
+    if (withdrawFee < 2) withdrawFee = 2;
+    if (withdrawFee > 50) withdrawFee = 50;
+    const totalDeduct = Number(amount) + withdrawFee;
+
+    if (wallet.availableBalance < totalDeduct) return res.status(400).json({ error: "Insufficient balance. Need EUR " + totalDeduct.toFixed(2) + " (EUR " + amount + " + EUR " + withdrawFee.toFixed(2) + " fee)" });
     if (amount > 5000) return res.status(400).json({ error: "Daily limit: EUR 5,000" });
 
-    wallet.availableBalance -= Number(amount);
-    wallet.transactions.push({ type: "withdrawal", amount: -Number(amount), status: "pending", description: "Withdrawal EUR " + amount + " (pending review)" });
+    wallet.availableBalance -= totalDeduct;
+    wallet.transactions.push({ type: "withdrawal", amount: -Number(amount), status: "pending", description: "Withdrawal EUR " + amount + " (fee: EUR " + withdrawFee.toFixed(2) + ", pending review)" });
     await wallet.save();
-    await notify(user._id, "system", "Withdrawal Submitted", "EUR " + amount + " withdrawal pending review", "/dashboard");
-    return res.json({ success: true, balance: wallet.availableBalance, message: "Withdrawal submitted for review" });
+
+    // Credit fee to platform wallet
+    try {
+      const { creditPlatformWallet } = await import("../../../lib/platformWallet.mjs").catch(() => require("../../../lib/platformWallet"));
+      await creditPlatformWallet(withdrawFee, "Withdrawal fee: EUR " + amount + " withdrawal", "wfee-" + Date.now(), "Withdrawal");
+    } catch(e) {
+      // Fallback: just record the fee
+      const Fee = (await import("../../../models/Fee")).default;
+      await Fee.create({ type: "withdrawal", amount: withdrawFee, userId: user._id.toString(), description: "0.3% withdrawal fee on EUR " + amount });
+    }
+
+    await notify(user._id, "system", "Withdrawal Submitted", "EUR " + amount + " withdrawal pending review (fee: EUR " + withdrawFee.toFixed(2) + ")", "/dashboard");
+    return res.json({ success: true, balance: wallet.availableBalance, fee: withdrawFee, message: "Withdrawal submitted. Fee: EUR " + withdrawFee.toFixed(2) });
   }
 
   return res.status(400).json({ error: "Action: deposit or withdraw" });
