@@ -17,9 +17,9 @@ export default function AdminDashboard() {
   const [assetMsg, setAssetMsg] = useState("");
   const [images, setImages] = useState([]);
   const [uploading, setUploading] = useState(false);
-  const [documents, setDocuments] = useState([]);
-  const [docUploading, setDocUploading] = useState(false);
-  const docRef = useRef();
+  const [documents, setDocuments] = useState({ legal:[], financial:[], kyc:[], regulatory:[], photos:[] });
+  const [docUploading, setDocUploading] = useState("");
+  
   const fileRef = useRef();
 
   useEffect(() => {
@@ -70,10 +70,9 @@ export default function AdminDashboard() {
     e.target.value = "";
   };
 
-  const handleDocUpload = async (e) => {
-    const file = e.target.files[0];
+  const handleDocUpload = async (file, category) => {
     if (!file) return;
-    setDocUploading(true);
+    setDocUploading(category);
     try {
       const fd = new FormData();
       fd.append("file", file);
@@ -81,20 +80,18 @@ export default function AdminDashboard() {
       const d = await r.json();
       if (d.url) {
         const ext = file.name.split(".").pop().toLowerCase();
-        const docType = ext === "pdf" ? "PDF" : ["doc","docx"].includes(ext) ? "Word" : ["xls","xlsx"].includes(ext) ? "Excel" : "File";
-        setDocuments(prev => [...prev, { name: file.name, url: d.url, type: docType }]);
+        const docType = ext === "pdf" ? "PDF" : ["doc","docx"].includes(ext) ? "Word" : ["xls","xlsx"].includes(ext) ? "Excel" : ["jpg","jpeg","png","webp"].includes(ext) ? "Image" : "File";
+        setDocuments(prev => ({ ...prev, [category]: [...(prev[category]||[]), { name: file.name, url: d.url, type: docType }] }));
       }
-    } catch(err) { console.error("Doc upload error:", err); }
-    setDocUploading(false);
-    e.target.value = "";
+    } catch(err) { console.error(err); }
+    setDocUploading("");
   };
-  const removeImage = (tempId) => setImages(prev => prev.filter(img => img.tempId !== tempId));
 
   const createAsset = async (e) => {
     e.preventDefault();
     setLoading(true); setAssetMsg("");
     try {
-      const payload = { ...assetForm, imageUrl: images.find(i => i.url)?.url || undefined, documents };
+      const payload = { ...assetForm, imageUrl: images.find(i => i.url)?.url || undefined, documents: [...(documents.legal||[]).map(d=>({...d,category:"legal"})), ...(documents.financial||[]).map(d=>({...d,category:"financial"})), ...(documents.kyc||[]).map(d=>({...d,category:"kyc"})), ...(documents.regulatory||[]).map(d=>({...d,category:"regulatory"}))] };
       if (assetForm.targetRaise) payload.targetRaise = Number(assetForm.targetRaise);
       if (assetForm.minInvestment) payload.minInvestment = Number(assetForm.minInvestment);
       if (assetForm.targetROI) payload.targetROI = Number(assetForm.targetROI);
@@ -107,7 +104,7 @@ export default function AdminDashboard() {
         body: JSON.stringify(payload),
       });
       const d = await r.json();
-      if (r.ok) { setAssetMsg("Asset created successfully!"); setAssetForm(emptyForm); setImages([]); setDocuments([]); fetchAssets(); }
+      if (r.ok) { setAssetMsg("Asset created successfully!"); setAssetForm(emptyForm); setImages([]); setDocuments({ legal:[], financial:[], kyc:[], regulatory:[], photos:[] }); fetchAssets(); }
       else setAssetMsg(d.error || "Failed to create asset");
     } catch { setAssetMsg("Network error"); }
     setLoading(false);
@@ -296,19 +293,89 @@ export default function AdminDashboard() {
               ))}</div>}
               <input type="file" accept="image/*" multiple ref={fileRef} style={{display:"none"}} onChange={handleImagePick} />
               <div className="upload-zone" onClick={()=>fileRef.current.click()}><div style={{fontSize:20}}>+</div><div style={{fontSize:12,color:"rgba(255,255,255,0.4)"}}>{uploading?"Uploading...":"Click to add photos"}</div></div>
-              <div className="section-title">Documents (Legal, Financial)</div>
-              {documents.length > 0 && <div style={{marginBottom:12}}>{documents.map((doc, i) => (
-                <div key={i} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"8px 12px",background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:8,marginBottom:6}}>
-                  <div style={{display:"flex",alignItems:"center",gap:8}}>
-                    <span>{doc.type === "PDF" ? "\uD83D\uDCC4" : "\uD83D\uDCC1"}</span>
-                    <span style={{fontSize:13,fontWeight:500}}>{doc.name}</span>
-                    <span style={{fontSize:11,color:"rgba(255,255,255,0.3)"}}>{doc.type}</span>
-                  </div>
-                  <button type="button" onClick={()=>setDocuments(prev=>prev.filter((_,j)=>j!==i))} style={{background:"none",border:"none",color:"#ff6b6b",cursor:"pointer",fontSize:14}}>x</button>
+<div className="section-title">Asset Documents</div>
+              <div style={{fontSize:12,color:"rgba(255,255,255,0.35)",marginBottom:16}}>Upload all required documents by category. Each category is reviewed separately by the compliance team.</div>
+              <div style={{background:"rgba(255,255,255,0.02)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:10,padding:16,marginBottom:12}}>
+                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
+                  <span style={{fontSize:16}}>\u2696\uFE0F</span>
+                  <span style={{fontSize:14,fontWeight:700,color:"#3B82F6"}}>Legal Documents</span>
                 </div>
-              ))}</div>}
-              <input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx" ref={docRef} style={{display:"none"}} onChange={handleDocUpload} />
-              <div className="upload-zone" onClick={()=>docRef.current.click()} style={{marginBottom:16}}><div style={{fontSize:16}}>\uD83D\uDCC4</div><div style={{fontSize:12,color:"rgba(255,255,255,0.4)"}}>{docUploading ? "Uploading..." : "Click to add documents (PDF, Word, Excel)"}</div></div>
+                <div style={{fontSize:11,color:"rgba(255,255,255,0.3)",marginBottom:10}}>Certificate of Incorporation, Board Resolution, Legal Opinion</div>
+                {(documents.legal||[]).length > 0 && <div style={{marginBottom:8}}>{(documents.legal||[]).map((doc, i) => (
+                  <div key={i} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"6px 10px",background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:6,marginBottom:4,fontSize:12}}>
+                    <div style={{display:"flex",alignItems:"center",gap:6}}>
+                      <span>{doc.type === "PDF" ? "\uD83D\uDCC4" : doc.type === "Image" ? "\uD83D\uDDBC" : "\uD83D\uDCC1"}</span>
+                      <span style={{fontWeight:500}}>{doc.name}</span>
+                      <span style={{color:"rgba(255,255,255,0.25)"}}>{doc.type}</span>
+                    </div>
+                    <button type="button" onClick={()=>setDocuments(prev=>({...prev,legal:prev.legal.filter((_,j)=>j!==i)}))} style={{background:"none",border:"none",color:"#ff6b6b",cursor:"pointer",fontSize:12}}>Remove</button>
+                  </div>
+                ))}</div>}
+                <div className="upload-zone" onClick={()=>{const inp=document.createElement("input");inp.type="file";inp.accept=".pdf,.doc,.docx";inp.onchange=e=>{if(e.target.files[0])handleDocUpload(e.target.files[0],"legal")};inp.click()}} style={{padding:14,marginTop:4}}>
+                  <div style={{fontSize:12,color:"rgba(255,255,255,0.35)"}}>{docUploading==="legal" ? "Uploading..." : "+ Upload Legal Documents"}</div>
+                </div>
+              </div>
+              <div style={{background:"rgba(255,255,255,0.02)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:10,padding:16,marginBottom:12}}>
+                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
+                  <span style={{fontSize:16}}>\uD83D\uDCB0</span>
+                  <span style={{fontSize:14,fontWeight:700,color:"#0ECB81"}}>Financial Documents</span>
+                </div>
+                <div style={{fontSize:11,color:"rgba(255,255,255,0.3)",marginBottom:10}}>Audited Statements, Bank Statements, Valuation Reports, P&L</div>
+                {(documents.financial||[]).length > 0 && <div style={{marginBottom:8}}>{(documents.financial||[]).map((doc, i) => (
+                  <div key={i} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"6px 10px",background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:6,marginBottom:4,fontSize:12}}>
+                    <div style={{display:"flex",alignItems:"center",gap:6}}>
+                      <span>{doc.type === "PDF" ? "\uD83D\uDCC4" : doc.type === "Image" ? "\uD83D\uDDBC" : "\uD83D\uDCC1"}</span>
+                      <span style={{fontWeight:500}}>{doc.name}</span>
+                      <span style={{color:"rgba(255,255,255,0.25)"}}>{doc.type}</span>
+                    </div>
+                    <button type="button" onClick={()=>setDocuments(prev=>({...prev,financial:prev.financial.filter((_,j)=>j!==i)}))} style={{background:"none",border:"none",color:"#ff6b6b",cursor:"pointer",fontSize:12}}>Remove</button>
+                  </div>
+                ))}</div>}
+                <div className="upload-zone" onClick={()=>{const inp=document.createElement("input");inp.type="file";inp.accept=".pdf,.xls,.xlsx,.doc,.docx";inp.onchange=e=>{if(e.target.files[0])handleDocUpload(e.target.files[0],"financial")};inp.click()}} style={{padding:14,marginTop:4}}>
+                  <div style={{fontSize:12,color:"rgba(255,255,255,0.35)"}}>{docUploading==="financial" ? "Uploading..." : "+ Upload Financial Documents"}</div>
+                </div>
+              </div>
+              <div style={{background:"rgba(255,255,255,0.02)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:10,padding:16,marginBottom:12}}>
+                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
+                  <span style={{fontSize:16}}>\uD83D\uDC64</span>
+                  <span style={{fontSize:14,fontWeight:700,color:"#F0B90B"}}>KYC / Owner Documents</span>
+                </div>
+                <div style={{fontSize:11,color:"rgba(255,255,255,0.3)",marginBottom:10}}>Passport, ID Card, Proof of Address, UBO Declaration</div>
+                {(documents.kyc||[]).length > 0 && <div style={{marginBottom:8}}>{(documents.kyc||[]).map((doc, i) => (
+                  <div key={i} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"6px 10px",background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:6,marginBottom:4,fontSize:12}}>
+                    <div style={{display:"flex",alignItems:"center",gap:6}}>
+                      <span>{doc.type === "PDF" ? "\uD83D\uDCC4" : doc.type === "Image" ? "\uD83D\uDDBC" : "\uD83D\uDCC1"}</span>
+                      <span style={{fontWeight:500}}>{doc.name}</span>
+                      <span style={{color:"rgba(255,255,255,0.25)"}}>{doc.type}</span>
+                    </div>
+                    <button type="button" onClick={()=>setDocuments(prev=>({...prev,kyc:prev.kyc.filter((_,j)=>j!==i)}))} style={{background:"none",border:"none",color:"#ff6b6b",cursor:"pointer",fontSize:12}}>Remove</button>
+                  </div>
+                ))}</div>}
+                <div className="upload-zone" onClick={()=>{const inp=document.createElement("input");inp.type="file";inp.accept=".pdf,.jpg,.jpeg,.png";inp.onchange=e=>{if(e.target.files[0])handleDocUpload(e.target.files[0],"kyc")};inp.click()}} style={{padding:14,marginTop:4}}>
+                  <div style={{fontSize:12,color:"rgba(255,255,255,0.35)"}}>{docUploading==="kyc" ? "Uploading..." : "+ Upload KYC / Owner Documents"}</div>
+                </div>
+              </div>
+              <div style={{background:"rgba(255,255,255,0.02)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:10,padding:16,marginBottom:12}}>
+                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
+                  <span style={{fontSize:16}}>\uD83D\uDCCB</span>
+                  <span style={{fontSize:14,fontWeight:700,color:"#8B5CF6"}}>Regulatory & Compliance</span>
+                </div>
+                <div style={{fontSize:11,color:"rgba(255,255,255,0.3)",marginBottom:10}}>Licenses, Permits, Regulatory Approvals, Insurance Certificates</div>
+                {(documents.regulatory||[]).length > 0 && <div style={{marginBottom:8}}>{(documents.regulatory||[]).map((doc, i) => (
+                  <div key={i} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"6px 10px",background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:6,marginBottom:4,fontSize:12}}>
+                    <div style={{display:"flex",alignItems:"center",gap:6}}>
+                      <span>{doc.type === "PDF" ? "\uD83D\uDCC4" : doc.type === "Image" ? "\uD83D\uDDBC" : "\uD83D\uDCC1"}</span>
+                      <span style={{fontWeight:500}}>{doc.name}</span>
+                      <span style={{color:"rgba(255,255,255,0.25)"}}>{doc.type}</span>
+                    </div>
+                    <button type="button" onClick={()=>setDocuments(prev=>({...prev,regulatory:prev.regulatory.filter((_,j)=>j!==i)}))} style={{background:"none",border:"none",color:"#ff6b6b",cursor:"pointer",fontSize:12}}>Remove</button>
+                  </div>
+                ))}</div>}
+                <div className="upload-zone" onClick={()=>{const inp=document.createElement("input");inp.type="file";inp.accept=".pdf,.doc,.docx";inp.onchange=e=>{if(e.target.files[0])handleDocUpload(e.target.files[0],"regulatory")};inp.click()}} style={{padding:14,marginTop:4}}>
+                  <div style={{fontSize:12,color:"rgba(255,255,255,0.35)"}}>{docUploading==="regulatory" ? "Uploading..." : "+ Upload Regulatory & Compliance"}</div>
+                </div>
+              </div>
+
               <button className="submit-btn" type="submit" disabled={loading||uploading}>{loading?"Creating...":"Create Asset"}</button>
               {assetMsg && <div className={assetMsg.includes("success")?"success-msg":"error-msg"}>{assetMsg}</div>}
             </form>
