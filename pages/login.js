@@ -12,7 +12,7 @@ const FEATURES = [
   { icon:"💶", text:"Invest from EUR 100" },
   { icon:"📈", text:"15–18% target annual ROI" },
   { icon:"🔐", text:"Enterprise-grade security" },
-  { icon:"🔗", text:"ERC-3643 security tokens" },
+  { icon:"🔗", text:"ERC-3643 asset tokens" },
   { icon:"🪪", text:"Sumsub KYC verification" },
 ];
 
@@ -20,7 +20,7 @@ const STATS = [
   ["Live","Platform active"],
   ["Growing","Investor community"],
   ["180+","Countries supported"],
-  ["EUR 100","Minimum investment"],
+  ["EUR 100","Minimum purchase"],
   ["0.2%","Trading fee"],
   ["15–18%","Target annual ROI"],
 ];

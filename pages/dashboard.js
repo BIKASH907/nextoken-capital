@@ -103,7 +103,7 @@ export default function InvestorDashboard() {
         <div style={{ maxWidth:1100, margin:"0 auto", padding:"28px 20px" }}>
           <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:24 }}>
             <div>
-              <h1 style={{ fontSize:24, fontWeight:800 }}>Investor Dashboard</h1>
+              <h1 style={{ fontSize:24, fontWeight:800 }}>My Dashboard</h1>
               <p style={{ fontSize:13, color:"rgba(255,255,255,0.4)" }}>Welcome, {session?.user?.name || user?.firstName || "Investor"}</p>
             </div>
             <div style={{ display:"flex", gap:8 }}>
@@ -126,7 +126,7 @@ export default function InvestorDashboard() {
           {/* PORTFOLIO */}
           {tab === "portfolio" && <>
             <div style={{ display:"flex", gap:12, marginBottom:24, flexWrap:"wrap" }}>
-              {card("Total Invested", "EUR " + (st.totalInvested||0).toLocaleString(), "#3b82f6")}
+              {card("Total Purchased", "EUR " + (st.totalInvested||0).toLocaleString(), "#3b82f6")}
               {card("Active", st.active||0, "#22c55e")}
               {card("Earnings", "EUR " + totalEarnings.toLocaleString(), "#F0B90B")}
               {card("Wallet", "EUR " + (wallet?.available||0).toLocaleString(), "#8b5cf6")}

@@ -388,7 +388,7 @@ export default function UniversalInvestment({ assetId }) {
           {/* Success */}
           {txHash && (
             <div className="mt-4 p-4 bg-green-900/20 border border-green-700 rounded-xl">
-              <p className="text-green-400 font-bold text-sm">✅ Investment Successful!</p>
+              <p className="text-green-400 font-bold text-sm">✅ Purchase Successful!</p>
               <p className="text-gray-400 text-xs mt-1">
                 Issuer received EUR • Commission deducted • Tokens credited
               </p>
@@ -432,7 +432,7 @@ export default function UniversalInvestment({ assetId }) {
             </div>
             <div className="bg-gray-900/50 rounded-xl p-3 text-center">
               <div className="text-white font-bold">€{asset.minInvestmentEUR}</div>
-              <div className="text-gray-600 text-xs">Min Invest</div>
+              <div className="text-gray-600 text-xs">Min Purchase</div>
             </div>
           </div>
 

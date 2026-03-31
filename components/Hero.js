@@ -7,7 +7,7 @@ export default function Hero() {
         <div className={styles.heroContent}>
           <p className={styles.heroLabel}>The Regulated RWA Marketplace</p>
           <h1 className={styles.heroTitle}>
-            Real-World Assets, Reimagined. Trade Tokenized Securities 24/7.
+            Real-World Assets, Reimagined. Trade Tokenized Digital Assets 24/7.
           </h1>
           <p className={styles.heroText}>
             Nextoken Capital is a structured digital marketplace for tokenized real-world

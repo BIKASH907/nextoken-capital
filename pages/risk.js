@@ -6,9 +6,9 @@ import Footer from "../components/Footer";
 const RISKS = [
   { icon:"📉", title:"Market Risk",         color:"#ef4444", desc:"The value of tokenized assets may go down as well as up. You may receive back less than you invested. Past performance is not a reliable indicator of future results. Real estate values, bond prices, and equity valuations are affected by economic conditions, interest rates, and market sentiment." },
   { icon:"💧", title:"Liquidity Risk",       color:"#F0B90B", desc:"Tokenized assets may be difficult to sell quickly at a fair price. Secondary market trading depends on the availability of buyers and sellers. There is no guarantee that a secondary market will exist for any particular token, and you may be unable to exit your investment before the stated maturity date." },
-  { icon:"⚖️", title:"Regulatory Risk",      color:"#3B82F6", desc:"The regulatory environment for crypto-assets and tokenized securities is evolving. Changes in law, regulation, or regulatory interpretation may affect the value of your investments, your ability to trade, or the platform's ability to operate. MiCA and other EU regulations may impose new requirements." },
+  { icon:"⚖️", title:"Regulatory Risk",      color:"#3B82F6", desc:"The regulatory environment for crypto-assets and tokenized digital assets is evolving. Changes in law, regulation, or regulatory interpretation may affect the value of your investments, your ability to trade, or the platform's ability to operate. MiCA and other EU regulations may impose new requirements." },
   { icon:"🔐", title:"Technology Risk",      color:"#0ECB81", desc:"Blockchain technology is subject to software bugs, cyber attacks, and infrastructure failures. Smart contract vulnerabilities could result in loss of funds. While we implement security best practices following ISO 27001 standards, no system is entirely free from technical risk." },
-  { icon:"🏗️", title:"Issuer Risk",          color:"#F0B90B", desc:"The financial performance of the underlying asset depends on the issuer's ability to manage and operate it. Issuers may default, become insolvent, or fail to deliver projected returns. Our compliance review does not constitute a recommendation or guarantee of performance." },
+  { icon:"🏗️", title:"Issuer Risk",          color:"#F0B90B", desc:"The financial performance of the underlying asset depends on the issuer's ability to manage and operate it. Issuers may default, become insolvent, or fail to deliver estimated earnings. Our compliance review does not constitute a recommendation or guarantee of performance." },
   { icon:"💱", title:"Currency Risk",        color:"#3B82F6", desc:"If you invest in assets denominated in a currency other than your home currency, exchange rate fluctuations may affect the value of your investment when converted back. Euro-denominated investments carry currency risk for non-Eurozone investors." },
   { icon:"🌐", title:"Concentration Risk",   color:"#ef4444", desc:"Investing a large proportion of your portfolio in a single asset, sector, or geography increases your exposure to specific risks. We recommend diversifying your investments across multiple asset classes, sectors, and geographies to reduce concentration risk." },
   { icon:"📋", title:"Operational Risk",     color:"#0ECB81", desc:"Platform downtime, settlement failures, or administrative errors could affect your ability to invest or trade. While we maintain business continuity plans, operational disruptions may delay or prevent transactions from being executed at the desired time or price." },
@@ -19,7 +19,7 @@ export default function RiskPage() {
     <>
       <Head>
         <title>Risk Disclosure — Nextoken Capital</title>
-        <meta name="description" content="Important risk disclosure for investors using the Nextoken Capital tokenized asset platform." />
+        <meta name="description" content="Important risk disclosure for buyers using the Nextoken Capital tokenized asset platform." />
       </Head>
       <Navbar />
       <style>{`
@@ -48,7 +48,7 @@ export default function RiskPage() {
           <div className="rk-tag">Risk Disclosure</div>
           <h1 className="rk-h1">Important Risk Information</h1>
           <div className="rk-warning">
-            <strong>Capital at Risk.</strong> Investing in tokenized assets involves significant risk and is not suitable for all investors. The value of your investments can go down as well as up, and you may lose all of the money you invest. Please read this risk disclosure carefully before investing and consider seeking independent financial advice.
+            <strong>Capital at Risk.</strong> Investing in tokenized assets involves significant risk and is not suitable for all investors. The value of your investments can go down as well as up, and you may lose all of the money you invest. Please read this risk disclosure carefully before investing and consider seeking independent financial guidance.
           </div>
         </div>
         <div className="rk-body">

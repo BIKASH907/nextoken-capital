@@ -43,7 +43,7 @@ const Footer = () => {
         <div style={{display:"flex",gap:20}}>
           <span style={{fontSize:11,color:"rgba(255,255,255,0.2)"}}>MiCA-ready architecture</span>
           <span style={{fontSize:11,color:"rgba(255,255,255,0.2)"}}>EU regulatory framework</span>
-          <span style={{fontSize:11,color:"rgba(255,255,255,0.2)"}}>ERC-3643 security tokens</span>
+          <span style={{fontSize:11,color:"rgba(255,255,255,0.2)"}}>ERC-3643 asset tokens</span>
         </div>
       </div>
     </footer>

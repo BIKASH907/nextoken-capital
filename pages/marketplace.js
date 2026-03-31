@@ -60,7 +60,7 @@ export default function Marketplace() {
             {[
               { l: "Listed Assets",   v: assets.length, c: "#F0B90B" },
               { l: "Asset Types",     v: new Set(assets.map(a => a.assetType)).size, c: "#8b5cf6" },
-              { l: "Min Investment",  v: "EUR 100", c: "#0ECB81" },
+              { l: "Min Purchase",  v: "EUR 100", c: "#0ECB81" },
               { l: "Avg Yield",       v: assets.length ? (assets.reduce((s, a) => s + (a.targetROI || 0), 0) / assets.length).toFixed(1) + "%" : "—", c: "#3b82f6" },
             ].map((s, i) => (
               <div key={i} style={{ background: "#161b22", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "14px 20px", flex: 1, minWidth: 120 }}>
@@ -127,8 +127,8 @@ export default function Marketplace() {
                       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 14 }}>
                         {[
                           { l: "TOKEN PRICE",   v: "EUR " + priceOf(a),          c: "#F0B90B" },
-                          { l: "ANNUAL YIELD",  v: (a.targetROI || 0) + "%",     c: "#0ECB81" },
-                          { l: "MIN INVEST",    v: "EUR " + (a.minInvestment || 100), c: "#3b82f6" },
+                          { l: "EST. RETURN",  v: (a.targetROI || 0) + "%",     c: "#0ECB81" },
+                          { l: "MIN PURCHASE",    v: "EUR " + (a.minInvestment || 100), c: "#3b82f6" },
                         ].map(({ l, v, c }) => (
                           <div key={l} style={{ background: "#0a0e14", borderRadius: 8, padding: "8px 10px", textAlign: "center" }}>
                             <div style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", marginBottom: 3 }}>{l}</div>
@@ -160,7 +160,7 @@ export default function Marketplace() {
                         <button
                           onClick={e => { e.stopPropagation(); if (!session) { router.push("/login"); return; } router.push("/asset/" + a._id); }}
                           style={{ flex: 1, padding: 12, background: "#F0B90B", color: "#000", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
-                          Invest Now
+                          Buy Now
                         </button>
                         <button
                           onClick={e => { e.stopPropagation(); router.push("/exchange?asset=" + a._id); }}

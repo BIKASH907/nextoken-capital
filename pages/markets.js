@@ -86,7 +86,7 @@ export default function MarketsPage() {
           <div className="mk-hero-stats" style={{ display: "flex", justifyContent: "center", gap: "40px", flexWrap: "wrap" }}>
             {[
               ["Total Assets", list.length + " Listed"],
-              ["Min Investment", "€100"],
+              ["Min Purchase", "€100"],
               ["Avg. Yield", list.length ? (list.reduce((s,a) => s + (a.annualYield||0), 0) / list.length).toFixed(1) + "%" : "—"],
               ["Blockchain", "Polygon"],
             ].map(([k,v]) => (
@@ -190,7 +190,7 @@ export default function MarketsPage() {
                       <div className="mk-card-stats" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px", marginBottom: "14px" }}>
                         {[
                           ["Token Price", asset.tokenPrice ? "€" + asset.tokenPrice : "—"],
-                          ["Annual Yield", asset.annualYield ? asset.annualYield + "%" : "—"],
+                          ["Est. Annual Return", asset.annualYield ? asset.annualYield + "%" : "—"],
                           ["Min. Invest",  asset.minInvestment ? "€" + asset.minInvestment : "—"],
                         ].map(([k,v]) => (
                           <div key={k} style={{ background: "rgba(255,255,255,0.03)", borderRadius: "8px", padding: "10px 8px", textAlign: "center" }}>

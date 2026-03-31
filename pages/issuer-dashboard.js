@@ -27,7 +27,7 @@ const TYPE_LABELS = {
 const DOC_CATEGORIES = [
   { id: "photos", label: "Photos", icon: "\uD83D\uDCF8", color: "#F0B90B", desc: "Public \u2014 visible to all visitors after approval", types: ["Property Exterior", "Interior", "Aerial View", "Progress Photos", "Other"], accept: ".jpg,.jpeg,.png,.webp" },
   { id: "legal", label: "Legal", icon: "\u2696\uFE0F", color: "#3B82F6", desc: "Admin only \u2014 reviewed by compliance team", types: ["Certificate of Incorporation", "Articles of Association", "Board Resolution", "UBO Declaration", "Legal Opinion", "Other"], accept: ".pdf,.doc,.docx" },
-  { id: "financial", label: "Financial", icon: "\uD83D\uDCB0", color: "#0ECB81", desc: "Investors only \u2014 visible to verified investors with active holdings", types: ["Audited Financial Statements", "Bank Statements", "Asset Valuation Report", "P&L Statement", "Cash Flow", "Other"], accept: ".pdf,.xls,.xlsx,.doc,.docx" },
+  { id: "financial", label: "Financial", icon: "\uD83D\uDCB0", color: "#0ECB81", desc: "Investors only \u2014 visible to verified buyers with active holdings", types: ["Audited Financial Statements", "Bank Statements", "Asset Valuation Report", "P&L Statement", "Cash Flow", "Other"], accept: ".pdf,.xls,.xlsx,.doc,.docx" },
   { id: "operational", label: "Operational", icon: "\uD83C\uDFD7\uFE0F", color: "#f59e0b", desc: "Admin only \u2014 property and operational documents", types: ["Title Deed", "Appraisal Report", "Insurance Certificate", "Lease Agreement", "Maintenance Records", "Other"], accept: ".pdf,.doc,.docx" },
   { id: "compliance", label: "Compliance & KYC", icon: "\uD83D\uDD10", color: "#8b5cf6", desc: "Admin only \u2014 identity and regulatory documents", types: ["Government-issued ID", "Proof of Address", "Sanctions Screening", "AML Check", "Tax ID Certificate", "Other"], accept: ".pdf,.jpg,.jpeg,.png" },
   { id: "technical", label: "Technical / Blockchain", icon: "\u26D3\uFE0F", color: "#06b6d4", desc: "Admin only \u2014 smart contract and tokenomics documents", types: ["Smart Contract Details", "Tokenomics Document", "Offering Structure", "Milestone Plan", "Whitepaper", "Other"], accept: ".pdf,.doc,.docx" },
@@ -303,7 +303,7 @@ setUser(uData.user || uData);
                       \uD83D\uDD12 Change Password
                     </div>
                     <div className="id-user-item" onClick={() => { setShowUserMenu(false); router.push("/dashboard"); }}>
-                      \uD83D\uDCCA Investor Dashboard
+                      \uD83D\uDCCA My Dashboard
                     </div>
                     <div className="id-user-divider" />
                     <div className="id-user-item" style={{ color: "#ef4444" }} onClick={handleLogout}>
@@ -585,11 +585,11 @@ setUser(uData.user || uData);
             <div style={{ fontSize: 12, fontWeight: 700, color: "#F0B90B", letterSpacing: 1, textTransform: "uppercase", margin: "20px 0 10px" }}>Financials</div>
             <div className="id-3col">
               <div className="id-field"><label className="id-label">Target Raise (EUR) *</label><input className="id-input" type="number" value={cf.targetRaise} onChange={e => uf("targetRaise", e.target.value)} placeholder="5000000" /></div>
-              <div className="id-field"><label className="id-label">Min Investment (EUR)</label><input className="id-input" type="number" value={cf.minInvestment} onChange={e => uf("minInvestment", e.target.value)} placeholder="100" /></div>
+              <div className="id-field"><label className="id-label">Min Purchase (EUR)</label><input className="id-input" type="number" value={cf.minInvestment} onChange={e => uf("minInvestment", e.target.value)} placeholder="100" /></div>
               <div className="id-field"><label className="id-label">Token Price (EUR)</label><input className="id-input" type="number" step="0.01" value={cf.tokenPrice} onChange={e => uf("tokenPrice", e.target.value)} placeholder="10.00" /></div>
             </div>
             <div className="id-3col">
-              <div className="id-field"><label className="id-label">Target ROI (%)</label><input className="id-input" type="number" step="0.1" value={cf.targetROI} onChange={e => uf("targetROI", e.target.value)} placeholder="18.2" /></div>
+              <div className="id-field"><label className="id-label">Est. Return (%)</label><input className="id-input" type="number" step="0.1" value={cf.targetROI} onChange={e => uf("targetROI", e.target.value)} placeholder="18.2" /></div>
               <div className="id-field"><label className="id-label">Term (months)</label><input className="id-input" type="number" value={cf.term} onChange={e => uf("term", e.target.value)} placeholder="36" /></div>
               <div className="id-field"><label className="id-label">Risk Level</label><select className="id-input" value={cf.riskLevel} onChange={e => uf("riskLevel", e.target.value)}><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select></div>
             </div>

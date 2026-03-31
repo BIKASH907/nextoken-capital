@@ -37,7 +37,7 @@ const tiers = [
     icon:"🏛",
     minAUM:"$10M+",
     color:"#F0B90B",
-    features:["White-glove onboarding","Custom SAFT/SAFE structuring","Co-investment opportunities","Real-time cap table management","Bespoke compliance support","Monthly analyst calls","Multi-signature custody setup"],
+    features:["White-glove onboarding","Custom SAFT/SAFE structuring","Co-asset listings","Real-time cap table management","Bespoke compliance support","Monthly analyst calls","Multi-signature custody setup"],
     cta:"Contact Our Team",
     featured:true,
   },
@@ -74,7 +74,7 @@ const faqs = [
   { q:"How is investor eligibility verified for institutional deals?",  a:"All institutional investors undergo enhanced due diligence (EDD) through our KYC/AML partner Sumsub, supplemented by FATF-compliant AML screening, entity verification, UBO (Ultimate Beneficial Owner) identification, and source of funds documentation." },
   { q:"Can non-EU institutions participate on the platform?",           a:"Yes. Nextoken supports investors from 30+ jurisdictions including Singapore, UAE, UK, Switzerland, India, and Hong Kong. We work with legal counsel in each jurisdiction to ensure compliant access through appropriate exemptions such as Reg D/S for US accredited investors." },
   { q:"What custody solutions are available for institutional clients?", a:"We support multi-signature custody arrangements, integration with regulated custodians such as Fireblocks and Copper, and direct wallet self-custody for institutions that prefer to manage their own private keys under a compliant framework." },
-  { q:"What is the minimum investment for institutional access?",       a:"Professional tier starts at $1M AUM. Institutional tier from $10M. Sovereign and Fund structures from $50M. Custom structures and co-investment arrangements are available for strategic partners." },
+  { q:"What is the minimum purchase for institutional access?",       a:"Professional tier starts at $1M AUM. Institutional tier from $10M. Sovereign and Fund structures from $50M. Custom structures and co-investment arrangements are available for strategic partners." },
 ];
 
 function FaqItem({ q, a }) {

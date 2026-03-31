@@ -5,9 +5,9 @@ import Footer from "../components/Footer";
 
 const PRESS = [
   { date:"Mar 10, 2026", source:"Fintech Lithuania",       title:"Nextoken Capital launches tokenized asset platform", type:"Coverage" },
-  { date:"Feb 22, 2026", source:"The Paypers",             title:"Nextoken Capital launches secondary market exchange for security tokens", type:"Coverage" },
+  { date:"Feb 22, 2026", source:"The Paypers",             title:"Nextoken Capital launches secondary market exchange for asset tokens", type:"Coverage" },
   { date:"Feb 5, 2026",  source:"Baltic Times",            title:"Lithuanian fintech tokenizes EUR 100M in real-world assets", type:"Coverage" },
-  { date:"Jan 18, 2026", source:"CoinDesk",                title:"EU-regulated platform brings institutional assets to retail investors", type:"Coverage" },
+  { date:"Jan 18, 2026", source:"CoinDesk",                title:"EU-compliant platform brings institutional assets to retail buyers", type:"Coverage" },
   { date:"Dec 12, 2025", source:"Nextoken Capital",        title:"Nextoken Capital receives MiCA CASP authorization from Bank of Lithuania", type:"Press Release" },
   { date:"Nov 3, 2025",  source:"Nextoken Capital",        title:"Platform launch: Tokenized real-world assets now available to 180+ countries", type:"Press Release" },
 ];

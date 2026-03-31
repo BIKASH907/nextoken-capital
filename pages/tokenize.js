@@ -99,7 +99,7 @@ export default function TokenizePage() {
     <>
       <Head>
         <title>Tokenize Your Asset — Nextoken Capital</title>
-        <meta name="description" content="List your real-world asset on the Nextoken marketplace. Upload documents, set terms, and reach global investors." />
+        <meta name="description" content="List your real-world asset on the Nextoken marketplace. Upload documents, set terms, and reach global buyers." />
       </Head>
       <Navbar />
 
@@ -227,8 +227,8 @@ export default function TokenizePage() {
               <div className="tz-title">Financial Details</div>
               <p className="tz-sub">Set investment terms, pricing, and risk parameters.</p>
               <div className="tz-row3">
-                <div className="tz-field"><label className="tz-label">Min Investment (EUR)</label><input className="tz-input" name="minInvestment" type="number" value={form.minInvestment} onChange={handle} /></div>
-                <div className="tz-field"><label className="tz-label">Target ROI (%)</label><input className="tz-input" name="targetROI" type="number" value={form.targetROI} onChange={handle} placeholder="e.g. 18" /></div>
+                <div className="tz-field"><label className="tz-label">Min Purchase (EUR)</label><input className="tz-input" name="minInvestment" type="number" value={form.minInvestment} onChange={handle} /></div>
+                <div className="tz-field"><label className="tz-label">Est. Return (%)</label><input className="tz-input" name="targetROI" type="number" value={form.targetROI} onChange={handle} placeholder="e.g. 18" /></div>
                 <div className="tz-field"><label className="tz-label">Term (months)</label><input className="tz-input" name="term" type="number" value={form.term} onChange={handle} placeholder="e.g. 36" /></div>
               </div>
               <div className="tz-row3">
@@ -327,8 +327,8 @@ export default function TokenizePage() {
                   ["Type", ASSET_TYPES.find(a=>a.id===assetType)?.label || assetType],
                   ["Location", form.location || "—"],
                   ["Target Raise", form.targetRaise ? `EUR ${parseInt(form.targetRaise).toLocaleString()}` : "—"],
-                  ["Min Investment", `EUR ${form.minInvestment}`],
-                  ["Target ROI", form.targetROI ? `${form.targetROI}%` : "—"],
+                  ["Min Purchase", `EUR ${form.minInvestment}`],
+                  ["Est. Return", form.targetROI ? `${form.targetROI}%` : "—"],
                   ["Term", form.term ? `${form.term} months` : "—"],
                   ["Token Price", form.tokenPrice ? `EUR ${form.tokenPrice}` : "—"],
                   ["Risk Level", form.riskLevel],

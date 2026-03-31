@@ -6,8 +6,8 @@ import Footer from "../components/Footer";
 const TEAM = [
   { name:"Bikash Bhat",       role:"CEO & Founder",          bio:"Fintech entrepreneur with 10+ years in capital markets and blockchain infrastructure.", photo:"/bikash.jpg", linkedin:"https://www.linkedin.com/in/bikash-bhat-87700318a" },
   { name:"Compliance Team",   role:"Legal & Compliance",     bio:"EU-based regulatory specialists ensuring full MiCA and Bank of Lithuania compliance." },
-  { name:"Engineering Team",  role:"Blockchain & Platform",  bio:"Full-stack engineers specialising in ERC-3643 security token infrastructure." },
-  { name:"Investment Team",   role:"Asset Origination",      bio:"Asset specialists sourcing and structuring real-world investment opportunities." },
+  { name:"Engineering Team",  role:"Blockchain & Platform",  bio:"Full-stack engineers specialising in ERC-3643 asset token infrastructure." },
+  { name:"Investment Team",   role:"Asset Origination",      bio:"Asset specialists sourcing and structuring real-world asset listings." },
 ];
 
 const VALUES = [
@@ -21,7 +21,7 @@ const MILESTONES = [
   { year:"2022", event:"Nextoken Capital UAB founded in Vilnius, Lithuania." },
   { year:"2023", event:"Bank of Lithuania EMI license granted. First asset tokenized on platform." },
   { year:"2024", event:"MiCA CASP authorization received. Platform launched to public investors." },
-  { year:"2025", event:"EUR 100M+ in assets tokenized. 10,000+ verified investors onboarded." },
+  { year:"2025", event:"EUR 100M+ in assets tokenized. 10,000+ verified buyers onboarded." },
   { year:"2026", event:"Secondary market exchange launched. 180+ countries supported." },
 ];
 
@@ -215,7 +215,7 @@ export default function AboutPage() {
                 { icon:"🏛️", title:"Bank of Lithuania", desc:"Nextoken Capital UAB is authorized and monitored by the Bank of Lithuania as an Electronic Money Institution.", badge:"EMI License" },
                 { icon:"⚖️", title:"MiCA Regulation",   desc:"We hold a MiCA CASP (Crypto-Asset Service Provider) authorization, the gold standard for EU crypto regulation.", badge:"CASP Authorized" },
                 { icon:"🪪", title:"Sumsub KYC",        desc:"All investors complete identity verification via Sumsub, ensuring full AML and CFT compliance across 180+ countries.", badge:"AML Compliant" },
-                { icon:"🔗", title:"ERC-3643 Standard", desc:"All security tokens are issued under the ERC-3643 standard, providing transfer controls, whitelisting and on-chain compliance.", badge:"Token Standard" },
+                { icon:"🔗", title:"ERC-3643 Standard", desc:"All asset tokens are issued under the ERC-3643 standard, providing transfer controls, whitelisting and on-chain compliance.", badge:"Token Standard" },
                 { icon:"🛡️", title:"Security Standards",         desc:"Our infrastructure follows international standards for information security management.", badge:"In Progress" },
                 { icon:"🌐", title:"FATF Aligned",      desc:"Our AML policies are aligned with FATF (Financial Action Task Force) recommendations for virtual asset service providers.", badge:"FATF Compliant" },
               ].map(r => (

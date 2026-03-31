@@ -213,7 +213,7 @@ const TEAM = [
 const LICENSES = [
   { flag: '🇱🇹', title: 'Bank of Lithuania',  id: 'License № EMI-2022-041',       desc: 'Authorized EMI under the Lithuanian Law on Electronic Money and Electronic Money Institutions.' },
   { flag: '🇪🇺', title: 'MiCA Authorization', id: 'Application in progress',   desc: 'Pursuing full authorization under EU Regulation 2023/1114 for CASP services across EEA states.' },
-  { flag: '⚖️',  title: 'DLT Pilot Regime',  id: 'DLT-MTF: ESMA-2023-LT-004',    desc: 'Approved DLT MTF under EU Regulation 2022/858, permitting tokenized securities trading.' },
+  { flag: '⚖️',  title: 'DLT Pilot Regime',  id: 'DLT-MTF: ESMA-2023-LT-004',    desc: 'Approved DLT MTF under EU Regulation 2022/858, permitting tokenized digital assets trading.' },
 ]
 
 const JOBS = [
@@ -240,7 +240,7 @@ const PERKS = [
 const PRESS_LOGOS = ['Financial Times', 'Bloomberg', 'CoinDesk', 'The Block', 'Reuters', 'Verslo žinios', 'Decrypt']
 
 const ARTICLES = [
-  { src: 'The Block',      date: 'Feb 14, 2026', title: 'Nextoken Capital reaches €420M tokenized asset milestone under MiCA regime',             desc: 'The Vilnius-based platform surpassed a major threshold, signaling growing institutional appetite for regulated on-chain securities.' },
+  { src: 'The Block',      date: 'Feb 14, 2026', title: 'Nextoken Capital reaches €420M tokenized asset milestone under MiCA regime',             desc: 'The Vilnius-based platform surpassed a major threshold, signaling growing institutional appetite for regulated on-chain digital assets.' },
   { src: 'CoinDesk',       date: 'Jan 28, 2026', title: "How Lithuania became Europe's quiet leader in tokenized capital markets regulation",      desc: "A deep dive into how the Bank of Lithuania's pragmatic approach to DLT licensing created a cluster of RWA platforms." },
   { src: 'Financial Times',date: 'Dec 10, 2025', title: 'Tokenized real estate: the Baltic platforms reshaping European property investment',     desc: "FT Alphaville covers Nextoken's Vilnius Office Token as a case study for compliant fractional property ownership." },
   { src: 'Bloomberg',      date: 'Nov 3, 2025',  title: 'EU DLT Pilot Regime: one year in, the platforms that are making it work',               desc: 'Bloomberg Markets profiles the five most active DLT MTF operators. Nextoken Capital placed second by trading volume.' },
@@ -257,12 +257,12 @@ const RELEASES = [
 const BLOG_CATS = ['All', 'Regulation', 'Product', 'Real Estate', 'Bonds', 'Technology', 'Market Analysis']
 
 const POSTS = [
-  { e: '🏛️', cat: 'Regulation',      title: 'DLT Pilot Regime explained: what issuers need to know before tokenizing securities',               excerpt: 'A plain-English breakdown of EU Regulation 2022/858 and the permissions it grants for on-chain securities trading.',                    author: 'Elena Vaitkutė',  time: '8 min · Feb 28' },
+  { e: '🏛️', cat: 'Regulation',      title: 'DLT Pilot Regime explained: what issuers need to know before tokenizing digital assets',               excerpt: 'A plain-English breakdown of EU Regulation 2022/858 and the permissions it grants for on-chain digital assets trading.',                    author: 'Elena Vaitkutė',  time: '8 min · Feb 28' },
   { e: '🏗️', cat: 'Real Estate',     title: 'How we tokenized a €2.4M Vilnius office building in under 72 hours',                              excerpt: 'A step-by-step walkthrough of the legal structure, smart contract architecture, and investor onboarding for the Vilnius Office Token.', author: 'Andrius Mažulis', time: '10 min · Feb 14' },
   { e: '📊', cat: 'Market Analysis', title: 'Q4 2025 tokenized bond market report: yield compression and new entrants',                         excerpt: 'Our quarterly analysis of the EU tokenized fixed-income market, covering 47 active issuances across six DLT platforms.',              author: 'Research Team',   time: '15 min · Jan 31' },
-  { e: '⛓️', cat: 'Technology',      title: 'Why we chose an EVM-compatible chain for regulated securities (and what we\'d do differently)',    excerpt: 'Our CTO shares the architecture decisions behind our settlement layer, including tradeoffs on chain selection and gas abstraction.',   author: 'Elena Vaitkutė',  time: '11 min · Jan 15' },
+  { e: '⛓️', cat: 'Technology',      title: 'Why we chose an EVM-compatible chain for regulated digital assets (and what we\'d do differently)',    excerpt: 'Our CTO shares the architecture decisions behind our settlement layer, including tradeoffs on chain selection and gas abstraction.',   author: 'Elena Vaitkutė',  time: '11 min · Jan 15' },
   { e: '🪙', cat: 'Product',         title: 'NXT Token: utility, governance rights, and staking mechanics explained',                           excerpt: 'A full explainer of the NXT platform token — how it reduces trading fees, grants governance votes, and accrues platform revenue.',  author: 'Product Team',    time: '7 min · Jan 8'   },
-  { e: '🌍', cat: 'Regulation',      title: 'Investing from outside the EU: what MiCA means for global access to tokenized securities',        excerpt: 'MiCA is an EU regulation — but its passporting regime and third-country rules have major implications for non-EU investors.',        author: 'Compliance Team', time: '9 min · Dec 19'  },
+  { e: '🌍', cat: 'Regulation',      title: 'Investing from outside the EU: what MiCA means for global access to tokenized digital assets',        excerpt: 'MiCA is an EU regulation — but its passporting regime and third-country rules have major implications for non-EU investors.',        author: 'Compliance Team', time: '9 min · Dec 19'  },
 ]
 
 const API_SIDEBAR = [
@@ -354,7 +354,7 @@ function AboutPage() {
             <div>
               <div className="c-eyebrow">Our Mission</div>
               <h2 className="c-h2">Capital markets shouldn't have gatekeepers</h2>
-              <p className="c-p">Today, access to real estate bonds, pre-IPO equity, and institutional-grade fixed income is limited to a small fraction of the global population — blocked by geography, minimum investment thresholds, and legacy intermediaries.</p>
+              <p className="c-p">Today, access to real estate bonds, pre-IPO equity, and institutional-grade fixed income is limited to a small fraction of the global population — blocked by geography, minimum purchase thresholds, and legacy intermediaries.</p>
               <p className="c-p">Nextoken Capital was built to fix that. By combining distributed ledger technology with a full EU regulatory stack, we enable any issuer to raise capital on-chain and any investor — anywhere in the world — to access it compliantly.</p>
               <p className="c-p" style={{marginBottom:0}}>We believe the future of capital markets is programmable, borderless, and always-on. We're building it now.</p>
             </div>

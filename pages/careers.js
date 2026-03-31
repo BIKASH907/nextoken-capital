@@ -9,7 +9,7 @@ const JOBS = [
   { id:2, title:"Compliance Officer",          dept:"Legal",        loc:"Vilnius",           type:"Full-time", desc:"Manage MiCA compliance, Bank of Lithuania reporting, AML monitoring, and regulatory filings." },
   { id:3, title:"Full-Stack Developer",        dept:"Engineering",  loc:"Remote",            type:"Full-time", desc:"Build investor-facing features on our Next.js platform, API integrations, and dashboard tooling." },
   { id:4, title:"Asset Origination Manager",  dept:"Investments",  loc:"Vilnius / EU",      type:"Full-time", desc:"Source, structure, and onboard real-world assets including real estate, bonds, and private equity." },
-  { id:5, title:"Product Designer (UI/UX)",   dept:"Design",       loc:"Remote",            type:"Full-time", desc:"Design investor dashboards, onboarding flows, and the secondary market exchange interface." },
+  { id:5, title:"Product Designer (UI/UX)",   dept:"Design",       loc:"Remote",            type:"Full-time", desc:"Design my dashboards, onboarding flows, and the secondary market exchange interface." },
   { id:6, title:"Marketing Manager",          dept:"Marketing",    loc:"Remote",            type:"Full-time", desc:"Drive investor acquisition through content marketing, partnerships, and growth campaigns." },
 ];
 

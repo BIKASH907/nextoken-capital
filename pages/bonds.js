@@ -28,7 +28,7 @@ const faqs = [
   { q:"What types of bonds are listed?",    a:"The platform includes green, corporate, convertible, and municipal bond structures from verified issuers across Europe and globally." },
   { q:"How is fundraising progress shown?", a:"Each bond displays a visible completion percentage and raised-versus-target amount updated in real time." },
   { q:"Can bonds trade digitally?",         a:"Where structure and review permit, digital bonds can progress toward exchange-based workflows on the Nextoken secondary market." },
-  { q:"What is the minimum investment?",    a:"Minimum ticket size varies by bond and is shown in each listing, starting from as low as EUR 250." },
+  { q:"What is the minimum purchase?",    a:"Minimum ticket size varies by bond and is shown in each listing, starting from as low as EUR 250." },
   { q:"How do issuers launch a bond?",      a:"Issuers begin through the Tokenize workflow, define structure, maturity, and investor terms, then submit documentation for review." },
 ];
 const S = {
@@ -216,7 +216,7 @@ export default function BondsPage() {
     <>
       <Head>
         <title>Bonds — Nextoken Capital</title>
-        <meta name="description" content="Trade tokenized bond securities on the Nextoken marketplace." />
+        <meta name="description" content="Trade tokenized bond digital assets on the Nextoken marketplace." />
       </Head>
 
       <Navbar />

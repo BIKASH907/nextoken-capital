@@ -82,7 +82,7 @@ const FEATURES = [
   { icon:"💶", text:"Invest from EUR 100" },
   { icon:"📈", text:"15–18% target annual ROI" },
   { icon:"🔐", text:"Enterprise-grade security" },
-  { icon:"🔗", text:"ERC-3643 security tokens" },
+  { icon:"🔗", text:"ERC-3643 asset tokens" },
   { icon:"🪪", text:"Sumsub KYC verification" },
 ];
 
@@ -301,7 +301,7 @@ export default function RegisterPage() {
               ["Live","Platform active"],
               ["Growing","Investor community"],
               ["180+","Countries supported"],
-              ["EUR 100","Minimum investment"],
+              ["EUR 100","Minimum purchase"],
               ["0.2%","Trading fee"],
               ["15–18%","Target annual ROI"],
             ].map(([v,l]) => (
@@ -338,7 +338,7 @@ export default function RegisterPage() {
               <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:20}}><div style={{flex:1,height:1,background:"rgba(255,255,255,0.08)"}}></div><span style={{fontSize:12,color:"rgba(255,255,255,0.3)"}}>or register with email</span><div style={{flex:1,height:1,background:"rgba(255,255,255,0.08)"}}></div></div>
               <div className="rg-title">Create your account</div>
               <p className="rg-sub">Join our investor community. Takes 3 minutes.</p>
-              <div style={{marginBottom:16}}><label style={{display:"block",fontSize:12,fontWeight:700,color:"rgba(255,255,255,0.4)",marginBottom:8,textTransform:"uppercase",letterSpacing:1}}>I WANT TO</label><div style={{display:"flex",gap:10}}><button type="button" onClick={()=>setForm({...form,role:"investor"})} style={{flex:1,padding:"14px 12px",borderRadius:10,cursor:"pointer",fontFamily:"inherit",fontSize:14,fontWeight:700,textAlign:"center",background:form.role==="investor"?"rgba(240,185,11,0.12)":"#161B22",color:form.role==="investor"?"#F0B90B":"rgba(255,255,255,0.4)",border:form.role==="investor"?"2px solid #F0B90B":"2px solid rgba(255,255,255,0.08)"}}>Invest in Assets<div style={{fontSize:10,fontWeight:400,color:"rgba(255,255,255,0.3)",marginTop:4}}>Buy tokenized bonds, equity</div></button><button type="button" onClick={()=>setForm({...form,role:"issuer"})} style={{flex:1,padding:"14px 12px",borderRadius:10,cursor:"pointer",fontFamily:"inherit",fontSize:14,fontWeight:700,textAlign:"center",background:form.role==="issuer"?"rgba(139,92,246,0.12)":"#161B22",color:form.role==="issuer"?"#8b5cf6":"rgba(255,255,255,0.4)",border:form.role==="issuer"?"2px solid #8b5cf6":"2px solid rgba(255,255,255,0.08)"}}>Tokenize My Assets<div style={{fontSize:10,fontWeight:400,color:"rgba(255,255,255,0.3)",marginTop:4}}>List assets for investors</div></button></div></div>
+              <div style={{marginBottom:16}}><label style={{display:"block",fontSize:12,fontWeight:700,color:"rgba(255,255,255,0.4)",marginBottom:8,textTransform:"uppercase",letterSpacing:1}}>I WANT TO</label><div style={{display:"flex",gap:10}}><button type="button" onClick={()=>setForm({...form,role:"investor"})} style={{flex:1,padding:"14px 12px",borderRadius:10,cursor:"pointer",fontFamily:"inherit",fontSize:14,fontWeight:700,textAlign:"center",background:form.role==="investor"?"rgba(240,185,11,0.12)":"#161B22",color:form.role==="investor"?"#F0B90B":"rgba(255,255,255,0.4)",border:form.role==="investor"?"2px solid #F0B90B":"2px solid rgba(255,255,255,0.08)"}}>Invest in Assets<div style={{fontSize:10,fontWeight:400,color:"rgba(255,255,255,0.3)",marginTop:4}}>Buy tokenized bonds, equity</div></button><button type="button" onClick={()=>setForm({...form,role:"issuer"})} style={{flex:1,padding:"14px 12px",borderRadius:10,cursor:"pointer",fontFamily:"inherit",fontSize:14,fontWeight:700,textAlign:"center",background:form.role==="issuer"?"rgba(139,92,246,0.12)":"#161B22",color:form.role==="issuer"?"#8b5cf6":"rgba(255,255,255,0.4)",border:form.role==="issuer"?"2px solid #8b5cf6":"2px solid rgba(255,255,255,0.08)"}}>Tokenize My Assets<div style={{fontSize:10,fontWeight:400,color:"rgba(255,255,255,0.3)",marginTop:4}}>List assets for buyers</div></button></div></div>
               <div className="rg-field">
                 <label className="rg-label">Email Address</label>
                 <input className="rg-input" name="email" type="email" value={form.email} onChange={handle} placeholder="you@example.com" autoComplete="email" />

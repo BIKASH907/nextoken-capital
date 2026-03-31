@@ -43,7 +43,7 @@ const frameworks = [
     title:"ERC-3643 Token Standard",
     region:"On-Chain",
     status:"Implemented",
-    desc:"All security tokens issued on Nextoken use the ERC-3643 standard — the institutional-grade framework for regulated security tokens on Ethereum. Compliance is enforced at the smart contract level, meaning non-compliant transfers are blocked automatically without human intervention.",
+    desc:"All asset tokens issued on Nextoken use the ERC-3643 standard — the institutional-grade framework for regulated asset tokens on Ethereum. Compliance is enforced at the smart contract level, meaning non-compliant transfers are blocked automatically without human intervention.",
     points:["On-chain KYC/AML enforcement via smart contracts","Automatic transfer blocking for non-whitelisted wallets","Jurisdiction-based transfer restrictions","Freezing and recovery mechanisms for court orders","Full on-chain audit trail for all transfers"],
   },
   {
@@ -133,7 +133,7 @@ export default function CompliancePage() {
           Nextoken Capital is pursuing regulation by the Bank of Lithuania, designed for MiCA compliance, FATF aligned, and follows ISO 27001 standards — with on-chain enforcement via ERC-3643. Compliance is not a checkbox. It is our marketplace infrastructure.
         </p>
         <div style={{ display:"flex", gap:14, justifyContent:"center", flexWrap:"wrap", marginBottom:48 }}>
-          <Link href="/register"      style={S.gold}>Start Investing</Link>
+          <Link href="/register"      style={S.gold}>Start Buying</Link>
           <Link href="/institutional" style={S.out}>Institutional Access</Link>
         </div>
         {/* Compliance badges */}
@@ -271,9 +271,9 @@ export default function CompliancePage() {
       {/* INVESTOR PROTECTIONS */}
       <div style={{ background:"#080810", borderTop:"1px solid rgba(255,255,255,0.06)", borderBottom:"1px solid rgba(255,255,255,0.06)" }}>
         <div style={S.sec}>
-          <span style={S.lbl}>Investor Protections</span>
+          <span style={S.lbl}>Buyer Protections</span>
           <h2 style={S.h2}>Your Rights as an Investor</h2>
-          <p style={S.sub}>As a regulated platform, Nextoken must uphold specific investor protection obligations under EU law. Here is what you are entitled to.</p>
+          <p style={S.sub}>As a compliant platform, Nextoken must uphold specific buyer protection obligations under EU law. Here is what you are entitled to.</p>
           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))", gap:16 }}>
             {[
               { icon:"💰", t:"Segregated Funds",         d:"Your investment funds are held in segregated accounts. Nextoken cannot use investor money for operational expenses." },
@@ -350,7 +350,7 @@ export default function CompliancePage() {
           </div>
           <div style={{ borderTop:"1px solid rgba(255,255,255,0.07)", paddingTop:20, display:"flex", flexWrap:"wrap", justifyContent:"space-between", gap:10 }}>
             <p style={{ fontSize:12, color:"rgba(255,255,255,0.5)", margin:0 }}>© 2026 Nextoken Capital UAB. All rights reserved. Registered in Lithuania.</p>
-            <p style={{ fontSize:11, color:"rgba(255,255,255,0.5)", opacity:0.6, margin:0 }}>This page is for informational purposes only and does not constitute legal or financial advice.</p>
+            <p style={{ fontSize:11, color:"rgba(255,255,255,0.5)", opacity:0.6, margin:0 }}>This page is for informational purposes only and does not constitute legal or financial guidance.</p>
           </div>
         </div>
       </footer>

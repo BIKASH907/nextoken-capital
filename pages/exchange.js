@@ -192,7 +192,7 @@ export default function Exchange() {
                     <div style={{ color: '#ccc', fontSize: '14px' }}>{selectedAsset.location || '—'}</div>
                   </div>
                   <div>
-                    <div style={{ color: '#555', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Annual Yield</div>
+                    <div style={{ color: '#555', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Est. Annual Return</div>
                     <div style={{ color: '#0ECB81', fontSize: '16px', fontWeight: '700' }}>{selectedAsset.annualYield ? `${selectedAsset.annualYield}%` : '—'}</div>
                   </div>
                   <div>
@@ -446,8 +446,8 @@ export default function Exchange() {
                   {[
                     ['Token Symbol', selectedAsset.tokenSymbol || '—'],
                     ['Token Price', `€${selectedAsset.tokenPrice}`],
-                    ['Min Investment', selectedAsset.minInvestment ? `€${selectedAsset.minInvestment}` : '—'],
-                    ['Annual Yield', selectedAsset.annualYield ? `${selectedAsset.annualYield}%` : '—'],
+                    ['Min Purchase', selectedAsset.minInvestment ? `€${selectedAsset.minInvestment}` : '—'],
+                    ['Est. Annual Return', selectedAsset.annualYield ? `${selectedAsset.annualYield}%` : '—'],
                     ['Investment Term', selectedAsset.investmentTerm || '—'],
                     ['Total Supply', selectedAsset.totalTokens?.toLocaleString() || '—'],
                   ].map(([k, v]) => (

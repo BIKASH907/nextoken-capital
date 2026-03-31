@@ -163,8 +163,8 @@ export default function AssetDetail() {
                 <div className="asset-fin-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
                   {[
                     ["Token Price",    price > 0 ? "€" + price : "—",                                     "#F0B90B"],
-                    ["Annual Yield",   yield_ + "%",                                                        "#0ECB81"],
-                    ["Min Investment", "€" + minInvest,                                                     "#3b82f6"],
+                    ["Est. Annual Return",   yield_ + "%",                                                        "#0ECB81"],
+                    ["Min Purchase", "€" + minInvest,                                                     "#3b82f6"],
                     ["Target Raise",   asset.targetRaise ? "€" + asset.targetRaise.toLocaleString() : "—", "#fff"],
                     ["Raised So Far",  "€" + (asset.raisedAmount || 0).toLocaleString(),                   "#fff"],
                     ["Total Supply",   supply.toLocaleString() + " tokens",                                 "#fff"],
@@ -245,12 +245,12 @@ export default function AssetDetail() {
                     {price > 0 ? "€" + price : "Price TBD"}
                   </div>
                   <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, marginBottom: 16 }}>
-                    per token · Annual yield: {yield_}%
+                    per token · Est. annual return: {yield_}%
                   </div>
 
-                  {/* Min investment notice */}
+                  {/* Min purchase notice */}
                   <div style={{ background: "rgba(240,185,11,0.06)", border: "1px solid rgba(240,185,11,0.15)", borderRadius: 8, padding: "8px 12px", marginBottom: 16, fontSize: 12, color: "#F0B90B" }}>
-                    Min investment: <strong>€{minInvest}</strong>
+                    Min purchase: <strong>€{minInvest}</strong>
                     {price > 0 && <span> = {minUnits} token{minUnits > 1 ? "s" : ""}</span>}
                   </div>
 

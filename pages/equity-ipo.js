@@ -21,9 +21,9 @@ const statusStyle = {
 const riskColor = { low:"#0ECB81", medium:"#f59e0b", high:"#ef4444" };
 
 const faqs = [
-  { q:"What is a blockchain IPO?",                   a:"A blockchain IPO is a public equity offering launched natively on-chain. Investors receive compliant security tokens representing real equity ownership, with on-chain settlement and a transparent shareholder registry." },
-  { q:"What does ERC-3643 mean?",                    a:"ERC-3643 is the regulatory-grade standard for security tokens on Ethereum. It enforces KYC, AML, and jurisdiction-based transfer controls at the smart contract level." },
-  { q:"What is the minimum investment?",             a:"Minimum ticket sizes vary by offering. Early-stage rounds typically start from EUR 500 to EUR 1,000, while blockchain IPOs can have entry points as low as EUR 100." },
+  { q:"What is a blockchain IPO?",                   a:"A blockchain IPO is a public equity offering launched natively on-chain. Investors receive compliant asset tokens representing real equity ownership, with on-chain settlement and a transparent shareholder registry." },
+  { q:"What does ERC-3643 mean?",                    a:"ERC-3643 is the regulatory-grade standard for asset tokens on Ethereum. It enforces KYC, AML, and jurisdiction-based transfer controls at the smart contract level." },
+  { q:"What is the minimum purchase?",             a:"Minimum ticket sizes vary by offering. Early-stage rounds typically start from EUR 500 to EUR 1,000, while blockchain IPOs can have entry points as low as EUR 100." },
   { q:"Can equity tokens be traded after issuance?", a:"Yes. Qualifying equity tokens may be listed on the Nextoken secondary exchange for peer-to-peer trading among eligible investors." },
   { q:"How do issuers launch an equity raise?",      a:"Issuers begin through the Tokenize workflow, submit legal documentation and financials, define equity structure and investor terms, then launch a compliant digital fundraise." },
 ];
@@ -170,7 +170,7 @@ function ListingCard({ item, onInvest }) {
         onMouseEnter={e=>{e.currentTarget.style.background="#F0B90B";e.currentTarget.style.color="#000";}}
         onMouseLeave={e=>{e.currentTarget.style.background="rgba(240,185,11,0.08)";e.currentTarget.style.color="#F0B90B";}}
         style={{width:"100%",padding:"11px 0",borderRadius:10,border:"1px solid rgba(240,185,11,0.3)",background:"rgba(240,185,11,0.08)",color:"#F0B90B",fontSize:13,fontWeight:600,cursor:"pointer",fontFamily:"inherit",transition:"all 0.15s"}}>
-        Invest Now →
+        Buy Now →
       </button>
     </div>
   );
@@ -225,7 +225,7 @@ export default function EquityIPOPage() {
           <span style={S.lbl}>Structures</span><h2 style={S.h2}>Equity Structures You Can Access</h2>
           <p style={S.sub}>From early-stage SAFEs to full blockchain IPO listings, Nextoken supports the complete equity capital lifecycle.</p>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:16}}>
-            {[{icon:"🚀",name:"Blockchain IPO",desc:"Full public equity offerings launched on-chain with transparent allocation and secondary market readiness."},{icon:"🌱",name:"Early-Stage Equity",desc:"Invest in pre-IPO rounds. Includes SAFE notes, priced seed rounds, and Series A allocations."},{icon:"📊",name:"Equity Tokens (ST)",desc:"ERC-3643 compliant security tokens with regulatory-grade investor whitelisting and transfer controls."},{icon:"🔄",name:"Secondary Listings",desc:"Trade previously issued equity tokens on the Nextoken exchange for early investor liquidity."}].map(c=>(
+            {[{icon:"🚀",name:"Blockchain IPO",desc:"Full public equity offerings launched on-chain with transparent allocation and secondary market readiness."},{icon:"🌱",name:"Early-Stage Equity",desc:"Invest in pre-IPO rounds. Includes SAFE notes, priced seed rounds, and Series A allocations."},{icon:"📊",name:"Equity Tokens (ST)",desc:"ERC-3643 compliant asset tokens with regulatory-grade investor whitelisting and transfer controls."},{icon:"🔄",name:"Secondary Listings",desc:"Trade previously issued equity tokens on the Nextoken exchange for early investor liquidity."}].map(c=>(
               <div key={c.name} onMouseEnter={e=>{e.currentTarget.style.borderColor="rgba(240,185,11,0.3)";e.currentTarget.style.transform="translateY(-2px)";}} onMouseLeave={e=>{e.currentTarget.style.borderColor="rgba(255,255,255,0.08)";e.currentTarget.style.transform="none";}} style={{background:"#0B0E11",border:"1px solid rgba(255,255,255,0.08)",borderRadius:16,padding:24,transition:"all 0.2s",cursor:"pointer"}}>
                 <div style={{fontSize:28,marginBottom:14}}>{c.icon}</div>
                 <div style={{fontFamily:"Syne,sans-serif",fontSize:16,fontWeight:700,color:"rgba(255,255,255,0.85)",marginBottom:8}}>{c.name}</div>
@@ -293,7 +293,7 @@ export default function EquityIPOPage() {
             <p style={S.sub}>From structure to on-chain settlement, Nextoken handles the full lifecycle of your equity raise.</p>
             <div style={{position:"relative",display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:32}}>
               <div style={{position:"absolute",top:24,left:60,right:60,height:1,background:"linear-gradient(90deg,transparent,rgba(240,185,11,0.3),transparent)"}}/>
-              {[{n:"01",t:"Define Structure",b:"Set share class, supply, valuation cap, investor rights, and preferred terms."},{n:"02",t:"Submit Legal Docs",b:"Prepare cap table, pitch deck, audited financials, and disclosure package."},{n:"03",t:"Token Issuance",b:"ERC-3643 security tokens with KYC-gated investor whitelisting on-chain."},{n:"04",t:"Run the Fundraise",b:"Open subscriptions, monitor allocation progress and milestones in real time."},{n:"05",t:"Exchange Listing",b:"Qualified tokens progress to Nextoken secondary exchange for liquidity."}].map(s=>(
+              {[{n:"01",t:"Define Structure",b:"Set share class, supply, valuation cap, investor rights, and preferred terms."},{n:"02",t:"Submit Legal Docs",b:"Prepare cap table, pitch deck, audited financials, and disclosure package."},{n:"03",t:"Token Issuance",b:"ERC-3643 asset tokens with KYC-gated investor whitelisting on-chain."},{n:"04",t:"Run the Fundraise",b:"Open subscriptions, monitor allocation progress and milestones in real time."},{n:"05",t:"Exchange Listing",b:"Qualified tokens progress to Nextoken secondary exchange for liquidity."}].map(s=>(
                 <div key={s.n}>
                   <div style={{width:48,height:48,borderRadius:"50%",border:"1px solid rgba(240,185,11,0.3)",background:"rgba(240,185,11,0.10)",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"Syne,sans-serif",fontSize:15,fontWeight:700,color:"#F0B90B",marginBottom:16,position:"relative",zIndex:1}}>{s.n}</div>
                   <h4 style={{fontFamily:"Syne,sans-serif",fontSize:14,fontWeight:700,color:"rgba(255,255,255,0.85)",marginBottom:8}}>{s.t}</h4>
