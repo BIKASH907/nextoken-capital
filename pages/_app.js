@@ -119,7 +119,7 @@ export default function App({ Component, pageProps }) {
                 @media(max-width:640px){.nb-login,.nb-register{display:none!important}.nb-burger{display:flex!important}}
               `}</style>
 
-              <><CookieConsent /><Component {...pageProps} />
+              <CookieConsent /><Component {...pageProps} />
               <NxtChatbot />
             </AppProvider>
           </SessionProvider>
