@@ -24,7 +24,7 @@ export default async function handler(req, res) {
   if (!sellOrder) return res.status(404).json({ error: "Not found" });
   if (sellOrder.userId.toString() === buyer._id.toString()) return res.status(400).json({ error: "Cannot buy own listing" });
 
-  const fee = Math.round(sellOrder.totalAmount * 0.01 * 100) / 100;
+  const fee = Math.round(sellOrder.totalAmount * 0.003 * 100) / 100; // 0.3% per side
   const totalWithFee = sellOrder.totalAmount + fee;
 
   let buyerWallet = await Wallet.findOne({ userId: buyer._id });

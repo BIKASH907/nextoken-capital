@@ -28,7 +28,7 @@ export default async function handler(req, res) {
 
   const sellPrice = pricePerUnit || investment.pricePerUnit;
   const totalAmount = units * sellPrice;
-  const fee = Math.round(totalAmount * 0.01 * 100) / 100;
+  const fee = Math.round(totalAmount * 0.003 * 100) / 100; // 0.3% sell fee
 
   await checkRisk(user._id, "order", { amount: totalAmount, action: "sell" });
 

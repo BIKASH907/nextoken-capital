@@ -13,7 +13,7 @@ import { checkRisk } from "../../../lib/riskEngine";
 import crypto from "crypto";
 import { getAuthUser } from "../../../lib/getUser";
 
-const COMMISSION_RATE = 0.02; // 2% Nextoken commission
+const COMMISSION_RATE = 0.002; // 0.2% Nextoken commission
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
