@@ -331,7 +331,7 @@ export default function EquityIPOPage() {
                   <div style={{width:1,height:22,background:"rgba(240,185,11,0.25)"}}/>
                   <div><div style={{fontFamily:"Syne,sans-serif",fontSize:13,fontWeight:800,letterSpacing:"0.15em",color:"#F0B90B"}}>NEXTOKEN</div><div style={{fontSize:9,letterSpacing:"0.2em",color:"rgba(255,255,255,0.45)",textTransform:"uppercase"}}>CAPITAL</div></div>
                 </div>
-                <p style={{fontSize:13,color:"rgba(255,255,255,0.45)",maxWidth:240,lineHeight:1.7,marginBottom:16}}>The regulated infrastructure for tokenized real-world assets. Registered in Lithuania.</p>
+                <p style={{fontSize:13,color:"rgba(255,255,255,0.45)",maxWidth:240,lineHeight:1.7,marginBottom:16}}>The compliant infrastructure for tokenized real-world assets. Registered in Lithuania.</p>
               </div>
               <div>
                 <h5 style={{fontSize:11,fontWeight:700,letterSpacing:"0.15em",textTransform:"uppercase",color:"rgba(255,255,255,0.45)",marginBottom:16}}>Products</h5>

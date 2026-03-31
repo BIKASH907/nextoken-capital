@@ -5,13 +5,13 @@ import Footer from "../components/Footer";
 
 const TEAM = [
   { name:"Bikash Bhat",       role:"CEO & Founder",          bio:"Fintech entrepreneur with 10+ years in capital markets and blockchain infrastructure.", photo:"/bikash.jpg", linkedin:"https://www.linkedin.com/in/bikash-bhat-87700318a" },
-  { name:"Compliance Team",   role:"Legal & Compliance",     bio:"EU-based regulatory specialists ensuring full MiCA and Bank of Lithuania compliance." },
+  { name:"Compliance Team",   role:"Legal & Compliance",     bio:"EU-based regulatory specialists ensuring full MiCA and Lithuanian authorities compliance." },
   { name:"Engineering Team",  role:"Blockchain & Platform",  bio:"Full-stack engineers specialising in ERC-3643 asset token infrastructure." },
   { name:"Investment Team",   role:"Asset Origination",      bio:"Asset specialists sourcing and structuring real-world asset listings." },
 ];
 
 const VALUES = [
-  { icon:"⚖️", title:"Regulated First",   desc:"Every product decision starts with regulatory compliance. We hold EMI and CASP authorizations from the Bank of Lithuania." },
+  { icon:"⚖️", title:"Regulated First",   desc:"Every product decision starts with regulatory compliance. We hold EMI and CASP authorizations from the Lithuanian authorities." },
   { icon:"🔍", title:"Full Transparency",  desc:"On-chain ownership records, public cap tables, and real-time reporting for every asset on the platform." },
   { icon:"🌍", title:"Global Access",      desc:"Investors from 180+ countries can access institutional-grade assets from as little as EUR 100." },
   { icon:"🔐", title:"Security First",     desc:"Enterprise-grade security with Sumsub KYC and ERC-3643 transfer controls protect every transaction." },
@@ -19,7 +19,7 @@ const VALUES = [
 
 const MILESTONES = [
   { year:"2022", event:"Nextoken Capital UAB founded in Vilnius, Lithuania." },
-  { year:"2023", event:"Bank of Lithuania EMI license granted. First asset tokenized on platform." },
+  { year:"2023", event:"Lithuanian authorities UAB registration granted. First asset tokenized on platform." },
   { year:"2024", event:"MiCA CASP authorization received. Platform launched to public investors." },
   { year:"2025", event:"EUR 100M+ in assets tokenized. 10,000+ verified buyers onboarded." },
   { year:"2026", event:"Secondary market exchange launched. 180+ countries supported." },
@@ -141,8 +141,8 @@ export default function AboutPage() {
             <h2 className="ab-title">Why We Built Nextoken Capital</h2>
             <div className="ab-mission">
               <p>Traditional capital markets are fragmented, slow, and inaccessible to most investors. <strong>Real estate deals require hundreds of thousands of euros.</strong> Private equity is reserved for institutions. Bond markets are opaque.</p>
-              <p>Nextoken Capital was founded to change this. By tokenizing real-world assets on regulated blockchain infrastructure, we enable <strong>buyers from 180+ countries to access tokenized real-world assets from EUR 100</strong> — with full transparency and on-chain settlement.</p>
-              <p>We are registered in Lithuania, monitored by the Bank of Lithuania, and operate under MiCA — the EU's comprehensive crypto-asset regulation framework. <strong>Compliance is not an afterthought. It is our foundation.</strong></p>
+              <p>Nextoken Capital was founded to change this. By tokenizing real-world assets on compliant blockchain infrastructure, we enable <strong>buyers from 180+ countries to access tokenized real-world assets from EUR 100</strong> — with full transparency and on-chain settlement.</p>
+              <p>We are registered in Lithuania, monitored by the Lithuanian authorities, and operate under MiCA — the EU's comprehensive crypto-asset regulation framework. <strong>Compliance is not an afterthought. It is our foundation.</strong></p>
             </div>
           </div>
         </section>
@@ -208,7 +208,7 @@ export default function AboutPage() {
         <section className="ab-section-alt">
           <div className="ab-inner">
             <div className="ab-tag">Regulation</div>
-            <h2 className="ab-title">Fully Regulated Infrastructure</h2>
+            <h2 className="ab-title">Fully Compliant Infrastructure</h2>
             <p className="ab-sub">Every service we offer operates under EU financial regulation.</p>
             <div className="ab-reg-grid">
               {[

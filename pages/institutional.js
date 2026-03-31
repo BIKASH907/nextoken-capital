@@ -13,7 +13,7 @@ const S = {
 };
 
 const regions = [
-  { flag:"🇱🇹", name:"European Union",    note:"MiCA regulated · VASP registered · Bank of Lithuania supervised",  color:"#8b5cf6" },
+  { flag:"🇱🇹", name:"European Union",    note:"MiCA regulated · VASP registered · Lithuanian authorities supervised",  color:"#8b5cf6" },
   { flag:"🇸🇬", name:"Singapore",         note:"MAS-compatible structure · APAC gateway for tokenized RWA",         color:"#0ECB81" },
   { flag:"🇦🇪", name:"UAE / Dubai",       note:"DIFC & ADGM compatible · MENA investor access",                     color:"#F0B90B" },
   { flag:"🇬🇧", name:"United Kingdom",    note:"FCA-aligned compliance · Post-Brexit digital asset framework",       color:"#38bdf8" },
@@ -53,7 +53,7 @@ const tiers = [
 
 const useCases = [
   { icon:"🏢", title:"Family Offices",        desc:"Diversify into tokenized real estate, infrastructure, and private equity with institutional-grade custody and reporting." },
-  { icon:"📊", title:"Hedge Funds",            desc:"Access tokenized RWA strategies, secondary market liquidity, and structured yield products on regulated infrastructure." },
+  { icon:"📊", title:"Hedge Funds",            desc:"Access tokenized RWA strategies, secondary market liquidity, and structured yield products on compliant infrastructure." },
   { icon:"🏦", title:"Asset Managers",         desc:"Offer clients tokenized bond and equity exposure through a regulated, ERC-3643 compliant issuance and distribution platform." },
   { icon:"🌐", title:"Sovereign Wealth Funds", desc:"Deploy capital into infrastructure, green bonds, and emerging market assets with full regulatory transparency and on-chain audit." },
   { icon:"🏗",  title:"Real Estate Funds",     desc:"Tokenize property portfolios, automate distributions, and offer fractional ownership to a global investor base." },
@@ -70,7 +70,7 @@ const stats = [
 ];
 
 const faqs = [
-  { q:"What regulatory framework does Nextoken operate under?",         a:"Nextoken Capital UAB is registered and supervised by the Bank of Lithuania under the EU regulatory framework. Our tokens comply with MiCA (Markets in Crypto-Assets Regulation) and use the ERC-3643 standard for institutional-grade transfer controls, KYC/AML enforcement, and jurisdictional restrictions at the smart contract level." },
+  { q:"What regulatory framework does Nextoken operate under?",         a:"Nextoken Capital UAB is registered and supervised by the Lithuanian authorities under the EU regulatory framework. Our tokens comply with MiCA (Markets in Crypto-Assets Regulation) and use the ERC-3643 standard for institutional-grade transfer controls, KYC/AML enforcement, and jurisdictional restrictions at the smart contract level." },
   { q:"How is investor eligibility verified for institutional deals?",  a:"All institutional investors undergo enhanced due diligence (EDD) through our KYC/AML partner Sumsub, supplemented by FATF-compliant AML screening, entity verification, UBO (Ultimate Beneficial Owner) identification, and source of funds documentation." },
   { q:"Can non-EU institutions participate on the platform?",           a:"Yes. Nextoken supports investors from 30+ jurisdictions including Singapore, UAE, UK, Switzerland, India, and Hong Kong. We work with legal counsel in each jurisdiction to ensure compliant access through appropriate exemptions such as Reg D/S for US accredited investors." },
   { q:"What custody solutions are available for institutional clients?", a:"We support multi-signature custody arrangements, integration with regulated custodians such as Fireblocks and Copper, and direct wallet self-custody for institutions that prefer to manage their own private keys under a compliant framework." },
@@ -145,7 +145,7 @@ export default function InstitutionalPage() {
       <div style={S.sec}>
         <span style={S.lbl}>Who We Serve</span>
         <h2 style={S.h2}>Global Institutional Use Cases</h2>
-        <p style={S.sub}>From family offices to sovereign wealth funds — Nextoken's regulated infrastructure powers institutional capital deployment at scale, worldwide.</p>
+        <p style={S.sub}>From family offices to sovereign wealth funds — Nextoken's compliant infrastructure powers institutional capital deployment at scale, worldwide.</p>
         <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))", gap:16 }}>
           {useCases.map((c) => (
             <div key={c.title}
@@ -216,7 +216,7 @@ export default function InstitutionalPage() {
           <p style={S.sub}>Every layer of Nextoken's infrastructure is built for institutional compliance — from smart contract enforcement to legal documentation and regulatory reporting.</p>
           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))", gap:16 }}>
             {[
-              { icon:"⚖️", title:"MiCA Compliant",       desc:"Full compliance with EU Markets in Crypto-Assets Regulation. Regulated by Bank of Lithuania." },
+              { icon:"⚖️", title:"MiCA Compliant",       desc:"Full compliance with EU Markets in Crypto-Assets Regulation. Regulated by Lithuanian authorities." },
               { icon:"🔐", title:"ERC-3643 Standard",    desc:"On-chain KYC/AML enforcement. Transfer restrictions and investor whitelisting at smart contract level." },
               { icon:"🌍", title:"FATF Compliant",       desc:"Travel Rule compliance, VASP registration, and cross-border reporting aligned with FATF recommendations." },
               { icon:"🛡", title:"Enterprise Security",  desc:"Information security management following international standards. Data protection and cybersecurity at enterprise grade." },
@@ -272,7 +272,7 @@ export default function InstitutionalPage() {
           <span style={S.lbl}>Ready to Deploy Capital?</span>
           <h2 style={{ ...S.h2, marginBottom:14 }}>Start Your Institutional<br />Onboarding Today</h2>
           <p style={{ fontSize:16, color:"rgba(255,255,255,0.5)", fontWeight:300, maxWidth:500, margin:"0 auto 36px", lineHeight:1.75 }}>
-            Join leading family offices, hedge funds, and asset managers already deploying capital through Nextoken Capital's regulated infrastructure.
+            Join leading family offices, hedge funds, and asset managers already deploying capital through Nextoken Capital's compliant infrastructure.
           </p>
           <div style={{ display:"flex", gap:14, justifyContent:"center", flexWrap:"wrap" }}>
             <Link href="/register" style={S.gold}>Apply for Access</Link>
@@ -297,8 +297,8 @@ export default function InstitutionalPage() {
                   <div style={{ fontSize:9, letterSpacing:"0.2em", color:"rgba(255,255,255,0.5)", textTransform:"uppercase" }}>CAPITAL</div>
                 </div>
               </div>
-              <p style={{ fontSize:13, color:"rgba(255,255,255,0.5)", maxWidth:260, lineHeight:1.75, marginBottom:16 }}>The regulated infrastructure for tokenized real-world assets. Registered in Lithuania.</p>
-              <p style={{ fontSize:11, color:"rgba(255,255,255,0.5)", textTransform:"uppercase", letterSpacing:"0.05em" }}>MONITORED BY <a href="#" style={{ color:"#F0B90B", textDecoration:"none" }}>Bank of Lithuania</a></p>
+              <p style={{ fontSize:13, color:"rgba(255,255,255,0.5)", maxWidth:260, lineHeight:1.75, marginBottom:16 }}>The compliant infrastructure for tokenized real-world assets. Registered in Lithuania.</p>
+              <p style={{ fontSize:11, color:"rgba(255,255,255,0.5)", textTransform:"uppercase", letterSpacing:"0.05em" }}>MONITORED BY <a href="#" style={{ color:"#F0B90B", textDecoration:"none" }}>Lithuanian authorities</a></p>
             </div>
             <div>
               <h5 style={{ fontSize:11, fontWeight:700, letterSpacing:"0.15em", textTransform:"uppercase", color:"rgba(255,255,255,0.5)", marginBottom:16 }}>Products</h5>

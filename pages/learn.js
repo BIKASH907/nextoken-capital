@@ -35,7 +35,7 @@ const articles = [
     id:3, cat:"Blockchain", readTime:"5 min", level:"Beginner",
     emoji:"🔐", color:"#8b5cf6",
     title:"What is ERC-3643 and Why Does It Matter?",
-    desc:"The ERC-3643 standard is the backbone of regulated asset tokens. Understand how it enforces compliance at the smart contract level — automatically.",
+    desc:"The ERC-3643 standard is the backbone of tokenized asset tokens. Understand how it enforces compliance at the smart contract level — automatically.",
     topics:["ERC-3643 explained","On-chain KYC/AML","Transfer restrictions","Why it beats ERC-20 for digital assets"],
   },
   {
@@ -84,7 +84,7 @@ const articles = [
     id:10, cat:"DeFi", readTime:"8 min", level:"Advanced",
     emoji:"🔄", color:"#34d399",
     title:"DeFi vs Regulated Tokenization — What is the Difference?",
-    desc:"DeFi and regulated tokenization both use blockchain — but they serve very different purposes. Understand the key distinctions.",
+    desc:"DeFi and compliant tokenization both use blockchain — but they serve very different purposes. Understand the key distinctions.",
     topics:["DeFi explained","Regulated tokens vs DeFi","Legal ownership","Smart contract compliance","Risk differences"],
   },
   {
@@ -362,7 +362,7 @@ export default function LearnPage() {
               <Link key={l} href={h} style={{ fontSize:13, color:"rgba(255,255,255,0.5)", textDecoration:"none" }}>{l}</Link>
             ))}
           </div>
-          <p style={{ fontSize:11.5, color:"rgba(255,255,255,0.5)", margin:0 }}>© 2026 Nextoken Capital UAB · Regulated by Bank of Lithuania</p>
+          <p style={{ fontSize:11.5, color:"rgba(255,255,255,0.5)", margin:0 }}>© 2026 Nextoken Capital UAB · Regulated by Lithuanian authorities</p>
         </div>
       </footer>
     </div>

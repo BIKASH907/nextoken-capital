@@ -20,14 +20,14 @@ const frameworks = [
     region:"European Union",
     status:"Compliant",
     desc:"Nextoken Capital operates in full compliance with the EU Markets in Crypto-Assets Regulation. As a regulated CASP (Crypto-Asset Service Provider), we maintain capital requirements, conduct regular audits, and publish transparent white papers for all tokenized asset offerings.",
-    points:["CASP license maintained","Capital adequacy requirements met","Mandatory white paper publication","Consumer protection standards enforced","Regular regulatory reporting to Bank of Lithuania"],
+    points:["CASP license maintained","Capital adequacy requirements met","Mandatory white paper publication","Consumer protection standards enforced","Regular regulatory reporting to Lithuanian authorities"],
   },
   {
     icon:"🏦", color:"#F0B90B",
-    title:"Bank of Lithuania Supervision",
+    title:"Lithuanian authorities Supervision",
     region:"Lithuania / EU",
     status:"Supervised",
-    desc:"Nextoken Capital UAB is registered and directly supervised by the Bank of Lithuania, the national financial regulator. This provides EU-wide passporting rights, enabling compliant operations across all 27 EU member states without additional licenses.",
+    desc:"Nextoken Capital UAB is registered and directly supervised by the Lithuanian authorities, the national financial regulator. This provides EU-wide passporting rights, enabling compliant operations across all 27 EU member states without additional licenses.",
     points:["Direct supervisory relationship","EU passporting rights across 27 member states","Annual compliance audits","Mandatory incident reporting","Consumer complaint resolution framework"],
   },
   {
@@ -43,7 +43,7 @@ const frameworks = [
     title:"ERC-3643 Token Standard",
     region:"On-Chain",
     status:"Implemented",
-    desc:"All asset tokens issued on Nextoken use the ERC-3643 standard — the institutional-grade framework for regulated asset tokens on Ethereum. Compliance is enforced at the smart contract level, meaning non-compliant transfers are blocked automatically without human intervention.",
+    desc:"All asset tokens issued on Nextoken use the ERC-3643 standard — the institutional-grade framework for tokenized asset tokens on Ethereum. Compliance is enforced at the smart contract level, meaning non-compliant transfers are blocked automatically without human intervention.",
     points:["On-chain KYC/AML enforcement via smart contracts","Automatic transfer blocking for non-whitelisted wallets","Jurisdiction-based transfer restrictions","Freezing and recovery mechanisms for court orders","Full on-chain audit trail for all transfers"],
   },
   {
@@ -80,9 +80,9 @@ const jurisdictions = [
 ];
 
 const faqs = [
-  { q:"Is Nextoken Capital regulated?",                                   a:"Yes. Nextoken Capital UAB is directly supervised by the Bank of Lithuania under EU financial regulations. We operate as a regulated Crypto-Asset Service Provider (CASP) under MiCA and maintain full compliance with EU AML/CFT directives." },
-  { q:"How is investor money protected?",                                  a:"Investor funds are held in segregated accounts separate from Nextoken's operational accounts. We maintain mandatory capital reserves as required by the Bank of Lithuania and carry professional indemnity insurance coverage." },
-  { q:"What happens if Nextoken ceases operations?",                       a:"As a regulated entity, Nextoken maintains a documented wind-down plan approved by the Bank of Lithuania. Investor tokens are held in self-custody wallets — Nextoken cannot access or freeze investor assets without a court order. The ERC-3643 smart contracts continue to function independently." },
+  { q:"Is Nextoken Capital regulated?",                                   a:"Yes. Nextoken Capital UAB is directly supervised by the Lithuanian authorities under EU financial regulations. We operate as a regulated Crypto-Asset Service Provider (CASP) under MiCA and maintain full compliance with EU AML/CFT directives." },
+  { q:"How is investor money protected?",                                  a:"Investor funds are held in segregated accounts separate from Nextoken's operational accounts. We maintain mandatory capital reserves as required by the Lithuanian authorities and carry professional indemnity insurance coverage." },
+  { q:"What happens if Nextoken ceases operations?",                       a:"As a regulated entity, Nextoken maintains a documented wind-down plan approved by the Lithuanian authorities. Investor tokens are held in self-custody wallets — Nextoken cannot access or freeze investor assets without a court order. The ERC-3643 smart contracts continue to function independently." },
   { q:"How does on-chain KYC enforcement work?",                           a:"Every investor is whitelisted on-chain after completing KYC verification. The ERC-3643 smart contract checks eligibility on every transfer — if the receiving wallet is not whitelisted, the transfer is automatically rejected. This means compliance is enforced 24/7 without manual oversight." },
   { q:"Are US investors allowed to participate?",                          a:"US persons may participate through applicable exemptions including Regulation D (Rule 506(b) and 506(c)) for accredited investors and Regulation S for offshore transactions. All US-linked investments require enhanced KYC and accredited investor verification." },
   { q:"How do you handle data privacy and GDPR?",                          a:"We are fully GDPR compliant. All personal data is processed lawfully, stored in EU-based servers, and protected under AES-256 encryption. Investors have the right to access, rectify, and delete their personal data. KYC data is handled by Sumsub under a separate data processing agreement." },
@@ -130,7 +130,7 @@ export default function CompliancePage() {
           Compliance at Every<br /><span style={{ color:"#F0B90B" }}>Layer of the Stack</span>
         </h1>
         <p style={{ fontSize:18, fontWeight:300, color:"rgba(255,255,255,0.5)", maxWidth:660, margin:"0 auto 40px", lineHeight:1.75 }}>
-          Nextoken Capital is pursuing regulation by the Bank of Lithuania, designed for MiCA compliance, FATF aligned, and follows ISO 27001 standards — with on-chain enforcement via ERC-3643. Compliance is not a checkbox. It is our marketplace infrastructure.
+          Nextoken Capital is pursuing regulation by the Lithuanian authorities, designed for MiCA compliance, FATF aligned, and follows ISO 27001 standards — with on-chain enforcement via ERC-3643. Compliance is not a checkbox. It is our marketplace infrastructure.
         </p>
         <div style={{ display:"flex", gap:14, justifyContent:"center", flexWrap:"wrap", marginBottom:48 }}>
           <Link href="/register"      style={S.gold}>Start Buying</Link>
@@ -139,7 +139,7 @@ export default function CompliancePage() {
         {/* Compliance badges */}
         <div style={{ display:"flex", flexWrap:"wrap", gap:12, justifyContent:"center" }}>
           {[
-            { icon:"🏦", t:"Bank of Lithuania" },
+            { icon:"🏦", t:"Lithuanian authorities" },
             { icon:"⚖️", t:"MiCA Compliant"    },
             { icon:"🌍", t:"FATF Aligned"       },
             { icon:"🔐", t:"ERC-3643"           },
@@ -279,7 +279,7 @@ export default function CompliancePage() {
               { icon:"💰", t:"Segregated Funds",         d:"Your investment funds are held in segregated accounts. Nextoken cannot use investor money for operational expenses." },
               { icon:"📋", t:"Mandatory Disclosure",      d:"All token offerings require a legally compliant white paper with full risk disclosures, financials, and investor rights." },
               { icon:"🔍", t:"Right to Information",      d:"You have the right to access all information about your investments, transactions, fees, and KYC data held about you." },
-              { icon:"🏛", t:"Regulatory Recourse",       d:"Complaints can be escalated to the Bank of Lithuania if unresolved by Nextoken. EU investors have additional ADR rights." },
+              { icon:"🏛", t:"Regulatory Recourse",       d:"Complaints can be escalated to the Lithuanian authorities if unresolved by Nextoken. EU investors have additional ADR rights." },
               { icon:"🗳", t:"Investor Rights",           d:"Security token holders retain the economic rights of the underlying asset including earnings distributions, interest, and voting where applicable." },
               { icon:"🔒", t:"Self-Custody Option",       d:"Tokens are held in your own wallet — Nextoken does not control your assets. Only a court order can trigger regulatory freeze." },
             ].map(c => (
@@ -332,8 +332,8 @@ export default function CompliancePage() {
                   <div style={{ fontSize:9, letterSpacing:"0.2em", color:"rgba(255,255,255,0.5)", textTransform:"uppercase" }}>CAPITAL</div>
                 </div>
               </div>
-              <p style={{ fontSize:13, color:"rgba(255,255,255,0.5)", maxWidth:260, lineHeight:1.75, marginBottom:16 }}>The regulated infrastructure for tokenized real-world assets. Registered in Lithuania.</p>
-              <p style={{ fontSize:11, color:"rgba(255,255,255,0.5)", textTransform:"uppercase", letterSpacing:"0.05em" }}>MONITORED BY <a href="#" style={{ color:"#F0B90B", textDecoration:"none" }}>Bank of Lithuania</a></p>
+              <p style={{ fontSize:13, color:"rgba(255,255,255,0.5)", maxWidth:260, lineHeight:1.75, marginBottom:16 }}>The compliant infrastructure for tokenized real-world assets. Registered in Lithuania.</p>
+              <p style={{ fontSize:11, color:"rgba(255,255,255,0.5)", textTransform:"uppercase", letterSpacing:"0.05em" }}>MONITORED BY <a href="#" style={{ color:"#F0B90B", textDecoration:"none" }}>Lithuanian authorities</a></p>
             </div>
             <div>
               <h5 style={{ fontSize:11, fontWeight:700, letterSpacing:"0.15em", textTransform:"uppercase", color:"rgba(255,255,255,0.5)", marginBottom:16 }}>Products</h5>

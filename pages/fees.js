@@ -31,7 +31,7 @@ export default function FeesPage() {
           <div style={{textAlign:'center',marginBottom:64}}>
             <div style={{fontSize:12,fontWeight:700,color:'#F0B90B',letterSpacing:3,textTransform:'uppercase',marginBottom:12}}>Transparent Pricing</div>
             <h1 style={{fontSize:44,fontWeight:900,marginBottom:16,lineHeight:1.1}}>Simple, Fair Fees</h1>
-            <p style={{fontSize:16,color:'rgba(255,255,255,0.5)',maxWidth:520,margin:'0 auto',lineHeight:1.7}}>No hidden charges. No surprises. Every fee is disclosed upfront in accordance with MiCA regulation and Bank of Lithuania requirements.</p>
+            <p style={{fontSize:16,color:'rgba(255,255,255,0.5)',maxWidth:520,margin:'0 auto',lineHeight:1.7}}>No hidden charges. No surprises. Every fee is disclosed upfront in accordance with MiCA regulation and Lithuanian authorities requirements.</p>
           </div>
           <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:16,marginBottom:48}}>
             {[{label:'Token Purchase',value:'0.2%'},{label:'Secondary Market',value:'0.3%'},{label:'Withdrawals',value:'0.3%'}].map(item => (

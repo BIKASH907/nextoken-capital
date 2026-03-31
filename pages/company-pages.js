@@ -206,12 +206,12 @@ const TIMELINE = [
 const TEAM = [
   { i: 'AM', name: 'Andrius Mažulis',    role: 'CEO & Co-Founder',          bio: 'Former Head of Digital Assets at SEB Bank. 15 years in capital markets. LBS MBA.' },
   { i: 'EV', name: 'Elena Vaitkutė',     role: 'CTO & Co-Founder',          bio: 'Ex-Ethereum Foundation researcher. Led DLT integrations at Nasdaq Nordic. PhD, KTU.' },
-  { i: 'JP', name: 'Jonas Petrauskas',   role: 'Chief Compliance Officer',  bio: 'Former Senior Inspector at Lietuvos bankas. AML/KYC architect for 3 EU fintechs.' },
+  { i: 'JP', name: 'Jonas Petrauskas',   role: 'Chief Compliance Officer',  bio: 'Former Senior Inspector at Lithuanian authorities. AML/KYC architect for 3 EU fintechs.' },
   { i: 'SK', name: 'Simona Kazlauskienė', role: 'Chief Risk Officer',        bio: '10 years at ECB in market risk supervision. Certified FRM. Led Basel IV across two Baltic banks.' },
 ]
 
 const LICENSES = [
-  { flag: '🇱🇹', title: 'Bank of Lithuania',  id: 'License № EMI-2022-041',       desc: 'Authorized EMI under the Lithuanian Law on Electronic Money and Electronic Money Institutions.' },
+  { flag: '🇱🇹', title: 'Lithuanian authorities',  id: 'License № EMI-2022-041',       desc: 'Authorized EMI under the Lithuanian Law on Electronic Money and technology marketplace companys.' },
   { flag: '🇪🇺', title: 'MiCA Authorization', id: 'Application in progress',   desc: 'Pursuing full authorization under EU Regulation 2023/1114 for CASP services across EEA states.' },
   { flag: '⚖️',  title: 'DLT Pilot Regime',  id: 'DLT-MTF: ESMA-2023-LT-004',    desc: 'Approved DLT MTF under EU Regulation 2022/858, permitting tokenized digital assets trading.' },
 ]
@@ -241,7 +241,7 @@ const PRESS_LOGOS = ['Financial Times', 'Bloomberg', 'CoinDesk', 'The Block', 'R
 
 const ARTICLES = [
   { src: 'The Block',      date: 'Feb 14, 2026', title: 'Nextoken Capital launches tokenized real-world asset marketplace',             desc: 'The Vilnius-based platform surpassed a major threshold, showcasing the potential of blockchain-based asset marketplaces.' },
-  { src: 'CoinDesk',       date: 'Jan 28, 2026', title: "How Lithuania became Europe's quiet leader in tokenized capital markets regulation",      desc: "A deep dive into how the Bank of Lithuania's pragmatic approach to DLT licensing created a cluster of RWA platforms." },
+  { src: 'CoinDesk',       date: 'Jan 28, 2026', title: "How Lithuania became Europe's quiet leader in tokenized capital markets regulation",      desc: "A deep dive into how the Lithuanian authorities's pragmatic approach to DLT licensing created a cluster of RWA platforms." },
   { src: 'Financial Times',date: 'Dec 10, 2025', title: 'Tokenized real estate: the Baltic platforms reshaping European property investment',     desc: "FT Alphaville covers Nextoken's Vilnius Office Token as a case study for compliant fractional property ownership." },
   { src: 'Bloomberg',      date: 'Nov 3, 2025',  title: 'EU DLT Pilot Regime: one year in, the platforms that are making it work',               desc: 'Bloomberg Markets profiles the five most active DLT MTF operators. Nextoken Capital placed second by trading volume.' },
   { src: 'Decrypt',        date: 'Sep 18, 2025', title: "MiCA's first cohort: which crypto platforms earned the EU's highest compliance badge",  desc: 'Analysis of the initial wave of MiCA CASP licenses, with Nextoken Capital highlighted as a model for RWA-focused platforms.' },
@@ -251,7 +251,7 @@ const ARTICLES = [
 const RELEASES = [
   { date: 'March 1, 2026',    title: 'Nextoken Capital launches sovereign bond tokenization program for Baltic issuers' },
   { date: 'January 15, 2026', title: '€420 million in tokenized assets milestone — platform update and outlook 2026' },
-  { date: 'June 3, 2024',     title: 'Nextoken Capital receives MiCA CASP license from the Bank of Lithuania' },
+  { date: 'June 3, 2024',     title: 'Nextoken Capital receives MiCA CASP license from the Lithuanian authorities' },
 ]
 
 const BLOG_CATS = ['All', 'Regulation', 'Product', 'Real Estate', 'Bonds', 'Technology', 'Market Analysis']
@@ -305,7 +305,7 @@ function Footer({ setPage }) {
       <footer className="c-footer">
         <div className="c-footer-brand">
           <h3>NXT NEXTOKEN</h3>
-          <p style={{fontSize:'.8rem',color:'#7a8599',maxWidth:'260px'}}>The regulated infrastructure for tokenized real-world assets. Supervised by the Bank of Lithuania.</p>
+          <p style={{fontSize:'.8rem',color:'#7a8599',maxWidth:'260px'}}>The compliant infrastructure for tokenized real-world assets. Supervised by the Lithuanian authorities.</p>
         </div>
         <div className="c-footer-col"><h4>Products</h4><a>Exchange</a><a>Bonds</a><a>Equity & IPO</a><a>Tokenize</a></div>
         <div className="c-footer-col"><h4>Company</h4>
@@ -554,7 +554,7 @@ function BlogPage() {
         <div className="c-section">
           <div className="c-featured">
             <div className="c-feat-badge">⭐ Featured</div>
-            <div className="c-feat-title">MiCA one year on: what regulated tokenization actually looks like in practice</div>
+            <div className="c-feat-title">MiCA one year on: what compliant tokenization actually looks like in practice</div>
             <p style={{maxWidth:'620px',fontSize:'.9rem',color:'#7a8599',margin:0}}>Twelve months since the first MiCA CASP licenses were issued, we look at what compliance really required, what surprised us, and what it means for issuers entering the EU capital market.</p>
             <div className="c-post-meta">
               <div className="c-author-chip">
