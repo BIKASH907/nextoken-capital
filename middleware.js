@@ -59,7 +59,11 @@ export function middleware(request) {
     }
   }
 
-  return NextResponse.next();
+  const response = NextResponse.next();
+  response.headers.set('X-Content-Type-Options', 'nosniff');
+  response.headers.set('X-DNS-Prefetch-Control', 'off');
+  response.headers.set('X-Download-Options', 'noopen');
+  return response;
 }
 
 export const config = {

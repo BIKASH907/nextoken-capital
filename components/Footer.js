@@ -41,9 +41,9 @@ const Footer = () => {
       <div style={{maxWidth:1200,margin:"0 auto",borderTop:"1px solid rgba(255,255,255,0.06)",paddingTop:20,display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:16}}>
         <p style={{fontSize:12,color:"rgba(255,255,255,0.25)",margin:0}}>© {new Date().getFullYear()} Nextoken Capital UAB. All rights reserved.</p>
         <div style={{display:"flex",gap:20}}>
-          <span style={{fontSize:11,color:"rgba(255,255,255,0.2)"}}>MiCA Compliant</span>
-          <span style={{fontSize:11,color:"rgba(255,255,255,0.2)"}}>Bank of Lithuania Regulated</span>
-          <span style={{fontSize:11,color:"rgba(255,255,255,0.2)"}}>ERC-3643</span>
+          <span style={{fontSize:11,color:"rgba(255,255,255,0.2)"}}>MiCA-ready architecture</span>
+          <span style={{fontSize:11,color:"rgba(255,255,255,0.2)"}}>EU regulatory framework</span>
+          <span style={{fontSize:11,color:"rgba(255,255,255,0.2)"}}>ERC-3643 security tokens</span>
         </div>
       </div>
     </footer>

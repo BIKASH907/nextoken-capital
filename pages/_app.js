@@ -1,3 +1,4 @@
+import CookieConsent from '../components/CookieConsent';
 import "../styles/globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
 import Head from "next/head";
@@ -118,7 +119,7 @@ export default function App({ Component, pageProps }) {
                 @media(max-width:640px){.nb-login,.nb-register{display:none!important}.nb-burger{display:flex!important}}
               `}</style>
 
-              <Component {...pageProps} />
+              <><CookieConsent /><Component {...pageProps} />
               <NxtChatbot />
             </AppProvider>
           </SessionProvider>
