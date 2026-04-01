@@ -1,3 +1,4 @@
+import Footer from '../components/Footer';
 import Head from "next/head";
 import Link from "next/link";
 import { useState } from "react";
@@ -332,30 +333,7 @@ export default function EquityIPOPage() {
           </div>
         </div>
 
-        <footer style={{borderTop:"1px solid rgba(255,255,255,0.08)",padding:"48px 32px 28px"}}>
-          <div style={{maxWidth:1200,margin:"0 auto"}}>
-            <div style={{display:"grid",gridTemplateColumns:"2fr 1fr",gap:48,marginBottom:40}}>
-              <div>
-                <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:14}}>
-                  <span style={{fontFamily:"Syne,sans-serif",fontSize:20,fontWeight:900,color:"#F0B90B",letterSpacing:2}}>NXT</span>
-                  <div style={{width:1,height:22,background:"rgba(240,185,11,0.25)"}}/>
-                  <div><div style={{fontFamily:"Syne,sans-serif",fontSize:13,fontWeight:800,letterSpacing:"0.15em",color:"#F0B90B"}}>NEXTOKEN</div><div style={{fontSize:9,letterSpacing:"0.2em",color:"rgba(255,255,255,0.45)",textTransform:"uppercase"}}>CAPITAL</div></div>
-                </div>
-                <p style={{fontSize:13,color:"rgba(255,255,255,0.45)",maxWidth:240,lineHeight:1.7,marginBottom:16}}>The compliant infrastructure for tokenized real-world assets. Registered in Lithuania.</p>
-              </div>
-              <div>
-                <h5 style={{fontSize:11,fontWeight:700,letterSpacing:"0.15em",textTransform:"uppercase",color:"rgba(255,255,255,0.45)",marginBottom:16}}>Products</h5>
-                {[["Markets","/markets"],["Exchange","/exchange"],["Bonds","/bonds"],["Equity & IPO","/equity-ipo"],["Tokenize","/tokenize"]].map(([l,h])=>(
-                  <Link key={l} href={h} style={{display:"block",fontSize:13,color:"rgba(255,255,255,0.6)",textDecoration:"none",marginBottom:10}}>{l}</Link>
-                ))}
-              </div>
-            </div>
-            <div style={{borderTop:"1px solid rgba(255,255,255,0.08)",paddingTop:20,display:"flex",flexWrap:"wrap",justifyContent:"space-between",gap:10}}>
-              <p style={{fontSize:12,color:"rgba(255,255,255,0.45)",margin:0}}>2026 Nextoken Capital UAB. All rights reserved.</p>
-              <p style={{fontSize:11,color:"rgba(255,255,255,0.45)",opacity:0.7,margin:0}}>Risk warning: Investing involves significant risk.</p>
-            </div>
-          </div>
-        </footer>
+        <Footer />
       </div>
 
       {investItem && <InvestModal item={investItem} onClose={()=>setInvestItem(null)}/>}
