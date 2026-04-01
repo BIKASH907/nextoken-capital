@@ -55,7 +55,7 @@ export default function LanguageSelector() {
   useEffect(() => {
     const saved = localStorage.getItem("nxt_lang");
     if (saved) setCurrent(saved);
-    if (!document.getElementById("gt-script")) {
+    if (document.getElementById("gt-script") === null) {
       window.googleTranslateElementInit = () => {
         new window.google.translate.TranslateElement(
           { pageLanguage: "en", autoDisplay: false },
@@ -85,7 +85,7 @@ export default function LanguageSelector() {
     <>
       <div id="google_translate_element" style={{position:"absolute",top:-9999,left:-9999}} />
       <div style={{position:"relative"}}>
-        <button onClick={() => setOpen(!open)} style={{display:"flex",alignItems:"center",gap:6,padding:"6px 12px",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:8,color:"#fff",fontSize:12,cursor:"pointer",fontFamily:"inherit",fontWeight:600}}>
+        <button onClick={() => setOpen(prev => !prev)} style={{display:"flex",alignItems:"center",gap:6,padding:"6px 12px",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:8,color:"#fff",fontSize:12,cursor:"pointer",fontFamily:"inherit",fontWeight:600}}>
           <span style={{fontSize:14}}>{currentLang.flag}</span>
           <span>{currentLang.code.toUpperCase()}</span>
           <span style={{fontSize:8,opacity:0.4}}>{open ? "\u25B2" : "\u25BC"}</span>

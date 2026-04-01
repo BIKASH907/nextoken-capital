@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
+import LanguageSelector from './LanguageSelector';
 import Link from "next/link";
 import { useRouter } from "next/router";
 

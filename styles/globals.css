@@ -124,3 +124,10 @@
   .footer-grid{grid-template-columns:1fr;gap:24px}
   .footer-bottom{flex-direction:column;align-items:flex-start}
 }
+
+.goog-te-banner-frame{display:none !important}
+body{top:0 !important}
+.goog-te-gadget{display:none !important}
+.skiptranslate{display:none !important}
+body>.skiptranslate{display:none !important}
+.goog-text-highlight{background:none !important;box-shadow:none !important}
