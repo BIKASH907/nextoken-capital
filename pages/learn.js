@@ -1,3 +1,4 @@
+import Footer from '../components/Footer';
 import Link from "next/link";
 import { useState } from "react";
 
@@ -350,21 +351,7 @@ export default function LearnPage() {
       </div>
 
       {/* FOOTER */}
-      <footer style={{ borderTop:"1px solid rgba(255,255,255,0.07)", padding:"40px 32px 24px" }}>
-        <div style={{ maxWidth:1200, margin:"0 auto", display:"flex", flexWrap:"wrap", justifyContent:"space-between", gap:20, alignItems:"center" }}>
-          <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-            <span style={{ fontFamily:"Syne,sans-serif", fontSize:18, fontWeight:900, color:"#F0B90B", letterSpacing:2 }}>NXT</span>
-            <div style={{ width:1, height:18, background:"rgba(240,185,11,0.25)" }} />
-            <span style={{ fontFamily:"Syne,sans-serif", fontSize:12, fontWeight:800, letterSpacing:"0.15em", color:"#F0B90B" }}>NEXTOKEN CAPITAL</span>
-          </div>
-          <div style={{ display:"flex", gap:20 }}>
-            {[["Markets","/markets"],["Bonds","/bonds"],["Equity & IPO","/equity-ipo"],["Tokenize","/tokenize"],["Compliance","/compliance"]].map(([l,h]) => (
-              <Link key={l} href={h} style={{ fontSize:13, color:"rgba(255,255,255,0.5)", textDecoration:"none" }}>{l}</Link>
-            ))}
-          </div>
-          <p style={{ fontSize:11.5, color:"rgba(255,255,255,0.5)", margin:0 }}>© 2026 Nextoken Capital UAB · Regulated by Lithuanian authorities</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
