@@ -143,7 +143,7 @@ export default function LoginPage() {
             </div>
             <p className="li-brand-desc">
               The regulated infrastructure for tokenized real-world assets.
-              Nextoken Capital UAB is registered in Lithuania and supervised by the Bank of Lithuania.
+              Nextoken Capital UAB is registered in Lithuania and supervised by the Lithuanian authorities.
             </p>
             <div className="li-brand-feats">
               {FEATURES.map(f => (
@@ -217,7 +217,7 @@ export default function LoginPage() {
 
 
           <div className="li-trust">
-            <span>🏛️ Bank of Lithuania</span>
+            <span>🏛️ Lithuanian authorities</span>
             <span>⚖️ MiCA Compliant</span>
             <span>🔐 SSL Encrypted</span>
           </div>

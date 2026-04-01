@@ -22,6 +22,10 @@ export default async function handler(req, res) {
   const user = await getAuthUser(req, res);
   if (!user) return res.status(401).json({ error: "Please login to continue" });
 
+  if (!user.kycStatus || user.kycStatus !== "approved") {
+    return res.status(403).json({ error: "KYC verification required. Please complete identity verification first." });
+  }
+
   const { assetId, units: rawUnits } = req.body;
   if (!assetId || !rawUnits || rawUnits <= 0) return res.status(400).json({ error: "Asset and units required" });
   const units = parseInt(rawUnits);

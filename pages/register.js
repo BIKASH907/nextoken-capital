@@ -421,7 +421,7 @@ export default function RegisterPage() {
                 </span>
               </label>
               <div className="rg-reg-note">
-                🏛️ <strong style={{color:"rgba(255,255,255,0.7)"}}>Nextoken Capital UAB</strong> holds an EMI license and MiCA CASP authorization from the Bank of Lithuania. All investors must complete Sumsub KYC before investing. Your identity documents are stored securely and processed under EU GDPR.
+                🏛️ <strong style={{color:"rgba(255,255,255,0.7)"}}>Nextoken Capital UAB</strong> holds an EMI license and MiCA CASP authorization from the Lithuanian authorities. All investors must complete Sumsub KYC before investing. Your identity documents are stored securely and processed under EU GDPR.
               </div>
               <div className="rg-two">
                 <button className="rg-btn rg-btn-ghost" onClick={() => setStep(1)}>← Back</button>

@@ -301,7 +301,7 @@ export default function KYCPage() {
 
           {/* Info footer */}
           <div style={{marginTop:24,padding:"16px 20px",background:"rgba(255,255,255,0.02)",border:"1px solid rgba(255,255,255,0.06)",borderRadius:10,fontSize:12,color:"rgba(255,255,255,0.3)",lineHeight:1.8}}>
-            🔐 Your documents are processed securely by Sumsub, an EU-regulated identity verification provider.
+            🔐 Your documents are processed securely by Sumsub, an EU-based identity verification provider.
             Data is stored and processed in compliance with EU GDPR.
             We retain KYC records for 5 years as required by EU AML regulations.
             Questions? Email <a href="mailto:support@nextokencapital.com" style={{color:"#F0B90B"}}>support@nextokencapital.com</a>

@@ -10,7 +10,7 @@ const INFO = [
   { icon:"📍", label:"Address",      value:"Saulėtekio al. 37 Vilnius, 10222, Lithuania" },
   { icon:"🏢", label:"Company",      value:"Nextoken Capital UAB" },
   { icon:"👤", label:"CEO & Founder",value:"Bikash Bhat" },
-  { icon:"🏦", label:"Regulated by", value:"Bank of Lithuania" },
+  { icon:"🏦", label:"Regulated by", value:"Lithuanian authorities" },
   { icon:"✉️", label:"Email",        value:"info@nextokencapital.com" },
   { icon:"🕐", label:"Office Hours", value:"Mon–Fri, 9am–6pm EET" },
 ];
