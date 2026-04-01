@@ -10,8 +10,7 @@ export default function TrustSection() {
           <h2 style={{fontSize:36,fontWeight:900,marginBottom:12}}>Every Asset Passes 5-Step Verification</h2>
           <p style={{fontSize:15,color:"rgba(255,255,255,0.4)",maxWidth:560,margin:"0 auto",lineHeight:1.7}}>We do not list assets blindly. Every listing goes through rigorous verification before reaching the marketplace.</p>
         </div>
-
-        <div style={{display:"flex",alignItems:"stretch",gap:6,marginBottom:64,flexWrap:"wrap",justifyContent:"center"}}>
+        <div className="trust-pipeline" style={{marginBottom:64}}>
           {[
             { n:"1", t:"Issuer KYB", d:"Company + ownership screening", c:"#F0B90B" },
             { n:"2", t:"Due Diligence", d:"Financials + valuation review", c:"#3B82F6" },
@@ -23,19 +22,17 @@ export default function TrustSection() {
               <div style={{width:32,height:32,borderRadius:"50%",background:s.c+"20",border:"2px solid "+s.c+"40",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 10px",fontSize:13,fontWeight:900,color:s.c}}>{s.n}</div>
               <div style={{fontSize:13,fontWeight:700,marginBottom:4}}>{s.t}</div>
               <div style={{fontSize:11,color:"rgba(255,255,255,0.3)"}}>{s.d}</div>
-              {i < 4 && <div style={{position:"absolute",top:"40%",right:-8,fontSize:14,color:"rgba(255,255,255,0.08)"}}>›</div>}
             </div>
           ))}
         </div>
-
-        <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:18,marginBottom:48}}>
+        <div className="trust-cards" style={{marginBottom:48}}>
           {[
-            { icon:"🔗", t:"Non-Custodial", d:"Funds go directly from your wallet to the issuer via smart contract. Nextoken never holds your money. Commission split on-chain.", bc:"rgba(240,185,11,0.1)" },
-            { icon:"📜", t:"Token Rights", d:"Each ERC-3643 token represents legal economic rights to the underlying asset. Earnings distributions proportional to holdings.", bc:"rgba(59,130,246,0.1)" },
-            { icon:"🛡️", t:"Asset Ownership", d:"Issuers retain legal ownership. Token holders own fractional economic rights. Issuer identity and registration verified through KYB.", bc:"rgba(14,203,129,0.1)" },
-            { icon:"🔐", t:"KYC via Sumsub", d:"Licensed global KYC provider. Document checks, facial recognition, and AML screening before any purchase.", bc:"rgba(139,92,246,0.1)" },
-            { icon:"⛓️", t:"On-Chain Transparency", d:"Every transaction on Polygon blockchain. Token balances and transfers publicly verifiable. No hidden ledgers.", bc:"rgba(239,68,68,0.1)" },
-            { icon:"💶", t:"Payments via Monerium", d:"EUR payments through Monerium — EU-licensed EMI. Bank-grade payment rails with full regulatory compliance.", bc:"rgba(20,184,166,0.1)" },
+            { icon:"🔗", t:"Non-Custodial", d:"Funds go directly from your wallet to the issuer via smart contract. Nextoken never holds your money.", bc:"rgba(240,185,11,0.1)" },
+            { icon:"📜", t:"Token Rights", d:"Each ERC-3643 token represents legal economic rights to the underlying asset.", bc:"rgba(59,130,246,0.1)" },
+            { icon:"🛡️", t:"Asset Ownership", d:"Issuers retain legal ownership. Token holders own fractional economic rights.", bc:"rgba(14,203,129,0.1)" },
+            { icon:"🔐", t:"KYC via Sumsub", d:"Licensed global KYC provider. Document checks, facial recognition, AML screening.", bc:"rgba(139,92,246,0.1)" },
+            { icon:"⛓️", t:"On-Chain Transparency", d:"Every transaction on Polygon blockchain. Publicly verifiable. No hidden ledgers.", bc:"rgba(239,68,68,0.1)" },
+            { icon:"💶", t:"Payments via Monerium", d:"EUR payments through Monerium — EU-licensed EMI. Bank-grade payment rails.", bc:"rgba(20,184,166,0.1)" },
           ].map((c,i) => (
             <div key={i} style={{background:"#0F1318",border:"1px solid rgba(255,255,255,0.06)",borderRadius:14,padding:28}}>
               <div style={{width:44,height:44,borderRadius:10,background:c.bc,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,marginBottom:14}}>{c.icon}</div>
@@ -44,8 +41,7 @@ export default function TrustSection() {
             </div>
           ))}
         </div>
-
-        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:14}}>
+        <div className="trust-bar">
           {[
             { n:"ERC-3643", l:"Security token standard" },
             { n:"Polygon", l:"Blockchain network" },

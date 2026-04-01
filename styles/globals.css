@@ -76,3 +76,39 @@
 .nb-mob-reg{display:block;padding:14px 18px;border-radius:10px;font-size:15px;font-weight:700;color:#000;text-decoration:none;background:#F0B90B;text-align:center}
 @media(max-width:900px){.nb-links{display:none}}
 @media(max-width:640px){.nb-login,.nb-register{display:none}.nb-burger{display:flex}}
+
+/* === RESPONSIVE HOMEPAGE === */
+.hero-grid{display:grid;grid-template-columns:1fr 380px;gap:60;align-items:center;max-width:1100px;margin:0 auto;width:100%;position:relative;z-index:2}
+.hero-stats{display:flex;gap:36px;padding-top:28px;border-top:1px solid rgba(255,255,255,0.06)}
+.hero-card{background:#0F1318;border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:24px;position:relative}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;max-width:1100px;margin:0 auto}
+.cats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.steps-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.trust-pipeline{display:flex;align-items:stretch;gap:6px;justify-content:center;flex-wrap:wrap}
+.trust-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.trust-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.step-arrow{position:absolute;top:40%;right:-8px;font-size:14px;color:rgba(255,255,255,0.08)}
+
+@media(max-width:900px){
+  .hero-grid{grid-template-columns:1fr;gap:32px}
+  .hero-card{max-width:400px}
+  .hero-stats{flex-wrap:wrap;gap:20px}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .cats-grid{grid-template-columns:repeat(2,1fr)}
+  .steps-grid{grid-template-columns:repeat(2,1fr)}
+  .trust-cards{grid-template-columns:repeat(2,1fr)}
+  .trust-bar{grid-template-columns:repeat(2,1fr)}
+  .step-arrow{display:none}
+}
+@media(max-width:640px){
+  .hero-grid{gap:24px;padding:0 4px}
+  .hero-grid h1{font-size:36px!important}
+  .hero-stats{gap:16px}
+  .hero-stats>div{min-width:45%}
+  .stats-grid{grid-template-columns:repeat(2,1fr);gap:10px}
+  .cats-grid{grid-template-columns:1fr}
+  .steps-grid{grid-template-columns:1fr}
+  .trust-pipeline{flex-direction:column;gap:10px}
+  .trust-cards{grid-template-columns:1fr}
+  .trust-bar{grid-template-columns:repeat(2,1fr);gap:10px}
+}
