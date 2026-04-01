@@ -97,7 +97,7 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState("");
   const [form, setForm] = useState({ role: "investor",
-    email:"", password:"", confirm:"",
+    preferredLanguage, email:"", password:"", confirm:"",
     firstName:"", lastName:"", country:"", dialCode:"+370", phone:"", dob:"",
     agreeTerms: false, agreeRisk: false,
   });
@@ -146,7 +146,7 @@ export default function RegisterPage() {
   const verifyOtp = async () => {
     setOtpLoading(true); setOtpError("");
     try {
-      const r = await fetch("/api/auth/verify-otp", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({role: form.role, email: form.email, otp}) });
+      const r = await fetch("/api/auth/verify-otp", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({role: form.role, email: form.email, preferredLanguage, otp}) });
       const d = await r.json();
       if (r.ok && d.verified) { setOtpVerified(true); setStep(1); setOtpSent(false); setOtp(""); }
       else setOtpError(d.error || "Invalid code");
