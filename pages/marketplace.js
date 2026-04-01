@@ -49,9 +49,9 @@ export default function Marketplace() {
 
           {/* HEADER */}
           <div style={{ marginBottom: 28 }}>
-            <h1 className="mp-head" style={{ fontSize: 32, fontWeight: 800, marginBottom: 6 }}>Invest in Tokenized Assets</h1>
+            <h1 className="mp-head" style={{ fontSize: 32, fontWeight: 800, marginBottom: 6, textAlign: "center", color: "#F0B90B" }}>Buy Tokenized Assets</h1>
             <p style={{ fontSize: 14, color: "rgba(255,255,255,0.4)", maxWidth: 600 }}>
-              Browse verified real-world assets. Each listing undergoes compliance review, financial verification, and legal structuring before reaching investors.
+              Browse verified real-world assets. Each listing undergoes compliance review, financial verification, and legal structuring before reaching buyers.
             </p>
           </div>
 
