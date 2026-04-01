@@ -258,6 +258,7 @@ export default function Navbar() {
           </div>
 
           <div className="nb-right">
+            <LanguageSelector />
             <button className={`nb-cw ${wallet ? "on" : ""}`} onClick={() => setShowModal(true)}>
               {wallet ? `\u25CF ${shortAddr}` : "Connect Wallet"}
             </button>
