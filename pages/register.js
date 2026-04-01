@@ -338,7 +338,6 @@ export default function RegisterPage() {
               <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:20}}><div style={{flex:1,height:1,background:"rgba(255,255,255,0.08)"}}></div><span style={{fontSize:12,color:"rgba(255,255,255,0.3)"}}>or register with email</span><div style={{flex:1,height:1,background:"rgba(255,255,255,0.08)"}}></div></div>
               <div className="rg-title">Create your account</div>
               <p className="rg-sub">Join our investor community. Takes 3 minutes.</p>
-              </div>
               <div className="rg-field">
                 <label className="rg-label">Phone Number</label>
                 <div className="rg-phone-row">
