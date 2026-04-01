@@ -201,6 +201,16 @@ export default function EquityIPOPage() {
     <>
       <Head><title>Equity & IPO — Nextoken Capital</title><meta name="description" content="Trade tokenized equity and blockchain IPOs on the Nextoken marketplace."/></Head>
       <Navbar />
+            <div id="coming-soon-banner" style={{background:"linear-gradient(90deg, rgba(240,185,11,0.1), rgba(240,185,11,0.03))",border:"1px solid rgba(240,185,11,0.15)",borderRadius:12,padding:"16px 24px",margin:"80px 20px 0",display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:12,maxWidth:1200,marginLeft:"auto",marginRight:"auto"}}>
+              <div style={{display:"flex",alignItems:"center",gap:12}}>
+                <span style={{fontSize:20}}>\uD83D\uDE80</span>
+                <div>
+                  <div style={{fontSize:14,fontWeight:700,color:"#F0B90B"}}>Equity & IPO — Coming Soon</div>
+                  <div style={{fontSize:12,color:"rgba(255,255,255,0.4)"}}>Tokenized equity offerings are under development. Browse available assets on the Marketplace.</div>
+                </div>
+              </div>
+              <a href="/marketplace" style={{padding:"8px 20px",background:"#F0B90B",color:"#0B0E11",borderRadius:8,fontWeight:700,fontSize:13,textDecoration:"none",whiteSpace:"nowrap"}}>Browse Marketplace</a>
+            </div>
       <div style={{...S.page,paddingTop:64}}>
         <style>{`@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');*{box-sizing:border-box;margin:0;padding:0}body{margin:0}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}.pulse{animation:pulse 2s infinite}::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#05060a}::-webkit-scrollbar-thumb{background:rgba(240,185,11,0.3);border-radius:3px}table{border-collapse:collapse;width:100%}th{text-align:left}`}</style>
 

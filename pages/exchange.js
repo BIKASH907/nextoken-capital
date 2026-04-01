@@ -5,17 +5,6 @@ import Head from 'next/head';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
-function ComingSoonBanner() {
-  return (
-    <div style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(11,14,17,0.95)",display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:16}}>
-      <div style={{fontSize:48,marginBottom:8}}>\uD83D\uDEE0\uFE0F</div>
-      <div style={{fontSize:32,fontWeight:900,color:"#F0B90B"}}>Secondary Market</div>
-      <div style={{fontSize:18,fontWeight:600,color:"#fff"}}>Coming Soon</div>
-      <div style={{fontSize:14,color:"rgba(255,255,255,0.4)",maxWidth:400,textAlign:"center",lineHeight:1.7}}>Our peer-to-peer token exchange is under development. Primary investments are available now on the Marketplace.</div>
-      <a href="/marketplace" style={{marginTop:12,padding:"12px 32px",background:"#F0B90B",color:"#0B0E11",borderRadius:10,fontWeight:700,fontSize:14,textDecoration:"none"}}>Browse Marketplace</a>
-    </div>
-  );
-}
 export default function Exchange() {
   const { data: session } = useSession();
   const [assets, setAssets] = useState([]);
@@ -136,7 +125,17 @@ export default function Exchange() {
             .ex-trades-row span:nth-child(3),.ex-trades-row span:nth-child(4){display:none}
           }
         `}</style></Head>
-      <ComingSoonBanner /><Navbar />
+      <Navbar />
+            <div id="coming-soon-banner" style={{background:"linear-gradient(90deg, rgba(240,185,11,0.1), rgba(240,185,11,0.03))",border:"1px solid rgba(240,185,11,0.15)",borderRadius:12,padding:"16px 24px",margin:"80px 20px 0",display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:12,maxWidth:1200,marginLeft:"auto",marginRight:"auto",marginTop:80}}>
+              <div style={{display:"flex",alignItems:"center",gap:12}}>
+                <span style={{fontSize:20}}>\uD83D\uDEE0\uFE0F</span>
+                <div>
+                  <div style={{fontSize:14,fontWeight:700,color:"#F0B90B"}}>Secondary Market — Coming Soon</div>
+                  <div style={{fontSize:12,color:"rgba(255,255,255,0.4)"}}>Peer-to-peer token trading is under development. Browse primary assets on the Marketplace.</div>
+                </div>
+              </div>
+              <a href="/marketplace" style={{padding:"8px 20px",background:"#F0B90B",color:"#0B0E11",borderRadius:8,fontWeight:700,fontSize:13,textDecoration:"none",whiteSpace:"nowrap"}}>Browse Marketplace</a>
+            </div>
 
       <div style={{ background: '#0B0E11', minHeight: '100vh', paddingTop: '72px', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
 
