@@ -97,7 +97,7 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState("");
   const [form, setForm] = useState({ role: "investor",
-    preferredLanguage, email:"", password:"", confirm:"",
+    email:"", password:"", confirm:"",
     firstName:"", lastName:"", country:"", dialCode:"+370", phone:"", dob:"",
     agreeTerms: false, agreeRisk: false,
   });
@@ -146,7 +146,7 @@ export default function RegisterPage() {
   const verifyOtp = async () => {
     setOtpLoading(true); setOtpError("");
     try {
-      const r = await fetch("/api/auth/verify-otp", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({role: form.role, email: form.email, preferredLanguage, otp}) });
+      const r = await fetch("/api/auth/verify-otp", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({role: form.role, email: form.email, otp}) });
       const d = await r.json();
       if (r.ok && d.verified) { setOtpVerified(true); setStep(1); setOtpSent(false); setOtp(""); }
       else setOtpError(d.error || "Invalid code");
@@ -338,48 +338,6 @@ export default function RegisterPage() {
               <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:20}}><div style={{flex:1,height:1,background:"rgba(255,255,255,0.08)"}}></div><span style={{fontSize:12,color:"rgba(255,255,255,0.3)"}}>or register with email</span><div style={{flex:1,height:1,background:"rgba(255,255,255,0.08)"}}></div></div>
               <div className="rg-title">Create your account</div>
               <p className="rg-sub">Join our investor community. Takes 3 minutes.</p>
-              <div style={{marginBottom:16}}><label style={{display:"block",fontSize:12,fontWeight:700,color:"rgba(255,255,255,0.4)",marginBottom:8,textTransform:"uppercase",letterSpacing:1}}>I WANT TO</label><div style={{display:"flex",gap:10}}><button type="button" onClick={()=>setForm({...form,role:"investor"})} style={{flex:1,padding:"14px 12px",borderRadius:10,cursor:"pointer",fontFamily:"inherit",fontSize:14,fontWeight:700,textAlign:"center",background:form.role==="investor"?"rgba(240,185,11,0.12)":"#161B22",color:form.role==="investor"?"#F0B90B":"rgba(255,255,255,0.4)",border:form.role==="investor"?"2px solid #F0B90B":"2px solid rgba(255,255,255,0.08)"}}>Invest in Assets<div style={{fontSize:10,fontWeight:400,color:"rgba(255,255,255,0.3)",marginTop:4}}>Buy tokenized bonds, equity</div></button><button type="button" onClick={()=>setForm({...form,role:"issuer"})} style={{flex:1,padding:"14px 12px",borderRadius:10,cursor:"pointer",fontFamily:"inherit",fontSize:14,fontWeight:700,textAlign:"center",background:form.role==="issuer"?"rgba(139,92,246,0.12)":"#161B22",color:form.role==="issuer"?"#8b5cf6":"rgba(255,255,255,0.4)",border:form.role==="issuer"?"2px solid #8b5cf6":"2px solid rgba(255,255,255,0.08)"}}>Tokenize My Assets<div style={{fontSize:10,fontWeight:400,color:"rgba(255,255,255,0.3)",marginTop:4}}>List assets for buyers</div></button></div></div>
-              <div className="rg-field">
-                <label className="rg-label">Email Address</label>
-                <input className="rg-input" name="email" type="email" value={form.email} onChange={handle} placeholder="you@example.com" autoComplete="email" />
-              </div>
-              <div className="rg-field">
-                <label className="rg-label">Password</label>
-                <input className="rg-input" name="password" type="password" value={form.password} onChange={handle} placeholder="Min. 8 characters" autoComplete="new-password" />
-                {form.password && <>
-                  <div className="rg-bar"><div className="rg-bar-fill" style={{width:(pwdStr()/5*100)+"%",background:SC[pwdStr()]}}/></div>
-                  <div className="rg-str" style={{color:SC[pwdStr()]}}>{SL[pwdStr()]}</div>
-                </>}
-              </div>
-              <div className="rg-field">
-                <label className="rg-label">Confirm Password</label>
-                <input className="rg-input" name="confirm" type="password" value={form.confirm} onChange={handle} placeholder="Repeat password" autoComplete="new-password" />
-                {form.confirm && <div style={{fontSize:12,marginTop:4,color:form.confirm===form.password?"#0ECB81":"#ef4444"}}>
-                  {form.confirm===form.password ? "✓ Passwords match" : "✗ Passwords do not match"}
-                </div>}
-              </div>
-              <button className="rg-btn" onClick={nextStep}>Continue →</button>
-            </>}
-
-            {/* OTP VERIFICATION */}
-            {step === 0 && otpSent && !otpVerified && <>
-              <div className="rg-title">Verify your email</div>
-              <p className="rg-sub">We sent a 6-digit code to <strong>{form.email}</strong></p>
-              <div className="rg-field" style={{marginTop:24}}>
-                <label className="rg-label">Verification Code</label>
-                <input className="rg-input" type="text" maxLength={6} value={otp} onChange={e=>setOtp(e.target.value.replace(/[^0-9]/g,''))} placeholder="000000" style={{fontSize:24,letterSpacing:8,textAlign:'center'}} autoFocus />
-              </div>
-              {otpError && <div className="rg-err">⚠️ {otpError}</div>}
-              <button className="rg-btn" onClick={verifyOtp} disabled={otpLoading || otp.length !== 6} style={{marginTop:16}}>{otpLoading ? 'Verifying...' : 'Verify Email →'}</button>
-              <button className="rg-btn" style={{background:'none',border:'none',color:'rgba(255,255,255,0.4)',fontSize:13,marginTop:8,cursor:'pointer'}} onClick={sendOtp} disabled={otpLoading}>Resend code</button>
-              <button className="rg-btn rg-btn-ghost" style={{marginTop:8}} onClick={() => setOtpSent(false)}>← Back</button>
-            </>}
-            {/* STEP 1 — Personal */}
-            {step === 1 && <>
-              <div className="rg-title">Personal details</div>
-              <p className="rg-sub">Required under EU AML/KYC regulation (AMLD6).</p>
-              <div className="rg-row">
-                <div className="rg-field"><label className="rg-label">Country</label><select className="rg-input" name="country" value={form.country} onChange={handle} style={{appearance:"none",cursor:"pointer"}}><option value="">Select country</option>{COUNTRIES.map(c=><option key={c.code} value={c.name}>{c.name}</option>)}</select></div>
               </div>
               <div className="rg-field">
                 <label className="rg-label">Phone Number</label>
