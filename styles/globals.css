@@ -112,3 +112,15 @@
   .trust-cards{grid-template-columns:1fr}
   .trust-bar{grid-template-columns:repeat(2,1fr);gap:10px}
 }
+
+/* === RESPONSIVE FOOTER === */
+.footer-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:40px}
+.footer-badges{display:flex;gap:12px;flex-wrap:wrap}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+@media(max-width:900px){
+  .footer-grid{grid-template-columns:1fr 1fr;gap:32px}
+}
+@media(max-width:640px){
+  .footer-grid{grid-template-columns:1fr;gap:24px}
+  .footer-bottom{flex-direction:column;align-items:flex-start}
+}
