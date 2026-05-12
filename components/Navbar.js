@@ -3,6 +3,7 @@ import { useSession } from "next-auth/react";
 import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import LanguageSelector from "./LanguageSelector";
 
 const WALLETS = [
   {
@@ -237,8 +238,9 @@ export default function Navbar() {
         .wm-disc:hover{background:rgba(255,77,77,0.15)}
         .wm-note{font-size:11px;color:rgba(255,255,255,0.22);text-align:center;margin-top:16px;line-height:1.7}
         .wm-note a{color:#F0B90B}
+        .nb-lang{display:flex;align-items:center;flex-shrink:0}
         @media(max-width:900px){.nb-links{display:none}}
-        @media(max-width:640px){.nb-li,.nb-cw{display:none}.nb-hbg{display:flex}}
+        @media(max-width:640px){.nb-li,.nb-cw,.nb-lang{display:none}.nb-hbg{display:flex}}
       `}</style>
 
       <nav className={`nb ${scrolled ? "sc" : "tp"}`}>
@@ -259,6 +261,7 @@ export default function Navbar() {
           </div>
 
           <div className="nb-right">
+            <div className="nb-lang"><LanguageSelector /></div>
             <button className={`nb-cw ${wallet ? "on" : ""}`} onClick={() => setShowModal(true)}>
               {wallet ? `\u25CF ${shortAddr}` : t("nav.connectWallet")}
             </button>
@@ -277,6 +280,7 @@ export default function Navbar() {
           <Link key={l.href} href={l.href} className={isActive(l.href) ? "on" : ""}>{l.label}</Link>
         ))}
         <div className="nb-mob-sep" />
+        <div style={{padding:"4px 0 12px",display:"flex",justifyContent:"center"}}><LanguageSelector /></div>
         <button className="nb-mob-cw" onClick={() => { setOpen(false); setShowModal(true); }}>
           {wallet ? `\u25CF ${shortAddr}` : t("nav.connectWallet")}
         </button>
@@ -332,15 +336,4 @@ export default function Navbar() {
                 {error && <div className="wm-err">&amp;#9888; {error}</div>}
                 <p className="wm-note">
                   {t("walletModal.termsNotice")}{" "}
-                  <Link href="/terms" onClick={() => setShowModal(false)}>{t("walletModal.termsLink")}</Link> {t("walletModal.and")}{" "}
-                  <Link href="/privacy" onClick={() => setShowModal(false)}>{t("walletModal.privacyLink")}</Link>.{" "}
-                  {t("walletModal.neverStoreKeys")}
-                </p>
-              </>
-            )}
-          </div>
-        </div>
-      )}
-    </>
-  );
-}
+                  <Link href="/terms" onClick={() => setShowModal(false)}>{t("walletModal.termsLink")}</Link> {t("walletMo

@@ -16,7 +16,6 @@ import { RainbowKitProvider, darkTheme, getDefaultConfig } from "@rainbow-me/rai
 import { polygon, mainnet, arbitrum, optimism, bsc, base, avalanche } from "wagmi/chains";
 
 const NxtChatbot = dynamic(() => import("../components/NxtChatbot"), { ssr: false });
-const GlobalLanguageFAB = dynamic(() => import("../components/GlobalLanguageFAB"), { ssr: false });
 const StickyDemoBar = dynamic(() => import("../components/StickyDemoBar"), { ssr: false });
 
 const config = getDefaultConfig({
@@ -127,7 +126,6 @@ export default function App({ Component, pageProps }) {
               `}</style>
 
               <CookieConsent /><Component {...pageProps} />
-              <GlobalLanguageFAB />
               <StickyDemoBar />
               <NxtChatbot />
             </AppProvider>
@@ -137,3 +135,4 @@ export default function App({ Component, pageProps }) {
     </WagmiProvider>
   );
 }
+                                                                                                                                        
