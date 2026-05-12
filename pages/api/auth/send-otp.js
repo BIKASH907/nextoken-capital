@@ -1,5 +1,6 @@
 import { connectDB } from "../../../lib/mongodb";
 import User from "../../../lib/models/User";
+import crypto from "crypto";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).end();
@@ -8,7 +9,8 @@ export default async function handler(req, res) {
 
   await connectDB();
 
-  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  // Cryptographically secure 6-digit OTP (100000–999999)
+  const otp = crypto.randomInt(100000, 1000000).toString();
   const expires = new Date(Date.now() + 10 * 60 * 1000);
 
   // Store OTP in a temp collection

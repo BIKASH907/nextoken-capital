@@ -1,4 +1,5 @@
 import CookieConsent from '../components/CookieConsent';
+import "../lib/i18n";
 import "../styles/globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
 import Head from "next/head";

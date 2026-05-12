@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import LanguageSelector from './LanguageSelector';
+import { useTranslation } from "react-i18next";
+import LanguageSelector from "./LanguageSelector";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
@@ -100,6 +101,7 @@ const WALLETS = [
 ];
 
 export default function Navbar() {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { data: session } = useSession();
@@ -151,7 +153,7 @@ export default function Navbar() {
         setShowModal(false);
       }
     } catch {
-      setError("Connection cancelled or failed. Please try again.");
+      setError(t("walletModal.connectionFailed"));
     } finally {
       setConnecting(null);
     }
@@ -163,11 +165,11 @@ export default function Navbar() {
   const shortAddr = wallet ? wallet.slice(0, 6) + "..." + wallet.slice(-4) : null;
 
   const links = [
-    { href: "/marketplace", label: "Markets" },
-    { href: "/exchange", label: "Exchange" },
-    { href: "/bonds", label: "Bonds" },
-    { href: "/equity-ipo", label: "Equity & IPO" },
-    { href: "/tokenize", label: "Tokenize Assets" },
+    { href: "/marketplace", label: t("nav.markets") },
+    { href: "/exchange", label: t("nav.exchange") },
+    { href: "/bonds", label: t("nav.bonds") },
+    { href: "/equity-ipo", label: t("nav.equityIpo") },
+    { href: "/tokenize", label: t("nav.tokenize") },
   ];
 
   return (
@@ -260,10 +262,10 @@ export default function Navbar() {
           <div className="nb-right">
             <LanguageSelector />
             <button className={`nb-cw ${wallet ? "on" : ""}`} onClick={() => setShowModal(true)}>
-              {wallet ? `\u25CF ${shortAddr}` : "Connect Wallet"}
+              {wallet ? `\u25CF ${shortAddr}` : t("nav.connectWallet")}
             </button>
-            {activeUser ? <Link href="/dashboard" className="nb-li" style={{color:"#F0B90B",fontWeight:700}}>{activeUser.firstName || activeUser.name || activeUser.email?.split("@")[0] || "Dashboard"}</Link> : <Link href="/login" className="nb-li">Log In</Link>}
-            <button className="nb-hbg" onClick={() => setOpen(!open)} aria-label="Menu">
+            {activeUser ? <Link href="/dashboard" className="nb-li" style={{color:"#F0B90B",fontWeight:700}}>{activeUser.firstName || activeUser.name || activeUser.email?.split("@")[0] || t("nav.dashboard")}</Link> : <Link href="/login" className="nb-li">{t("nav.logIn")}</Link>}
+            <button className="nb-hbg" onClick={() => setOpen(!open)} aria-label={t("nav.menu")}>
               <span style={{ transform: open ? "rotate(45deg) translate(5px,5px)" : "none" }} />
               <span style={{ opacity: open ? 0 : 1 }} />
               <span style={{ transform: open ? "rotate(-45deg) translate(5px,-5px)" : "none" }} />
@@ -278,16 +280,16 @@ export default function Navbar() {
         ))}
         <div className="nb-mob-sep" />
         <button className="nb-mob-cw" onClick={() => { setOpen(false); setShowModal(true); }}>
-          {wallet ? `\u25CF ${shortAddr}` : "Connect Wallet"}
+          {wallet ? `\u25CF ${shortAddr}` : t("nav.connectWallet")}
         </button>
-        {activeUser ? <Link href="/dashboard" className="nb-mob-li" style={{color:"#F0B90B",fontWeight:700}}>{activeUser.firstName || activeUser.name || activeUser.email?.split("@")[0] || "Dashboard"}</Link> : <Link href="/login" className="nb-mob-li">Log In</Link>}
+        {activeUser ? <Link href="/dashboard" className="nb-mob-li" style={{color:"#F0B90B",fontWeight:700}}>{activeUser.firstName || activeUser.name || activeUser.email?.split("@")[0] || t("nav.dashboard")}</Link> : <Link href="/login" className="nb-mob-li">{t("nav.logIn")}</Link>}
       </div>
 
       {showModal && (
         <div className="wm-ov" onClick={e => { if (e.target === e.currentTarget) setShowModal(false); }}>
           <div className="wm-box">
             <div className="wm-head">
-              <div className="wm-title">{wallet ? "Wallet Connected" : "Connect a Wallet"}</div>
+              <div className="wm-title">{wallet ? t("walletModal.connectedTitle") : t("walletModal.connectTitle")}</div>
               <button className="wm-x" onClick={() => setShowModal(false)}>&times;</button>
             </div>
 
@@ -295,12 +297,12 @@ export default function Navbar() {
               <div className="wm-connected">
                 <div style={{ fontSize: 44, marginBottom: 14 }}>&check;</div>
                 <div className="wm-conn-addr">{shortAddr}</div>
-                <div className="wm-conn-via">Connected via {walletName}</div>
-                <button className="wm-disc" onClick={disconnect}>Disconnect Wallet</button>
+                <div className="wm-conn-via">{t("walletModal.connectedVia", { walletName })}</div>
+                <button className="wm-disc" onClick={disconnect}>{t("walletModal.disconnect")}</button>
               </div>
             ) : (
               <>
-                <p className="wm-sub">Select your preferred wallet to connect to Nextoken Capital.</p>
+                <p className="wm-sub">{t("walletModal.selectPreferred")}</p>
                 <div className="wm-grid">
                   {WALLETS.map(w => {
                     const installed = w.check();
@@ -319,11 +321,11 @@ export default function Navbar() {
                         {isLoading ? (
                           <div className="wm-spinner" />
                         ) : w.comingSoon ? (
-                          <span className="wm-badge soon">Soon</span>
+                          <span className="wm-badge soon">{t("walletModal.soon")}</span>
                         ) : installed ? (
-                          <span className="wm-badge ok">Installed &check;</span>
+                          <span className="wm-badge ok">{t("walletModal.installed")} &check;</span>
                         ) : (
-                          <span className="wm-badge get">Install</span>
+                          <span className="wm-badge get">{t("walletModal.install")}</span>
                         )}
                       </div>
                     );
@@ -331,10 +333,10 @@ export default function Navbar() {
                 </div>
                 {error && <div className="wm-err">&amp;#9888; {error}</div>}
                 <p className="wm-note">
-                  By connecting you agree to our{" "}
-                  <Link href="/terms" onClick={() => setShowModal(false)}>Terms</Link> and{" "}
-                  <Link href="/privacy" onClick={() => setShowModal(false)}>Privacy Policy</Link>.
-                  We never store your private keys.
+                  {t("walletModal.termsNotice")}{" "}
+                  <Link href="/terms" onClick={() => setShowModal(false)}>{t("walletModal.termsLink")}</Link> {t("walletModal.and")}{" "}
+                  <Link href="/privacy" onClick={() => setShowModal(false)}>{t("walletModal.privacyLink")}</Link>.{" "}
+                  {t("walletModal.neverStoreKeys")}
                 </p>
               </>
             )}

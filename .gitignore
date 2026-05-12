@@ -1,12 +1,13 @@
-node_modules
+node_modules/
 .next
-.env
 .vercel
-.env*.local
+
+# Environment files — never commit real secrets
+.env
 .env.local
-.env.local
-.env.local
-.env.local
+.env.*.local
+
+# Archives and one-off scripts
 *.tar.gz
 update-content.sh
 polish-content.sh
@@ -15,8 +16,3 @@ unify-admin.sh
 add-filters.sh
 patch-features.sh
 update-tokenize.sh
-patch-features.sh
-.env
-.env.local
-node_modules/
-node_modules/

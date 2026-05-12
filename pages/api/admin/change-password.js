@@ -7,8 +7,9 @@ import bcrypt from "bcryptjs";
 async function verifyAdmin(req) {
   const auth = req.headers.authorization;
   if (!auth || !auth.startsWith("Bearer ")) return null;
+  if (!process.env.JWT_SECRET) return null;
   try {
-    const decoded = jwt.verify(auth.split(" ")[1], process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET);
+    const decoded = jwt.verify(auth.split(" ")[1], process.env.JWT_SECRET);
     const emp = await Employee.findById(decoded.id || decoded.employeeId);
     if (!emp || !emp.isActive) return null;
     return emp;

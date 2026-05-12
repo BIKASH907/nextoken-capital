@@ -6,7 +6,8 @@ export default async function handler(req, res) {
   const jwt = require("jsonwebtoken");
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) return res.status(401).json({ error: "No token" });
-  try { jwt.verify(token, process.env.JWT_SECRET || "nextoken-capital-jwt-secret-2024"); }
+  if (!process.env.JWT_SECRET) return res.status(500).json({ error: "Server misconfigured" });
+  try { jwt.verify(token, process.env.JWT_SECRET); }
   catch { return res.status(401).json({ error: "Invalid token" }); }
 
   const { contractAddress, wallet, status } = req.body;

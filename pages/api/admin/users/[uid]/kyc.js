@@ -9,9 +9,9 @@ export default async function handler(req, res) {
 
   // Verify admin token
   const jwt = require("jsonwebtoken");
-  const SECRET = process.env.JWT_SECRET || "nextoken-capital-jwt-secret-2024";
+  if (!process.env.JWT_SECRET) return res.status(500).json({ error: "Server misconfigured" });
   let admin;
-  try { admin = jwt.verify(token, SECRET); } catch { return res.status(401).json({ error: "Invalid token" }); }
+  try { admin = jwt.verify(token, process.env.JWT_SECRET); } catch { return res.status(401).json({ error: "Invalid token" }); }
 
   await connectDB();
 
