@@ -1,18 +1,18 @@
 {
   "nav": {
-    "markets": "Markets",
-    "exchange": "Exchange",
-    "bonds": "Bonds",
-    "equityIpo": "Equity & IPO",
-    "tokenize": "Tokenize Assets",
-    "connectWallet": "Connect Wallet",
-    "logIn": "Log In",
-    "dashboard": "Dashboard",
-    "menu": "Menu"
+    "markets": "ตลาด",
+    "exchange": "แลกเปลี่ยน",
+    "bonds": "พันธบัตร",
+    "equityIpo": "ตราสารทุนและการเสนอขายหุ้น IPO",
+    "tokenize": "โทเค็นสินทรัพย์",
+    "connectWallet": "เชื่อมต่อกระเป๋าเงิน",
+    "logIn": "เข้าสู่ระบบ",
+    "dashboard": "แดชบอร์ด",
+    "menu": "เมนู"
   },
   "walletModal": {
-    "connectTitle": "Connect a Wallet",
-    "connectedTitle": "Wallet Connected",
+    "connectTitle": "เชื่อมต่อกระเป๋าเงิน",
+    "connectedTitle": "เชื่อมต่อกระเป๋าเงินแล้ว",
     "selectPreferred": "เลือกกระเป๋าสตางค์ที่คุณต้องการเพื่อเชื่อมต่อกับ Nextoken Capital",
     "connectedVia": "เชื่อมต่อผ่าน {{walletName}}",
     "disconnect": "ยกเลิกการเชื่อมต่อ Wallet",
@@ -66,7 +66,7 @@
     "stat3Num": "ERC-3643",
     "stat3Label": "โทเค็นมาตรฐาน",
     "stat4Num": "Polygon",
-    "stat4Label": "Blockchain"
+    "stat4Label": "บล็อกเชน"
   },
   "stats": {
     "listings": "รายการสินทรัพย์",
@@ -116,15 +116,15 @@
     "contractDesc": "ความปลอดภัยของรหัส ERC-3643",
     "approvalTitle": "การอนุมัติ",
     "approvalDesc": "ทีมปฏิบัติตามข้อกำหนด sign-off",
-    "nonCustodialTitle": "Non-Custodial",
+    "nonCustodialTitle": "ไม่ใช่การคุมขัง",
     "nonCustodialDesc": "เงินจะส่งตรงจากกระเป๋าเงินของคุณไปยังผู้ออกผ่านสัญญาอัจฉริยะ Nextoken ไม่เคยถือเงินของคุณ",
-    "rightsTitle": "Token Rights",
+    "rightsTitle": "สิทธิ์โทเค็น",
     "rightsDesc": "โทเค็น ERC-3643 แต่ละอันแสดงถึงสิทธิ์ทางเศรษฐกิจตามกฎหมายสำหรับสินทรัพย์อ้างอิง",
     "ownershipTitle": "ความเป็นเจ้าของสินทรัพย์",
     "ownershipDesc": "ผู้ออกยังคงเป็นเจ้าของตามกฎหมาย ผู้ถือโทเค็นเป็นเจ้าของสิทธิ์ทางเศรษฐกิจแบบเศษส่วน",
     "kycTitle": "KYC ผ่าน Sumsub",
     "kycDesc": "ผู้ให้บริการ KYC ระดับโลกที่ได้รับใบอนุญาต การตรวจสอบเอกสาร การจดจำใบหน้า การคัดกรอง AML",
-    "onchainTitle": "On-Chain Transparency",
+    "onchainTitle": "ความโปร่งใสในห่วงโซ่",
     "onchainDesc": "ทุกธุรกรรมบน Polygon blockchain สามารถตรวจสอบได้แบบสาธารณะ ไม่มีบัญชีแยกประเภทที่ซ่อนอยู่",
     "paymentsTitle": "ชำระเงินผ่าน Monerium",
     "paymentsDesc": "EUR ชำระเงินผ่าน Monerium — EMI ที่ได้รับอนุญาตจากสหภาพยุโรป รางการชำระเงินระดับธนาคาร",

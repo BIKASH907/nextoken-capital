@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "react-i18next";
-import LanguageSelector from "./LanguageSelector";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
@@ -260,7 +259,6 @@ export default function Navbar() {
           </div>
 
           <div className="nb-right">
-            <LanguageSelector />
             <button className={`nb-cw ${wallet ? "on" : ""}`} onClick={() => setShowModal(true)}>
               {wallet ? `\u25CF ${shortAddr}` : t("nav.connectWallet")}
             </button>
