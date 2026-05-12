@@ -66,7 +66,8 @@
     "stat3Num": "ERC-3643",
     "stat3Label": "代币标准",
     "stat4Num": "Polygon",
-    "stat4Label": "区块链"
+    "stat4Label": "区块链",
+    "headline": "直接在链上购买代币化的<yellow>现实世界资产</yellow>。"
   },
   "stats": {
     "listings": "资产列表",

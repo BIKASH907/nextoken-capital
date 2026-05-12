@@ -9,6 +9,7 @@ import { AppProvider } from "../lib/AppContext";
 import { SessionProvider } from "next-auth/react";
 import dynamic from "next/dynamic";
 import SeoStructuredData from "../components/SeoStructuredData";
+import HreflangTags from "../components/HreflangTags";
 import { WagmiProvider } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RainbowKitProvider, darkTheme, getDefaultConfig } from "@rainbow-me/rainbowkit";
@@ -69,6 +70,7 @@ export default function App({ Component, pageProps }) {
                 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800;9..40,900&display=swap" rel="stylesheet" />
               </Head>
               <SeoStructuredData />
+              <HreflangTags />
 
               {loading && (
                 <div style={{ position: "fixed", top: 0, left: 0, right: 0, height: 2, background: "#F0B90B", zIndex: 9999 }} />

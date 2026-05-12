@@ -125,3 +125,21 @@
   .footer-bottom{flex-direction:column;align-items:flex-start}
 }
 
+
+/* ---------------------------------------------------------------------- */
+/* i18n robustness: prevent layout breaks with long German/Greek/Finnish  */
+/* text and right-to-left scripts (Arabic, Hebrew, Urdu, Farsi).          */
+/* ---------------------------------------------------------------------- */
+body, h1, h2, h3, h4, p, span, a, button { word-break: break-word; overflow-wrap: anywhere; }
+.nb-links a, .nb-cw, .nb-li, .nb-login, .nb-register { white-space: nowrap; }
+.nb-mob a, .nb-mob-cw, .nb-mob-li { white-space: normal; word-break: break-word; }
+
+/* RTL: flip layout direction for Arabic, Hebrew, Urdu, Farsi */
+html[dir="rtl"] body { direction: rtl; }
+html[dir="rtl"] .nb-in,
+html[dir="rtl"] .nb-right { flex-direction: row-reverse; }
+
+/* Hero stats wrap on small / long-language layouts */
+@media(max-width: 700px) {
+  h1 { font-size: clamp(28px, 8vw, 48px) !important; line-height: 1.2 !important; }
+}

@@ -66,7 +66,8 @@
     "stat3Num": "ERC-3643",
     "stat3Label": "トークン規格",
     "stat4Num": "Polygon",
-    "stat4Label": "ブロックチェーン"
+    "stat4Label": "ブロックチェーン",
+    "headline": "トークン化された<yellow>現実世界の資産</yellow>をオンチェーンで直接購入します。"
   },
   "stats": {
     "listings": "資産リスト",

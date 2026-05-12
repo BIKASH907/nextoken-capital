@@ -66,7 +66,8 @@
     "stat3Num": "ERC-3643",
     "stat3Label": "토큰 표준",
     "stat4Num": "Polygon",
-    "stat4Label": "블록체인"
+    "stat4Label": "블록체인",
+    "headline": "토큰화된<yellow>실제 자산</yellow>를 온체인에서 직접 구매하세요."
   },
   "stats": {
     "listings": "자산 목록",

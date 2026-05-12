@@ -3,6 +3,24 @@ const nextConfig = {
   reactStrictMode: true,
   productionBrowserSourceMaps: false,
   poweredByHeader: false,
+
+  // -----------------------------------------------------------------------
+  // i18n routing. Enabling this gives us /de/, /fr/, /es/, ... URL prefixes
+  // for free, plus useRouter().locale and Vercel-side locale detection that
+  // we wire into hreflang tags. localeDetection is OFF for now so existing
+  // visitors landing on / are not auto-redirected to a translated URL.
+  // -----------------------------------------------------------------------
+  i18n: {
+    locales: [
+      "en","de","fr","es","it","pt","nl","pl","cs","ro","el","hu","bg","hr",
+      "sk","sl","lt","lv","et","fi","sv","da","mt","ga","ar","zh","ja","ko",
+      "hi","ne","th","vi","ms","id","tr","ru","uk","he","sw","af","bn","ur",
+      "fa","fil",
+    ],
+    defaultLocale: "en",
+    localeDetection: false,
+  },
+
   async headers() {
     return [{
       source: '/(.*)',

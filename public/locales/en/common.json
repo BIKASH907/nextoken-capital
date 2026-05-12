@@ -66,7 +66,8 @@
     "stat3Num": "ERC-3643",
     "stat3Label": "Token standard",
     "stat4Num": "Polygon",
-    "stat4Label": "Blockchain"
+    "stat4Label": "Blockchain",
+    "headline": "Buy Tokenized <yellow>Real-World Assets</yellow> Directly On-Chain."
   },
   "stats": {
     "listings": "Asset Listings",
@@ -136,5 +137,41 @@
   "language": {
     "label": "Language",
     "search": "Search language..."
+  },
+  "lead": {
+    "title": "Get Early Access",
+    "subtitle": "Join the institutional waitlist. We'll send platform updates, MiCA roadmap details, and onboarding info.",
+    "placeholder": "your@email.com",
+    "intent": "I am a...",
+    "intent_investor": "Investor",
+    "intent_issuer": "Asset Issuer",
+    "intent_institution": "Institution / Fund",
+    "intent_partner": "Partner / Advisor",
+    "submit": "Request Access",
+    "success": "Thanks. We'll be in touch shortly.",
+    "error": "Something went wrong. Please try again.",
+    "demoTitle": "Book an Institutional Demo",
+    "demoBtn": "Book a Demo",
+    "newsletterTitle": "Stay in the loop",
+    "newsletterBtn": "Subscribe"
+  },
+  "team": {
+    "eyebrow": "Leadership",
+    "title": "Built by Finance & Blockchain Experts",
+    "lead": "Our team combines capital markets, regulatory and blockchain engineering experience.",
+    "addPhoto": "Add team photo",
+    "addBio": "Add bio + role"
+  },
+  "partners": {
+    "eyebrow": "Ecosystem",
+    "title": "Trusted Infrastructure & Partners",
+    "lead": "We operate on regulated, audited financial infrastructure.",
+    "addLogo": "Add partner logo",
+    "categoryCustody": "Custody",
+    "categoryKyc": "KYC / AML",
+    "categoryPayments": "Payments",
+    "categoryBlockchain": "Blockchain",
+    "categoryAudit": "Audit",
+    "categoryLegal": "Legal"
   }
 }

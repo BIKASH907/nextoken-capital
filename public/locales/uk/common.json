@@ -66,7 +66,8 @@
     "stat3Num": "ERC-3643",
     "stat3Label": "Стандарт жетона",
     "stat4Num": "Polygon",
-    "stat4Label": "Блокчейн"
+    "stat4Label": "Блокчейн",
+    "headline": "Купуйте токенізовані<yellow>реальні активи</yellow>безпосередньо в мережі."
   },
   "stats": {
     "listings": "Списки активів",

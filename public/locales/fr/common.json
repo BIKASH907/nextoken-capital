@@ -66,7 +66,8 @@
     "stat3Num": "ERC-3643",
     "stat3Label": "Norme de jeton",
     "stat4Num": "Polygon",
-    "stat4Label": "Chaîne de blocs"
+    "stat4Label": "Chaîne de blocs",
+    "headline": "Achetez des actifs tokenisés<yellow>du monde réel</yellow>directement sur la chaîne."
   },
   "stats": {
     "listings": "Listes d'actifs",

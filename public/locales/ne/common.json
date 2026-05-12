@@ -66,7 +66,8 @@
     "stat3Num": "ERC-3643",
     "stat3Label": "टोकन मानक",
     "stat4Num": "Polygon",
-    "stat4Label": "ब्लकचेन"
+    "stat4Label": "ब्लकचेन",
+    "headline": "टोकनकृत <yellow>वास्तविक-विश्व सम्पत्ति</yellow> सिधै अन-चेन किन्नुहोस्।"
   },
   "stats": {
     "listings": "सम्पत्ति सूची",
