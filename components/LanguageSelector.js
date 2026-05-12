@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import i18n, { SUPPORTED_LANGUAGES } from "../lib/i18n";
+import i18n, { SUPPORTED_LANGUAGES, ensureLanguage } from "../lib/i18n";
 
 export default function LanguageSelector() {
   const { t } = useTranslation();
@@ -15,10 +15,10 @@ export default function LanguageSelector() {
     return () => i18n.off("languageChanged", onChange);
   }, []);
 
-  const selectLang = (code) => {
-    i18n.changeLanguage(code);
+  const selectLang = async (code) => {
     setOpen(false);
     setSearch("");
+    await ensureLanguage(code);
   };
 
   const currentLang =
@@ -26,10 +26,7 @@ export default function LanguageSelector() {
 
   const filtered = SUPPORTED_LANGUAGES.filter((l) => {
     const q = search.toLowerCase();
-    return (
-      l.name.toLowerCase().includes(q) ||
-      l.code.toLowerCase().includes(q)
-    );
+    return l.name.toLowerCase().includes(q) || l.code.toLowerCase().includes(q);
   });
 
   return (
