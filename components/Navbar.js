@@ -336,4 +336,15 @@ export default function Navbar() {
                 {error && <div className="wm-err">&amp;#9888; {error}</div>}
                 <p className="wm-note">
                   {t("walletModal.termsNotice")}{" "}
-                  <Link href="/terms" onClick={() => setShowModal(false)}>{t("walletModal.termsLink")}</Link> {t("walletMo
+                  <Link href="/terms" onClick={() => setShowModal(false)}>{t("walletModal.termsLink")}</Link> {t("walletModal.and")}{" "}
+                  <Link href="/privacy" onClick={() => setShowModal(false)}>{t("walletModal.privacyLink")}</Link>.{" "}
+                  {t("walletModal.neverStoreKeys")}
+                </p>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
