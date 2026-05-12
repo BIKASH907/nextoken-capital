@@ -63,6 +63,7 @@ function FaqItem({ q, a }) {
 
 // ── NEW: INVEST MODAL ──────────────────────────────────────────────────────────
 function InvestModal({ bond, onClose }) {
+  const { t } = useTranslation();
   const [amount, setAmount] = useState(bond.min);
   const [step, setStep]     = useState("form");
   const [loading, setLoading] = useState(false);
@@ -161,6 +162,7 @@ function InvestModal({ bond, onClose }) {
 
 // ── BOND CARD (identical to original + onInvest prop) ─────────────────────────
 function BondCard({ bond, onInvest }) {
+  const { t } = useTranslation();
   const [hov, setHov] = useState(false);
   const sc = statusStyle[bond.status]||statusStyle.Live;
   return (

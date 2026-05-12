@@ -44,6 +44,7 @@ function FaqItem({ q, a }) {
 }
 
 function InvestModal({ item, onClose }) {
+  const { t } = useTranslation();
   const [amount, setAmount] = useState(String(item.minNum));
   const [step, setStep]     = useState("form");
   const [loading, setLoading] = useState(false);

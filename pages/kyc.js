@@ -115,6 +115,7 @@ export default function KYCPage() {
   };
 
   const loadSumsubScript = () => {
+  const { t } = useTranslation();
     return new Promise((resolve, reject) => {
       if (window.SNSWebSdk) { resolve(); return; }
       const script = document.createElement("script");
