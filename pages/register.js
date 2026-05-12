@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import { signIn } from "next-auth/react";
 import Navbar from "../components/Navbar";
 
+import { useTranslation } from "react-i18next";
 // All 180+ countries with dial codes
 const COUNTRIES = [
   { name:"Afghanistan", code:"AF", dial:"+93" },{ name:"Albania", code:"AL", dial:"+355" },
@@ -87,6 +88,7 @@ const FEATURES = [
 ];
 
 export default function RegisterPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [step, setStep]       = useState(0);
   const [otpSent, setOtpSent]   = useState(false);
@@ -196,7 +198,7 @@ export default function RegisterPage() {
   return (
     <>
       <Head>
-        <title>Create Account — Nextoken Capital</title>
+        <title>{t("register.create_account_nextoken_capital")}</title>
         <meta name="description" content="Create your Nextoken Capital account. Invest in tokenized real-world assets from EUR 100." />
       </Head>
       <Navbar />
@@ -296,7 +298,7 @@ export default function RegisterPage() {
           </div>
 
           <div className="rg-reg-info">
-            <div className="rg-reg-info-title">Platform Stats</div>
+            <div className="rg-reg-info-title">{t("register.platform_stats")}</div>
             {[
               ["Live","Platform active"],
               ["Growing","Investor community"],
@@ -334,12 +336,12 @@ export default function RegisterPage() {
 
             {/* STEP 0 — Account */}
             {step === 0 && <>
-              <button onClick={async () => { const res = await fetch("/api/auth/csrf"); const {csrfToken} = await res.json(); const form = document.createElement("form"); form.method = "POST"; form.action = "/api/auth/signin/google"; const cb = document.createElement("input"); cb.type = "hidden"; cb.name = "callbackUrl"; cb.value = "/dashboard"; const csrf = document.createElement("input"); csrf.type = "hidden"; csrf.name = "csrfToken"; csrf.value = csrfToken; form.appendChild(cb); form.appendChild(csrf); document.body.appendChild(form); form.submit(); }} style={{width:"100%",padding:"12px",background:"#fff",color:"#000",border:"none",borderRadius:8,fontSize:14,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:10,marginBottom:20}}><img src="https://www.google.com/favicon.ico" width={18} height={18} alt="" />Continue with Google</button>
-              <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:20}}><div style={{flex:1,height:1,background:"rgba(255,255,255,0.08)"}}></div><span style={{fontSize:12,color:"rgba(255,255,255,0.3)"}}>or register with email</span><div style={{flex:1,height:1,background:"rgba(255,255,255,0.08)"}}></div></div>
-              <div className="rg-title">Create your account</div>
-              <p className="rg-sub">Join our investor community. Takes 3 minutes.</p>
+              <button onClick={async () => { const res = await fetch("/api/auth/csrf"); const {csrfToken} = await res.json(); const form = document.createElement("form"); form.method = "POST"; form.action = "/api/auth/signin/google"; const cb = document.createElement("input"); cb.type = "hidden"; cb.name = "callbackUrl"; cb.value = "/dashboard"; const csrf = document.createElement("input"); csrf.type = "hidden"; csrf.name = "csrfToken"; csrf.value = csrfToken; form.appendChild(cb); form.appendChild(csrf); document.body.appendChild(form); form.submit(); }} style={{width:"100%",padding:"12px",background:"#fff",color:"#000",border:"none",borderRadius:8,fontSize:14,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:10,marginBottom:20}}><img src="https://www.google.com/favicon.ico" width={18} height={18} alt="" />{t("register.continue_with_google")}</button>
+              <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:20}}><div style={{flex:1,height:1,background:"rgba(255,255,255,0.08)"}}></div><span style={{fontSize:12,color:"rgba(255,255,255,0.3)"}}>{t("register.or_register_with_email")}</span><div style={{flex:1,height:1,background:"rgba(255,255,255,0.08)"}}></div></div>
+              <div className="rg-title">{t("register.create_your_account")}</div>
+              <p className="rg-sub">{t("register.join_our_investor_community_takes_3_minu")}</p>
               <div className="rg-field">
-                <label className="rg-label">Phone Number</label>
+                <label className="rg-label">{t("register.phone_number")}</label>
                 <div className="rg-phone-row">
                   <select className="rg-input" name="dialCode" value={form.dialCode} onChange={handle} style={{appearance:"none",cursor:"pointer"}}>
                     {COUNTRIES.map(c => (
@@ -350,40 +352,40 @@ export default function RegisterPage() {
                 </div>
               </div>
               <div className="rg-field">
-                <label className="rg-label">Date of Birth</label>
+                <label className="rg-label">{t("register.date_of_birth")}</label>
                 <input className="rg-input" name="dob" type="date" value={form.dob} onChange={handle}
                   max={new Date(Date.now() - 18 * 365.25 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]} />
-                <div style={{fontSize:11,color:"rgba(255,255,255,0.28)",marginTop:4}}>You must be 18 or older to invest.</div>
+                <div style={{fontSize:11,color:"rgba(255,255,255,0.28)",marginTop:4}}>{t("register.you_must_be_18_or_older_to_invest")}</div>
               </div>
               <div className="rg-two">
-                <button className="rg-btn rg-btn-ghost" onClick={() => setStep(0)}>← Back</button>
+                <button className="rg-btn rg-btn-ghost" onClick={() => setStep(0)}>{t("register.back")}</button>
                 <button className="rg-btn" onClick={nextStep}>Continue →</button>
               </div>
             </>}
 
             {/* STEP 2 — Agreements */}
             {step === 2 && <>
-              <div className="rg-title">Review & agree</div>
-              <p className="rg-sub">Please read and accept our terms before creating your account.</p>
+              <div className="rg-title">{t("register.review_agree")}</div>
+              <p className="rg-sub">{t("register.please_read_and_accept_our_terms_before_")}</p>
               <label className="rg-check">
                 <input type="checkbox" name="agreeTerms" checked={form.agreeTerms} onChange={handle} />
                 <span className="rg-check-txt">
-                  I agree to the <Link href="/terms" target="_blank">Terms of Service</Link> and <Link href="/privacy" target="_blank">Privacy Policy</Link> of Nextoken Capital UAB, a company registered in Lithuania , registered in Lithuania.
+                  I agree to the <Link href="/terms" target="_blank">{t("register.terms_of_service")}</Link> {t("register.and")} <Link href="/privacy" target="_blank">{t("register.privacy_policy")}</Link> of Nextoken Capital UAB, a company registered in Lithuania , registered in Lithuania.
                 </span>
               </label>
               <label className="rg-check">
                 <input type="checkbox" name="agreeRisk" checked={form.agreeRisk} onChange={handle} />
                 <span className="rg-check-txt">
-                  I have read the <Link href="/risk" target="_blank">Risk Disclosure</Link> and <Link href="/aml" target="_blank">AML Policy</Link>. I understand that tokenized asset investments involve significant risk and I may lose my invested capital.
+                  I have read the <Link href="/risk" target="_blank">{t("register.risk_disclosure")}</Link> {t("register.and")} <Link href="/aml" target="_blank">{t("register.aml_policy")}</Link>. I understand that tokenized asset investments involve significant risk and I may lose my invested capital.
                 </span>
               </label>
               <div className="rg-reg-note">
-                🏛️ <strong style={{color:"rgba(255,255,255,0.7)"}}>Nextoken Capital UAB</strong> holds an EMI license and MiCA CASP authorization from the Lithuanian authorities. All investors must complete Sumsub KYC before investing. Your identity documents are stored securely and processed under EU GDPR.
+                🏛️ <strong style={{color:"rgba(255,255,255,0.7)"}}>{t("register.nextoken_capital_uab")}</strong> holds an EMI license and MiCA CASP authorization from the Lithuanian authorities. All investors must complete Sumsub KYC before investing. Your identity documents are stored securely and processed under EU GDPR.
               </div>
               <div className="rg-two">
-                <button className="rg-btn rg-btn-ghost" onClick={() => setStep(1)}>← Back</button>
+                <button className="rg-btn rg-btn-ghost" onClick={() => setStep(1)}>{t("register.back")}</button>
                 <button className="rg-btn" disabled={!form.agreeTerms || !form.agreeRisk || loading} onClick={submitRegistration}>
-                  {loading ? <><div className="rg-spin" /> Creating...</> : "Create Account →"}
+                  {loading ? <><div className="rg-spin" /> {t("register.creating")}</> : "Create Account →"}
                 </button>
               </div>
             </>}
@@ -392,13 +394,13 @@ export default function RegisterPage() {
             {step === 3 && (
               <div className="rg-done">
                 <div className="rg-done-ico">🎉</div>
-                <div className="rg-done-title">Account Created!</div>
+                <div className="rg-done-title">{t("register.account_created")}</div>
                 <p className="rg-done-sub">
                   Welcome to Nextoken Capital, <strong style={{color:"#fff"}}>{form.firstName}</strong>!<br />
                   A confirmation has been sent to <strong style={{color:"#fff"}}>{form.email}</strong>.
                 </p>
                 <div className="rg-done-kyc">
-                  <div className="rg-done-kyc-title">⚠️ Next step: Complete KYC verification</div>
+                  <div className="rg-done-kyc-title">{t("register.next_step_complete_kyc_verification")}</div>
                   <p className="rg-done-kyc-sub">
                     You must verify your identity before you can invest. This takes 2–5 minutes via Sumsub. You will need a government-issued photo ID.
                   </p>

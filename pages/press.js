@@ -3,6 +3,7 @@ import Link from "next/link";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
+import { useTranslation } from "react-i18next";
 const PRESS = [
   { date:"Mar 10, 2026", source:"Fintech Lithuania",       title:"Nextoken Capital launches tokenized asset platform", type:"Coverage" },
   { date:"Feb 22, 2026", source:"The Paypers",             title:"Nextoken Capital launches secondary market exchange for asset tokens", type:"Coverage" },
@@ -22,10 +23,11 @@ const FACTS = [
 ];
 
 export default function PressPage() {
+  const { t } = useTranslation();
   return (
     <>
       <Head>
-        <title>Press — Nextoken Capital</title>
+        <title>{t("press.press_nextoken_capital")}</title>
         <meta name="description" content="Press coverage, press releases, and media resources for Nextoken Capital." />
       </Head>
       <Navbar />
@@ -69,10 +71,10 @@ export default function PressPage() {
         <div className="pr-hero">
           <div className="pr-hero-inner">
             <div className="pr-hero-left">
-              <div className="pr-tag">Press & Media</div>
-              <h1 className="pr-h1">Press Room</h1>
-              <p className="pr-sub">Press coverage, press releases, and media resources for journalists and analysts covering Nextoken Capital and tokenized asset markets.</p>
-              <Link href="/contact" className="pr-contact-btn">Media Enquiries</Link>
+              <div className="pr-tag">{t("press.press_media")}</div>
+              <h1 className="pr-h1">{t("press.press_room")}</h1>
+              <p className="pr-sub">{t("press.press_coverage_press_releases_and_media_")}</p>
+              <Link href="/contact" className="pr-contact-btn">{t("press.media_enquiries")}</Link>
             </div>
             <div className="pr-facts">
               {FACTS.map(f => (
@@ -86,7 +88,7 @@ export default function PressPage() {
         </div>
         <div className="pr-body">
           <div>
-            <div className="pr-section-title">Coverage & Press Releases</div>
+            <div className="pr-section-title">{t("press.coverage_press_releases")}</div>
             {PRESS.map(p => (
               <div key={p.title} className="pr-item">
                 <div>
@@ -99,10 +101,10 @@ export default function PressPage() {
             ))}
           </div>
           <div>
-            <div className="pr-section-title">Media Kit</div>
+            <div className="pr-section-title">{t("press.media_kit")}</div>
             <div className="pr-kit">
-              <div className="pr-kit-title">Brand Assets</div>
-              <p className="pr-kit-sub">Download official logos, brand guidelines, and product screenshots.</p>
+              <div className="pr-kit-title">{t("press.brand_assets")}</div>
+              <p className="pr-kit-sub">{t("press.download_official_logos_brand_guidelines")}</p>
               {[
                 { icon:"🖼️", label:"Logo Pack (SVG, PNG)" },
                 { icon:"📐", label:"Brand Guidelines PDF" },
@@ -117,9 +119,9 @@ export default function PressPage() {
               ))}
             </div>
             <div className="pr-contact-card">
-              <div className="pr-contact-title">Media Contact</div>
-              <p className="pr-contact-text">For interview requests, press enquiries, and media partnerships:</p>
-              <a href="mailto:press@nextokencapital.com" className="pr-contact-email">press@nextokencapital.com</a>
+              <div className="pr-contact-title">{t("press.media_contact")}</div>
+              <p className="pr-contact-text">{t("press.for_interview_requests_press_enquiries_a")}</p>
+              <a href="mailto:press@nextokencapital.com" className="pr-contact-email">{t("press.press_nextokencapital_com")}</a>
             </div>
           </div>
         </div>

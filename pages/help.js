@@ -4,6 +4,7 @@ import Link from "next/link";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
+import { useTranslation } from "react-i18next";
 const FAQS = [
   { cat:"Getting Started", q:"How do I create an account?", a:"Click 'Get Started' in the top navigation. You will need to provide your name, email, and complete KYC identity verification via Sumsub. The process takes under 5 minutes." },
   { cat:"Getting Started", q:"What documents do I need for KYC?", a:"You need a government-issued photo ID (passport, national ID card, or driver's license) and access to a camera for a selfie. In some cases we may request proof of address." },
@@ -22,6 +23,7 @@ const FAQS = [
 const CATS = ["All", "Getting Started", "Investing", "Exchange", "Wallet", "Security"];
 
 export default function HelpPage() {
+  const { t } = useTranslation();
   const [cat, setCat]       = useState("All");
   const [search, setSearch] = useState("");
   const [open, setOpen]     = useState(null);
@@ -34,7 +36,7 @@ export default function HelpPage() {
   return (
     <>
       <Head>
-        <title>Help Center — Nextoken Capital</title>
+        <title>{t("help.help_center_nextoken_capital")}</title>
         <meta name="description" content="Find answers to common questions about investing, the exchange, wallet, and account security on Nextoken Capital." />
       </Head>
       <Navbar />
@@ -75,8 +77,8 @@ export default function HelpPage() {
       `}</style>
       <div className="hp">
         <div className="hp-hero">
-          <div className="hp-tag">Help Center</div>
-          <h1 className="hp-h1">How can we help you?</h1>
+          <div className="hp-tag">{t("help.help_center")}</div>
+          <h1 className="hp-h1">{t("help.how_can_we_help_you")}</h1>
           <div className="hp-search-wrap">
             <span className="hp-search-icon">🔍</span>
             <input className="hp-search" placeholder="Search help articles..." value={search} onChange={e => setSearch(e.target.value)} />
@@ -88,7 +90,7 @@ export default function HelpPage() {
           </div>
           <div className="hp-count">{filtered.length} article{filtered.length !== 1 ? "s" : ""} found</div>
           {filtered.length === 0 ? (
-            <div className="hp-no-results">No articles found. Try a different search term or category.</div>
+            <div className="hp-no-results">{t("help.no_articles_found_try_a_different_search")}</div>
           ) : (
             filtered.map((f, i) => (
               <div key={i} className={`hp-faq${open===i?" open":""}`}>
@@ -102,11 +104,11 @@ export default function HelpPage() {
             ))
           )}
           <div className="hp-contact">
-            <div className="hp-contact-title">Still need help?</div>
-            <p className="hp-contact-sub">Our support team in Vilnius is available Monday to Friday, 9am–6pm EET.</p>
+            <div className="hp-contact-title">{t("help.still_need_help")}</div>
+            <p className="hp-contact-sub">{t("help.our_support_team_in_vilnius_is_available")}</p>
             <div className="hp-contact-btns">
-              <Link href="/contact" className="hp-contact-btn primary">Contact Support</Link>
-              <Link href="/status"  className="hp-contact-btn ghost">Platform Status</Link>
+              <Link href="/contact" className="hp-contact-btn primary">{t("help.contact_support")}</Link>
+              <Link href="/status"  className="hp-contact-btn ghost">{t("help.platform_status")}</Link>
             </div>
           </div>
         </div>

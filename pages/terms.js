@@ -3,6 +3,7 @@ import Link from "next/link";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
+import { useTranslation } from "react-i18next";
 const SECTIONS = [
   { id:"1", title:"Acceptance of Terms", content:"By accessing or using the Nextoken Capital platform, you agree to be bound by these Terms of Service. If you do not agree, you may not access or use the platform. These Terms constitute a legally binding agreement between you and Nextoken Capital UAB, a company registered in Lithuania." },
   { id:"2", title:"Eligibility", content:"You must be at least 18 years of age to use the platform. By using the platform, you represent that you are of legal age in your jurisdiction and have the legal capacity to enter into a binding agreement. The platform is not available to residents of jurisdictions where its use would be prohibited by applicable law." },
@@ -19,10 +20,11 @@ const SECTIONS = [
 ];
 
 export default function TermsPage() {
+  const { t } = useTranslation();
   return (
     <>
       <Head>
-        <title>Terms of Service — Nextoken Capital</title>
+        <title>{t("terms.terms_of_service_nextoken_capital")}</title>
         <meta name="description" content="Terms of Service for Nextoken Capital UAB, registered in Lithuania." />
       </Head>
       <Navbar />
@@ -52,14 +54,14 @@ export default function TermsPage() {
       <div className="lp">
         <div className="lp-hero">
           <div className="lp-hero-inner">
-            <div className="lp-tag">Legal</div>
-            <h1 className="lp-h1">Terms of Service</h1>
-            <p className="lp-meta">Last updated: March 1, 2026 · Effective: March 1, 2026 · Nextoken Capital UAB, Lithuania</p>
+            <div className="lp-tag">{t("terms.legal")}</div>
+            <h1 className="lp-h1">{t("terms.terms_of_service")}</h1>
+            <p className="lp-meta">{t("terms.last_updated_march_1_2026_effective_marc")}</p>
           </div>
         </div>
         <div className="lp-body">
           <div className="lp-toc">
-            <div className="lp-toc-title">Contents</div>
+            <div className="lp-toc-title">{t("terms.contents")}</div>
             {SECTIONS.map(s => <a key={s.id} href={`#s${s.id}`}>{s.id}. {s.title}</a>)}
           </div>
           <div className="lp-content">
@@ -71,10 +73,10 @@ export default function TermsPage() {
               </div>
             ))}
             <div className="lp-footer-links">
-              <Link href="/privacy">Privacy Policy</Link>
-              <Link href="/risk">Risk Disclosure</Link>
-              <Link href="/aml">AML Policy</Link>
-              <Link href="/contact">Contact Us</Link>
+              <Link href="/privacy">{t("terms.privacy_policy")}</Link>
+              <Link href="/risk">{t("terms.risk_disclosure")}</Link>
+              <Link href="/aml">{t("terms.aml_policy")}</Link>
+              <Link href="/contact">{t("terms.contact_us")}</Link>
             </div>
           </div>
         </div>

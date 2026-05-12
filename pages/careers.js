@@ -4,6 +4,7 @@ import Link from "next/link";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
+import { useTranslation } from "react-i18next";
 const JOBS = [
   { id:1, title:"Senior Blockchain Engineer",  dept:"Engineering",  loc:"Vilnius / Remote", type:"Full-time", desc:"Build and maintain ERC-3643 token infrastructure, smart contracts, and on-chain settlement systems." },
   { id:2, title:"Compliance Officer",          dept:"Legal",        loc:"Vilnius",           type:"Full-time", desc:"Manage MiCA compliance, regulatory compliance, AML monitoring, and regulatory filings." },
@@ -25,6 +26,7 @@ const PERKS = [
 const DEPTS = ["All", "Engineering", "Legal", "Investments", "Design", "Marketing"];
 
 export default function CareersPage() {
+  const { t } = useTranslation();
   const [dept, setDept] = useState("All");
   const [selected, setSelected] = useState(null);
   const [applied, setApplied] = useState(false);
@@ -34,7 +36,7 @@ export default function CareersPage() {
   return (
     <>
       <Head>
-        <title>Careers — Nextoken Capital</title>
+        <title>{t("careers.careers_nextoken_capital")}</title>
         <meta name="description" content="Join the Nextoken Capital team and help build the marketplace for tokenized real-world assets." />
       </Head>
       <Navbar />
@@ -112,9 +114,9 @@ export default function CareersPage() {
 
         <section className="cr-hero">
           <div className="cr-hero-glow" />
-          <div className="cr-hero-tag">We are hiring</div>
-          <h1>Build the Future of <em>Capital Markets</em></h1>
-          <p>Join a team of fintech engineers, compliance specialists, and investment professionals building tokenization marketplace infrastructure.</p>
+          <div className="cr-hero-tag">{t("careers.we_are_hiring")}</div>
+          <h1>{t("careers.build_the_future_of")} <em>{t("careers.capital_markets")}</em></h1>
+          <p>{t("careers.join_a_team_of_fintech_engineers_complia")}</p>
         </section>
 
         <div className="cr-stats">
@@ -127,9 +129,9 @@ export default function CareersPage() {
 
         <section className="cr-section">
           <div className="cr-inner">
-            <div className="cr-tag">Open Positions</div>
-            <h2 className="cr-title">Current Openings</h2>
-            <p className="cr-sub">We are a remote-friendly team. Most roles can be performed from anywhere in the EU.</p>
+            <div className="cr-tag">{t("careers.open_positions")}</div>
+            <h2 className="cr-title">{t("careers.current_openings")}</h2>
+            <p className="cr-sub">{t("careers.we_are_a_remote_friendly_team_most_roles")}</p>
 
             <div className="cr-filter">
               {DEPTS.map(d => (
@@ -159,8 +161,8 @@ export default function CareersPage() {
                       {applied ? (
                         <div className="cr-applied">
                           <div className="cr-applied-icon">🎉</div>
-                          <div className="cr-applied-title">Application Received!</div>
-                          <p className="cr-applied-sub">Thanks for applying to <strong>{job.title}</strong>. Our team will review your application and get back to you within 5 business days.</p>
+                          <div className="cr-applied-title">{t("careers.application_received")}</div>
+                          <p className="cr-applied-sub">{t("careers.thanks_for_applying_to")} <strong>{job.title}</strong>{t("careers.our_team_will_review_your_application_an")}</p>
                         </div>
                       ) : (
                         <>
@@ -180,9 +182,9 @@ export default function CareersPage() {
 
         <section className="cr-section-alt">
           <div className="cr-inner">
-            <div className="cr-tag">Benefits</div>
-            <h2 className="cr-title">Why Work at Nextoken</h2>
-            <p className="cr-sub">We invest in our team the same way we invest in building great products.</p>
+            <div className="cr-tag">{t("careers.benefits")}</div>
+            <h2 className="cr-title">{t("careers.why_work_at_nextoken")}</h2>
+            <p className="cr-sub">{t("careers.we_invest_in_our_team_the_same_way_we_in")}</p>
             <div className="cr-perks-grid">
               {PERKS.map(p => (
                 <div key={p.title} className="cr-perk-card">
@@ -196,9 +198,9 @@ export default function CareersPage() {
         </section>
 
         <section className="cr-cta">
-          <h2>Don&apos;t see a role that fits?</h2>
-          <p>Send us your CV and we will keep it on file for future opportunities.</p>
-          <Link href="/contact" className="cr-cta-btn">Get in Touch</Link>
+          <h2>{t("careers.don_apos_t_see_a_role_that_fits")}</h2>
+          <p>{t("careers.send_us_your_cv_and_we_will_keep_it_on_f")}</p>
+          <Link href="/contact" className="cr-cta-btn">{t("careers.get_in_touch")}</Link>
         </section>
 
       </div>

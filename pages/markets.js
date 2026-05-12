@@ -4,6 +4,7 @@ import Link from "next/link";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
+import { useTranslation } from "react-i18next";
 const CATS  = ["All","real_estate","bond","equity","infrastructure","energy","fund","other"];
 const RISKS = ["All","low","medium","high"];
 const SORTS = ["Most Funded","Highest Yield","Lowest Min. Invest","Newest"];
@@ -28,6 +29,7 @@ const ASSET_ICONS = {
 };
 
 export default function MarketsPage() {
+  const { t } = useTranslation();
   const [assets, setAssets]   = useState([]);
   const [loading, setLoading] = useState(true);
   const [cat, setCat]         = useState("All");
@@ -54,7 +56,7 @@ export default function MarketsPage() {
 
   return (
     <>
-      <Head><title>Markets — Nextoken Capital</title>
+      <Head><title>{t("markets.markets_nextoken_capital")}</title>
         <style>{`
           @media(max-width:768px){
             .mk-grid{grid-template-columns:1fr !important}
@@ -131,13 +133,13 @@ export default function MarketsPage() {
           {loading ? (
             <div style={{ textAlign: "center", padding: "80px", color: "rgba(255,255,255,0.3)" }}>
               <div style={{ fontSize: "48px", marginBottom: "16px" }}>⏳</div>
-              <div>Loading assets...</div>
+              <div>{t("markets.loading_assets")}</div>
             </div>
           ) : list.length === 0 ? (
             <div style={{ textAlign: "center", padding: "80px", color: "rgba(255,255,255,0.3)" }}>
               <div style={{ fontSize: "48px", marginBottom: "16px" }}>📭</div>
-              <div style={{ fontSize: "18px", marginBottom: "8px" }}>No assets found</div>
-              <div style={{ fontSize: "14px" }}>Try adjusting your filters or check back soon</div>
+              <div style={{ fontSize: "18px", marginBottom: "8px" }}>{t("markets.no_assets_found")}</div>
+              <div style={{ fontSize: "14px" }}>{t("markets.try_adjusting_your_filters_or_check_back")}</div>
             </div>
           ) : (
             <div className="mk-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))", gap: "20px" }}>
@@ -162,7 +164,7 @@ export default function MarketsPage() {
                           {(asset.riskLevel || "medium").charAt(0).toUpperCase() + (asset.riskLevel || "medium").slice(1)} Risk
                         </span>
                         {asset.status === "live" && (
-                          <span style={{ background: "rgba(14,203,129,0.15)", color: "#0ECB81", border: "1px solid rgba(14,203,129,0.3)", borderRadius: "20px", padding: "3px 10px", fontSize: "11px", fontWeight: "700" }}>● Live</span>
+                          <span style={{ background: "rgba(14,203,129,0.15)", color: "#0ECB81", border: "1px solid rgba(14,203,129,0.3)", borderRadius: "20px", padding: "3px 10px", fontSize: "11px", fontWeight: "700" }}>{t("markets.live")}</span>
                         )}
                       </div>
                       {/* Type badge */}
@@ -204,7 +206,7 @@ export default function MarketsPage() {
                       {asset.targetRaise > 0 && (
                         <div style={{ marginBottom: "14px" }}>
                           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px", fontSize: "12px" }}>
-                            <span style={{ color: "rgba(255,255,255,0.4)" }}>Funding Progress</span>
+                            <span style={{ color: "rgba(255,255,255,0.4)" }}>{t("markets.funding_progress")}</span>
                             <span style={{ color: "#F0B90B", fontWeight: "700" }}>{progress}%</span>
                           </div>
                           <div style={{ background: "rgba(255,255,255,0.07)", borderRadius: "4px", height: "6px", overflow: "hidden" }}>

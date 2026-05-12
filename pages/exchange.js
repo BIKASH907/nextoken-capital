@@ -5,7 +5,9 @@ import Head from 'next/head';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
+import { useTranslation } from "react-i18next";
 export default function Exchange() {
+  const { t } = useTranslation();
   const { data: session } = useSession();
   const [assets, setAssets] = useState([]);
   const [selectedAsset, setSelectedAsset] = useState(null);
@@ -106,7 +108,7 @@ export default function Exchange() {
 
   return (
     <>
-      <Head><title>Exchange — Nextoken Capital</title>
+      <Head><title>{t("exchange.exchange_nextoken_capital")}</title>
         <style>{`
           @media(max-width:900px){
             .ex-main{grid-template-columns:1fr !important}
@@ -128,13 +130,13 @@ export default function Exchange() {
       <Navbar />
             <div id="coming-soon-banner" style={{background:"linear-gradient(90deg, rgba(240,185,11,0.1), rgba(240,185,11,0.03))",border:"1px solid rgba(240,185,11,0.15)",borderRadius:12,padding:"16px 24px",margin:"80px 20px 0",display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:12,maxWidth:1200,marginLeft:"auto",marginRight:"auto",marginTop:80}}>
               <div style={{display:"flex",alignItems:"center",gap:12}}>
-                <span style={{fontSize:20}}>\uD83D\uDEE0\uFE0F</span>
+                <span style={{fontSize:20}}>{t("exchange.ud83d_udee0_ufe0f")}</span>
                 <div>
-                  <div style={{fontSize:14,fontWeight:700,color:"#F0B90B"}}>Secondary Market — Coming Soon</div>
-                  <div style={{fontSize:12,color:"rgba(255,255,255,0.4)"}}>Peer-to-peer token trading is under development. Browse primary assets on the Marketplace.</div>
+                  <div style={{fontSize:14,fontWeight:700,color:"#F0B90B"}}>{t("exchange.secondary_market_coming_soon")}</div>
+                  <div style={{fontSize:12,color:"rgba(255,255,255,0.4)"}}>{t("exchange.peer_to_peer_token_trading_is_under_deve")}</div>
                 </div>
               </div>
-              <a href="/marketplace" style={{padding:"8px 20px",background:"#F0B90B",color:"#0B0E11",borderRadius:8,fontWeight:700,fontSize:13,textDecoration:"none",whiteSpace:"nowrap"}}>Browse Marketplace</a>
+              <a href="/marketplace" style={{padding:"8px 20px",background:"#F0B90B",color:"#0B0E11",borderRadius:8,fontWeight:700,fontSize:13,textDecoration:"none",whiteSpace:"nowrap"}}>{t("exchange.browse_marketplace")}</a>
             </div>
 
       <div style={{ background: '#0B0E11', minHeight: '100vh', paddingTop: '72px', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
@@ -158,8 +160,8 @@ export default function Exchange() {
                     fontSize: '15px', fontWeight: '600', cursor: 'pointer', minWidth: '260px',
                     outline: 'none'
                   }}>
-                  {assetsLoading && <option value="">Loading assets...</option>}
-                  {!assetsLoading && assets.length === 0 && <option value="">No assets listed yet</option>}
+                  {assetsLoading && <option value="">{t("exchange.loading_assets")}</option>}
+                  {!assetsLoading && assets.length === 0 && <option value="">{t("exchange.no_assets_listed_yet")}</option>}
                   {assets.map(a => (
                     <option key={a._id} value={a._id}>
                       {a.name} · {a.tokenSymbol || 'TKN'} · €{a.tokenPrice}
@@ -173,29 +175,29 @@ export default function Exchange() {
               {selectedAsset && (
                 <div className='ex-hero-stats' style={{ display: 'flex', gap: '32px', flexWrap: 'wrap', alignItems: 'center' }}>
                   <div>
-                    <div style={{ color: '#555', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Mid Price</div>
+                    <div style={{ color: '#555', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.8px' }}>{t("exchange.mid_price")}</div>
                     <div style={{ color: '#F0B90B', fontSize: '22px', fontWeight: '800' }}>€{midPrice}</div>
                   </div>
                   {spread && (
                     <div>
-                      <div style={{ color: '#555', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Spread</div>
+                      <div style={{ color: '#555', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.8px' }}>{t("exchange.spread")}</div>
                       <div style={{ color: '#aaa', fontSize: '16px', fontWeight: '600' }}>€{spread}</div>
                     </div>
                   )}
                   <div>
-                    <div style={{ color: '#555', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Asset Type</div>
+                    <div style={{ color: '#555', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.8px' }}>{t("exchange.asset_type")}</div>
                     <div style={{ color: '#ccc', fontSize: '14px', fontWeight: '500', textTransform: 'capitalize' }}>{selectedAsset.assetType || '—'}</div>
                   </div>
                   <div>
-                    <div style={{ color: '#555', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Location</div>
+                    <div style={{ color: '#555', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.8px' }}>{t("exchange.location")}</div>
                     <div style={{ color: '#ccc', fontSize: '14px' }}>{selectedAsset.location || '—'}</div>
                   </div>
                   <div>
-                    <div style={{ color: '#555', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Est. Annual Return</div>
+                    <div style={{ color: '#555', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.8px' }}>{t("exchange.est_annual_return")}</div>
                     <div style={{ color: '#0ECB81', fontSize: '16px', fontWeight: '700' }}>{selectedAsset.annualYield ? `${selectedAsset.annualYield}%` : '—'}</div>
                   </div>
                   <div>
-                    <div style={{ color: '#555', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Total Supply</div>
+                    <div style={{ color: '#555', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.8px' }}>{t("exchange.total_supply")}</div>
                     <div style={{ color: '#ccc', fontSize: '14px' }}>{selectedAsset.totalTokens?.toLocaleString() || '—'} tokens</div>
                   </div>
                 </div>
@@ -247,7 +249,7 @@ export default function Exchange() {
               {/* Price chart area */}
               <div style={{ background: '#0F1318', border: '1px solid #1a1a1a', borderRadius: '12px', padding: '20px', marginBottom: '16px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                  <span style={{ fontWeight: '700', fontSize: '15px', color: '#fff' }}>Price History</span>
+                  <span style={{ fontWeight: '700', fontSize: '15px', color: '#fff' }}>{t("exchange.price_history")}</span>
                   <div style={{ display: 'flex', gap: '6px' }}>
                     {['1D', '7D', '30D', '90D'].map(r => (
                       <button key={r} style={{ background: r === '7D' ? '#F0B90B' : '#161B22', color: r === '7D' ? '#000' : '#555', border: '1px solid #222', borderRadius: '6px', padding: '4px 10px', cursor: 'pointer', fontSize: '12px', fontWeight: '600' }}>{r}</button>
@@ -284,12 +286,12 @@ export default function Exchange() {
                   <div className='ex-ob-grid' style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
                     {/* Bids */}
                     <div style={{ padding: '16px', borderRight: '1px solid #1a1a1a' }}>
-                      <div style={{ color: '#0ECB81', fontWeight: '700', fontSize: '12px', letterSpacing: '1px', marginBottom: '14px' }}>▲ BIDS (Buyers)</div>
+                      <div style={{ color: '#0ECB81', fontWeight: '700', fontSize: '12px', letterSpacing: '1px', marginBottom: '14px' }}>{t("exchange.bids_buyers")}</div>
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', marginBottom: '8px' }}>
                         {['Price €', 'Units', 'Value €'].map(h => <span key={h} style={{ color: '#333', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{h}</span>)}
                       </div>
                       {orderBook.bids.length === 0
-                        ? <div style={{ color: 'rgba(255,255,255,0.08)', fontSize: '13px', paddingTop: '24px', textAlign: 'center' }}>No bids yet</div>
+                        ? <div style={{ color: 'rgba(255,255,255,0.08)', fontSize: '13px', paddingTop: '24px', textAlign: 'center' }}>{t("exchange.no_bids_yet")}</div>
                         : orderBook.bids.map((b, i) => (
                           <div key={i} onClick={() => { setPrice(b.price.toString()); setSide('sell'); }}
                             style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', padding: '6px 0', borderBottom: '1px solid #111', cursor: 'pointer', borderRadius: '4px' }}>
@@ -302,12 +304,12 @@ export default function Exchange() {
 
                     {/* Asks */}
                     <div style={{ padding: '16px' }}>
-                      <div style={{ color: '#ef4444', fontWeight: '700', fontSize: '12px', letterSpacing: '1px', marginBottom: '14px' }}>▼ ASKS (Sellers)</div>
+                      <div style={{ color: '#ef4444', fontWeight: '700', fontSize: '12px', letterSpacing: '1px', marginBottom: '14px' }}>{t("exchange.asks_sellers")}</div>
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', marginBottom: '8px' }}>
                         {['Price €', 'Units', 'Value €'].map(h => <span key={h} style={{ color: '#333', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{h}</span>)}
                       </div>
                       {orderBook.asks.length === 0
-                        ? <div style={{ color: 'rgba(255,255,255,0.08)', fontSize: '13px', paddingTop: '24px', textAlign: 'center' }}>No asks yet</div>
+                        ? <div style={{ color: 'rgba(255,255,255,0.08)', fontSize: '13px', paddingTop: '24px', textAlign: 'center' }}>{t("exchange.no_asks_yet")}</div>
                         : orderBook.asks.map((a, i) => (
                           <div key={i} onClick={() => { setPrice(a.price.toString()); setSide('buy'); }}
                             style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', padding: '6px 0', borderBottom: '1px solid #111', cursor: 'pointer', borderRadius: '4px' }}>
@@ -324,7 +326,7 @@ export default function Exchange() {
                 {tab === 'trades' && (
                   <div style={{ padding: '16px' }}>
                     {trades.length === 0
-                      ? <div style={{ color: 'rgba(255,255,255,0.08)', textAlign: 'center', padding: '40px', fontSize: '14px' }}>No trades executed yet</div>
+                      ? <div style={{ color: 'rgba(255,255,255,0.08)', textAlign: 'center', padding: '40px', fontSize: '14px' }}>{t("exchange.no_trades_executed_yet")}</div>
                       : trades.map((t, i) => (
                         <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', padding: '8px 0', borderBottom: '1px solid #111', fontSize: '13px' }}>
                           <span style={{ color: '#444' }}>{new Date(t.createdAt).toLocaleTimeString()}</span>
@@ -340,7 +342,7 @@ export default function Exchange() {
                 {tab === 'myorders' && (
                   <div style={{ padding: '40px', textAlign: 'center' }}>
                     <div style={{ fontSize: '32px', marginBottom: '12px' }}>🔐</div>
-                    <div style={{ color: '#555', fontSize: '14px' }}>Log in to view and manage your orders</div>
+                    <div style={{ color: '#555', fontSize: '14px' }}>{t("exchange.log_in_to_view_and_manage_your_orders")}</div>
                   </div>
                 )}
               </div>
@@ -349,7 +351,7 @@ export default function Exchange() {
             {/* ── RIGHT PANEL: Place Order ── */}
             <div className='ex-sidebar' style={{ position: 'sticky', top: '88px', height: 'fit-content' }}>
               <div style={{ background: '#0F1318', border: '1px solid #1a1a1a', borderRadius: '12px', padding: '20px' }}>
-                <div style={{ fontWeight: '700', fontSize: '16px', marginBottom: '20px', color: '#fff' }}>Place Order</div>
+                <div style={{ fontWeight: '700', fontSize: '16px', marginBottom: '20px', color: '#fff' }}>{t("exchange.place_order")}</div>
 
                 {/* Limit / Market toggle */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', marginBottom: '16px', background: '#0F1318', padding: '4px', borderRadius: '10px', border: '1px solid #1a1a1a' }}>
@@ -369,19 +371,19 @@ export default function Exchange() {
                     border: `1px solid ${side === 'buy' ? '#0ECB81' : 'rgba(255,255,255,0.06)'}`,
                     color: '#fff', borderRadius: '10px', padding: '13px', cursor: 'pointer',
                     fontWeight: '800', fontSize: '15px', letterSpacing: '0.5px', transition: 'all 0.2s'
-                  }}>BUY</button>
+                  }}>{t("exchange.buy")}</button>
                   <button onClick={() => setSide('sell')} style={{
                     background: side === 'sell' ? 'linear-gradient(135deg,#cf2222,#991b1b)' : '#111',
                     border: `1px solid ${side === 'sell' ? '#cf2222' : 'rgba(255,255,255,0.06)'}`,
                     color: '#fff', borderRadius: '10px', padding: '13px', cursor: 'pointer',
                     fontWeight: '800', fontSize: '15px', letterSpacing: '0.5px', transition: 'all 0.2s'
-                  }}>SELL</button>
+                  }}>{t("exchange.sell")}</button>
                 </div>
 
                 <form onSubmit={placeOrder}>
                   {orderType === 'limit' && (
                     <div style={{ marginBottom: '14px' }}>
-                      <label style={{ color: '#555', fontSize: '11px', letterSpacing: '1px', display: 'block', marginBottom: '7px', textTransform: 'uppercase' }}>Price (EUR)</label>
+                      <label style={{ color: '#555', fontSize: '11px', letterSpacing: '1px', display: 'block', marginBottom: '7px', textTransform: 'uppercase' }}>{t("exchange.price_eur")}</label>
                       <div style={{ position: 'relative' }}>
                         <span style={{ position: 'absolute', left: '13px', top: '50%', transform: 'translateY(-50%)', color: '#555', fontSize: '14px' }}>€</span>
                         <input type="number" step="0.01" value={price} onChange={e => setPrice(e.target.value)}
@@ -392,7 +394,7 @@ export default function Exchange() {
                   )}
 
                   <div style={{ marginBottom: '14px' }}>
-                    <label style={{ color: '#555', fontSize: '11px', letterSpacing: '1px', display: 'block', marginBottom: '7px', textTransform: 'uppercase' }}>Units</label>
+                    <label style={{ color: '#555', fontSize: '11px', letterSpacing: '1px', display: 'block', marginBottom: '7px', textTransform: 'uppercase' }}>{t("exchange.units")}</label>
                     <input type="number" step="1" min="1" value={units} onChange={e => setUnits(e.target.value)}
                       placeholder="0"
                       style={{ width: '100%', background: '#0F1318', border: '1px solid #222', color: '#fff', padding: '12px', borderRadius: '8px', fontSize: '15px', boxSizing: 'border-box', outline: 'none' }} />
@@ -408,15 +410,15 @@ export default function Exchange() {
                   {/* Summary box */}
                   <div style={{ background: '#0F1318', border: '1px solid #1a1a1a', borderRadius: '8px', padding: '14px', marginBottom: '16px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '13px' }}>
-                      <span style={{ color: '#444' }}>Subtotal</span>
+                      <span style={{ color: '#444' }}>{t("exchange.subtotal")}</span>
                       <span style={{ color: '#888' }}>€{total}</span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '13px' }}>
-                      <span style={{ color: '#444' }}>Fee (0.5%)</span>
+                      <span style={{ color: '#444' }}>{t("exchange.fee_0_5")}</span>
                       <span style={{ color: '#888' }}>€{fee}</span>
                     </div>
                     <div style={{ borderTop: '1px solid #1a1a1a', paddingTop: '8px', display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
-                      <span style={{ color: '#666', fontWeight: '600' }}>Total</span>
+                      <span style={{ color: '#666', fontWeight: '600' }}>{t("exchange.total")}</span>
                       <span style={{ color: '#F0B90B', fontWeight: '800' }}>€{(parseFloat(total) + parseFloat(fee)).toFixed(2)}</span>
                     </div>
                   </div>
@@ -441,7 +443,7 @@ export default function Exchange() {
 
                 {/* Asset details */}
                 <div style={{ marginTop: '16px', background: '#0F1318', border: '1px solid #1a1a1a', borderRadius: '8px', padding: '14px' }}>
-                  <div style={{ color: '#333', fontSize: '10px', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '12px', fontWeight: '700' }}>Asset Details</div>
+                  <div style={{ color: '#333', fontSize: '10px', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '12px', fontWeight: '700' }}>{t("exchange.asset_details")}</div>
                   {[
                     ['Token Symbol', selectedAsset.tokenSymbol || '—'],
                     ['Token Price', `€${selectedAsset.tokenPrice}`],

@@ -2,6 +2,7 @@ import Footer from '../components/Footer';
 import Link from "next/link";
 import { useState } from "react";
 
+import { useTranslation } from "react-i18next";
 const S = {
   page:  { minHeight:"100vh", background:"#0B0E11", color:"rgba(255,255,255,0.85)", fontFamily:"'DM Sans',system-ui,sans-serif" },
   sec:   { maxWidth:1200, margin:"0 auto", padding:"64px 32px" },
@@ -168,6 +169,7 @@ function FaqItem({ q, a }) {
 }
 
 export default function LearnPage() {
+  const { t } = useTranslation();
   const [activeCat, setActiveCat] = useState("All");
   const [search, setSearch] = useState("");
   const [glossarySearch, setGlossarySearch] = useState("");
@@ -206,7 +208,7 @@ export default function LearnPage() {
           Education Hub
         </div>
         <h1 style={{ fontFamily:"Syne,sans-serif", fontSize:"clamp(36px,6vw,68px)", fontWeight:800, lineHeight:1.05, letterSpacing:"-1.5px", color:"rgba(255,255,255,0.85)", maxWidth:820, margin:"0 auto 20px" }}>
-          Learn to Invest in<br /><span style={{ color:"#F0B90B" }}>Tokenized Assets</span>
+          Learn to Invest in<br /><span style={{ color:"#F0B90B" }}>{t("learn.tokenized_assets")}</span>
         </h1>
         <p style={{ fontSize:17, fontWeight:300, color:"rgba(255,255,255,0.5)", maxWidth:600, margin:"0 auto 36px", lineHeight:1.75 }}>
           From blockchain basics to advanced tokenization strategies — everything you need to invest confidently in real-world tokenized assets.
@@ -231,9 +233,9 @@ export default function LearnPage() {
 
       {/* LEARNING PATHS */}
       <div style={S.sec}>
-        <span style={S.lbl}>Learning Paths</span>
-        <h2 style={S.h2}>Where Do You Want to Start?</h2>
-        <p style={S.sub}>Choose a learning path based on your experience level or investment goal.</p>
+        <span style={S.lbl}>{t("learn.learning_paths")}</span>
+        <h2 style={S.h2}>{t("learn.where_do_you_want_to_start")}</h2>
+        <p style={S.sub}>{t("learn.choose_a_learning_path_based_on_your_exp")}</p>
         <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(260px,1fr))", gap:16, marginBottom:12 }}>
           {[
             { icon:"🌱", color:"#0ECB81", bg:"rgba(34,197,94,0.10)", title:"Complete Beginner",      desc:"Never invested before? Start here. Learn what tokenized assets are, how blockchain works, and how to make your first investment.",  steps:["What is RWA tokenization?","Blockchain basics","How KYC works","Your first investment"] },
@@ -280,8 +282,8 @@ export default function LearnPage() {
                 {categories.map(c => <button key={c} onClick={() => setActiveCat(c)} style={S.FB(activeCat===c)}>{c}</button>)}
               </div>
               <p style={{ fontSize:13, color:"rgba(255,255,255,0.5)", marginBottom:20 }}>
-                Showing <strong style={{ color:"rgba(255,255,255,0.85)" }}>{filtered.length}</strong> of <strong style={{ color:"rgba(255,255,255,0.85)" }}>{articles.length}</strong> articles
-                {activeCat!=="All" && <span> in <strong style={{ color:"#F0B90B" }}>{activeCat}</strong></span>}
+                Showing <strong style={{ color:"rgba(255,255,255,0.85)" }}>{filtered.length}</strong> {t("learn.of")} <strong style={{ color:"rgba(255,255,255,0.85)" }}>{articles.length}</strong> articles
+                {activeCat!=="All" && <span> {t("learn.in")} <strong style={{ color:"#F0B90B" }}>{activeCat}</strong></span>}
               </p>
               <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))", gap:18 }}>
                 {filtered.map(a => <ArticleCard key={a.id} a={a} />)}
@@ -323,8 +325,8 @@ export default function LearnPage() {
 
       {/* QUICK FAQS */}
       <div style={S.sec}>
-        <span style={S.lbl}>Common Questions</span>
-        <h2 style={{ ...S.h2, marginBottom:28 }}>Investor FAQ</h2>
+        <span style={S.lbl}>{t("learn.common_questions")}</span>
+        <h2 style={{ ...S.h2, marginBottom:28 }}>{t("learn.investor_faq")}</h2>
         {[
           { q:"Do I need crypto experience to invest on Nextoken?",          a:"No. Nextoken is designed for both crypto-native and traditional investors. You can invest without ever interacting with a blockchain wallet — simply use your email account and bank transfer. The blockchain complexity is handled behind the scenes." },
           { q:"What is the minimum amount I can invest?",                    a:"Minimum purchase sizes vary by offering. They start as low as EUR 100 for some blockchain IPOs, EUR 250 for green bonds and real estate, and EUR 500-1,000 for early-stage equity and energy projects. Each listing shows the minimum clearly." },
@@ -339,13 +341,13 @@ export default function LearnPage() {
       <div style={{ margin:"0 32px 64px", borderRadius:18, padding:"64px 40px", textAlign:"center", position:"relative", overflow:"hidden", border:"1px solid rgba(240,185,11,0.25)", background:"linear-gradient(135deg,rgba(240,185,11,0.08) 0%,rgba(99,102,241,0.05) 100%)" }}>
         <div style={{ position:"absolute", inset:0, background:"radial-gradient(ellipse 600px 300px at 50% 0%,rgba(240,185,11,0.10) 0%,transparent 70%)", pointerEvents:"none" }} />
         <div style={{ position:"relative", zIndex:1 }}>
-          <h2 style={{ fontFamily:"Syne,sans-serif", fontSize:"clamp(24px,4vw,40px)", fontWeight:800, color:"rgba(255,255,255,0.85)", margin:"0 0 14px", letterSpacing:"-0.5px" }}>Ready to Start Buying?</h2>
+          <h2 style={{ fontFamily:"Syne,sans-serif", fontSize:"clamp(24px,4vw,40px)", fontWeight:800, color:"rgba(255,255,255,0.85)", margin:"0 0 14px", letterSpacing:"-0.5px" }}>{t("learn.ready_to_start_buying")}</h2>
           <p style={{ fontSize:15, color:"rgba(255,255,255,0.5)", fontWeight:300, maxWidth:440, margin:"0 auto 32px", lineHeight:1.75 }}>
             Create your free account, complete KYC in 5 minutes, and access tokenized bonds, equity, and real estate from EUR 100.
           </p>
           <div style={{ display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap" }}>
-            <Link href="/register" style={S.gold}>Create Free Account</Link>
-            <Link href="/markets"  style={S.out}>Explore Markets</Link>
+            <Link href="/register" style={S.gold}>{t("learn.create_free_account")}</Link>
+            <Link href="/markets"  style={S.out}>{t("learn.explore_markets")}</Link>
           </div>
         </div>
       </div>

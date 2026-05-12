@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import Navbar from "../components/Navbar";
 
+import { useTranslation } from "react-i18next";
 const listings = [
   { id:1, emoji:"⚡", name:"VoltGrid Energy",      ticker:"VGE", subtype:"Blockchain IPO", type:"ipo",       risk:"low",    location:"Helsinki, Finland",      irr:"28.4%", min:"EUR 100",   minNum:100,  price:"EUR 2.10", target:"EUR 18M", raised:"EUR 15.7M", pct:87, status:"hot",      sl:"Hot"         },
   { id:2, emoji:"🤖", name:"NeuroLogic AI",         ticker:"NLA", subtype:"Series A",      type:"early",     risk:"medium", location:"Tallinn, Estonia",       irr:"34.2%", min:"EUR 500",   minNum:500,  price:"EUR 1.42", target:"EUR 25M", raised:"EUR 15.3M", pct:61, status:"live",     sl:"Live"        },
@@ -64,8 +65,8 @@ function InvestModal({ item, onClose }) {
         {step==="success"?(
           <div style={{textAlign:"center",padding:"16px 0"}}>
             <div style={{fontSize:52,marginBottom:14}}>🎉</div>
-            <div style={{fontFamily:"Syne,sans-serif",fontSize:20,fontWeight:800,color:"#0ECB81",marginBottom:8}}>Investment Placed!</div>
-            <p style={{fontSize:13,color:"rgba(255,255,255,0.6)",lineHeight:1.7,marginBottom:20}}>You invested <strong style={{color:"#F0B90B"}}>EUR {amount}</strong> in <strong style={{color:"#fff"}}>{item.name}</strong>.<br/>Confirmation sent to your registered email.</p>
+            <div style={{fontFamily:"Syne,sans-serif",fontSize:20,fontWeight:800,color:"#0ECB81",marginBottom:8}}>{t("equity_ipo.investment_placed")}</div>
+            <p style={{fontSize:13,color:"rgba(255,255,255,0.6)",lineHeight:1.7,marginBottom:20}}>{t("equity_ipo.you_invested")} <strong style={{color:"#F0B90B"}}>EUR {amount}</strong> {t("equity_ipo.in")} <strong style={{color:"#fff"}}>{item.name}</strong>.<br/>{t("equity_ipo.confirmation_sent_to_your_registered_ema")}</p>
             <div style={{background:"rgba(240,185,11,0.06)",border:"1px solid rgba(240,185,11,0.15)",borderRadius:10,padding:16,marginBottom:20,textAlign:"left"}}>
               {[["Company",item.name],["Ticker",item.ticker],["Amount","EUR "+amount],["Units",tokens+" @ "+item.price],["Target IRR",item.irr],["Stage",item.subtype]].map(([l,v])=>(
                 <div key={l} style={{display:"flex",justifyContent:"space-between",fontSize:12,marginBottom:6}}>
@@ -74,12 +75,12 @@ function InvestModal({ item, onClose }) {
                 </div>
               ))}
             </div>
-            <button onClick={onClose} style={{width:"100%",padding:12,background:"#F0B90B",color:"#000",border:"none",borderRadius:10,fontSize:14,fontWeight:800,cursor:"pointer",fontFamily:"inherit"}}>Done</button>
+            <button onClick={onClose} style={{width:"100%",padding:12,background:"#F0B90B",color:"#000",border:"none",borderRadius:10,fontSize:14,fontWeight:800,cursor:"pointer",fontFamily:"inherit"}}>{t("equity_ipo.done")}</button>
           </div>
         ):step==="confirm"?(
           <>
-            <div style={{fontFamily:"Syne,sans-serif",fontSize:17,fontWeight:800,color:"rgba(255,255,255,0.85)",marginBottom:4}}>Confirm Investment</div>
-            <p style={{fontSize:12,color:"rgba(255,255,255,0.45)",marginBottom:20,lineHeight:1.6}}>Review your details before confirming.</p>
+            <div style={{fontFamily:"Syne,sans-serif",fontSize:17,fontWeight:800,color:"rgba(255,255,255,0.85)",marginBottom:4}}>{t("equity_ipo.confirm_investment")}</div>
+            <p style={{fontSize:12,color:"rgba(255,255,255,0.45)",marginBottom:20,lineHeight:1.6}}>{t("equity_ipo.review_your_details_before_confirming")}</p>
             <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:12,padding:16,marginBottom:16}}>
               {[["Company",item.name],["Stage",item.subtype],["Amount","EUR "+amount],["Units",tokens+" @ "+item.price],["Target IRR",item.irr],["Risk",item.risk.charAt(0).toUpperCase()+item.risk.slice(1)]].map(([l,v])=>(
                 <div key={l} style={{display:"flex",justifyContent:"space-between",fontSize:12.5,marginBottom:8,borderBottom:"1px solid rgba(255,255,255,0.04)",paddingBottom:8}}>
@@ -89,12 +90,12 @@ function InvestModal({ item, onClose }) {
               ))}
             </div>
             <p style={{fontSize:11,color:"rgba(255,255,255,0.3)",lineHeight:1.6,marginBottom:16}}>
-              By confirming you agree to our <Link href="/terms" style={{color:"#F0B90B"}}>Terms</Link> and <Link href="/risk" style={{color:"#F0B90B"}}>Risk Disclosure</Link>. Subject to KYC.
+              By confirming you agree to our <Link href="/terms" style={{color:"#F0B90B"}}>{t("equity_ipo.terms")}</Link> {t("equity_ipo.and")} <Link href="/risk" style={{color:"#F0B90B"}}>{t("equity_ipo.risk_disclosure")}</Link>. Subject to KYC.
             </p>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1.4fr",gap:10}}>
-              <button onClick={()=>setStep("form")} style={{padding:12,background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:10,color:"rgba(255,255,255,0.6)",fontSize:13,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>← Back</button>
+              <button onClick={()=>setStep("form")} style={{padding:12,background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:10,color:"rgba(255,255,255,0.6)",fontSize:13,fontWeight:600,cursor:"pointer",fontFamily:"inherit"}}>{t("equity_ipo.back")}</button>
               <button onClick={confirm} disabled={loading} style={{padding:12,background:"#F0B90B",color:"#000",border:"none",borderRadius:10,fontSize:14,fontWeight:800,cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
-                {loading?<><span style={{width:14,height:14,border:"2px solid rgba(0,0,0,0.2)",borderTopColor:"#000",borderRadius:"50%",animation:"eqspin .6s linear infinite",display:"inline-block"}}/>Investing...</>:"Confirm →"}
+                {loading?<><span style={{width:14,height:14,border:"2px solid rgba(0,0,0,0.2)",borderTopColor:"#000",borderRadius:"50%",animation:"eqspin .6s linear infinite",display:"inline-block"}}/>{t("equity_ipo.investing")}</>:"Confirm →"}
               </button>
             </div>
           </>
@@ -111,7 +112,7 @@ function InvestModal({ item, onClose }) {
                 </div>
               ))}
             </div>
-            <label style={{display:"block",fontSize:11,fontWeight:700,color:"rgba(255,255,255,0.4)",textTransform:"uppercase",letterSpacing:".5px",marginBottom:7}}>Investment Amount (EUR)</label>
+            <label style={{display:"block",fontSize:11,fontWeight:700,color:"rgba(255,255,255,0.4)",textTransform:"uppercase",letterSpacing:".5px",marginBottom:7}}>{t("equity_ipo.investment_amount_eur")}</label>
             <input type="number" min={item.minNum} step="50" value={amount} onChange={e=>setAmount(e.target.value)}
               style={{width:"100%",background:"#161B22",color:"#fff",border:"1px solid rgba(255,255,255,0.1)",borderRadius:8,padding:"12px 14px",fontSize:16,fontWeight:700,outline:"none",fontFamily:"inherit",boxSizing:"border-box",marginBottom:8}}/>
             <div style={{fontSize:12,color:"rgba(255,255,255,0.45)",marginBottom:14}}>≈ {tokens} units @ {item.price}</div>
@@ -121,7 +122,7 @@ function InvestModal({ item, onClose }) {
               ))}
             </div>
             <div style={{background:"rgba(240,185,11,0.05)",border:"1px solid rgba(240,185,11,0.15)",borderRadius:8,padding:"10px 14px",fontSize:12,color:"rgba(255,255,255,0.45)",lineHeight:1.6,marginBottom:16}}>
-              ⚠️ KYC required. <Link href="/register" style={{color:"#F0B90B"}}>Register</Link> or <Link href="/login" style={{color:"#F0B90B"}}>log in</Link> to invest.
+              ⚠️ KYC required. <Link href="/register" style={{color:"#F0B90B"}}>{t("equity_ipo.register")}</Link> {t("equity_ipo.or")} <Link href="/login" style={{color:"#F0B90B"}}>{t("equity_ipo.log_in")}</Link> to invest.
             </div>
             <button onClick={()=>{if(!amount||parseFloat(amount)<item.minNum){alert("Min "+item.min);return;}setStep("confirm");}}
               onMouseEnter={e=>e.currentTarget.style.background="#FFD000"}
@@ -192,6 +193,7 @@ const tableRows=[
 ];
 
 export default function EquityIPOPage() {
+  const { t } = useTranslation();
   const [activeType,setActiveType]=useState("all");
   const [activeRisk,setActiveRisk]=useState("all");
   const [activeSort,setActiveSort]=useState("IRR");
@@ -200,27 +202,27 @@ export default function EquityIPOPage() {
 
   return (
     <>
-      <Head><title>Equity & IPO — Nextoken Capital</title><meta name="description" content="Trade tokenized equity and blockchain IPOs on the Nextoken marketplace."/></Head>
+      <Head><title>{t("equity_ipo.equity_ipo_nextoken_capital")}</title><meta name="description" content="Trade tokenized equity and blockchain IPOs on the Nextoken marketplace."/></Head>
       <Navbar />
             <div id="coming-soon-banner" style={{background:"linear-gradient(90deg, rgba(240,185,11,0.1), rgba(240,185,11,0.03))",border:"1px solid rgba(240,185,11,0.15)",borderRadius:12,padding:"16px 24px",margin:"80px 20px 0",display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:12,maxWidth:1200,marginLeft:"auto",marginRight:"auto"}}>
               <div style={{display:"flex",alignItems:"center",gap:12}}>
-                <span style={{fontSize:20}}>\uD83D\uDE80</span>
+                <span style={{fontSize:20}}>{t("equity_ipo.ud83d_ude80")}</span>
                 <div>
-                  <div style={{fontSize:14,fontWeight:700,color:"#F0B90B"}}>Equity & IPO — Coming Soon</div>
-                  <div style={{fontSize:12,color:"rgba(255,255,255,0.4)"}}>Tokenized equity offerings are under development. Browse available assets on the Marketplace.</div>
+                  <div style={{fontSize:14,fontWeight:700,color:"#F0B90B"}}>{t("equity_ipo.equity_ipo_coming_soon")}</div>
+                  <div style={{fontSize:12,color:"rgba(255,255,255,0.4)"}}>{t("equity_ipo.tokenized_equity_offerings_are_under_dev")}</div>
                 </div>
               </div>
-              <a href="/marketplace" style={{padding:"8px 20px",background:"#F0B90B",color:"#0B0E11",borderRadius:8,fontWeight:700,fontSize:13,textDecoration:"none",whiteSpace:"nowrap"}}>Browse Marketplace</a>
+              <a href="/marketplace" style={{padding:"8px 20px",background:"#F0B90B",color:"#0B0E11",borderRadius:8,fontWeight:700,fontSize:13,textDecoration:"none",whiteSpace:"nowrap"}}>{t("equity_ipo.browse_marketplace")}</a>
             </div>
       <div style={{...S.page,paddingTop:64}}>
         <style>{`@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');*{box-sizing:border-box;margin:0;padding:0}body{margin:0}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}.pulse{animation:pulse 2s infinite}::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#05060a}::-webkit-scrollbar-thumb{background:rgba(240,185,11,0.3);border-radius:3px}table{border-collapse:collapse;width:100%}th{text-align:left}`}</style>
 
         <div style={{position:"relative",padding:"90px 32px 70px",textAlign:"center",overflow:"hidden"}}>
           <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse 800px 400px at 50% -40px,rgba(240,185,11,0.13) 0%,transparent 70%)",pointerEvents:"none"}}/>
-          <div style={{...S.badge,marginBottom:24}}><span className="pulse" style={{width:7,height:7,borderRadius:"50%",background:"#F0B90B",display:"inline-block"}}/>Equity and IPO</div>
-          <h1 style={{fontFamily:"Syne,sans-serif",fontSize:"clamp(36px,6vw,68px)",fontWeight:800,lineHeight:1.05,letterSpacing:"-1.5px",color:"rgba(255,255,255,0.85)",maxWidth:820,margin:"0 auto 20px"}}>Digital Equity and<br/><span style={{color:"#F0B90B"}}>Blockchain IPO Market</span></h1>
-          <p style={{fontSize:17,fontWeight:300,color:"rgba(255,255,255,0.6)",maxWidth:600,margin:"0 auto 36px",lineHeight:1.7}}>Participate in tokenized equity raises and blockchain-native IPOs. Early-stage access, transparent cap tables, and on-chain share issuance for modern investors.</p>
-          <div style={{display:"flex",gap:12,justifyContent:"center",flexWrap:"wrap"}}><a href="#listings" style={S.gold}>Explore Listings</a><a href="#issue" style={S.out}>Issue Equity</a></div>
+          <div style={{...S.badge,marginBottom:24}}><span className="pulse" style={{width:7,height:7,borderRadius:"50%",background:"#F0B90B",display:"inline-block"}}/>{t("equity_ipo.equity_and_ipo")}</div>
+          <h1 style={{fontFamily:"Syne,sans-serif",fontSize:"clamp(36px,6vw,68px)",fontWeight:800,lineHeight:1.05,letterSpacing:"-1.5px",color:"rgba(255,255,255,0.85)",maxWidth:820,margin:"0 auto 20px"}}>{t("equity_ipo.digital_equity_and")}<br/><span style={{color:"#F0B90B"}}>{t("equity_ipo.blockchain_ipo_market")}</span></h1>
+          <p style={{fontSize:17,fontWeight:300,color:"rgba(255,255,255,0.6)",maxWidth:600,margin:"0 auto 36px",lineHeight:1.7}}>{t("equity_ipo.participate_in_tokenized_equity_raises_a")}</p>
+          <div style={{display:"flex",gap:12,justifyContent:"center",flexWrap:"wrap"}}><a href="#listings" style={S.gold}>{t("equity_ipo.explore_listings")}</a><a href="#issue" style={S.out}>{t("equity_ipo.issue_equity")}</a></div>
         </div>
 
         <div style={{margin:"0 32px",borderTop:"1px solid rgba(255,255,255,0.08)",borderBottom:"1px solid rgba(255,255,255,0.08)",background:"#0B0E11",display:"flex",flexWrap:"wrap"}}>
@@ -233,8 +235,8 @@ export default function EquityIPOPage() {
         </div>
 
         <div style={S.sec}>
-          <span style={S.lbl}>Structures</span><h2 style={S.h2}>Equity Structures You Can Access</h2>
-          <p style={S.sub}>From early-stage SAFEs to full blockchain IPO listings, Nextoken supports the complete equity capital lifecycle.</p>
+          <span style={S.lbl}>{t("equity_ipo.structures")}</span><h2 style={S.h2}>{t("equity_ipo.equity_structures_you_can_access")}</h2>
+          <p style={S.sub}>{t("equity_ipo.from_early_stage_safes_to_full_blockchai")}</p>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:16}}>
             {[{icon:"🚀",name:"Blockchain IPO",desc:"Full public equity offerings launched on-chain with transparent allocation and secondary market readiness."},{icon:"🌱",name:"Early-Stage Equity",desc:"Invest in pre-IPO rounds. Includes SAFE notes, priced seed rounds, and Series A allocations."},{icon:"📊",name:"Equity Tokens (ST)",desc:"ERC-3643 compliant asset tokens with regulatory-grade investor whitelisting and transfer controls."},{icon:"🔄",name:"Secondary Listings",desc:"Trade previously issued equity tokens on the Nextoken exchange for early investor liquidity."}].map(c=>(
               <div key={c.name} onMouseEnter={e=>{e.currentTarget.style.borderColor="rgba(240,185,11,0.3)";e.currentTarget.style.transform="translateY(-2px)";}} onMouseLeave={e=>{e.currentTarget.style.borderColor="rgba(255,255,255,0.08)";e.currentTarget.style.transform="none";}} style={{background:"#0B0E11",border:"1px solid rgba(255,255,255,0.08)",borderRadius:16,padding:24,transition:"all 0.2s",cursor:"pointer"}}>
@@ -247,22 +249,22 @@ export default function EquityIPOPage() {
         </div>
 
         <div id="listings" style={S.sec}>
-          <span style={S.lbl}>Live Now</span><h2 style={S.h2}>Equity and IPO Directory</h2>
-          <p style={S.sub}>Browse active raises, upcoming IPOs, and secondary market equity token listings.</p>
+          <span style={S.lbl}>{t("equity_ipo.live_now")}</span><h2 style={S.h2}>{t("equity_ipo.equity_and_ipo_directory")}</h2>
+          <p style={S.sub}>{t("equity_ipo.browse_active_raises_upcoming_ipos_and_s")}</p>
           <div style={{display:"flex",flexWrap:"wrap",gap:10,alignItems:"center",marginBottom:28}}>
-            <span style={{fontSize:11.5,color:"rgba(255,255,255,0.45)",fontWeight:600}}>TYPE</span>
+            <span style={{fontSize:11.5,color:"rgba(255,255,255,0.45)",fontWeight:600}}>{t("equity_ipo.type")}</span>
             <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>{typeFilters.map(([v,l])=><button key={v} onClick={()=>setActiveType(v)} style={FB(activeType===v)}>{l}</button>)}</div>
             <div style={{width:1,height:28,background:"rgba(255,255,255,0.08)",margin:"0 4px"}}/>
             <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>{riskFilters.map(([v,l])=><button key={v} onClick={()=>setActiveRisk(v)} style={FB(activeRisk===v)}>{l}</button>)}</div>
           </div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))",gap:20}}>
             {filtered.map(item=><ListingCard key={item.id} item={item} onInvest={setInvestItem}/>)}
-            {filtered.length===0&&<div style={{gridColumn:"1/-1",padding:"60px 0",textAlign:"center",color:"rgba(255,255,255,0.45)"}}>No listings match this filter.</div>}
+            {filtered.length===0&&<div style={{gridColumn:"1/-1",padding:"60px 0",textAlign:"center",color:"rgba(255,255,255,0.45)"}}>{t("equity_ipo.no_listings_match_this_filter")}</div>}
           </div>
         </div>
 
         <div style={S.sec}>
-          <span style={S.lbl}>Full Directory</span><h2 style={S.h2}>All Equity Listings</h2>
+          <span style={S.lbl}>{t("equity_ipo.full_directory")}</span><h2 style={S.h2}>{t("equity_ipo.all_equity_listings")}</h2>
           <div style={{display:"flex",gap:6,marginBottom:20,flexWrap:"wrap"}}>
             {["IRR","Mkt Cap","Progress","Min. Invest","Name"].map(s=>(
               <button key={s} onClick={()=>setActiveSort(s)} style={{padding:"6px 12px",borderRadius:8,border:"1px solid "+(activeSort===s?"rgba(240,185,11,0.5)":"rgba(255,255,255,0.08)"),background:activeSort===s?"rgba(240,185,11,0.12)":"transparent",color:activeSort===s?"#F0B90B":"rgba(255,255,255,0.45)",fontSize:12,fontWeight:500,cursor:"pointer",fontFamily:"inherit"}}>Sort: {s}</button>
@@ -300,8 +302,8 @@ export default function EquityIPOPage() {
 
         <div id="issue" style={{background:"#0B0E11",borderTop:"1px solid rgba(255,255,255,0.06)",borderBottom:"1px solid rgba(255,255,255,0.06)"}}>
           <div style={S.sec}>
-            <span style={S.lbl}>Issuer Workflow</span><h2 style={S.h2}>How Equity Issuance Works</h2>
-            <p style={S.sub}>From structure to on-chain settlement, Nextoken handles the full lifecycle of your equity raise.</p>
+            <span style={S.lbl}>{t("equity_ipo.issuer_workflow")}</span><h2 style={S.h2}>{t("equity_ipo.how_equity_issuance_works")}</h2>
+            <p style={S.sub}>{t("equity_ipo.from_structure_to_on_chain_settlement_ne")}</p>
             <div style={{position:"relative",display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:32}}>
               <div style={{position:"absolute",top:24,left:60,right:60,height:1,background:"linear-gradient(90deg,transparent,rgba(240,185,11,0.3),transparent)"}}/>
               {[{n:"01",t:"Define Structure",b:"Set share class, supply, valuation cap, investor rights, and preferred terms."},{n:"02",t:"Submit Legal Docs",b:"Prepare cap table, pitch deck, audited financials, and disclosure package."},{n:"03",t:"Token Issuance",b:"ERC-3643 asset tokens with KYC-gated investor whitelisting on-chain."},{n:"04",t:"Run the Fundraise",b:"Open subscriptions, monitor allocation progress and milestones in real time."},{n:"05",t:"Exchange Listing",b:"Qualified tokens progress to Nextoken secondary exchange for liquidity."}].map(s=>(
@@ -316,19 +318,19 @@ export default function EquityIPOPage() {
         </div>
 
         <div style={S.sec}>
-          <span style={S.lbl}>FAQ</span><h2 style={{...S.h2,marginBottom:28}}>Common Equity Questions</h2>
+          <span style={S.lbl}>{t("equity_ipo.faq")}</span><h2 style={{...S.h2,marginBottom:28}}>{t("equity_ipo.common_equity_questions")}</h2>
           {faqs.map(f=><FaqItem key={f.q} q={f.q} a={f.a}/>)}
         </div>
 
         <div style={{margin:"0 32px 64px",borderRadius:18,padding:"64px 48px",textAlign:"center",position:"relative",overflow:"hidden",border:"1px solid rgba(240,185,11,0.3)",background:"linear-gradient(135deg,rgba(240,185,11,0.08) 0%,rgba(99,102,241,0.06) 100%)"}}>
           <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse 600px 300px at 50% 0%,rgba(240,185,11,0.10) 0%,transparent 70%)",pointerEvents:"none"}}/>
           <div style={{position:"relative",zIndex:1}}>
-            <span style={S.lbl}>Get Started</span>
-            <h2 style={{...S.h2,marginBottom:12}}>Ready to Issue or Invest in Digital Equity?</h2>
-            <p style={{fontSize:15,color:"rgba(255,255,255,0.6)",fontWeight:300,maxWidth:460,margin:"0 auto 32px",lineHeight:1.7}}>Join our growing community of traders and issuers on the Nextoken marketplace.</p>
+            <span style={S.lbl}>{t("equity_ipo.get_started")}</span>
+            <h2 style={{...S.h2,marginBottom:12}}>{t("equity_ipo.ready_to_issue_or_invest_in_digital_equi")}</h2>
+            <p style={{fontSize:15,color:"rgba(255,255,255,0.6)",fontWeight:300,maxWidth:460,margin:"0 auto 32px",lineHeight:1.7}}>{t("equity_ipo.join_our_growing_community_of_traders_an")}</p>
             <div style={{display:"flex",gap:12,justifyContent:"center",flexWrap:"wrap"}}>
-              <Link href="/tokenize" style={S.gold}>Issue Equity</Link>
-              <Link href="/exchange" style={S.out}>Explore Exchange</Link>
+              <Link href="/tokenize" style={S.gold}>{t("equity_ipo.issue_equity")}</Link>
+              <Link href="/exchange" style={S.out}>{t("equity_ipo.explore_exchange")}</Link>
             </div>
           </div>
         </div>

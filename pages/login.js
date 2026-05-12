@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import Navbar from "../components/Navbar";
 
+import { useTranslation } from "react-i18next";
 const FEATURES = [
   { icon:"🏛️", text:"EU compliance-ready platform" },
   { icon:"⚖️", text:"MiCA compliant platform" },
@@ -26,6 +27,7 @@ const STATS = [
 ];
 
 export default function LoginPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [form, setForm]       = useState({ email: "", password: "" });
   const [showPwd, setShowPwd] = useState(false);
@@ -62,7 +64,7 @@ export default function LoginPage() {
   return (
     <>
       <Head>
-        <title>Login — Nextoken Capital</title>
+        <title>{t("login.login_nextoken_capital")}</title>
         <meta name="description" content="Log in to your Nextoken Capital account." />
       </Head>
       <Navbar />
@@ -156,7 +158,7 @@ export default function LoginPage() {
           </div>
 
           <div className="li-stats-card">
-            <div className="li-stats-title">Platform Stats</div>
+            <div className="li-stats-title">{t("login.platform_stats")}</div>
             {STATS.map(([v, l]) => (
               <div key={l} className="li-stat-row">
                 <span className="li-stat-v">{v}</span>
@@ -169,32 +171,32 @@ export default function LoginPage() {
         {/* RIGHT — form */}
         <div className="li-right">
           <div className="li-box">
-            <div className="li-title">Welcome back</div>
-            <p className="li-sub">Log in to your Nextoken Capital account.</p>
+            <div className="li-title">{t("login.welcome_back")}</div>
+            <p className="li-sub">{t("login.log_in_to_your_nextoken_capital_account")}</p>
 
             {error && <div className="li-error">{error}</div>}
 
             <form onSubmit={submit}>
               <div className="li-field">
-                <label className="li-label">Email Address</label>
+                <label className="li-label">{t("login.email_address")}</label>
                 <input className="li-input" name="email" type="email" value={form.email} onChange={handle} placeholder="you@example.com" required autoComplete="email" />
               </div>
               <div className="li-field">
-                <label className="li-label">Password</label>
+                <label className="li-label">{t("login.password")}</label>
                 <div className="li-pwd-wrap">
                   <input className="li-input" name="password" type={showPwd ? "text" : "password"} value={form.password} onChange={handle} placeholder="Your password" required autoComplete="current-password" />
                   <button type="button" className="li-eye" onClick={() => setShowPwd(!showPwd)}>{showPwd ? "🙈" : "👁️"}</button>
                 </div>
               </div>
 
-              <Link href="/forgot-password" className="li-forgot">Forgot password?</Link>
+              <Link href="/forgot-password" className="li-forgot">{t("login.forgot_password")}</Link>
 
               <button type="submit" className="li-btn" disabled={loading || !form.email || !form.password}>
-                {loading ? <><div className="li-spin" /> Logging in...</> : "Login →"}
+                {loading ? <><div className="li-spin" /> {t("login.logging_in")}</> : "Login →"}
               </button>
             </form>
 
-            <div className="li-divider"><div className="li-divider-line" /><span>or</span><div className="li-divider-line" /></div>
+            <div className="li-divider"><div className="li-divider-line" /><span>{t("login.or")}</span><div className="li-divider-line" /></div>
 
             <button className="li-google" onClick={async () => {
               const res = await fetch("/api/auth/csrf");
@@ -210,16 +212,16 @@ export default function LoginPage() {
               Continue with Google
             </button>
 
-            <div className="li-divider"><div className="li-divider-line" /><span>or</span><div className="li-divider-line" /></div>
+            <div className="li-divider"><div className="li-divider-line" /><span>{t("login.or")}</span><div className="li-divider-line" /></div>
 
-            <Link href="/register" className="li-create">📝 Create New Account</Link>
+            <Link href="/register" className="li-create">{t("login.create_new_account")}</Link>
           </div>
 
 
           <div className="li-trust">
-            <span>🏛️ Lithuanian authorities</span>
-            <span>⚖️ MiCA Compliant</span>
-            <span>🔐 SSL Encrypted</span>
+            <span>{t("login.lithuanian_authorities")}</span>
+            <span>{t("login.mica_compliant")}</span>
+            <span>{t("login.ssl_encrypted")}</span>
           </div>
         </div>
       </div>

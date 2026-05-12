@@ -4,6 +4,7 @@ import Link from "next/link";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
+import { useTranslation } from "react-i18next";
 const TOPICS = ["General Inquiry","Investment Question","Tokenize My Asset","Technical Support","Press & Media","Compliance & Legal","Partnership","Other"];
 
 const INFO = [
@@ -16,6 +17,7 @@ const INFO = [
 ];
 
 export default function ContactPage() {
+  const { t } = useTranslation();
   const [form, setForm] = useState({ name:"", email:"", topic:"General Inquiry", message:"" });
   const [sent, setSent] = useState(false);
 
@@ -25,7 +27,7 @@ export default function ContactPage() {
   return (
     <>
       <Head>
-        <title>Contact Us — Nextoken Capital</title>
+        <title>{t("contact.contact_us_nextoken_capital")}</title>
         <meta name="description" content="Get in touch with the Nextoken Capital team in Vilnius, Lithuania." />
       </Head>
       <Navbar />
@@ -85,9 +87,9 @@ export default function ContactPage() {
 
       <div className="ct-page">
         <div className="ct-hero">
-          <div className="ct-hero-tag">Get in touch</div>
-          <h1>Contact <em>Nextoken Capital</em></h1>
-          <p>Our team in Vilnius, Lithuania is ready to help with investment questions, tokenization inquiries, or technical support.</p>
+          <div className="ct-hero-tag">{t("contact.get_in_touch")}</div>
+          <h1>{t("contact.contact")} <em>{t("contact.nextoken_capital")}</em></h1>
+          <p>{t("contact.our_team_in_vilnius_lithuania_is_ready_t")}</p>
         </div>
 
         <div className="ct-body">
@@ -97,31 +99,31 @@ export default function ContactPage() {
             {sent ? (
               <div className="ct-success">
                 <div className="ct-success-icon">✅</div>
-                <div className="ct-success-title">Message Sent!</div>
+                <div className="ct-success-title">{t("contact.message_sent")}</div>
                 <p className="ct-success-sub">Thank you for reaching out. We will reply to {form.email} within 1–2 business days.</p>
               </div>
             ) : (
               <>
-                <div className="ct-form-title">Send us a message</div>
+                <div className="ct-form-title">{t("contact.send_us_a_message")}</div>
                 <form onSubmit={submit}>
                   <div className="ct-row">
                     <div className="ct-field">
-                      <label>Your Name</label>
+                      <label>{t("contact.your_name")}</label>
                       <input name="name" value={form.name} onChange={handle} placeholder="Bikash Bhat" required />
                     </div>
                     <div className="ct-field">
-                      <label>Email Address</label>
+                      <label>{t("contact.email_address")}</label>
                       <input name="email" type="email" value={form.email} onChange={handle} placeholder="you@example.com" required />
                     </div>
                   </div>
                   <div className="ct-field">
-                    <label>Topic</label>
+                    <label>{t("contact.topic")}</label>
                     <select name="topic" value={form.topic} onChange={handle}>
                       {TOPICS.map(t => <option key={t}>{t}</option>)}
                     </select>
                   </div>
                   <div className="ct-field">
-                    <label>Message</label>
+                    <label>{t("contact.message")}</label>
                     <textarea name="message" value={form.message} onChange={handle} rows={6} placeholder="How can we help you?" required />
                   </div>
                   <button type="submit" className="ct-submit">Send Message →</button>
@@ -133,7 +135,7 @@ export default function ContactPage() {
           {/* INFO */}
           <div>
             <div className="ct-info-card">
-              <div className="ct-info-title">Office</div>
+              <div className="ct-info-title">{t("contact.office")}</div>
               {INFO.map(i => (
                 <div key={i.label} className="ct-info-row">
                   <div className="ct-info-icon">{i.icon}</div>
@@ -146,7 +148,7 @@ export default function ContactPage() {
             </div>
 
             <div className="ct-links-card">
-              <div className="ct-links-title">Quick Links</div>
+              <div className="ct-links-title">{t("contact.quick_links")}</div>
               {[
                 ["/help",    "Help Center"],
                 ["/api",     "API Documentation"],

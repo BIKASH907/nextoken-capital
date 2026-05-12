@@ -5,7 +5,9 @@ import { useSession } from "next-auth/react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
+import { useTranslation } from "react-i18next";
 export default function Marketplace() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { data: session } = useSession();
   const [assets, setAssets] = useState([]);
@@ -30,7 +32,7 @@ export default function Marketplace() {
 
   return (
     <>
-      <Head><title>Marketplace — Nextoken Capital</title>
+      <Head><title>{t("marketplace.marketplace_nextoken_capital")}</title>
         <style>{`
           @media(max-width:768px){
             .mp-stats{flex-direction:column !important}
@@ -49,7 +51,7 @@ export default function Marketplace() {
 
           {/* HEADER */}
           <div style={{ marginBottom: 28 }}>
-            <h1 className="mp-head" style={{ fontSize: 32, fontWeight: 800, marginBottom: 6, textAlign: "center", color: "#F0B90B" }}>Buy Tokenized Assets</h1>
+            <h1 className="mp-head" style={{ fontSize: 32, fontWeight: 800, marginBottom: 6, textAlign: "center", color: "#F0B90B" }}>{t("marketplace.buy_tokenized_assets")}</h1>
             <p style={{ fontSize: 14, color: "rgba(255,255,255,0.4)", maxWidth: 600 }}>
               Browse verified real-world assets. Each listing undergoes compliance review, financial verification, and legal structuring before reaching buyers.
             </p>
@@ -81,9 +83,9 @@ export default function Marketplace() {
 
           {/* ASSET GRID */}
           {loading ? (
-            <div style={{ textAlign: "center", padding: 60, color: "rgba(255,255,255,0.3)" }}>Loading assets...</div>
+            <div style={{ textAlign: "center", padding: 60, color: "rgba(255,255,255,0.3)" }}>{t("marketplace.loading_assets")}</div>
           ) : filtered.length === 0 ? (
-            <div style={{ textAlign: "center", padding: 60, color: "rgba(255,255,255,0.3)" }}>No assets available yet. Check back soon.</div>
+            <div style={{ textAlign: "center", padding: 60, color: "rgba(255,255,255,0.3)" }}>{t("marketplace.no_assets_available_yet_check_back_soon")}</div>
           ) : (
             <div className="mp-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))", gap: 16 }}>
               {filtered.map(a => {
@@ -172,8 +174,8 @@ export default function Marketplace() {
 
                     {/* Footer */}
                     <div style={{ background: "rgba(255,255,255,0.02)", padding: "8px 20px", display: "flex", justifyContent: "space-between", fontSize: 10, color: "rgba(255,255,255,0.25)" }}>
-                      <span>30-day min hold for profit</span>
-                      <span>Non-custodial purchase · Direct to issuer</span>
+                      <span>{t("marketplace.30_day_min_hold_for_profit")}</span>
+                      <span>{t("marketplace.non_custodial_purchase_direct_to_issuer")}</span>
                     </div>
                   </div>
                 );
@@ -183,7 +185,7 @@ export default function Marketplace() {
 
           {/* HOW IT WORKS */}
           <div style={{ marginTop: 40, background: "#161b22", borderRadius: 14, border: "1px solid rgba(255,255,255,0.06)", padding: "30px 24px" }}>
-            <h2 style={{ fontSize: 18, fontWeight: 800, color: "#F0B90B", marginBottom: 16 }}>How It Works</h2>
+            <h2 style={{ fontSize: 18, fontWeight: 800, color: "#F0B90B", marginBottom: 16 }}>{t("marketplace.how_it_works")}</h2>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 20 }}>
               {[
                 { n: "1", t: "Browse Assets",   d: "Explore verified tokenized real-world assets with full documentation." },

@@ -2,6 +2,7 @@ import Footer from '../components/Footer';
 import Link from "next/link";
 import { useState } from "react";
 
+import { useTranslation } from "react-i18next";
 const S = {
   page:  { minHeight:"100vh", background:"#0B0E11", color:"rgba(255,255,255,0.85)", fontFamily:"'DM Sans',system-ui,sans-serif" },
   sec:   { maxWidth:1200, margin:"0 auto", padding:"72px 32px" },
@@ -105,6 +106,7 @@ function FaqItem({ q, a }) {
 }
 
 export default function CompliancePage() {
+  const { t } = useTranslation();
   const [activeFramework, setActiveFramework] = useState(0);
 
   return (
@@ -128,14 +130,14 @@ export default function CompliancePage() {
           Regulatory Compliance
         </div>
         <h1 style={{ fontFamily:"Syne,sans-serif", fontSize:"clamp(36px,6vw,72px)", fontWeight:800, lineHeight:1.04, letterSpacing:"-2px", color:"rgba(255,255,255,0.85)", maxWidth:900, margin:"0 auto 22px" }}>
-          Compliance at Every<br /><span style={{ color:"#F0B90B" }}>Layer of the Stack</span>
+          Compliance at Every<br /><span style={{ color:"#F0B90B" }}>{t("compliance.layer_of_the_stack")}</span>
         </h1>
         <p style={{ fontSize:18, fontWeight:300, color:"rgba(255,255,255,0.5)", maxWidth:660, margin:"0 auto 40px", lineHeight:1.75 }}>
           Nextoken Capital is pursuing regulation by the Lithuanian authorities, designed for MiCA compliance, FATF aligned, and follows ISO 27001 standards — with on-chain enforcement via ERC-3643. Compliance is not a checkbox. It is our marketplace infrastructure.
         </p>
         <div style={{ display:"flex", gap:14, justifyContent:"center", flexWrap:"wrap", marginBottom:48 }}>
-          <Link href="/register"      style={S.gold}>Start Buying</Link>
-          <Link href="/institutional" style={S.out}>Institutional Access</Link>
+          <Link href="/register"      style={S.gold}>{t("compliance.start_buying")}</Link>
+          <Link href="/institutional" style={S.out}>{t("compliance.institutional_access")}</Link>
         </div>
         {/* Compliance badges */}
         <div style={{ display:"flex", flexWrap:"wrap", gap:12, justifyContent:"center" }}>
@@ -167,9 +169,9 @@ export default function CompliancePage() {
 
       {/* FRAMEWORKS — Interactive */}
       <div style={S.sec}>
-        <span style={S.lbl}>Regulatory Frameworks</span>
-        <h2 style={S.h2}>Our Compliance Infrastructure</h2>
-        <p style={S.sub}>Six interlocking regulatory frameworks ensuring Nextoken operates to the highest legal standards across every jurisdiction we serve.</p>
+        <span style={S.lbl}>{t("compliance.regulatory_frameworks")}</span>
+        <h2 style={S.h2}>{t("compliance.our_compliance_infrastructure")}</h2>
+        <p style={S.sub}>{t("compliance.six_interlocking_regulatory_frameworks_e")}</p>
 
         <div style={{ display:"grid", gridTemplateColumns:"280px 1fr", gap:20, alignItems:"flex-start" }}>
           {/* Sidebar tabs */}
@@ -203,7 +205,7 @@ export default function CompliancePage() {
             </div>
             <p style={{ fontSize:14.5, color:"rgba(255,255,255,0.5)", lineHeight:1.8, marginBottom:24 }}>{frameworks[activeFramework].desc}</p>
             <div style={{ borderTop:"1px solid rgba(255,255,255,0.07)", paddingTop:20 }}>
-              <p style={{ fontSize:11, fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase", color:"rgba(255,255,255,0.5)", margin:"0 0 14px" }}>Key Requirements Met</p>
+              <p style={{ fontSize:11, fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase", color:"rgba(255,255,255,0.5)", margin:"0 0 14px" }}>{t("compliance.key_requirements_met")}</p>
               <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10 }}>
                 {frameworks[activeFramework].points.map(p => (
                   <div key={p} style={{ display:"flex", alignItems:"flex-start", gap:10 }}>
@@ -220,9 +222,9 @@ export default function CompliancePage() {
       {/* JURISDICTIONS */}
       <div style={{ background:"#080810", borderTop:"1px solid rgba(255,255,255,0.06)", borderBottom:"1px solid rgba(255,255,255,0.06)" }}>
         <div style={S.sec}>
-          <span style={S.lbl}>Global Access</span>
-          <h2 style={S.h2}>Jurisdiction Coverage</h2>
-          <p style={S.sub}>Nextoken's legal framework enables compliant investor access across 180+ countries. Below are key supported jurisdictions and their applicable regulatory structures.</p>
+          <span style={S.lbl}>{t("compliance.global_access")}</span>
+          <h2 style={S.h2}>{t("compliance.jurisdiction_coverage")}</h2>
+          <p style={S.sub}>{t("compliance.nextoken_s_legal_framework_enables_compl")}</p>
           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(240px,1fr))", gap:14 }}>
             {jurisdictions.map(j => (
               <div key={j.name} style={{ ...S.card, display:"flex", alignItems:"center", gap:14 }}>
@@ -240,7 +242,7 @@ export default function CompliancePage() {
           <div style={{ marginTop:20, padding:18, borderRadius:12, border:"1px solid rgba(245,158,11,0.2)", background:"rgba(245,158,11,0.05)", display:"flex", gap:12, alignItems:"flex-start" }}>
             <span style={{ fontSize:20, flexShrink:0 }}>⚠️</span>
             <p style={{ fontSize:13, color:"rgba(255,255,255,0.5)", margin:0, lineHeight:1.7 }}>
-              <strong style={{ color:"#f59e0b" }}>US Investors:</strong> Participation is restricted to accredited investors under Regulation D (Rule 506(b)/506(c)) or offshore offerings under Regulation S. All US-linked investors require enhanced KYC and accredited investor verification. Contact our compliance team for details.
+              <strong style={{ color:"#f59e0b" }}>{t("compliance.us_investors")}</strong> Participation is restricted to accredited investors under Regulation D (Rule 506(b)/506(c)) or offshore offerings under Regulation S. All US-linked investors require enhanced KYC and accredited investor verification. Contact our compliance team for details.
             </p>
           </div>
         </div>
@@ -248,9 +250,9 @@ export default function CompliancePage() {
 
       {/* ON-CHAIN COMPLIANCE */}
       <div style={S.sec}>
-        <span style={S.lbl}>On-Chain Enforcement</span>
-        <h2 style={S.h2}>Compliance Is Code</h2>
-        <p style={S.sub}>Unlike traditional compliance which relies on manual oversight, Nextoken enforces regulatory requirements directly in smart contract code via ERC-3643 — automatically, 24/7, with zero human intervention required.</p>
+        <span style={S.lbl}>{t("compliance.on_chain_enforcement")}</span>
+        <h2 style={S.h2}>{t("compliance.compliance_is_code")}</h2>
+        <p style={S.sub}>{t("compliance.unlike_traditional_compliance_which_reli")}</p>
         <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(240px,1fr))", gap:16 }}>
           {[
             { icon:"🔐", t:"Whitelist Enforcement",    d:"Only KYC-verified, jurisdiction-eligible wallets can receive token transfers. Non-compliant transfers are rejected at the contract level." },
@@ -272,9 +274,9 @@ export default function CompliancePage() {
       {/* INVESTOR PROTECTIONS */}
       <div style={{ background:"#080810", borderTop:"1px solid rgba(255,255,255,0.06)", borderBottom:"1px solid rgba(255,255,255,0.06)" }}>
         <div style={S.sec}>
-          <span style={S.lbl}>Buyer Protections</span>
-          <h2 style={S.h2}>Your Rights as an Investor</h2>
-          <p style={S.sub}>As a compliant platform, Nextoken must uphold specific buyer protection obligations under EU law. Here is what you are entitled to.</p>
+          <span style={S.lbl}>{t("compliance.buyer_protections")}</span>
+          <h2 style={S.h2}>{t("compliance.your_rights_as_an_investor")}</h2>
+          <p style={S.sub}>{t("compliance.as_a_compliant_platform_nextoken_must_up")}</p>
           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))", gap:16 }}>
             {[
               { icon:"💰", t:"Segregated Funds",         d:"Your investment funds are held in segregated accounts. Nextoken cannot use investor money for operational expenses." },
@@ -296,8 +298,8 @@ export default function CompliancePage() {
 
       {/* FAQ */}
       <div style={S.sec}>
-        <span style={S.lbl}>FAQ</span>
-        <h2 style={{ ...S.h2, marginBottom:32 }}>Compliance FAQ</h2>
+        <span style={S.lbl}>{t("compliance.faq")}</span>
+        <h2 style={{ ...S.h2, marginBottom:32 }}>{t("compliance.compliance_faq")}</h2>
         {faqs.map(f => <FaqItem key={f.q} q={f.q} a={f.a} />)}
       </div>
 
@@ -305,14 +307,14 @@ export default function CompliancePage() {
       <div style={{ margin:"0 32px 64px", borderRadius:20, padding:"72px 48px", textAlign:"center", position:"relative", overflow:"hidden", border:"1px solid rgba(240,185,11,0.25)", background:"linear-gradient(135deg,rgba(240,185,11,0.08) 0%,rgba(99,102,241,0.05) 100%)" }}>
         <div style={{ position:"absolute", inset:0, background:"radial-gradient(ellipse 700px 400px at 50% 0%,rgba(240,185,11,0.10) 0%,transparent 70%)", pointerEvents:"none" }} />
         <div style={{ position:"relative", zIndex:1 }}>
-          <span style={S.lbl}>Questions About Compliance?</span>
-          <h2 style={{ ...S.h2, marginBottom:14 }}>Talk to Our Compliance Team</h2>
+          <span style={S.lbl}>{t("compliance.questions_about_compliance")}</span>
+          <h2 style={{ ...S.h2, marginBottom:14 }}>{t("compliance.talk_to_our_compliance_team")}</h2>
           <p style={{ fontSize:16, color:"rgba(255,255,255,0.5)", fontWeight:300, maxWidth:520, margin:"0 auto 36px", lineHeight:1.75 }}>
             Our in-house compliance and legal team is available to answer questions from investors, issuers, and institutional partners about our regulatory framework.
           </p>
           <div style={{ display:"flex", gap:14, justifyContent:"center", flexWrap:"wrap" }}>
-            <Link href="/contact"      style={S.gold}>Contact Compliance Team</Link>
-            <Link href="/institutional" style={S.out}>Institutional Onboarding</Link>
+            <Link href="/contact"      style={S.gold}>{t("compliance.contact_compliance_team")}</Link>
+            <Link href="/institutional" style={S.out}>{t("compliance.institutional_onboarding")}</Link>
           </div>
           <p style={{ fontSize:11.5, color:"rgba(255,255,255,0.5)", marginTop:24, opacity:0.7 }}>
             Designed for EU Regulation · MiCA Compliance-Ready · FATF Aligned · ERC-3643 · Security Standards · GDPR

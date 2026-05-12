@@ -3,6 +3,7 @@ import Link from "next/link";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
+import { useTranslation } from "react-i18next";
 const SECTIONS = [
   { id:"1", title:"Who We Are", content:"Nextoken Capital UAB ('we', 'us', 'our') is a company registered in Lithuania (registration in progress), registered in Lithuania. Our registered address is Vilnius, Lithuania. MiCA CASP authorization is in progress. We are the data controller for personal data processed through the Nextoken Capital platform." },
   { id:"2", title:"What Data We Collect", content:"We collect: (a) Identity data — full name, date of birth, nationality, government ID documents; (b) Contact data — email address, phone number, postal address; (c) Financial data — investment history, transaction records, wallet addresses; (d) KYC/AML data — identity verification results, source of funds information; (e) Technical data — IP address, browser type, device information, cookies; (f) Usage data — pages visited, features used, time spent on platform." },
@@ -17,10 +18,11 @@ const SECTIONS = [
 ];
 
 export default function PrivacyPage() {
+  const { t } = useTranslation();
   return (
     <>
       <Head>
-        <title>Privacy Policy — Nextoken Capital</title>
+        <title>{t("privacy.privacy_policy_nextoken_capital")}</title>
         <meta name="description" content="Privacy Policy for Nextoken Capital UAB — how we collect, use, and protect your personal data." />
       </Head>
       <Navbar />
@@ -49,14 +51,14 @@ export default function PrivacyPage() {
       <div className="lp">
         <div className="lp-hero">
           <div className="lp-hero-inner">
-            <div className="lp-tag">Legal</div>
-            <h1 className="lp-h1">Privacy Policy</h1>
-            <p className="lp-meta">Last updated: March 1, 2026 · Nextoken Capital UAB, Lithuania · GDPR Compliant</p>
+            <div className="lp-tag">{t("privacy.legal")}</div>
+            <h1 className="lp-h1">{t("privacy.privacy_policy")}</h1>
+            <p className="lp-meta">{t("privacy.last_updated_march_1_2026_nextoken_capit")}</p>
           </div>
         </div>
         <div className="lp-body">
           <div className="lp-toc">
-            <div className="lp-toc-title">Contents</div>
+            <div className="lp-toc-title">{t("privacy.contents")}</div>
             {SECTIONS.map(s => <a key={s.id} href={`#s${s.id}`}>{s.id}. {s.title}</a>)}
           </div>
           <div>
@@ -68,10 +70,10 @@ export default function PrivacyPage() {
               </div>
             ))}
             <div className="lp-footer-links">
-              <Link href="/terms">Terms of Service</Link>
-              <Link href="/risk">Risk Disclosure</Link>
-              <Link href="/aml">AML Policy</Link>
-              <Link href="/contact">Contact Us</Link>
+              <Link href="/terms">{t("privacy.terms_of_service")}</Link>
+              <Link href="/risk">{t("privacy.risk_disclosure")}</Link>
+              <Link href="/aml">{t("privacy.aml_policy")}</Link>
+              <Link href="/contact">{t("privacy.contact_us")}</Link>
             </div>
           </div>
         </div>

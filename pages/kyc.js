@@ -8,7 +8,9 @@ import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import Navbar from "../components/Navbar";
 
+import { useTranslation } from "react-i18next";
 export default function KYCPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [status, setStatus]   = useState("loading"); // loading | ready | verifying | approved | rejected | error
   const [error, setError]     = useState("");
@@ -127,7 +129,7 @@ export default function KYCPage() {
   return (
     <>
       <Head>
-        <title>Identity Verification — Nextoken Capital</title>
+        <title>{t("kyc.identity_verification_nextoken_capital")}</title>
         <meta name="description" content="Complete your KYC identity verification to start investing on Nextoken Capital." />
       </Head>
       <Navbar />
@@ -195,9 +197,9 @@ export default function KYCPage() {
 
       <div className="kyc-page">
         <div className="kyc-hero">
-          <div className="kyc-hero-tag">Identity Verification</div>
-          <h1>Complete Your KYC</h1>
-          <p>Verify your identity to unlock investing. Powered by Sumsub — takes 2–5 minutes. You need a government-issued photo ID.</p>
+          <div className="kyc-hero-tag">{t("kyc.identity_verification")}</div>
+          <h1>{t("kyc.complete_your_kyc")}</h1>
+          <p>{t("kyc.verify_your_identity_to_unlock_investing")}</p>
         </div>
 
         <div className="kyc-body">
@@ -241,8 +243,8 @@ export default function KYCPage() {
             <div className="kyc-error">
               ⚠️ {error}
               <div style={{marginTop:10}}>
-                <button className="kyc-btn" onClick={initKYC}>Try Again</button>
-                <a href="mailto:support@nextokencapital.com" className="kyc-btn kyc-btn-ghost" style={{textDecoration:"none",display:"inline-flex"}}>Contact Support</a>
+                <button className="kyc-btn" onClick={initKYC}>{t("kyc.try_again")}</button>
+                <a href="mailto:support@nextokencapital.com" className="kyc-btn kyc-btn-ghost" style={{textDecoration:"none",display:"inline-flex"}}>{t("kyc.contact_support")}</a>
               </div>
             </div>
           )}
@@ -251,7 +253,7 @@ export default function KYCPage() {
           {status === "loading" && !error && (
             <div className="kyc-loading">
               <div className="kyc-loading-spin" />
-              <div className="kyc-loading-text">Loading verification system...<br />Please wait a moment.</div>
+              <div className="kyc-loading-text">{t("kyc.loading_verification_system")}<br />{t("kyc.please_wait_a_moment")}</div>
             </div>
           )}
 
@@ -259,7 +261,7 @@ export default function KYCPage() {
           {status === "verifying" && (
             <div className="kyc-verifying">
               <div className="kyc-verifying-ico">⏳</div>
-              <div className="kyc-verifying-title">Documents Under Review</div>
+              <div className="kyc-verifying-title">{t("kyc.documents_under_review")}</div>
               <p className="kyc-verifying-sub">
                 {message || "Your documents have been submitted and are being reviewed. This usually takes 1–2 minutes. You will be notified by email when complete."}
               </p>
@@ -270,12 +272,12 @@ export default function KYCPage() {
           {status === "approved" && (
             <div className="kyc-approved">
               <div className="kyc-approved-ico">✅</div>
-              <div className="kyc-approved-title">Identity Verified!</div>
+              <div className="kyc-approved-title">{t("kyc.identity_verified")}</div>
               <p className="kyc-approved-sub">
                 Your identity has been successfully verified. You can now invest in any available asset on the platform.
               </p>
               <Link href="/dashboard" className="kyc-btn">Go to Dashboard →</Link>
-              <Link href="/markets" className="kyc-btn kyc-btn-ghost" style={{marginLeft:10,textDecoration:"none",display:"inline-flex"}}>Browse Markets</Link>
+              <Link href="/markets" className="kyc-btn kyc-btn-ghost" style={{marginLeft:10,textDecoration:"none",display:"inline-flex"}}>{t("kyc.browse_markets")}</Link>
             </div>
           )}
 
@@ -283,12 +285,12 @@ export default function KYCPage() {
           {status === "rejected" && (
             <div className="kyc-rejected">
               <div className="kyc-rejected-ico">❌</div>
-              <div className="kyc-rejected-title">Verification Failed</div>
+              <div className="kyc-rejected-title">{t("kyc.verification_failed")}</div>
               <p className="kyc-rejected-sub">
                 Your identity verification was unsuccessful. This can happen if the document was unclear, expired, or didn&apos;t match your details.
               </p>
-              <button className="kyc-btn" onClick={initKYC}>Try Again</button>
-              <a href="mailto:support@nextokencapital.com" className="kyc-btn kyc-btn-ghost" style={{textDecoration:"none",display:"inline-flex"}}>Contact Support</a>
+              <button className="kyc-btn" onClick={initKYC}>{t("kyc.try_again")}</button>
+              <a href="mailto:support@nextokencapital.com" className="kyc-btn kyc-btn-ghost" style={{textDecoration:"none",display:"inline-flex"}}>{t("kyc.contact_support")}</a>
             </div>
           )}
 
@@ -304,7 +306,7 @@ export default function KYCPage() {
             🔐 Your documents are processed securely by Sumsub, an EU-based identity verification provider.
             Data is stored and processed in compliance with EU GDPR.
             We retain KYC records for 5 years as required by EU AML regulations.
-            Questions? Email <a href="mailto:support@nextokencapital.com" style={{color:"#F0B90B"}}>support@nextokencapital.com</a>
+            Questions? Email <a href="mailto:support@nextokencapital.com" style={{color:"#F0B90B"}}>{t("kyc.support_nextokencapital_com")}</a>
           </div>
 
         </div>

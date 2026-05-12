@@ -3,6 +3,7 @@ import Link from "next/link";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
+import { useTranslation } from "react-i18next";
 const TEAM = [
   { name:"Bikash Bhat",       role:"CEO & Founder",          bio:"Fintech entrepreneur with 10+ years in capital markets and blockchain infrastructure.", photo:"/bikash.jpg", linkedin:"https://www.linkedin.com/in/bikash-bhat-87700318a" },
   { name:"Compliance Team",   role:"Legal & Compliance",     bio:"EU-based compliance specialists building toward MiCA-ready operations." },
@@ -26,10 +27,11 @@ const MILESTONES = [
 ];
 
 export default function AboutPage() {
+  const { t } = useTranslation();
   return (
     <>
       <Head>
-        <title>About Us — Nextoken Capital</title>
+        <title>{t("about.about_us_nextoken_capital")}</title>
         <meta name="description" content="Nextoken Capital is a tokenized real-world asset marketplace registered in Lithuania, connecting asset issuers with global buyers." />
       </Head>
       <Navbar />
@@ -116,9 +118,9 @@ export default function AboutPage() {
         <section className="ab-hero">
           <div className="ab-hero-glow" />
           <div className="ab-hero-inner">
-            <div className="ab-hero-tag">About Us</div>
-            <h1>The Regulated Marketplace for <em>Tokenized Assets</em></h1>
-            <p>Nextoken Capital is a technology marketplace for tokenized real-world assets — transparent, accessible, and on-chain.</p>
+            <div className="ab-hero-tag">{t("about.about_us")}</div>
+            <h1>{t("about.the_regulated_marketplace_for")} <em>{t("about.tokenized_assets")}</em></h1>
+            <p>{t("about.nextoken_capital_is_a_technology_marketp")}</p>
             <div className="ab-hero-badges">
               {["🏛️ Lithuania UAB","📍 Vilnius, Lithuania","⚖️ MiCA-Ready","🔗 Founded 2022"].map(b => (
                 <div key={b} className="ab-hero-badge">{b}</div>
@@ -137,21 +139,21 @@ export default function AboutPage() {
 
         <section className="ab-section">
           <div className="ab-inner">
-            <div className="ab-tag">Our Mission</div>
-            <h2 className="ab-title">Why We Built Nextoken Capital</h2>
+            <div className="ab-tag">{t("about.our_mission")}</div>
+            <h2 className="ab-title">{t("about.why_we_built_nextoken_capital")}</h2>
             <div className="ab-mission">
-              <p>Traditional capital markets are fragmented, slow, and inaccessible to most investors. <strong>Real estate deals require hundreds of thousands of euros.</strong> Private equity is reserved for institutions. Bond markets are opaque.</p>
-              <p>Nextoken Capital was founded to change this. By tokenizing real-world assets on compliant blockchain infrastructure, we enable <strong>buyers from 180+ countries to access tokenized real-world assets from EUR 100</strong> — with full transparency and on-chain settlement.</p>
-              <p>We are registered in Lithuania, registered in Lithuania and building toward MiCA compliance — the EU's comprehensive crypto-asset regulation framework. <strong>Compliance is not an afterthought. It is our foundation.</strong></p>
+              <p>{t("about.traditional_capital_markets_are_fragment")} <strong>{t("about.real_estate_deals_require_hundreds_of_th")}</strong> {t("about.private_equity_is_reserved_for_instituti")}</p>
+              <p>{t("about.nextoken_capital_was_founded_to_change_t")} <strong>{t("about.buyers_from_180_countries_to_access_toke")}</strong> {t("about.with_full_transparency_and_on_chain_sett")}</p>
+              <p>{t("about.we_are_registered_in_lithuania_registere")} <strong>{t("about.compliance_is_not_an_afterthought_it_is_")}</strong></p>
             </div>
           </div>
         </section>
 
         <section className="ab-section-alt">
           <div className="ab-inner">
-            <div className="ab-tag">Our Values</div>
-            <h2 className="ab-title">What We Stand For</h2>
-            <p className="ab-sub">Four principles that guide every product decision we make.</p>
+            <div className="ab-tag">{t("about.our_values")}</div>
+            <h2 className="ab-title">{t("about.what_we_stand_for")}</h2>
+            <p className="ab-sub">{t("about.four_principles_that_guide_every_product")}</p>
             <div className="ab-values-grid">
               {VALUES.map(v => (
                 <div key={v.title} className="ab-value-card">
@@ -168,9 +170,9 @@ export default function AboutPage() {
           <div className="ab-inner">
             <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:64, alignItems:"start" }}>
               <div>
-                <div className="ab-tag">Our Journey</div>
-                <h2 className="ab-title">Company Timeline</h2>
-                <p className="ab-sub">From founding to a fully operational tokenized asset platform.</p>
+                <div className="ab-tag">{t("about.our_journey")}</div>
+                <h2 className="ab-title">{t("about.company_timeline")}</h2>
+                <p className="ab-sub">{t("about.from_founding_to_a_fully_operational_tok")}</p>
                 <div className="ab-timeline">
                   {MILESTONES.map((m, i) => (
                     <div key={m.year} className="ab-timeline-item">
@@ -187,9 +189,9 @@ export default function AboutPage() {
                 </div>
               </div>
               <div>
-                <div className="ab-tag">The Team</div>
-                <h2 className="ab-title">Who Builds Nextoken</h2>
-                <p className="ab-sub">A team of fintech, compliance, and blockchain specialists.</p>
+                <div className="ab-tag">{t("about.the_team")}</div>
+                <h2 className="ab-title">{t("about.who_builds_nextoken")}</h2>
+                <p className="ab-sub">{t("about.a_team_of_fintech_compliance_and_blockch")}</p>
                 <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14 }}>
                   {TEAM.map(t => (
                     <div key={t.name} className="ab-team-card">
@@ -207,9 +209,9 @@ export default function AboutPage() {
 
         <section className="ab-section-alt">
           <div className="ab-inner">
-            <div className="ab-tag">Regulation</div>
-            <h2 className="ab-title">Fully Compliant Infrastructure</h2>
-            <p className="ab-sub">Every service we offer operates under EU financial regulation.</p>
+            <div className="ab-tag">{t("about.regulation")}</div>
+            <h2 className="ab-title">{t("about.fully_compliant_infrastructure")}</h2>
+            <p className="ab-sub">{t("about.every_service_we_offer_operates_under_eu")}</p>
             <div className="ab-reg-grid">
               {[
                 { icon:"🏛️", title:"Registered in Lithuania", desc:"Nextoken Capital UAB is registered in Lithuania as a technology marketplace. Payments handled by Monerium (EU-licensed EMI).", badge:"UAB Registered" },
@@ -231,11 +233,11 @@ export default function AboutPage() {
         </section>
 
         <section className="ab-cta">
-          <h2>Join the marketplace</h2>
-          <p>Create your free account and start trading tokenized real-world assets on our marketplace today.</p>
+          <h2>{t("about.join_the_marketplace")}</h2>
+          <p>{t("about.create_your_free_account_and_start_tradi")}</p>
           <div className="ab-cta-btns">
-            <Link href="/register" className="ab-cta-dark">Create Free Account</Link>
-            <Link href="/contact"  className="ab-cta-ghost">Contact the Team</Link>
+            <Link href="/register" className="ab-cta-dark">{t("about.create_free_account")}</Link>
+            <Link href="/contact"  className="ab-cta-ghost">{t("about.contact_the_team")}</Link>
           </div>
         </section>
 

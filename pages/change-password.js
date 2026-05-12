@@ -3,7 +3,9 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 
+import { useTranslation } from "react-i18next";
 export default function ChangePassword() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { data: session, status } = useSession();
   const [current, setCurrent] = useState("");
@@ -36,24 +38,24 @@ export default function ChangePassword() {
 
   return (
     <>
-      <Head><title>Change Password — Nextoken Capital</title></Head>
+      <Head><title>{t("change_password.change_password_nextoken_capital")}</title></Head>
       <div style={{ minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",padding:20,background:"#0B0E11" }}>
         <div style={{ width:"100%",maxWidth:400,background:"#0F1318",border:"1px solid rgba(255,255,255,0.08)",borderRadius:16,padding:32 }}>
           <div style={{ textAlign:"center",marginBottom:24 }}>
             <div style={{ fontSize:24,fontWeight:900,color:"#F0B90B" }}>NXT</div>
-            <div style={{ fontSize:11,color:"rgba(255,255,255,0.3)",letterSpacing:1 }}>NEXTOKEN CAPITAL</div>
+            <div style={{ fontSize:11,color:"rgba(255,255,255,0.3)",letterSpacing:1 }}>{t("change_password.nextoken_capital")}</div>
           </div>
 
           {done ? (
             <div style={{ textAlign:"center" }}>
               <div style={{ fontSize:48,marginBottom:16 }}>✅</div>
-              <h2 style={{ fontSize:18,fontWeight:800,color:"#22c55e",marginBottom:8 }}>Password Changed</h2>
-              <p style={{ fontSize:13,color:"rgba(255,255,255,0.5)",marginBottom:20 }}>Your password has been updated successfully.</p>
-              <button onClick={() => router.push("/dashboard")} style={{ width:"100%",padding:12,background:"#F0B90B",color:"#000",fontSize:14,fontWeight:700,border:"none",borderRadius:8,cursor:"pointer",fontFamily:"inherit" }}>Back to Dashboard</button>
+              <h2 style={{ fontSize:18,fontWeight:800,color:"#22c55e",marginBottom:8 }}>{t("change_password.password_changed")}</h2>
+              <p style={{ fontSize:13,color:"rgba(255,255,255,0.5)",marginBottom:20 }}>{t("change_password.your_password_has_been_updated_successfu")}</p>
+              <button onClick={() => router.push("/dashboard")} style={{ width:"100%",padding:12,background:"#F0B90B",color:"#000",fontSize:14,fontWeight:700,border:"none",borderRadius:8,cursor:"pointer",fontFamily:"inherit" }}>{t("change_password.back_to_dashboard")}</button>
             </div>
           ) : (
             <>
-              <h2 style={{ fontSize:18,fontWeight:800,color:"#fff",marginBottom:4 }}>Change Password</h2>
+              <h2 style={{ fontSize:18,fontWeight:800,color:"#fff",marginBottom:4 }}>{t("change_password.change_password")}</h2>
               <p style={{ fontSize:13,color:"rgba(255,255,255,0.4)",marginBottom:20 }}>
                 Logged in as <strong style={{ color:"#F0B90B" }}>{session?.user?.email}</strong>
               </p>
@@ -62,15 +64,15 @@ export default function ChangePassword() {
 
               <form onSubmit={handleSubmit}>
                 <div style={{ marginBottom:16 }}>
-                  <label style={{ display:"block",fontSize:11,fontWeight:700,color:"rgba(255,255,255,0.4)",textTransform:"uppercase",letterSpacing:.5,marginBottom:6 }}>Current Password</label>
+                  <label style={{ display:"block",fontSize:11,fontWeight:700,color:"rgba(255,255,255,0.4)",textTransform:"uppercase",letterSpacing:.5,marginBottom:6 }}>{t("change_password.current_password")}</label>
                   <input type="password" value={current} onChange={e => setCurrent(e.target.value)} required style={s} placeholder="Your current password" />
                 </div>
                 <div style={{ marginBottom:16 }}>
-                  <label style={{ display:"block",fontSize:11,fontWeight:700,color:"rgba(255,255,255,0.4)",textTransform:"uppercase",letterSpacing:.5,marginBottom:6 }}>New Password</label>
+                  <label style={{ display:"block",fontSize:11,fontWeight:700,color:"rgba(255,255,255,0.4)",textTransform:"uppercase",letterSpacing:.5,marginBottom:6 }}>{t("change_password.new_password")}</label>
                   <input type="password" value={newPwd} onChange={e => setNewPwd(e.target.value)} required minLength={8} style={s} placeholder="Minimum 8 characters" />
                 </div>
                 <div style={{ marginBottom:20 }}>
-                  <label style={{ display:"block",fontSize:11,fontWeight:700,color:"rgba(255,255,255,0.4)",textTransform:"uppercase",letterSpacing:.5,marginBottom:6 }}>Confirm New Password</label>
+                  <label style={{ display:"block",fontSize:11,fontWeight:700,color:"rgba(255,255,255,0.4)",textTransform:"uppercase",letterSpacing:.5,marginBottom:6 }}>{t("change_password.confirm_new_password")}</label>
                   <input type="password" value={confirm} onChange={e => setConfirm(e.target.value)} required style={s} placeholder="Repeat new password" />
                 </div>
                 <button type="submit" disabled={loading} style={{ width:"100%",padding:13,background:"#F0B90B",color:"#000",fontSize:14,fontWeight:800,border:"none",borderRadius:8,cursor:"pointer",fontFamily:"inherit",opacity:loading?0.5:1 }}>
@@ -78,7 +80,7 @@ export default function ChangePassword() {
                 </button>
               </form>
               <div style={{ textAlign:"center",marginTop:16 }}>
-                <button onClick={() => router.push("/dashboard")} style={{ background:"none",border:"none",color:"rgba(255,255,255,0.4)",fontSize:13,cursor:"pointer",fontFamily:"inherit" }}>← Back to Dashboard</button>
+                <button onClick={() => router.push("/dashboard")} style={{ background:"none",border:"none",color:"rgba(255,255,255,0.4)",fontSize:13,cursor:"pointer",fontFamily:"inherit" }}>{t("change_password.back_to_dashboard_2")}</button>
               </div>
             </>
           )}

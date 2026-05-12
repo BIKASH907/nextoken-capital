@@ -3,6 +3,7 @@ import Link from "next/link";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
+import { useTranslation } from "react-i18next";
 const SECTIONS = [
   { id:"1", title:"Our Commitment", content:"Nextoken Capital UAB is committed to the highest standards of Anti-Money Laundering (AML) and Counter-Terrorist Financing (CTF) compliance. We are subject to the EU AML Directives (AMLD4, AMLD5, AMLD6), the Lithuanian Law on the Prevention of Money Laundering and Terrorist Financing, and FATF recommendations for virtual asset service providers." },
   { id:"2", title:"Know Your Customer (KYC)", content:"All users must complete identity verification before investing or issuing assets on the platform. We verify: full legal name; date of birth; nationality and country of residence; government-issued photo ID (passport, national ID, or driver's license); and proof of address for higher-risk profiles. KYC is powered by Sumsub, a regulated identity verification provider." },
@@ -17,10 +18,11 @@ const SECTIONS = [
 ];
 
 export default function AMLPage() {
+  const { t } = useTranslation();
   return (
     <>
       <Head>
-        <title>AML Policy — Nextoken Capital</title>
+        <title>{t("aml.aml_policy_nextoken_capital")}</title>
         <meta name="description" content="Anti-Money Laundering Policy for Nextoken Capital UAB, registered in Lithuania." />
       </Head>
       <Navbar />
@@ -48,14 +50,14 @@ export default function AMLPage() {
       <div className="lp">
         <div className="lp-hero">
           <div className="lp-hero-inner">
-            <div className="lp-tag">Legal</div>
-            <h1 className="lp-h1">AML Policy</h1>
-            <p className="lp-meta">Last updated: March 1, 2026 · Nextoken Capital UAB · FATF Aligned · Lithuania Registered</p>
+            <div className="lp-tag">{t("aml.legal")}</div>
+            <h1 className="lp-h1">{t("aml.aml_policy")}</h1>
+            <p className="lp-meta">{t("aml.last_updated_march_1_2026_nextoken_capit")}</p>
           </div>
         </div>
         <div className="lp-body">
           <div className="lp-toc">
-            <div className="lp-toc-title">Contents</div>
+            <div className="lp-toc-title">{t("aml.contents")}</div>
             {SECTIONS.map(s => <a key={s.id} href={`#s${s.id}`}>{s.id}. {s.title}</a>)}
           </div>
           <div>
@@ -67,10 +69,10 @@ export default function AMLPage() {
               </div>
             ))}
             <div className="lp-footer-links">
-              <Link href="/terms">Terms of Service</Link>
-              <Link href="/privacy">Privacy Policy</Link>
-              <Link href="/risk">Risk Disclosure</Link>
-              <Link href="/contact">Contact Us</Link>
+              <Link href="/terms">{t("aml.terms_of_service")}</Link>
+              <Link href="/privacy">{t("aml.privacy_policy")}</Link>
+              <Link href="/risk">{t("aml.risk_disclosure")}</Link>
+              <Link href="/contact">{t("aml.contact_us")}</Link>
             </div>
           </div>
         </div>

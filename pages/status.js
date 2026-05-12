@@ -3,6 +3,7 @@ import Head from "next/head";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
+import { useTranslation } from "react-i18next";
 const SERVICES = [
   { name:"Platform & Web App",          status:"operational", uptime:"99.98%" },
   { name:"Secondary Market Exchange",   status:"operational", uptime:"99.95%" },
@@ -21,6 +22,7 @@ const INCIDENTS = [
 ];
 
 export default function StatusPage() {
+  const { t } = useTranslation();
   const [now, setNow] = useState("");
   useEffect(() => { setNow(new Date().toLocaleString("en-GB", { timeZone:"Europe/Vilnius" })); }, []);
 
@@ -29,7 +31,7 @@ export default function StatusPage() {
   return (
     <>
       <Head>
-        <title>Platform Status — Nextoken Capital</title>
+        <title>{t("status.platform_status_nextoken_capital")}</title>
         <meta name="description" content="Real-time status of Nextoken Capital platform services." />
       </Head>
       <Navbar />
@@ -80,8 +82,8 @@ export default function StatusPage() {
       `}</style>
       <div className="st">
         <div className="st-hero">
-          <div className="st-tag">System Status</div>
-          <h1 className="st-h1">Platform Status</h1>
+          <div className="st-tag">{t("status.system_status")}</div>
+          <h1 className="st-h1">{t("status.platform_status")}</h1>
           <div className={`st-overall ${allOperational ? "green" : "red"}`}>
             <span className={`st-dot ${allOperational ? "green" : "red"}`} />
             {allOperational ? "All systems operational" : "Some systems degraded"}
@@ -91,12 +93,12 @@ export default function StatusPage() {
         <div className="st-body">
 
           <div className="st-uptime-summary">
-            <div className="st-up-card"><div className="st-up-val">99.96%</div><div className="st-up-lbl">30-day uptime</div></div>
-            <div className="st-up-card"><div className="st-up-val">99.94%</div><div className="st-up-lbl">90-day uptime</div></div>
-            <div className="st-up-card"><div className="st-up-val">0</div><div className="st-up-lbl">Active incidents</div></div>
+            <div className="st-up-card"><div className="st-up-val">99.96%</div><div className="st-up-lbl">{t("status.30_day_uptime")}</div></div>
+            <div className="st-up-card"><div className="st-up-val">99.94%</div><div className="st-up-lbl">{t("status.90_day_uptime")}</div></div>
+            <div className="st-up-card"><div className="st-up-val">0</div><div className="st-up-lbl">{t("status.active_incidents")}</div></div>
           </div>
 
-          <div className="st-section-title">Services</div>
+          <div className="st-section-title">{t("status.services")}</div>
           <div className="st-services">
             {SERVICES.map(s => (
               <div key={s.name} className="st-service">
@@ -112,7 +114,7 @@ export default function StatusPage() {
             ))}
           </div>
 
-          <div className="st-section-title">Recent Incidents</div>
+          <div className="st-section-title">{t("status.recent_incidents")}</div>
           <div className="st-incidents">
             {INCIDENTS.map(inc => (
               <div key={inc.title} className="st-incident">
@@ -121,7 +123,7 @@ export default function StatusPage() {
                   <div className="st-inc-date">{inc.date}</div>
                 </div>
                 <div className="st-inc-meta">
-                  <span className="st-inc-resolved">Resolved</span>
+                  <span className="st-inc-resolved">{t("status.resolved")}</span>
                   <span className="st-inc-duration">Duration: {inc.duration}</span>
                 </div>
                 <p className="st-inc-detail">{inc.detail}</p>

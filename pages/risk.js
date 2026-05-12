@@ -3,6 +3,7 @@ import Link from "next/link";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
+import { useTranslation } from "react-i18next";
 const RISKS = [
   { icon:"📉", title:"Market Risk",         color:"#ef4444", desc:"The value of tokenized assets may go down as well as up. You may receive back less than you invested. Past performance is not a reliable indicator of future results. Real estate values, bond prices, and equity valuations are affected by economic conditions, interest rates, and market sentiment." },
   { icon:"💧", title:"Liquidity Risk",       color:"#F0B90B", desc:"Tokenized assets may be difficult to sell quickly at a fair price. Secondary market trading depends on the availability of buyers and sellers. There is no guarantee that a secondary market will exist for any particular token, and you may be unable to exit your investment before the stated maturity date." },
@@ -15,10 +16,11 @@ const RISKS = [
 ];
 
 export default function RiskPage() {
+  const { t } = useTranslation();
   return (
     <>
       <Head>
-        <title>Risk Disclosure — Nextoken Capital</title>
+        <title>{t("risk.risk_disclosure_nextoken_capital")}</title>
         <meta name="description" content="Important risk disclosure for buyers using the Nextoken Capital tokenized asset platform." />
       </Head>
       <Navbar />
@@ -45,10 +47,10 @@ export default function RiskPage() {
       `}</style>
       <div className="rk">
         <div className="rk-hero">
-          <div className="rk-tag">Risk Disclosure</div>
-          <h1 className="rk-h1">Important Risk Information</h1>
+          <div className="rk-tag">{t("risk.risk_disclosure")}</div>
+          <h1 className="rk-h1">{t("risk.important_risk_information")}</h1>
           <div className="rk-warning">
-            <strong>Capital at Risk.</strong> Investing in tokenized assets involves significant risk and is not suitable for all investors. The value of your investments can go down as well as up, and you may lose all of the money you invest. Please read this risk disclosure carefully before investing and consider seeking independent financial guidance.
+            <strong>{t("risk.capital_at_risk")}</strong> Investing in tokenized assets involves significant risk and is not suitable for all investors. The value of your investments can go down as well as up, and you may lose all of the money you invest. Please read this risk disclosure carefully before investing and consider seeking independent financial guidance.
           </div>
         </div>
         <div className="rk-body">
@@ -64,7 +66,7 @@ export default function RiskPage() {
             ))}
           </div>
           <div className="rk-summary">
-            <div className="rk-summary-title">⚠️ Key Points to Remember</div>
+            <div className="rk-summary-title">{t("risk.key_points_to_remember")}</div>
             {[
               "Only invest money you can afford to lose entirely.",
               "Tokenized assets are not covered by the EU Deposit Guarantee Scheme.",
@@ -77,10 +79,10 @@ export default function RiskPage() {
             ].map(t => <div key={t} className="rk-summary-item">{t}</div>)}
           </div>
           <div className="rk-footer-links">
-            <Link href="/terms">Terms of Service</Link>
-            <Link href="/privacy">Privacy Policy</Link>
-            <Link href="/aml">AML Policy</Link>
-            <Link href="/contact">Contact Us</Link>
+            <Link href="/terms">{t("risk.terms_of_service")}</Link>
+            <Link href="/privacy">{t("risk.privacy_policy")}</Link>
+            <Link href="/aml">{t("risk.aml_policy")}</Link>
+            <Link href="/contact">{t("risk.contact_us")}</Link>
           </div>
         </div>
       </div>

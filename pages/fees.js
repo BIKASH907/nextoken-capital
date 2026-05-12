@@ -2,6 +2,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { useTranslation } from "react-i18next";
 const FEES = [
   { icon:'🏦', title:'Account Opening', fee:'Free', color:'#0ECB81', desc:'Create your account, complete KYC verification, and access the platform at no cost.', detail:'There are no fees to open an account, verify your identity, or browse asset listings.' },
   { icon:'📥', title:'Wallet Connection', fee:'Free', color:'#0ECB81', desc:'Connect your wallet to start purchasing. Payments processed via Monerium (SEPA).', detail:'No platform fee for connecting your wallet. Your bank may charge its own transfer fees for SEPA payments.' },
@@ -22,16 +23,17 @@ const EXAMPLES = [
   {tx:'Fiat Conversion',amt:'EUR 20,000',rate:'0.3%',pay:'EUR 50.00 (max)'},
 ];
 export default function FeesPage() {
+  const { t } = useTranslation();
   return (
     <>
-      <Head><title>Fees and Pricing — Nextoken Capital</title><meta name="description" content="Transparent marketplace fee schedule. See all charges for trading, withdrawals and more." /></Head>
+      <Head><title>{t("fees.fees_and_pricing_nextoken_capital")}</title><meta name="description" content="Transparent marketplace fee schedule. See all charges for trading, withdrawals and more." /></Head>
       <Navbar />
       <div style={{minHeight:'100vh',background:'#0B0E11',color:'#fff',fontFamily:"'DM Sans',system-ui,sans-serif",paddingTop:100,paddingBottom:80}}>
         <div style={{maxWidth:960,margin:'0 auto',padding:'0 20px'}}>
           <div style={{textAlign:'center',marginBottom:64}}>
-            <div style={{fontSize:12,fontWeight:700,color:'#F0B90B',letterSpacing:3,textTransform:'uppercase',marginBottom:12}}>Transparent Pricing</div>
-            <h1 style={{fontSize:44,fontWeight:900,marginBottom:16,lineHeight:1.1}}>Simple, Fair Fees</h1>
-            <p style={{fontSize:16,color:'rgba(255,255,255,0.5)',maxWidth:520,margin:'0 auto',lineHeight:1.7}}>No hidden charges. No surprises. Every fee is disclosed upfront in accordance with EU marketplace standards.</p>
+            <div style={{fontSize:12,fontWeight:700,color:'#F0B90B',letterSpacing:3,textTransform:'uppercase',marginBottom:12}}>{t("fees.transparent_pricing")}</div>
+            <h1 style={{fontSize:44,fontWeight:900,marginBottom:16,lineHeight:1.1}}>{t("fees.simple_fair_fees")}</h1>
+            <p style={{fontSize:16,color:'rgba(255,255,255,0.5)',maxWidth:520,margin:'0 auto',lineHeight:1.7}}>{t("fees.no_hidden_charges_no_surprises_every_fee")}</p>
           </div>
           <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:16,marginBottom:48}}>
             {[{label:'Token Purchase',value:'0.2%'},{label:'Secondary Market',value:'0.3%'},{label:'Fiat Conversion',value:'0.3%'}].map(item => (
@@ -58,8 +60,8 @@ export default function FeesPage() {
             ))}
           </div>
           <div style={{background:'#0F1318',border:'1px solid rgba(255,255,255,0.07)',borderRadius:12,padding:32,marginBottom:32}}>
-            <div style={{fontSize:20,fontWeight:800,marginBottom:8}}>Fee Examples</div>
-            <div style={{fontSize:14,color:'rgba(255,255,255,0.5)',marginBottom:24}}>Here is what you would pay on common transactions:</div>
+            <div style={{fontSize:20,fontWeight:800,marginBottom:8}}>{t("fees.fee_examples")}</div>
+            <div style={{fontSize:14,color:'rgba(255,255,255,0.5)',marginBottom:24}}>{t("fees.here_is_what_you_would_pay_on_common_tra")}</div>
             <div style={{overflowX:'auto'}}>
               <table style={{width:'100%',borderCollapse:'collapse',fontSize:14}}>
                 <thead><tr style={{borderBottom:'1px solid rgba(255,255,255,0.08)'}}>
@@ -77,12 +79,12 @@ export default function FeesPage() {
             </div>
           </div>
           <div style={{background:'rgba(240,185,11,0.06)',border:'1px solid rgba(240,185,11,0.15)',borderRadius:12,padding:32,marginBottom:32}}>
-            <div style={{fontSize:20,fontWeight:800,marginBottom:8}}>Institutional and Issuer Pricing</div>
-            <p style={{fontSize:14,color:'rgba(255,255,255,0.6)',marginBottom:20,lineHeight:1.7}}>For institutional buyers, asset issuers, and partners with transaction volumes above EUR 500,000, we offer custom fee arrangements including volume discounts and white-label options. Contact our team to discuss your requirements.</p>
-            <Link href="/contact" style={{display:'inline-block',padding:'10px 24px',background:'#F0B90B',color:'#000',borderRadius:8,fontWeight:700,fontSize:14,textDecoration:'none'}}>Contact Sales</Link>
+            <div style={{fontSize:20,fontWeight:800,marginBottom:8}}>{t("fees.institutional_and_issuer_pricing")}</div>
+            <p style={{fontSize:14,color:'rgba(255,255,255,0.6)',marginBottom:20,lineHeight:1.7}}>{t("fees.for_institutional_buyers_asset_issuers_a")}</p>
+            <Link href="/contact" style={{display:'inline-block',padding:'10px 24px',background:'#F0B90B',color:'#000',borderRadius:8,fontWeight:700,fontSize:14,textDecoration:'none'}}>{t("fees.contact_sales")}</Link>
           </div>
           <div style={{background:'#0F1318',border:'1px solid rgba(255,255,255,0.07)',borderRadius:12,padding:32}}>
-            <div style={{fontSize:16,fontWeight:700,marginBottom:16}}>Important Notes</div>
+            <div style={{fontSize:16,fontWeight:700,marginBottom:16}}>{t("fees.important_notes")}</div>
             {['All fees are inclusive of VAT where applicable under Lithuanian law.','Fees are deducted automatically via smart contract at the time of transaction.','Conversion fee minimum is EUR 2.00 and maximum is EUR 50.00 regardless of amount.','Nextoken Capital will provide 30 days written notice before any fee changes.','Fee waivers or promotions may apply during special periods and will be announced separately.','This fee schedule is effective as of March 1, 2026 and supersedes all previous schedules.'].map((note,i) => (
               <div key={i} style={{display:'flex',gap:12,marginBottom:10,fontSize:13,color:'rgba(255,255,255,0.55)',lineHeight:1.6}}>
                 <span style={{color:'#F0B90B',flexShrink:0,marginTop:1}}>→</span>{note}
