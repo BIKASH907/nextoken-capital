@@ -635,5 +635,9 @@
     "asset_submitted": "Tillgång inskickad!",
     "faq": "FAQ",
     "representation_process": "Representationsprocess"
+  },
+  "partners": {
+    "categoryWallet": "Plånbok utan förvaring",
+    "lead": "Vi arbetar på reglerad, granskad finansiell infrastruktur - och din plånbok stannar hos dig. Nextoken Capital förvarar aldrig dina pengar."
   }
 }

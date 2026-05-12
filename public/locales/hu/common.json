@@ -635,5 +635,9 @@
     "asset_submitted": "Az eszköz elküldve!",
     "faq": "GYIK",
     "representation_process": "Képviseleti folyamat"
+  },
+  "partners": {
+    "categoryWallet": "Nem őrizetbe vett pénztárca",
+    "lead": "Szabályozott, auditált pénzügyi infrastruktúrán dolgozunk – és pénztárcája Önnél marad. A Nextoken Capital soha nem őrzi az Ön alapját."
   }
 }

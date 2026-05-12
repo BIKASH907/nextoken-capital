@@ -631,5 +631,9 @@
     "asset_submitted": "Risorsa inviata!",
     "faq": "Domande frequenti",
     "representation_process": "Processo di rappresentazione"
+  },
+  "partners": {
+    "categoryWallet": "Portafoglio non custodito",
+    "lead": "Operiamo su infrastrutture finanziarie regolamentate e controllate e il tuo portafoglio rimane con te. Nextoken Capital non custodisce mai i tuoi fondi."
   }
 }

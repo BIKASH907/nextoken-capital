@@ -635,5 +635,9 @@
     "asset_submitted": "Assi Sottomessi!",
     "faq": "FAQ",
     "representation_process": "Proċess ta' Rappreżentazzjoni"
+  },
+  "partners": {
+    "categoryWallet": "Kartiera Mhux Kustodja",
+    "lead": "Aħna noperaw fuq infrastruttura finanzjarja regolata u awditjata — u l-kartiera tiegħek tibqa’ miegħek. Nextoken Capital qatt ma kustodja l-fondi tiegħek."
   }
 }

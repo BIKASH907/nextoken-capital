@@ -635,5 +635,9 @@
     "asset_submitted": "Asset eingereicht!",
     "faq": "FAQ",
     "representation_process": "Darstellungsprozess"
+  },
+  "partners": {
+    "categoryWallet": "Nicht verwahrte Geldbörse",
+    "lead": "Wir arbeiten auf einer regulierten, geprüften Finanzinfrastruktur – und Ihr Geldbeutel bleibt bei Ihnen. Nextoken Capital verwahrt Ihre Gelder niemals."
   }
 }

@@ -635,5 +635,9 @@
     "asset_submitted": "Naisumite ang Asset!",
     "faq": "FAQ",
     "representation_process": "Proseso ng Representasyon"
+  },
+  "partners": {
+    "categoryWallet": "Non-Custodial Wallet",
+    "lead": "Nagpapatakbo kami sa kinokontrol, na-audit na imprastraktura sa pananalapi — at mananatili sa iyo ang iyong wallet. Hindi kailanman kinukustodiya ng Nextoken Capital ang iyong mga pondo."
   }
 }

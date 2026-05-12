@@ -635,5 +635,9 @@
     "asset_submitted": "¡Recurso enviado!",
     "faq": "Preguntas frecuentes",
     "representation_process": "Proceso de representación"
+  },
+  "partners": {
+    "categoryWallet": "Monedero sin custodia",
+    "lead": "Operamos en una infraestructura financiera regulada y auditada, y su billetera permanece con usted. Nextoken Capital nunca custodia sus fondos."
   }
 }

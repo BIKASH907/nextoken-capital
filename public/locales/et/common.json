@@ -635,5 +635,9 @@
     "asset_submitted": "Vara on esitatud!",
     "faq": "KKK",
     "representation_process": "Esindusprotsess"
+  },
+  "partners": {
+    "categoryWallet": "Mitte-vangistuslik rahakott",
+    "lead": "Tegutseme reguleeritud, auditeeritud finantsinfrastruktuuril – ja teie rahakott jääb teie juurde. Nextoken Capital ei säilita kunagi teie vahendeid."
   }
 }

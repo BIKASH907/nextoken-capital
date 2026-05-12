@@ -635,5 +635,9 @@
     "asset_submitted": "Sredstvo je poslano!",
     "faq": "FAQ",
     "representation_process": "Proces zastupanja"
+  },
+  "partners": {
+    "categoryWallet": "Novčanik bez skrbništva",
+    "lead": "Djelujemo na reguliranoj, revidiranoj financijskoj infrastrukturi — a vaš novčanik ostaje s vama. Nextoken Capital nikada ne čuva vaša sredstva."
   }
 }

@@ -635,5 +635,9 @@
     "asset_submitted": "Sócmhainn a Cuireadh isteach!",
     "faq": "CCanna",
     "representation_process": "Próiseas Ionadaíochta"
+  },
+  "partners": {
+    "categoryWallet": "Sparán Neamhchoimeádta",
+    "lead": "Oibrímid ar bhonneagar airgeadais rialaithe, iniúchta — agus fanann do sparán leat. Ní choimeádann Nextoken Capital do chistí riamh."
   }
 }

@@ -634,5 +634,9 @@
     "asset_submitted": "Actif soumis !",
     "faq": "FAQ",
     "representation_process": "Processus de représentation"
+  },
+  "partners": {
+    "categoryWallet": "Portefeuille non dépositaire",
+    "lead": "Nous opérons sur une infrastructure financière réglementée et auditée – et votre portefeuille reste avec vous. Nextoken Capital ne conserve jamais vos fonds."
   }
 }

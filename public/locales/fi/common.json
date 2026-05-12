@@ -635,5 +635,9 @@
     "asset_submitted": "Omaisuus lähetetty!",
     "faq": "FAQ",
     "representation_process": "Edustusprosessi"
+  },
+  "partners": {
+    "categoryWallet": "Ei-varmistuslompakko",
+    "lead": "Toimimme säännellyn, tarkastetun rahoitusinfrastruktuurin pohjalta – ja lompakkosi pysyy mukanasi. Nextoken Capital ei koskaan säilytä varojasi."
   }
 }

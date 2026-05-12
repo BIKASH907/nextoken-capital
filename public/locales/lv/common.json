@@ -635,5 +635,9 @@
     "asset_submitted": "Līdzeklis ir iesniegts!",
     "faq": "FAQ",
     "representation_process": "Pārstāvības process"
+  },
+  "partners": {
+    "categoryWallet": "Ar brīvības atņemšanu nesaistīts maks",
+    "lead": "Mēs strādājam ar regulētu, auditētu finanšu infrastruktūru — un jūsu maciņš paliek pie jums. Nextoken Capital nekad neuzglabā jūsu līdzekļus."
   }
 }

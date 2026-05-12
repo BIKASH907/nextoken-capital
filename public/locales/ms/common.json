@@ -635,5 +635,9 @@
     "asset_submitted": "Aset Dihantar!",
     "faq": "Soalan Lazim",
     "representation_process": "Proses Perwakilan"
+  },
+  "partners": {
+    "categoryWallet": "Dompet Bukan Penjagaan",
+    "lead": "Kami beroperasi pada infrastruktur kewangan yang dikawal selia dan diaudit — dan dompet anda kekal bersama anda. Nextoken Capital tidak pernah menjaga dana anda."
   }
 }

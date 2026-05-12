@@ -635,5 +635,9 @@
     "asset_submitted": "Sredstvo je poslano!",
     "faq": "pogosta vprašanja",
     "representation_process": "Postopek zastopanja"
+  },
+  "partners": {
+    "categoryWallet": "Neskrbniška denarnica",
+    "lead": "Delujemo na regulirani, revidirani finančni infrastrukturi — in vaša denarnica ostane z vami. Nextoken Capital nikoli ne hrani vaših sredstev."
   }
 }

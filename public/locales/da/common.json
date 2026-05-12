@@ -635,5 +635,9 @@
     "asset_submitted": "Aktiv indsendt!",
     "faq": "FAQ",
     "representation_process": "Repræsentationsproces"
+  },
+  "partners": {
+    "categoryWallet": "Ikke-depotpung",
+    "lead": "Vi opererer på reguleret, revideret finansiel infrastruktur - og din tegnebog forbliver hos dig. Nextoken Capital opbevarer aldrig dine penge."
   }
 }

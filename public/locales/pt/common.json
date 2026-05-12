@@ -635,5 +635,9 @@
     "asset_submitted": "Ativo enviado!",
     "faq": "Perguntas frequentes",
     "representation_process": "Processo de representação"
+  },
+  "partners": {
+    "categoryWallet": "Carteira sem custódia",
+    "lead": "Operamos em infraestrutura financeira regulamentada e auditada — e sua carteira permanece com você. Nextoken Capital nunca custodia seus fundos."
   }
 }

@@ -635,5 +635,9 @@
     "asset_submitted": "הנכס נשלח!",
     "faq": "שאלות נפוצות",
     "representation_process": "תהליך ייצוג"
+  },
+  "partners": {
+    "categoryWallet": "ארנק שאינו משמורת",
+    "lead": "אנו פועלים על תשתית פיננסית מוסדרת ומבוקרת - והארנק שלך נשאר איתך. Nextoken Capital לעולם לא שומרת על הכספים שלך."
   }
 }

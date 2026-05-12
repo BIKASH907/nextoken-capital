@@ -635,5 +635,9 @@
     "asset_submitted": "Turtas pateiktas!",
     "faq": "DUK",
     "representation_process": "Atstovavimo procesas"
+  },
+  "partners": {
+    "categoryWallet": "Piniginė be laisvės atėmimo",
+    "lead": "Mes dirbame pagal reguliuojamą, audituotą finansinę infrastruktūrą – ir jūsų piniginė lieka su jumis. Nextoken Capital niekada nesaugo jūsų lėšų."
   }
 }

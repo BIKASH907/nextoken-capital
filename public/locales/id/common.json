@@ -635,5 +635,9 @@
     "asset_submitted": "Aset Diserahkan!",
     "faq": "Pertanyaan Umum",
     "representation_process": "Proses Representasi"
+  },
+  "partners": {
+    "categoryWallet": "Dompet Non-Penahanan",
+    "lead": "Kami beroperasi pada infrastruktur keuangan yang teregulasi dan teraudit — dan dompet Anda tetap bersama Anda. Nextoken Capital tidak pernah menyimpan dana Anda."
   }
 }

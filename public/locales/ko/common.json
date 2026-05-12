@@ -635,5 +635,9 @@
     "asset_submitted": "자산이 제출되었습니다!",
     "faq": "FAQ",
     "representation_process": "대표 프로세스"
+  },
+  "partners": {
+    "categoryWallet": "비수탁형 지갑",
+    "lead": "우리는 규제되고 감사된 금융 인프라를 운영하며 귀하의 지갑은 귀하와 함께 있습니다. Nextoken Capital은 귀하의 자금을 절대 관리하지 않습니다."
   }
 }

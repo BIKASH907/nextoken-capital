@@ -635,5 +635,9 @@
     "asset_submitted": "Item ingediend!",
     "faq": "Veelgestelde vragen",
     "representation_process": "Representatieproces"
+  },
+  "partners": {
+    "categoryWallet": "Niet-bewarende portemonnee",
+    "lead": "Wij opereren op een gereguleerde, gecontroleerde financiële infrastructuur – en uw portemonnee blijft bij u. Nextoken Capital bewaart nooit uw geld."
   }
 }

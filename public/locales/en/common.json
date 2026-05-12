@@ -165,14 +165,15 @@
   "partners": {
     "eyebrow": "Ecosystem",
     "title": "Trusted Infrastructure & Partners",
-    "lead": "We operate on regulated, audited financial infrastructure.",
+    "lead": "We operate on regulated, audited financial infrastructure — and your wallet stays with you. Nextoken Capital never custodies your funds.",
     "addLogo": "Add partner logo",
     "categoryCustody": "Custody",
     "categoryKyc": "KYC / AML",
     "categoryPayments": "Payments",
     "categoryBlockchain": "Blockchain",
     "categoryAudit": "Audit",
-    "categoryLegal": "Legal"
+    "categoryLegal": "Legal",
+    "categoryWallet": "Non-Custodial Wallet"
   },
   "about": {
     "about_us_nextoken_capital": "About Us — Nextoken Capital",

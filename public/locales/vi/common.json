@@ -635,5 +635,9 @@
     "asset_submitted": "Đã gửi nội dung!",
     "faq": "Câu hỏi thường gặp",
     "representation_process": "Quy trình đại diện"
+  },
+  "partners": {
+    "categoryWallet": "Ví không giám sát",
+    "lead": "Chúng tôi hoạt động trên cơ sở hạ tầng tài chính được kiểm toán và quản lý — và ví tiền của bạn sẽ luôn ở bên bạn. Nextoken Capital không bao giờ giám sát tiền của bạn."
   }
 }

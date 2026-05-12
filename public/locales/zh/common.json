@@ -635,5 +635,9 @@
     "asset_submitted": "资产已提交！",
     "faq": "常见问题解答",
     "representation_process": "表示过程"
+  },
+  "partners": {
+    "categoryWallet": "非托管钱包",
+    "lead": "我们在受监管、经过审计的金融基础设施上运营——您的钱包就在您身边。 Nextoken Capital 绝不会托管您的资金。"
   }
 }

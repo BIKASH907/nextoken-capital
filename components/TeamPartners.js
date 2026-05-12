@@ -8,12 +8,12 @@ const TEAM = [
 ];
 
 const PARTNERS = [
-  { category: "categoryCustody",    name: "Add custody partner",         placeholder: true  },
-  { category: "categoryKyc",        name: "Sumsub",                      placeholder: false },
-  { category: "categoryPayments",   name: "Monerium",                    placeholder: false },
-  { category: "categoryBlockchain", name: "Polygon",                     placeholder: false },
-  { category: "categoryAudit",      name: "Add smart contract auditor",  placeholder: true  },
-  { category: "categoryLegal",      name: "Add legal advisor",           placeholder: true  },
+  { category: "categoryWallet",     name: "MetaMask · Ledger · WalletConnect", placeholder: false },
+  { category: "categoryKyc",        name: "Sumsub",                            placeholder: false },
+  { category: "categoryPayments",   name: "Monerium",                          placeholder: false },
+  { category: "categoryBlockchain", name: "Polygon",                           placeholder: false },
+  { category: "categoryAudit",      name: "Add smart contract auditor",        placeholder: true  },
+  { category: "categoryLegal",      name: "Add legal advisor",                 placeholder: true  },
 ];
 
 export default function TeamPartners() {

@@ -635,5 +635,9 @@
     "asset_submitted": "Zasób przesłany!",
     "faq": "FAQ",
     "representation_process": "Proces reprezentacji"
+  },
+  "partners": {
+    "categoryWallet": "Portfel bez depozytu",
+    "lead": "Działamy w oparciu o regulowaną, kontrolowaną infrastrukturę finansową, a Twój portfel pozostaje przy Tobie. Nextoken Capital nigdy nie przechowuje Twoich środków."
   }
 }

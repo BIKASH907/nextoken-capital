@@ -635,5 +635,9 @@
     "asset_submitted": "Varlık Gönderildi!",
     "faq": "SSS",
     "representation_process": "Temsil Süreci"
+  },
+  "partners": {
+    "categoryWallet": "Saklama Dışı Cüzdan",
+    "lead": "Düzenlenmiş, denetlenmiş finansal altyapı üzerinde çalışıyoruz ve cüzdanınız yanınızda kalıyor. Nextoken Capital, fonlarınızı asla saklamaz."
   }
 }

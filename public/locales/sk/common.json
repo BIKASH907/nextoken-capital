@@ -635,5 +635,9 @@
     "asset_submitted": "Majetok odoslaný!",
     "faq": "FAQ",
     "representation_process": "Proces zastupovania"
+  },
+  "partners": {
+    "categoryWallet": "Peňaženka bez úschovy",
+    "lead": "Fungujeme na regulovanej, auditovanej finančnej infraštruktúre – a vaša peňaženka zostane s vami. Nextoken Capital nikdy neschováva vaše prostriedky."
   }
 }

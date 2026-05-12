@@ -635,5 +635,9 @@
     "asset_submitted": "Activ trimis!",
     "faq": "Întrebări frecvente",
     "representation_process": "Procesul de reprezentare"
+  },
+  "partners": {
+    "categoryWallet": "Portofel fără custodie",
+    "lead": "Operăm pe infrastructură financiară reglementată, auditată – iar portofelul tău rămâne cu tine. Nextoken Capital nu vă păstrează niciodată fondurile."
   }
 }

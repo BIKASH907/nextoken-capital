@@ -635,5 +635,9 @@
     "asset_submitted": "アセットが送信されました!",
     "faq": "よくある質問",
     "representation_process": "代表プロセス"
+  },
+  "partners": {
+    "categoryWallet": "非保管ウォレット",
+    "lead": "当社は規制され、監査された金融インフラストラクチャで運営されており、お客様の財布は常にお客様とともにあります。 Nextoken Capital があなたの資金を保管することはありません。"
   }
 }
