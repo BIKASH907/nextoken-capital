@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
 
-// Client-only import — LanguageSelector reads localStorage / navigator.language
+// Client-only — LanguageSelector reads localStorage / navigator.language
 const LanguageSelector = dynamic(() => import("./LanguageSelector"), { ssr: false });
 
 export default function GlobalLanguageFAB() {
@@ -8,9 +8,9 @@ export default function GlobalLanguageFAB() {
     <div
       style={{
         position: "fixed",
-        top: 14,
+        top: 76,          // ↓ below the 64px navbar so it doesn't overlap Log In / Connect Wallet
         right: 14,
-        zIndex: 10000,
+        zIndex: 9001,     // ↓ behind navbar (9000) so the navbar bar always wins above 64px
         pointerEvents: "auto",
       }}
     >
