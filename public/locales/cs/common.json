@@ -362,7 +362,6 @@
     "or": "nebo",
     "log_in": "přihlásit se",
     "equity_ipo_nextoken_capital": "Equity & IPO — Nextoken Capital",
-    "ud83d_ude80": "\\uD83D\\uDE80",
     "equity_ipo_coming_soon": "Equity & IPO – již brzy",
     "tokenized_equity_offerings_are_under_dev": "Tokenizované nabídky akcií jsou ve vývoji. Procházejte dostupná aktiva na Marketplace.",
     "browse_marketplace": "Procházet Marketplace",
@@ -394,7 +393,6 @@
   },
   "exchange": {
     "exchange_nextoken_capital": "Burza — Nextoken Capital",
-    "ud83d_udee0_ufe0f": "\\uD83D\\uDEE0\\uFE0F",
     "secondary_market_coming_soon": "Sekundární trh – již brzy",
     "peer_to_peer_token_trading_is_under_deve": "Peer-to-peer obchodování s tokeny je ve vývoji. Procházejte primární aktiva na Marketplace.",
     "browse_marketplace": "Procházet Marketplace",

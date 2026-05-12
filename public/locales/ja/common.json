@@ -362,7 +362,6 @@
     "or": "または",
     "log_in": "ログインする",
     "equity_ipo_nextoken_capital": "株式と IPO — Nextoken Capital",
-    "ud83d_ude80": "\\uD83D\\uDE80",
     "equity_ipo_coming_soon": "株式と IPO — 近日公開予定",
     "tokenized_equity_offerings_are_under_dev": "トークン化された株式の提供は開発中です。マーケットプレイスで利用可能なアセットを参照します。",
     "browse_marketplace": "マーケットプレイスを閲覧する",
@@ -394,7 +393,6 @@
   },
   "exchange": {
     "exchange_nextoken_capital": "取引所 — Nextoken Capital",
-    "ud83d_udee0_ufe0f": "\\uD83D\\uDEE0\\uFE0F",
     "secondary_market_coming_soon": "流通市場 — 近日公開予定",
     "peer_to_peer_token_trading_is_under_deve": "ピアツーピアのトークン取引は開発中です。マーケットプレイスで主要なアセットを閲覧します。",
     "browse_marketplace": "マーケットプレイスを閲覧する",

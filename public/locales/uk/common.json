@@ -362,7 +362,6 @@
     "or": "або",
     "log_in": "увійти",
     "equity_ipo_nextoken_capital": "Акції та IPO — Nextoken Capital",
-    "ud83d_ude80": "\\uD83D\\uDE80",
     "equity_ipo_coming_soon": "Акції та IPO — незабаром",
     "tokenized_equity_offerings_are_under_dev": "Пропозиції токенізованих акцій знаходяться на стадії розробки. Перегляньте доступні активи на Marketplace.",
     "browse_marketplace": "Перегляньте Marketplace",
@@ -394,7 +393,6 @@
   },
   "exchange": {
     "exchange_nextoken_capital": "Біржа — Nextoken Capital",
-    "ud83d_udee0_ufe0f": "\\uD83D\\uDEE0\\uFE0F",
     "secondary_market_coming_soon": "Вторинний ринок — незабаром",
     "peer_to_peer_token_trading_is_under_deve": "Однорангова торгівля токенами знаходиться в стадії розробки. Перегляньте основні активи на Marketplace.",
     "browse_marketplace": "Перегляньте Marketplace",

@@ -361,7 +361,6 @@
     "register": "Registre",
     "or": "ou",
     "equity_ipo_nextoken_capital": "Equity & IPO — Nextoken Capital",
-    "ud83d_ude80": "\\uD83D\\uDE80",
     "equity_ipo_coming_soon": "Equity & IPO — Bientôt disponible",
     "tokenized_equity_offerings_are_under_dev": "Des offres d'actions tokenisées sont en cours de développement. Parcourez les actifs disponibles sur la Marketplace.",
     "browse_marketplace": "Parcourir le marché",
@@ -393,7 +392,6 @@
   },
   "exchange": {
     "exchange_nextoken_capital": "Exchange — Nextoken Capital",
-    "ud83d_udee0_ufe0f": "\\uD83D\\uDEE0\\uFE0F",
     "secondary_market_coming_soon": "Marché secondaire — Bientôt disponible",
     "peer_to_peer_token_trading_is_under_deve": "Le trading de jetons peer-to-peer est en cours de développement. Parcourez les principaux actifs sur la Marketplace.",
     "browse_marketplace": "Parcourir le marché",

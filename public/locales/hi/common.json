@@ -362,7 +362,6 @@
     "or": "या",
     "log_in": "लॉग इन करें",
     "equity_ipo_nextoken_capital": "इक्विटी और आईपीओ - नेक्स्टोकेन कैपिटल",
-    "ud83d_ude80": "\\uD83D\\uDE80",
     "equity_ipo_coming_soon": "इक्विटी और आईपीओ - जल्द आ रहा है",
     "tokenized_equity_offerings_are_under_dev": "टोकनयुक्त इक्विटी पेशकशें विकासाधीन हैं। मार्केटप्लेस पर उपलब्ध संपत्तियाँ ब्राउज़ करें।",
     "browse_marketplace": "बाज़ार ब्राउज़ करें",
@@ -394,7 +393,6 @@
   },
   "exchange": {
     "exchange_nextoken_capital": "एक्सचेंज - नेक्स्टोकेन कैपिटल",
-    "ud83d_udee0_ufe0f": "\\uD83D\\uDEE0\\uFE0F",
     "secondary_market_coming_soon": "द्वितीयक बाज़ार - शीघ्र आ रहा है",
     "peer_to_peer_token_trading_is_under_deve": "पीयर-टू-पीयर टोकन ट्रेडिंग विकासाधीन है। मार्केटप्लेस पर प्राथमिक परिसंपत्तियाँ ब्राउज़ करें।",
     "browse_marketplace": "बाज़ार ब्राउज़ करें",

@@ -362,7 +362,6 @@
     "or": "یا",
     "log_in": "لاگ ان",
     "equity_ipo_nextoken_capital": "ایکویٹی اور IPO - Nextoken Capital",
-    "ud83d_ude80": "\\uD83D\\uDE80",
     "equity_ipo_coming_soon": "ایکویٹی اور آئی پی او - جلد آرہا ہے۔",
     "tokenized_equity_offerings_are_under_dev": "ٹوکنائزڈ ایکویٹی پیشکشیں تیار ہو رہی ہیں۔ مارکیٹ پلیس پر دستیاب اثاثوں کو براؤز کریں۔",
     "browse_marketplace": "مارکیٹ پلیس کو براؤز کریں۔",
@@ -394,7 +393,6 @@
   },
   "exchange": {
     "exchange_nextoken_capital": "ایکسچینج - Nextoken Capital",
-    "ud83d_udee0_ufe0f": "\\uD83D\\uDEE0\\uFE0F",
     "secondary_market_coming_soon": "سیکنڈری مارکیٹ - جلد آرہا ہے۔",
     "peer_to_peer_token_trading_is_under_deve": "پیئر ٹو پیئر ٹوکن ٹریڈنگ جاری ہے۔ مارکیٹ پلیس پر بنیادی اثاثوں کو براؤز کریں۔",
     "browse_marketplace": "مارکیٹ پلیس کو براؤز کریں۔",

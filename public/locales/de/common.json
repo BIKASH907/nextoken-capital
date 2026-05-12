@@ -362,7 +362,6 @@
     "or": "oder",
     "log_in": "Anmelden",
     "equity_ipo_nextoken_capital": "Eigenkapital & Börsengang – Nextoken Capital",
-    "ud83d_ude80": "\\uD83D\\uDE80",
     "equity_ipo_coming_soon": "Eigenkapital & Börsengang – Demnächst erhältlich",
     "tokenized_equity_offerings_are_under_dev": "Tokenisierte Aktienangebote sind in der Entwicklung. Durchsuchen Sie die verfügbaren Assets auf dem Marktplatz.",
     "browse_marketplace": "Marktplatz durchsuchen",
@@ -394,7 +393,6 @@
   },
   "exchange": {
     "exchange_nextoken_capital": "Exchange – Nextoken Capital",
-    "ud83d_udee0_ufe0f": "\\uD83D\\uDEE0\\uFE0F",
     "secondary_market_coming_soon": "Sekundärmarkt – Demnächst erhältlich",
     "peer_to_peer_token_trading_is_under_deve": "Der Peer-to-Peer-Token-Handel befindet sich in der Entwicklung. Durchsuchen Sie primäre Assets auf dem Marktplatz.",
     "browse_marketplace": "Marktplatz durchsuchen",

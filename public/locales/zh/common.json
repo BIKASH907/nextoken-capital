@@ -362,7 +362,6 @@
     "or": "或",
     "log_in": "登录",
     "equity_ipo_nextoken_capital": "股权与首次公开募股 — Nextoken Capital",
-    "ud83d_ude80": "\\uD83D\\uDE80",
     "equity_ipo_coming_soon": "股权与首次公开募股 — 即将推出",
     "tokenized_equity_offerings_are_under_dev": "代币化股票发行正在开发中。浏览市场上的可用资产。",
     "browse_marketplace": "浏览市场",
@@ -394,7 +393,6 @@
   },
   "exchange": {
     "exchange_nextoken_capital": "交易所 — Nextoken Capital",
-    "ud83d_udee0_ufe0f": "\\uD83D\\uDEE0\\uFE0F",
     "secondary_market_coming_soon": "二级市场——即将推出",
     "peer_to_peer_token_trading_is_under_deve": "点对点代币交易正在开发中。浏览市场上的主要资产。",
     "browse_marketplace": "浏览市场",

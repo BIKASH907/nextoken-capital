@@ -362,7 +362,6 @@
     "or": "หรือ",
     "log_in": "เข้าสู่ระบบ",
     "equity_ipo_nextoken_capital": "ตราสารทุนและการเสนอขายหุ้น IPO — Nextoken Capital",
-    "ud83d_ude80": "\\uD83D\\uDE80",
     "equity_ipo_coming_soon": "ตราสารทุนและการเสนอขายหุ้น IPO — เร็วๆ นี้",
     "tokenized_equity_offerings_are_under_dev": "การเสนอขายหุ้นแบบโทเค็นอยู่ระหว่างการพัฒนา เรียกดูสินทรัพย์ที่มีอยู่ใน Marketplace",
     "browse_marketplace": "เรียกดูตลาดกลาง",
@@ -394,7 +393,6 @@
   },
   "exchange": {
     "exchange_nextoken_capital": "แลกเปลี่ยน — Nextoken Capital",
-    "ud83d_udee0_ufe0f": "\\uD83D\\uDEE0\\uFE0F",
     "secondary_market_coming_soon": "ตลาดรอง — เร็วๆ นี้",
     "peer_to_peer_token_trading_is_under_deve": "การซื้อขายโทเค็นแบบเพียร์ทูเพียร์อยู่ระหว่างการพัฒนา เรียกดูสินทรัพย์หลักในตลาดกลาง",
     "browse_marketplace": "เรียกดูตลาดกลาง",

@@ -362,7 +362,6 @@
     "or": "또는",
     "log_in": "로그인",
     "equity_ipo_nextoken_capital": "주식 및 IPO — Nextoken Capital",
-    "ud83d_ude80": "\\uD83D\\uDE80",
     "equity_ipo_coming_soon": "주식 및 IPO — 출시 예정",
     "tokenized_equity_offerings_are_under_dev": "토큰화된 지분 상품이 개발 중입니다. Marketplace에서 사용 가능한 자산을 찾아보세요.",
     "browse_marketplace": "마켓플레이스 찾아보기",
@@ -394,7 +393,6 @@
   },
   "exchange": {
     "exchange_nextoken_capital": "거래소 — Nextoken Capital",
-    "ud83d_udee0_ufe0f": "\\uD83D\\uDEE0\\uFE0F",
     "secondary_market_coming_soon": "2차 시장 — 출시 예정",
     "peer_to_peer_token_trading_is_under_deve": "P2P 토큰 거래가 개발 중입니다. 마켓플레이스에서 주요 자산을 찾아보세요.",
     "browse_marketplace": "마켓플레이스 찾아보기",

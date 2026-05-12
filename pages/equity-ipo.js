@@ -206,7 +206,7 @@ export default function EquityIPOPage() {
       <Navbar />
             <div id="coming-soon-banner" style={{background:"linear-gradient(90deg, rgba(240,185,11,0.1), rgba(240,185,11,0.03))",border:"1px solid rgba(240,185,11,0.15)",borderRadius:12,padding:"16px 24px",margin:"80px 20px 0",display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:12,maxWidth:1200,marginLeft:"auto",marginRight:"auto"}}>
               <div style={{display:"flex",alignItems:"center",gap:12}}>
-                <span style={{fontSize:20}}>{t("equity_ipo.ud83d_ude80")}</span>
+                <span style={{fontSize:20}}>🚀</span>
                 <div>
                   <div style={{fontSize:14,fontWeight:700,color:"#F0B90B"}}>{t("equity_ipo.equity_ipo_coming_soon")}</div>
                   <div style={{fontSize:12,color:"rgba(255,255,255,0.4)"}}>{t("equity_ipo.tokenized_equity_offerings_are_under_dev")}</div>
