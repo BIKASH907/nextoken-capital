@@ -12,8 +12,8 @@ const PARTNERS = [
   { category: "categoryKyc",        name: "Sumsub",                            placeholder: false },
   { category: "categoryPayments",   name: "Monerium",                          placeholder: false },
   { category: "categoryBlockchain", name: "Polygon",                           placeholder: false },
-  { category: "categoryAudit",      name: "Add smart contract auditor",        placeholder: true  },
-  { category: "categoryLegal",      name: "Add legal advisor",                 placeholder: true  },
+  { category: "categoryAudit",      name: "Engagement underway",               placeholder: true  },
+  { category: "categoryLegal",      name: "Engagement underway",               placeholder: true  },
 ];
 
 export default function TeamPartners() {
@@ -54,14 +54,7 @@ export default function TeamPartners() {
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 12 }}>
             {PARTNERS.map((p, i) => (
-              <div key={i} style={{ background: "rgba(255,255,255,0.02)", border: p.placeholder ? "1px dashed rgba(255,255,255,0.15)" : "1px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: "20px 16px", textAlign: "center", opacity: p.placeholder ? 0.55 : 1 }}>
+              <div key={i} style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: "20px 16px", textAlign: "center" }}>
                 <div style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 8 }}>{t(`partners.${p.category}`)}</div>
-                <div style={{ fontSize: 14, fontWeight: 800, color: p.placeholder ? "rgba(255,255,255,0.5)" : "#fff" }}>{p.name}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-    </>
-  );
-}
+                <div style={{ fontSize: 14, fontWeight: 800, color: p.placeholder ? "rgba(255,255,255,0.7)" : "#fff", fontStyle: p.placeholder ? "italic" : "normal" }}>{p.name}</div>
+                {p.placeholder && <div style={{ marginTop: 6, fontSize: 10, color: "rgba(240,185,11,0.7)", fontWeight: 600 }}>In progress</div
