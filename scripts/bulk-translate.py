@@ -27,7 +27,7 @@ SRC = ROOT / "public" / "locales" / "en" / "common.json"
 LANGS = [
     "de","fr","es","it","pt","nl","pl","cs","ro","el","hu","bg","hr",
     "sk","sl","lt","lv","et","fi","sv","da","mt","ga","ar","zh","ja",
-    "ko","hi","ne","th","vi","ms","id","tr","ru","uk","he","sw","af",
+    "ko","hi","th","vi","ms","id","tr","ru","uk","he","sw","af",
     "bn","ur","fa","fil",
 ]
 
@@ -116,31 +116,4 @@ def main():
             print(f"[err]  {lang}: batch: {e}")
             continue
 
-        if not translated_batch or len(translated_batch) != len(to_send):
-            print(f"[err]  {lang}: batch size mismatch ({len(translated_batch) if translated_batch else 0}/{len(to_send)})")
-            continue
-
-        # Reassemble
-        final = [None] * len(raw_strings)
-        for j, idx in enumerate(to_send_indices):
-            t = translated_batch[j]
-            if not t:
-                final[idx] = raw_strings[idx]
-            else:
-                final[idx] = restore(t, holders_list[idx])
-        for i, s in enumerate(raw_strings):
-            if final[i] is None:
-                final[i] = s
-
-        # Write back into nested structure.
-        out_obj = json.loads(json.dumps(src))  # deep clone
-        for (path, _), value in zip(flat, final):
-            set_path(out_obj, path, value)
-
-        out_path.write_text(json.dumps(out_obj, ensure_ascii=False, indent=2) + "\n",
-                            encoding="utf-8")
-        print(f"[ok]   {lang} ({time.time()-t0:.1f}s)")
-
-
-if __name__ == "__main__":
-    main()
+        if not translated_batch or len(translated_batch) != len(to

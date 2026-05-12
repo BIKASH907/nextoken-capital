@@ -14,7 +14,7 @@ const nextConfig = {
     locales: [
       "en","de","fr","es","it","pt","nl","pl","cs","ro","el","hu","bg","hr",
       "sk","sl","lt","lv","et","fi","sv","da","mt","ga","ar","zh","ja","ko",
-      "hi","ne","th","vi","ms","id","tr","ru","uk","he","sw","af","bn","ur",
+      "hi","th","vi","ms","id","tr","ru","uk","he","sw","af","bn","ur",
       "fa","fil",
     ],
     defaultLocale: "en",
