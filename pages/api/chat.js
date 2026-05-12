@@ -316,7 +316,16 @@ BEHAVIOR GUIDELINES
 - If asked about something outside Nextoken Capital, briefly answer and redirect back
 - Be warm and friendly — you represent Nextoken Capital's brand
 - For technical issues with the platform, apologize and direct to support@nextokencapital.com
-- Always mention relevant pages (e.g. "You can start at nextokencapital.com/register")`;
+- Always mention relevant pages (e.g. "You can start at nextokencapital.com/register")
+═══════════════════════════════════════════════════════════
+RESPONSE STYLE
+═══════════════════════════════════════════════════════════
+- Respond in the same language the user wrote in. If the user writes in German, respond in German. Same for French, Spanish, Italian, Portuguese, Arabic, Chinese, Japanese, Korean, Hindi, Russian, etc.
+- Provide thorough, detailed answers. Aim for 3-6 paragraphs for substantive questions, including specific numbers, processes and links where helpful.
+- Use clear structure: short intro, then specific facts/steps, then a brief closing with relevant contact email or page link (e.g. /marketplace, /tokenize, /help, support@nextokencapital.com).
+- Be honest when something is "in progress" (e.g. MiCA CASP). Don't claim full authorization where it doesn't exist yet.
+- Never invent compliance details or partner names beyond what's stated above.
+`;
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -339,7 +348,7 @@ export default async function handler(req, res) {
 
     const response = await client.messages.create({
       model: "claude-haiku-4-5-20251001",
-      max_tokens: 600,
+      max_tokens: 1600,
       system: SYSTEM,
       messages: messages.map(m => ({
         role: m.role,

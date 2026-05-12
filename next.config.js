@@ -21,6 +21,13 @@ const nextConfig = {
     localeDetection: false,
   },
 
+
+  async rewrites() {
+    return [
+      { source: "/sitemap.xml", destination: "/api/sitemap.xml" },
+      { source: "/sitemap_index.xml", destination: "/api/sitemap.xml" },
+    ];
+  },
   async headers() {
     return [{
       source: '/(.*)',

@@ -17,6 +17,7 @@ import { polygon, mainnet, arbitrum, optimism, bsc, base, avalanche } from "wagm
 
 const NxtChatbot = dynamic(() => import("../components/NxtChatbot"), { ssr: false });
 const GlobalLanguageFAB = dynamic(() => import("../components/GlobalLanguageFAB"), { ssr: false });
+const StickyDemoBar = dynamic(() => import("../components/StickyDemoBar"), { ssr: false });
 
 const config = getDefaultConfig({
   appName: "Nextoken Capital",
@@ -127,6 +128,7 @@ export default function App({ Component, pageProps }) {
 
               <CookieConsent /><Component {...pageProps} />
               <GlobalLanguageFAB />
+              <StickyDemoBar />
               <NxtChatbot />
             </AppProvider>
           </SessionProvider>

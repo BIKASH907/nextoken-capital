@@ -15,7 +15,7 @@ export default function LeadCapture() {
       const res = await fetch("/api/leads/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, intent, source: "homepage" }),
+        body: JSON.stringify({ email, intent, source: "homepage", website: "" }),
       });
       setStatus(res.ok ? "ok" : "err");
     } catch (e) {
@@ -34,7 +34,16 @@ export default function LeadCapture() {
             ✓ {t("lead.success")}
           </div>
         ) : (
-          <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 12 }} autoComplete="off">
+            {/* Honeypot — bots fill this, humans don't see it. */}
+            <input
+              type="text"
+              name="website"
+              tabIndex={-1}
+              autoComplete="off"
+              style={{ position: "absolute", left: -9999, opacity: 0, pointerEvents: "none", height: 0, width: 0 }}
+              onChange={() => {}}
+            />
             <input
               type="email"
               required

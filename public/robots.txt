@@ -1,11 +1,14 @@
 User-agent: *
 Allow: /
-Disallow: /admin
-Disallow: /admin/*
+
+# Internal/admin areas
+Disallow: /admin/
 Disallow: /api/
-Disallow: /api/*
 Disallow: /dashboard
-Disallow: /issuer-dashboard
-Disallow: /owner-dashboard
+Disallow: /settings
+Disallow: /change-password
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /kyc
 
 Sitemap: https://nextokencapital.com/sitemap.xml
